@@ -1355,6 +1355,9 @@
       <div class="nav-item" data-target="page" data-page="c3_3">
         <span class="nav-id">C3.3</span><span class="nav-name">微信 · 聊天页（接收方）</span><span class="nav-tag tag-modal">浮层</span>
       </div>
+      <div class="nav-item" data-target="page" data-page="c3_4">
+        <span class="nav-id">C3.4</span><span class="nav-name">自动识别邀请码</span><span class="nav-tag tag-modal">浮层</span>
+      </div>
     </div>
 
     <div class="nav-section-label">弹层 / 确认框</div>
@@ -2314,9 +2317,9 @@
       <!-- 💍 大图标 -->
       <div class="auto-detect-icon">💍</div>
       <!-- 标题 -->
-      <div class="auto-detect-title">正在切换到关心页面…</div>
+      <div class="auto-detect-title">正在识别邀请码</div>
       <!-- 副文 -->
-      <div class="auto-detect-sub">已复制邀请码，正在返回 AIRING 识别</div>
+      <div class="auto-detect-sub">剪贴板检测到 AIR-9F3K2X</div>
       <!-- 加载点动画 -->
       <div class="auto-detect-loading">
         <span class="dot"></span><span class="dot"></span><span class="dot"></span>
@@ -2792,7 +2795,7 @@
   function autoDetectProceed(){
     openConfirm('阿戒', '邀请码：AIR-9F3K2X');
   }
-  // C3.4 作为切回 AIRING 的过渡页，随后返回关心首页并弹确认框
+  // C3.4 = 用户手动打开 App 后识别剪贴板邀请码 → 0.5s 后回到关心首页并弹 C3.2.a 添加好友二次确认弹窗
   const _origGoto = goto;
   goto = function(pid){
     _origGoto(pid);
@@ -2800,14 +2803,11 @@
       setTimeout(()=>{
         if(document.querySelector('.page.active')?.dataset.page === 'c3_4'){
           _origGoto('c1');
-          setTimeout(()=>{
-            if(document.querySelector('.page.active')?.dataset.page === 'c1' &&
-               !document.getElementById('confirmModal').classList.contains('open')){
-              autoDetectProceed();
-            }
-          }, 180);
+          if(!document.getElementById('confirmModal').classList.contains('open')){
+            autoDetectProceed();
+          }
         }
-      }, 1500);
+      }, 500);
     }
   };
 

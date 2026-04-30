@@ -405,7 +405,11 @@ button { font: inherit; color: inherit; background: transparent; border: 0; padd
 .lv-rail-inner {
   display: flex; gap: 12px;
   overflow-x: auto; scroll-snap-type: x mandatory;
-  padding: 4px 16px 8px;
+  padding-top: 4px;
+  padding-right: 16px;
+  padding-bottom: 8px;
+  padding-left: 16px;       /* 第一张主推卡左缘 16px */
+  scroll-padding-left: 16px;
   -webkit-overflow-scrolling: touch;
 }
 .lv-rail-inner::-webkit-scrollbar { display: none; }
@@ -427,13 +431,6 @@ button { font: inherit; color: inherit; background: transparent; border: 0; padd
   cursor: pointer; position: relative;
   height: 200px;
   box-shadow: 0 6px 18px rgba(80,60,140,0.14);
-}
-.lv-hero .h-art {
-  position: absolute; font-size: 140px;
-  right: -10px; top: 50%; transform: translateY(-58%);
-  opacity: 0.92;
-  filter: drop-shadow(0 6px 14px rgba(0,0,0,0.25));
-  pointer-events: none; z-index: 1;
 }
 .lv-hero .h-bg { position: absolute; inset: 0; }
 .lv-hero .h-cal {
@@ -507,15 +504,22 @@ button { font: inherit; color: inherit; background: transparent; border: 0; padd
 }
 .lv-hero .h-joined::before { content: '✓'; font-size: 10px; }
 
-/* 主题渐变 */
-.bg-night   { background: linear-gradient(135deg, #312e81 0%, #6366f1 60%, #a78bfa 100%); }
-.bg-sakura  { background: linear-gradient(135deg, #fce7f3 0%, #f9a8d4 50%, #c084fc 100%); }
-.bg-stream  { background: linear-gradient(135deg, #a7f3d0 0%, #6ee7b7 50%, #22c55e 100%); }
-.bg-runner  { background: linear-gradient(135deg, #fde68a 0%, #fb923c 60%, #dc2626 100%); }
-.bg-morning { background: linear-gradient(135deg, #fef3c7 0%, #fbbf24 50%, #f97316 100%); }
-.bg-water   { background: linear-gradient(135deg, #cffafe 0%, #22d3ee 50%, #0891b2 100%); }
-.bg-breath  { background: linear-gradient(135deg, #fae8ff 0%, #d8b4fe 50%, #9333ea 100%); }
-.bg-stand   { background: linear-gradient(135deg, #fef9c3 0%, #fde047 50%, #facc15 100%); }
+/* 主题渐变（卡通阳光风：天空浅蓝过渡到地平线暖色，避免暗调） */
+.bg-night   { background: linear-gradient(180deg, #BEE6F2 0%, #DDF0F8 55%, #FEF3C7 100%); }   /* 绵羊：晨蓝 → 暖黄地平线 */
+.bg-sakura  { background: linear-gradient(180deg, #BFE4F8 0%, #FCE7F3 55%, #FBCFE8 100%); }   /* 樱花：天蓝 → 樱粉 */
+.bg-stream  { background: linear-gradient(180deg, #BFE4F8 0%, #DCFCE7 55%, #BBF7D0 100%); }   /* 溪边：天蓝 → 嫩绿 */
+.bg-runner  { background: linear-gradient(180deg, #BEE6F2 0%, #FEF3C7 55%, #FED7AA 100%); }   /* 跑步：晨蓝 → 暖橙地平线 */
+.bg-morning { background: linear-gradient(180deg, #FFE4B5 0%, #FED7AA 55%, #FDBA74 100%); }   /* 晨光：朝霞蜜桃 */
+.bg-water   { background: linear-gradient(180deg, #BFE4F8 0%, #CFFAFE 55%, #A5F3FC 100%); }   /* 清泉：天蓝 → 浅青 */
+.bg-breath  { background: linear-gradient(180deg, #DBEAFE 0%, #FAE8FF 55%, #E9D5FF 100%); }   /* 呼吸：天青 → 莲紫 */
+.bg-stand   { background: linear-gradient(180deg, #BEE6F2 0%, #FEF9C3 55%, #FDE68A 100%); }   /* 站立：晨蓝 → 暖黄 */
+
+/* SVG 卡通场景图层（绝对铺满 .h-bg，不阻挡点击） */
+.lv-hero .h-scene {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+}
 
 /* 我的练级容器（练级进度入口 + 成就勋章入口，左右两栏） */
 .lv-mesect {
@@ -782,6 +786,30 @@ button { font: inherit; color: inherit; background: transparent; border: 0; padd
 }
 .lv-gtab .e { font-size: 13px; }
 
+/* 月度挑战 · 搜索框（粘贴邀请码 / 输入关键词） */
+.lv-month-search {
+  margin: 0 16px 12px;
+  height: 40px;
+  padding: 0 14px;
+  background: var(--card);                  /* 白底 */
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  box-shadow: 0 1px 2px rgba(15,23,42,0.04);
+  display: flex; align-items: center; gap: 8px;
+}
+.lv-month-search .lvms-icon {
+  font-size: 14px; color: var(--text3);
+  flex-shrink: 0;
+}
+.lv-month-search input {
+  flex: 1; min-width: 0;
+  border: none; outline: none; background: transparent;
+  font-size: 13px;
+  font-family: inherit;
+  color: var(--text);
+}
+.lv-month-search input::placeholder { color: var(--text3); }
+
 /* 月度挑战 卡片列表 */
 .lv-mlist { padding: 0 16px 6px; }
 .lv-mcard {
@@ -897,12 +925,29 @@ button { font: inherit; color: inherit; background: transparent; border: 0; padd
 }
 .lv-allbtn .arr { font-size: 18px; font-weight: 600; }
 
+/* "加载更多" 纯文字按钮（蓝色，无底色边框） */
+.lv-loadmore {
+  margin: 0 16px 18px;
+  padding: 12px 0;
+  text-align: center;
+  font-size: 14px; font-weight: 700;
+  color: var(--color-brand-primary);
+  cursor: pointer;
+  letter-spacing: 0.2px;
+  transition: opacity 0.15s;
+}
+.lv-loadmore:active { opacity: 0.6; }
+
 /* 使用入门 横向卡 */
 .lv-tut { padding: 0 0 8px; }
 .lv-tut-rail {
   display: flex; gap: 10px;
   overflow-x: auto;
-  padding: 4px 16px 8px;
+  padding-top: 4px;
+  padding-right: 16px;
+  padding-bottom: 8px;
+  padding-left: 16px;       /* 第一张卡左缘与区段头/卡片对齐于 16px */
+  scroll-padding-left: 16px;/* scroll-snap 起点也认这 16px，避免回弹时卡贴边 */
   scroll-snap-type: x mandatory;
 }
 .lv-tut-rail::-webkit-scrollbar { display: none; }
@@ -936,7 +981,11 @@ button { font: inherit; color: inherit; background: transparent; border: 0; padd
 .lv-kol-rail {
   display: flex; gap: 10px;
   overflow-x: auto;
-  padding: 4px 16px 8px;
+  padding-top: 4px;
+  padding-right: 16px;
+  padding-bottom: 8px;
+  padding-left: 16px;       /* 第一张卡左缘与区段头对齐于 16px */
+  scroll-padding-left: 16px;/* scroll-snap 起点也认这 16px */
   scroll-snap-type: x mandatory;
 }
 .lv-kol-rail::-webkit-scrollbar { display: none; }
@@ -1489,6 +1538,152 @@ button { font: inherit; color: inherit; background: transparent; border: 0; padd
   cursor: pointer; font-size: 18px; color: var(--text3);
 }
 
+/* 加入成功 · 居中弹窗（区别于底部弹层 modal-card） */
+.modal-overlay.is-center { align-items: center; }
+.modal-overlay.is-center .success-card {
+  position: relative;
+  width: calc(100% - 48px);
+  max-width: 320px;
+  background: var(--card);
+  border-radius: 22px;
+  padding: 28px 24px 18px;
+  text-align: center;
+  overflow: hidden;
+  transform: scale(0.86);
+  opacity: 0;
+  transition: transform 0.3s cubic-bezier(0.22,0.95,0.4,1), opacity 0.25s;
+  box-shadow: 0 12px 48px rgba(15,23,42,0.20);
+}
+.modal-overlay.is-center.show .success-card { transform: scale(1); opacity: 1; }
+.success-card .confetti {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+}
+.success-card .success-badge {
+  display: flex; justify-content: center;
+  margin-bottom: 18px;
+  position: relative; z-index: 1;
+}
+.success-card .success-badge svg {
+  filter: drop-shadow(0 6px 14px rgba(34,197,94,0.32));
+}
+.success-card .success-text {
+  font-size: 15px; line-height: 1.6;
+  color: var(--text);
+  font-weight: 600;
+  margin-bottom: 20px;
+  position: relative; z-index: 1;
+}
+.success-card .success-actions {
+  display: flex; gap: 10px;
+  position: relative; z-index: 1;
+}
+.success-card .success-btn {
+  flex: 1; padding: 12px;
+  border-radius: 999px;
+  font-size: 15px; font-weight: 700;
+  cursor: pointer; text-align: center;
+  transition: transform 0.12s, box-shadow 0.12s;
+}
+.success-card .success-btn:active { transform: scale(0.97); }
+.success-card .success-btn.cancel {
+  background: var(--border-soft);
+  color: var(--text2);
+}
+.success-card .success-btn.primary {
+  background: linear-gradient(135deg, #3A6FE0, #1E8FFF);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(58,111,224,0.32);
+}
+
+/* L7 加入挑战 · 居中二次确认（参考 02-关心模块 C3.2.a；头像换成圆角矩形挑战封面） */
+.modal-overlay.is-center .confirm-card {
+  position: relative;
+  width: calc(100% - 48px);
+  max-width: 320px;
+  background: var(--card);
+  border-radius: 22px;
+  padding: 24px 20px 16px;
+  text-align: center;
+  box-shadow: 0 12px 48px rgba(15,23,42,0.20);
+  transform: scale(0.86);
+  opacity: 0;
+  transition: transform 0.3s cubic-bezier(0.22,0.95,0.4,1), opacity 0.25s;
+}
+.modal-overlay.is-center.show .confirm-card {
+  transform: scale(1); opacity: 1;
+}
+/* 右上角关闭 ✕ 按钮（圆形，灰底） */
+.confirm-card .confirm-close {
+  position: absolute;
+  top: 12px; right: 12px;
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: var(--color-bg-surface-muted);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; line-height: 1;
+  color: var(--text3);
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.15s;
+}
+.confirm-card .confirm-close:hover { background: var(--border-soft); }
+.confirm-card .confirm-close:active { transform: scale(0.92); }
+
+/* 挑战封面（圆角矩形，复用 .bg-sakura / .bg-runner 等主题渐变） */
+.confirm-card .confirm-cover {
+  width: 88px; height: 62px;
+  margin: 0 auto 14px;
+  border-radius: 14px;
+  position: relative; overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 12px rgba(15,23,42,0.12);
+}
+.confirm-card .confirm-cover-emoji {
+  font-size: 36px;
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.18));
+}
+.confirm-card .confirm-ttl {
+  font-size: 17px; font-weight: 700;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+.confirm-card .confirm-ct {
+  font-size: 14px;
+  color: var(--text2);
+  margin-bottom: 6px;
+  line-height: 1.5;
+}
+.confirm-card .confirm-ct b { color: var(--text); font-weight: 700; }
+.confirm-card .confirm-src {
+  font-size: 11px;
+  color: var(--text3);
+  margin-bottom: 18px;
+  letter-spacing: 0.3px;
+}
+.confirm-card .confirm-btns { display: flex; gap: 10px; }
+.confirm-card .confirm-btn {
+  flex: 1; min-width: 0; height: 44px;
+  padding: 0 8px;
+  border-radius: 999px;
+  font-size: 14px; font-weight: 700;
+  border: none; cursor: pointer;
+  font-family: inherit;
+  white-space: nowrap;
+  transition: transform 0.12s;
+}
+.confirm-card .confirm-btn:active { transform: scale(0.97); }
+.confirm-card .confirm-btn.ghost {
+  background: var(--border-soft);
+  color: var(--text2);
+}
+.confirm-card .confirm-btn.primary {
+  background: linear-gradient(135deg, #6c5ce7, #a855f7);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(108,92,231,0.32);
+}
+
 /* 邀请码卡 */
 .invite-card {
   background: linear-gradient(135deg, #fff5f9 0%, #fce7f3 50%, #f3e8ff 100%);
@@ -1543,6 +1738,128 @@ button { font: inherit; color: inherit; background: transparent; border: 0; padd
 }
 .step-txt { flex: 1; font-size: 12px; color: var(--text2); line-height: 1.6; }
 .step-txt b { color: var(--text); font-weight: 700; }
+
+/* ============================================================
+   L6 邀请好友加入挑战 · C3 风格内容（参考 02-关心模块.html C3 添加好友页）
+   邀请预览卡 · 渠道选择标题 · 3 个白底渠道卡 · 2 条 Tip · 底部粘贴 dock
+   ============================================================ */
+.invite-modal-body { padding-bottom: 4px; }
+
+/* 邀请预览卡（顶部白底高亮） */
+.invite-prev {
+  margin: 4px 0 18px;
+  padding: 18px 14px;
+  background: var(--card);
+  border-radius: 22px;
+  box-shadow: var(--shadow-card);
+  border: 1px solid var(--border);
+  text-align: center;
+}
+.invite-prev .invite-prev-av {
+  width: 56px; height: 56px;
+  margin: 0 auto 8px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6c5ce7, #a855f7);
+  color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; font-weight: 700;
+}
+.invite-prev .invite-prev-badge {
+  display: inline-flex; align-items: center;
+  height: 20px; padding: 0 9px;
+  background: rgba(58,111,224,0.10);
+  color: var(--color-brand-primary);
+  font-size: 10px; font-weight: 700;
+  border-radius: 999px;
+  margin-bottom: 6px; letter-spacing: 1px;
+}
+.invite-prev .invite-prev-name {
+  font-size: 16px; font-weight: 700;
+  margin-bottom: 8px;
+  color: var(--text);
+}
+.invite-prev .invite-prev-quote {
+  font-size: 13px; color: var(--text2);
+  line-height: 1.5; padding: 10px;
+  background: var(--color-bg-surface-muted);
+  border-radius: 12px; text-align: left;
+}
+
+/* 渠道选择小标题 */
+.invite-section-head {
+  font-size: 16px; font-weight: 700;
+  color: var(--text);
+  padding: 0 4px; margin-bottom: 10px;
+}
+
+/* 渠道入口 3 列网格（全部白底卡片） */
+.ch-grid {
+  display: grid; grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px; margin-bottom: 14px;
+}
+.ch-cell {
+  padding: 18px 6px 14px;
+  border-radius: 16px;
+  display: flex; flex-direction: column;
+  align-items: center; gap: 8px;
+  cursor: pointer;
+  background: var(--card);
+  box-shadow: var(--shadow-card);
+  border: 1px solid var(--border);
+  color: var(--text);
+  transition: transform 0.12s;
+}
+.ch-cell:active { transform: scale(0.98); }
+.ch-cell .ic { font-size: 28px; }
+.ch-cell .lbl { font-size: 13px; font-weight: 600; color: var(--text); }
+.ch-cell.tint-copy .ic { color: var(--color-brand-primary); }
+.ch-cell.tint-wx   .ic { color: #07C160; }
+.ch-cell.tint-pyq  .ic { color: #5DA98A; }
+
+/* Tip 行 */
+.tip-line {
+  padding: 6px 4px;
+  font-size: 11px; color: var(--text3);
+  line-height: 1.6;
+}
+.tip-line b { color: var(--pink); font-weight: 700; }
+
+/* 底部"粘贴邀请码"dock（不是绝对定位，跟随模态滚动） */
+.invite-dock {
+  margin: 16px 0 0;
+  height: 48px;
+  padding: 0 6px 0 14px;
+  background: var(--card);
+  border-radius: 999px;
+  box-shadow: 0 8px 24px rgba(15,23,42,0.10);
+  border: 1px solid var(--border);
+  display: flex; align-items: center; gap: 8px;
+}
+.invite-dock .dock-si { font-size: 16px; color: var(--text3); }
+.invite-dock input {
+  flex: 1; min-width: 0;
+  border: none; background: transparent; outline: none;
+  font-size: 13px;
+  font-family: inherit;
+  color: var(--text);
+}
+.invite-dock input::placeholder { color: var(--text3); }
+.invite-dock .dock-clr {
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  background: var(--color-bg-surface-muted);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text3);
+  font-size: 13px; cursor: pointer;
+}
+.invite-dock .dock-add {
+  height: 34px; padding: 0 16px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #6c5ce7, #a855f7);
+  color: #fff;
+  font-size: 13px; font-weight: 600;
+  border: none; cursor: pointer;
+}
 
 .paste-input {
   width: 100%; padding: 18px 16px;
@@ -1691,7 +2008,9 @@ button { font: inherit; color: inherit; background: transparent; border: 0; padd
 .phone-frame.is-logged-out .lv-joined,
 .phone-frame.is-logged-out .lv-sect-head,
 .phone-frame.is-logged-out .lv-goal-tabs,
+.phone-frame.is-logged-out .lv-month-search,
 .phone-frame.is-logged-out .lv-mlist,
+.phone-frame.is-logged-out .lv-loadmore,
 .phone-frame.is-logged-out .lv-allbtn,
 .phone-frame.is-logged-out .lv-tut,
 .phone-frame.is-logged-out .lv-kol,
@@ -1699,13 +2018,16 @@ button { font: inherit; color: inherit; background: transparent; border: 0; padd
 .phone-frame.is-logged-out .section-sub { display: none; }
 .phone-frame.is-logged-out .empty-logged-out { display: block; }
 
-/* 无加入态：隐藏整段已加入挑战（标题 + 列表卡），并去掉练级进度入口的"连击 N 天"小标签 */
+/* 无加入态：隐藏整段已加入挑战（标题 + 列表卡），并去掉练级进度入口的"连击 N 天"小标签；
+   同时隐藏所有卡片上残留的"已加入"小标签（轮播卡 .h-joined 与月度挑战卡 .joined-tag），
+   避免与"无加入"整体状态冲突 */
 .phone-frame.is-no-joined #joinedSect,
 .phone-frame.is-no-joined .lv-joined,
-.phone-frame.is-no-joined .lv-me-progress .lv-tag { display: none; }
-.phone-frame.is-no-joined .empty-no-joined { display: block; }
+.phone-frame.is-no-joined .lv-me-progress .lv-tag,
+.phone-frame.is-no-joined .lv-hero .h-joined,
+.phone-frame.is-no-joined .lv-mcard .joined-tag { display: none; }
 
-.empty-logged-out, .empty-no-joined { display: none; }
+.empty-logged-out { display: none; }
 </style>
 </head>
 <body>
@@ -1775,6 +2097,9 @@ button { font: inherit; color: inherit; background: transparent; border: 0; padd
     </div>
     <div class="nav-item" data-target="overlay" data-overlay="allChOverlay">
       <span class="nav-id">L3</span><span class="nav-name">全部挑战（24 项）</span><span class="nav-tag tag-page">二级页面</span>
+    </div>
+    <div class="nav-item" data-target="overlay" data-overlay="joinedAllOverlay">
+      <span class="nav-id">L3'</span><span class="nav-name">已加入全部挑战（10 项）</span><span class="nav-tag tag-page">二级页面</span>
     </div>
     <div class="nav-item" data-target="overlay" data-overlay="tutListOv">
       <span class="nav-id">L4</span><span class="nav-name">使用入门列表</span><span class="nav-tag tag-page">二级页面</span>
@@ -1897,25 +2222,28 @@ button { font: inherit; color: inherit; background: transparent; border: 0; padd
     </div>
 
     <div class="cd-section">
-      <div class="cd-sect-h">你的进度</div>
-      <div class="cd-card">
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px">
-          <div>
-            <div style="font-size:17px;font-weight:800;color:var(--text)"><span id="cdTargetIcon">🚶</span> <span id="cdTargetTitle">累计步行 100,000 步</span></div>
-            <div style="font-size:12px;color:var(--text3);font-weight:600;margin-top:4px"><span id="cdMetricPct">92%</span> 已完成</div>
+      <!-- 「你的进度」区块（未加入态由 openChallenge() 整块隐藏） -->
+      <div id="cdProgressBlock">
+        <div class="cd-sect-h">你的进度</div>
+        <div class="cd-card">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px">
+            <div>
+              <div style="font-size:17px;font-weight:800;color:var(--text)"><span id="cdTargetIcon">🚶</span> <span id="cdTargetTitle">累计步行 100,000 步</span></div>
+              <div style="font-size:12px;color:var(--text3);font-weight:600;margin-top:4px"><span id="cdMetricPct">92%</span> 已完成</div>
+            </div>
           </div>
-        </div>
-        <div style="margin:14px 0 8px;height:8px;background:#eef0f3;border-radius:4px;overflow:hidden">
-          <div id="cdMetricFill" style="height:100%;background:linear-gradient(90deg,#22c55e,#06b6d4);border-radius:4px;width:0;transition:width 1.4s"></div>
-        </div>
-        <div style="display:flex;justify-content:space-between;align-items:flex-end">
-          <div>
-            <div style="font-size:20px;font-weight:800;color:var(--text);font-family:'Inter',sans-serif" id="cdMetricCur">133,721</div>
-            <div style="font-size:11px;color:var(--text3);font-weight:600;margin-top:2px">当前</div>
+          <div style="margin:14px 0 8px;height:8px;background:#eef0f3;border-radius:4px;overflow:hidden">
+            <div id="cdMetricFill" style="height:100%;background:linear-gradient(90deg,#22c55e,#06b6d4);border-radius:4px;width:0;transition:width 1.4s"></div>
           </div>
-          <div style="text-align:right">
-            <div style="font-size:16px;font-weight:800;color:var(--text2);font-family:'Inter',sans-serif" id="cdMetricTotal">100,000</div>
-            <div style="font-size:11px;color:var(--text3);font-weight:600;margin-top:2px">目标</div>
+          <div style="display:flex;justify-content:space-between;align-items:flex-end">
+            <div>
+              <div style="font-size:20px;font-weight:800;color:var(--text);font-family:'Inter',sans-serif" id="cdMetricCur">133,721</div>
+              <div style="font-size:11px;color:var(--text3);font-weight:600;margin-top:2px">当前</div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-size:16px;font-weight:800;color:var(--text2);font-family:'Inter',sans-serif" id="cdMetricTotal">100,000</div>
+              <div style="font-size:11px;color:var(--text3);font-weight:600;margin-top:2px">目标</div>
+            </div>
           </div>
         </div>
       </div>
@@ -2028,6 +2356,16 @@ button { font: inherit; color: inherit; background: transparent; border: 0; padd
     <div class="lv-mlist" id="allChList"></div>
   </div>
 
+  <!-- L3' 已加入全部挑战（与 L1.E 首页条目同款行结构，承载 10 项已加入挑战的完整列表） -->
+  <div class="fs-overlay" id="joinedAllOverlay" style="background:var(--bg)">
+    <div class="list-head">
+      <div class="ov-back" onclick="closeOverlay('joinedAllOverlay')">‹</div>
+      <div class="ov-title">已加入挑战 · 10 项</div>
+    </div>
+    <!-- 复用 .lv-joined 卡 + .lv-jrow 行结构（与首页 L1.E 完全一致） -->
+    <div class="lv-joined" id="joinedAllList" style="margin:0 16px 24px"></div>
+  </div>
+
   <!-- 教程列表 -->
   <div class="fs-overlay" id="tutListOv" style="background:var(--bg)">
     <div class="list-head">
@@ -2071,6 +2409,48 @@ button { font: inherit; color: inherit; background: transparent; border: 0; padd
   </div>
 
   <!-- ===== 模态：邀请码 ===== -->
+  <!-- 加入成功 · 居中弹窗（点击 L2 立即加入后弹出） -->
+  <div class="modal-overlay is-center" id="joinSuccessModal" onclick="closeJoinSuccess()">
+    <div class="success-card" onclick="event.stopPropagation()">
+      <!-- 彩纸装饰（绝对铺满，不阻挡点击） -->
+      <svg class="confetti" viewBox="0 0 320 240" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+        <rect x="20"  y="40"  width="14" height="6" rx="1.2" fill="#FB923C" transform="rotate(-25 27 43)"/>
+        <rect x="60"  y="22"  width="12" height="5" rx="1"   fill="#A855F7" transform="rotate(35 66 25)"/>
+        <rect x="120" y="20"  width="10" height="5" rx="1"   fill="#EC4899" transform="rotate(15 125 22)"/>
+        <rect x="240" y="20"  width="11" height="5" rx="1"   fill="#22C55E" transform="rotate(-30 245 22)"/>
+        <rect x="280" y="40"  width="14" height="6" rx="1.2" fill="#FACC15" transform="rotate(15 287 43)"/>
+        <rect x="40"  y="120" width="14" height="6" rx="1.2" fill="#FACC15" transform="rotate(45 47 123)"/>
+        <rect x="280" y="138" width="12" height="5" rx="1"   fill="#3B82F6" transform="rotate(-20 286 141)"/>
+        <rect x="22"  y="180" width="14" height="6" rx="1.2" fill="#A855F7" transform="rotate(20 29 183)"/>
+        <rect x="180" y="200" width="12" height="6" rx="1.2" fill="#22C55E" transform="rotate(-15 186 203)"/>
+        <rect x="280" y="190" width="14" height="6" rx="1.2" fill="#FB923C" transform="rotate(-40 287 193)"/>
+        <rect x="100" y="200" width="10" height="5" rx="1"   fill="#EC4899" transform="rotate(25 105 203)"/>
+        <rect x="200" y="35"  width="10" height="5" rx="1"   fill="#3B82F6" transform="rotate(40 205 38)"/>
+      </svg>
+
+      <!-- 绿色 12 角徽章 + 白色对勾 -->
+      <div class="success-badge">
+        <svg viewBox="0 0 80 80" width="76" height="76" aria-hidden="true">
+          <polygon points="40,4 44,12 52,8 53,17 62,16 60,25 68,28 63,35 70,40 63,45 68,52 60,55 62,64 53,63 52,72 44,68 40,76 36,68 28,72 27,63 18,64 20,55 12,52 17,45 10,40 17,35 12,28 20,25 18,16 27,17 28,8 36,12"
+                   fill="#22C55E"/>
+          <path d="M 26 41 L 36 51 L 56 31"
+                stroke="#FFFFFF" stroke-width="6"
+                fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+
+      <!-- 文案 -->
+      <div class="success-text">你已加入，不如也告诉你的朋友，邀请一起参与这个挑战吧。</div>
+
+      <!-- 双按钮：稍后（辅）+ 邀请（主） -->
+      <div class="success-actions">
+        <div class="success-btn cancel" onclick="closeJoinSuccess()">稍后</div>
+        <div class="success-btn primary" onclick="joinSuccessInvite()">邀请</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- L6 邀请好友加入挑战（参考 02-关心模块 C3 添加好友页：邀请预览 + 3 渠道 + dock） -->
   <div class="modal-overlay" id="inviteChModal">
     <div class="modal-card" onclick="event.stopPropagation()">
       <div class="modal-handle"></div>
@@ -2078,51 +2458,59 @@ button { font: inherit; color: inherit; background: transparent; border: 0; padd
         <div class="modal-title">邀请好友加入挑战</div>
         <div class="modal-close" onclick="closeOverlay('inviteChModal')">×</div>
       </div>
-      <div class="invite-card">
-        <div class="ilbl">挑战邀请码</div>
-        <div class="ival" id="inviteCodeVal">CHL-K8M3X9</div>
-        <div class="ihint">有效期 24 小时 · 朋友粘贴到 AIRing 即可加入</div>
-      </div>
-      <div class="invite-msg" id="inviteMsgVal">嗨！我刚加入「樱花漫步，落英缤纷」挑战 🌸 一起来吧。
+      <div class="invite-modal-body">
+        <!-- 邀请预览卡（白底高亮卡：头像 + 邀请码徽章 + 名字 + 邀请文案） -->
+        <div class="invite-prev">
+          <div class="invite-prev-av">阿</div>
+          <div class="invite-prev-badge" id="inviteCodeBadge">AIRING · CHL-K8M3X9</div>
+          <div class="invite-prev-name">阿戒</div>
+          <div class="invite-prev-quote" id="inviteQuoteVal">💞 我刚加入「樱花漫步，落英缤纷」🌸 ，复制邀请码 <b style="color:var(--color-brand-primary)">CHL-K8M3X9</b>，打开 AIRing 一起来挑战吧！</div>
+        </div>
 
-挑战邀请码：<span class="ekey">CHL-K8M3X9</span>
-打开 AIRing → 练级 → 粘贴邀请码
+        <!-- 渠道选择标题 -->
+        <div class="invite-section-head">选择邀请渠道</div>
 
-👉 一起完赛抽 Apple Watch！</div>
-      <div class="btn-row">
-        <div class="btn secondary" onclick="copyInviteCode()">复制邀请码</div>
-        <div class="btn primary" onclick="copyInviteMsg()">📋 复制全文</div>
-      </div>
-      <div class="steps">
-        <div class="step-row"><div class="step-num">1</div><div class="step-txt">点击 <b>复制全文</b> → 黏贴到微信发给朋友</div></div>
-        <div class="step-row"><div class="step-num">2</div><div class="step-txt">朋友复制邀请码后打开 AIRing，App 会<b>自动识别</b>剪贴板</div></div>
-        <div class="step-row"><div class="step-num">3</div><div class="step-txt">朋友确认 → 加入挑战 → 你们的进度互相可见</div></div>
+        <!-- 3 个渠道入口（全部白色卡片） -->
+        <div class="ch-grid">
+          <div class="ch-cell tint-copy" onclick="copyInviteCode()">
+            <div class="ic">🔗</div><div class="lbl">复制链接</div>
+          </div>
+          <div class="ch-cell tint-wx" onclick="toast('打开微信 · 选择聊天')">
+            <div class="ic">💬</div><div class="lbl">发送微信</div>
+          </div>
+          <div class="ch-cell tint-pyq" onclick="toast('打开微信 · 发布朋友圈')">
+            <div class="ic">🌳</div><div class="lbl">发送朋友圈</div>
+          </div>
+        </div>
+
+        <!-- Tip（底部 2 条） -->
+        <div class="tip-line">ⓘ 通过邀请码加入的朋友可以互相看到挑战进度</div>
+        <div class="tip-line">ⓘ 每邀请成功一位 <b>+10 XP</b></div>
       </div>
     </div>
     <div style="position:absolute;inset:0;z-index:-1" onclick="closeOverlay('inviteChModal')"></div>
   </div>
 
   <!-- ===== 模态：粘贴邀请码 ===== -->
-  <div class="modal-overlay" id="pasteChModal">
-    <div class="modal-card" onclick="event.stopPropagation()">
-      <div class="modal-handle"></div>
-      <div class="modal-header">
-        <div class="modal-title">粘贴邀请码</div>
-        <div class="modal-close" onclick="closeOverlay('pasteChModal')">×</div>
+  <!-- L7 粘贴邀请码加入挑战（参考 02-关心模块 C3.2.a 添加好友确认框）：
+       居中确认弹窗 + 圆角矩形挑战封面（替代圆形头像）+ 挑战名（替代用户昵称）+ 邀请码源 + 查看详情 / 确认加入 双按钮
+       关闭由右上角 ✕ 按钮承担（点击遮罩同样可关） -->
+  <div class="modal-overlay is-center" id="pasteChModal" onclick="closeOverlay('pasteChModal')">
+    <div class="confirm-card" onclick="event.stopPropagation()">
+      <!-- 右上角关闭 ✕ -->
+      <div class="confirm-close" onclick="closeOverlay('pasteChModal')" aria-label="关闭">×</div>
+      <!-- 挑战封面（圆角矩形，复用 .bg-* 主题渐变 + emoji） -->
+      <div class="confirm-cover bg-sakura" id="confirmChCover">
+        <div class="confirm-cover-emoji" id="confirmChEmoji">🌸</div>
       </div>
-      <div style="font-size:12px;color:var(--text2);margin-bottom:8px;font-weight:600">从朋友消息里复制了 CHL-XXXXXX 之类的码：</div>
-      <input class="paste-input" id="pasteCodeInput" placeholder="CHL-XXXXXX" maxlength="12">
-      <div class="paste-clip" onclick="autoFillFromClip()">
-        <div class="ic">📋</div>
-        <div class="tx">从剪贴板自动识别<small>App 启动也会自动识别</small></div>
-        <div style="font-size:12px;color:var(--accent);font-weight:800">读取 ›</div>
-      </div>
-      <div class="btn-row">
-        <div class="btn secondary" onclick="closeOverlay('pasteChModal')">取消</div>
-        <div class="btn primary" onclick="submitInviteChCode()">加入挑战</div>
+      <div class="confirm-ttl">加入挑战</div>
+      <div class="confirm-ct">是否加入 <b id="confirmChName">樱花漫步，落英缤纷</b>？</div>
+      <div class="confirm-src" id="confirmChSrc">通过邀请码：CHL-K8M3X9</div>
+      <div class="confirm-btns">
+        <button class="confirm-btn ghost" onclick="viewPendingChallengeDetail()">查看详情</button>
+        <button class="confirm-btn primary" onclick="submitInviteChCode()">确认加入</button>
       </div>
     </div>
-    <div style="position:absolute;inset:0;z-index:-1" onclick="closeOverlay('pasteChModal')"></div>
   </div>
 
   <!-- ===== 发起人主页 ===== -->
@@ -2534,8 +2922,8 @@ function renderLevelupPage(){
 
     <!-- L1.E 已加入挑战 · 区段头（标题外提，不放在卡内） -->
     <div class="lv-sect-head" id="joinedSect">
-      <div class="t">已加入挑战 <span class="t-meta">进行中 · 4 项</span></div>
-      <div class="more" onclick="openOverlay('allChOverlay')">查看全部 ›</div>
+      <div class="t">已加入挑战</div>
+      <div class="more" onclick="openOverlay('joinedAllOverlay')">查看全部 10 项 ›</div>
     </div>
     <!-- L1.E 已加入挑战 · 列表卡（年度官方挑战「2026 心动 200 万步」作为列表中一行参与） -->
     <div class="lv-joined" id="joinedList">
@@ -2559,7 +2947,12 @@ function renderLevelupPage(){
       <div class="lv-gtab"><span class="e">😴</span>睡眠</div>
       <div class="lv-gtab"><span class="e">⚡</span>体能</div>
     </div>
-    <div class="lv-mlist">
+    <!-- 月度挑战搜索框：粘贴邀请码 or 关键词加入挑战 -->
+    <div class="lv-month-search">
+      <span class="lvms-icon">🔍</span>
+      <input type="text" placeholder="粘贴邀请码或输入关键词加入挑战" />
+    </div>
+    <div class="lv-mlist" id="monthChList">
       ${renderMcard('sakura','🌸','bg-sakura',true, '缓解久坐','sed','林深','物理治疗师','linear-gradient(135deg,#f9a8d4,#ec4899)','14,632 漫步者','+5 XP / 1,000 步')}
       ${renderMcard('runner','🏃','bg-runner',false,'提升心肺','car','陈逐风','马拉松教练','linear-gradient(135deg,#fb923c,#dc2626)','5,716 跑者','+10 XP / 公里')}
       ${renderMcard('stream','🦦','bg-stream',false,'焦虑减压','anx','禅一','正念导师','linear-gradient(135deg,#34d399,#06b6d4)','5,277 冥想者','+8 XP / 10 min')}
@@ -2568,19 +2961,8 @@ function renderLevelupPage(){
       ${renderMcard('water','💧','bg-water',true, '代谢平衡','met','水若','营养师','linear-gradient(135deg,#22d3ee,#0891b2)','7,890 饮水族','+5 XP / 200ml')}
     </div>
 
-    <div class="lv-allbtn" onclick="openOverlay('allChOverlay')">
-      🗂️ 查看全部挑战 · 24 项 <span class="arr">›</span>
-    </div>
-    <div class="lv-allbtn" onclick="openOverlay('pasteChModal')" style="background:linear-gradient(135deg,#fff5f9,#f3e8ff);border-color:#f5d5e4;color:#9d174d;margin-top:-6px">
-      🔗 粘贴朋友的邀请码加入挑战 <span class="arr">›</span>
-    </div>
-
-    <!-- 已登录但还没加入任何挑战的空态 -->
-    <div class="lv-empty empty-no-joined" style="margin-top:-4px">
-      <div class="ico">🎯</div>
-      <div class="ttl">还没加入任何挑战</div>
-      <div class="body">先选一个本月主推的挑战开始你的练级之旅吧</div>
-    </div>
+    <!-- 加载更多：蓝色纯文字按钮，点击追加 6 张卡，按钮自身隐藏 -->
+    <div class="lv-loadmore" id="lvLoadMoreBtn" onclick="loadMoreMonthlyChallenges()">加载更多</div>
 
     <!-- L1.G 使用入门（区段头与卡片左侧统一 16px） -->
     <div class="lv-sect-head" id="tutSect" style="margin-top:18px">
@@ -2617,10 +2999,193 @@ function renderLevelupPage(){
   `;
 }
 
+/* 卡通阳光场景：每张卡的前景按挑战主题完全独立绘制（不只是变色） */
+function renderHeroScene(id){
+  // 通用天空层：太阳 + 光线 + 云朵（所有卡共用，提供"阳光"基底）
+  const sky = `
+    <!-- 太阳光晕 -->
+    <circle cx="56" cy="46" r="36" fill="#FFD93D" opacity="0.18"/>
+    <!-- 太阳光线 -->
+    <g stroke="#FFB800" stroke-width="2.5" stroke-linecap="round" opacity="0.7">
+      <line x1="56" y1="14" x2="56" y2="6"/>
+      <line x1="32" y1="22" x2="26" y2="16"/>
+      <line x1="24" y1="46" x2="16" y2="46"/>
+      <line x1="32" y1="70" x2="26" y2="76"/>
+      <line x1="80" y1="22" x2="86" y2="16"/>
+      <line x1="88" y1="46" x2="96" y2="46"/>
+      <line x1="80" y1="70" x2="86" y2="76"/>
+    </g>
+    <!-- 太阳本体 -->
+    <circle cx="56" cy="46" r="20" fill="#FFD93D"/>
+    <circle cx="56" cy="46" r="13" fill="#FFB800"/>
+    <!-- 云朵 -->
+    <g fill="#FFFFFF" opacity="0.92">
+      <ellipse cx="172" cy="32" rx="22" ry="7"/>
+      <ellipse cx="158" cy="29" rx="11" ry="5"/>
+      <ellipse cx="190" cy="28" rx="14" ry="6"/>
+    </g>
+    <g fill="#FFFFFF" opacity="0.7">
+      <ellipse cx="118" cy="64" rx="14" ry="4.5"/>
+      <ellipse cx="130" cy="62" rx="9" ry="3.8"/>
+    </g>`;
+
+  // 主题前景：地形 + 主题专属元素（每张卡完全不同）
+  const scenes = {
+    /* 绵羊咩咩：草地 + 卡通绵羊 × 3（白身 + 灰头 + 黑腿） */
+    sheep: `
+      <path d="M0 138 Q 70 110 140 130 T 280 120 T 360 130 V 200 H 0 Z" fill="#86EFAC" opacity="0.55"/>
+      <path d="M0 168 Q 60 145 140 162 T 280 155 T 360 168 V 200 H 0 Z" fill="#22C55E" opacity="0.7"/>
+      <g transform="translate(95 158)">
+        <ellipse cx="0" cy="0" rx="14" ry="9" fill="#FFFFFF"/>
+        <ellipse cx="-12" cy="-2" rx="5" ry="4.5" fill="#E5E7EB"/>
+        <circle cx="-13" cy="-3" r="1" fill="#1F2937"/>
+        <line x1="-4" y1="9" x2="-4" y2="13" stroke="#1F2937" stroke-width="1.8" stroke-linecap="round"/>
+        <line x1="3" y1="9" x2="3" y2="13" stroke="#1F2937" stroke-width="1.8" stroke-linecap="round"/>
+      </g>
+      <g transform="translate(170 168)">
+        <ellipse cx="0" cy="0" rx="11" ry="7" fill="#FFFFFF"/>
+        <ellipse cx="9" cy="-2" rx="4" ry="3.5" fill="#E5E7EB"/>
+        <circle cx="10" cy="-3" r="0.9" fill="#1F2937"/>
+        <line x1="-3" y1="7" x2="-3" y2="10" stroke="#1F2937" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="2" y1="7" x2="2" y2="10" stroke="#1F2937" stroke-width="1.5" stroke-linecap="round"/>
+      </g>
+      <g transform="translate(245 161)">
+        <ellipse cx="0" cy="0" rx="13" ry="8" fill="#FFFFFF"/>
+        <ellipse cx="-11" cy="-2" rx="4.5" ry="4" fill="#E5E7EB"/>
+        <circle cx="-12" cy="-3" r="1" fill="#1F2937"/>
+        <line x1="-3" y1="8" x2="-3" y2="11" stroke="#1F2937" stroke-width="1.6" stroke-linecap="round"/>
+        <line x1="2" y1="8" x2="2" y2="11" stroke="#1F2937" stroke-width="1.6" stroke-linecap="round"/>
+      </g>`,
+
+    /* 樱花漫步：粉色山 + 樱花树 + 飘落花瓣 × 7 */
+    sakura: `
+      <path d="M0 138 Q 70 110 140 130 T 280 120 T 360 130 V 200 H 0 Z" fill="#FBCFE8" opacity="0.55"/>
+      <path d="M0 168 Q 60 145 140 162 T 280 155 T 360 168 V 200 H 0 Z" fill="#F472B6" opacity="0.65"/>
+      <g transform="translate(50 175)">
+        <rect x="-2.5" y="-6" width="5" height="22" fill="#92400E" rx="1"/>
+        <circle cx="0" cy="-14" r="16" fill="#FBCFE8"/>
+        <circle cx="-9" cy="-9" r="10" fill="#F9A8D4" opacity="0.95"/>
+        <circle cx="9" cy="-11" r="11" fill="#FCE7F3"/>
+        <circle cx="-2" cy="-22" r="8" fill="#F9A8D4" opacity="0.9"/>
+      </g>
+      <g fill="#F9A8D4" opacity="0.9">
+        <ellipse cx="155" cy="78" rx="3.5" ry="2.2" transform="rotate(20 155 78)"/>
+        <ellipse cx="195" cy="105" rx="3" ry="2" transform="rotate(-15 195 105)"/>
+        <ellipse cx="235" cy="68" rx="3.5" ry="2.2" transform="rotate(40 235 68)"/>
+        <ellipse cx="180" cy="125" rx="2.5" ry="1.8" transform="rotate(-25 180 125)"/>
+        <ellipse cx="275" cy="92" rx="3" ry="2" transform="rotate(15 275 92)"/>
+        <ellipse cx="305" cy="115" rx="2.8" ry="1.8" transform="rotate(-10 305 115)"/>
+        <ellipse cx="220" cy="140" rx="2.6" ry="1.8" transform="rotate(35 220 140)"/>
+      </g>`,
+
+    /* 燕成排飞，人追风跑：暖橙地平线 + V 形飞燕 × 4 + 双层跑道虚线 */
+    runner: `
+      <path d="M0 138 Q 70 110 140 130 T 280 120 T 360 130 V 200 H 0 Z" fill="#FED7AA" opacity="0.55"/>
+      <path d="M0 168 Q 60 145 140 162 T 280 155 T 360 168 V 200 H 0 Z" fill="#FB923C" opacity="0.7"/>
+      <g stroke="#1F2937" stroke-width="2.2" stroke-linecap="round" fill="none" opacity="0.85">
+        <path d="M 130 58 q 5 -4 10 0 q 5 4 10 0"/>
+        <path d="M 158 48 q 4 -3 8 0 q 4 3 8 0"/>
+        <path d="M 188 62 q 4 -3 8 0 q 4 3 8 0"/>
+        <path d="M 220 52 q 5 -4 10 0 q 5 4 10 0"/>
+      </g>
+      <path d="M -10 188 Q 90 170 180 180 T 380 174"
+            stroke="#FFFFFF" stroke-width="3" stroke-dasharray="9 6" stroke-linecap="round"
+            fill="none" opacity="0.95"/>
+      <path d="M -10 178 Q 90 161 180 171 T 380 165"
+            stroke="#FFFFFF" stroke-width="1.5" stroke-dasharray="4 6" stroke-linecap="round"
+            fill="none" opacity="0.55"/>`,
+
+    /* 溪边放空：远岸嫩绿 + 三层水波 + 漂浮叶子 × 3 + 鹅卵石 */
+    stream: `
+      <path d="M0 138 Q 70 110 140 130 T 280 120 T 360 130 V 200 H 0 Z" fill="#A7F3D0" opacity="0.55"/>
+      <path d="M0 162 Q 60 156 120 162 T 240 162 T 360 162 V 200 H 0 Z" fill="#67E8F9" opacity="0.55"/>
+      <path d="M0 175 Q 60 170 120 175 T 240 175 T 360 175 V 200 H 0 Z" fill="#22D3EE" opacity="0.6"/>
+      <path d="M0 188 Q 60 183 120 188 T 240 188 T 360 188 V 200 H 0 Z" fill="#0891B2" opacity="0.65"/>
+      <g fill="#22C55E" opacity="0.9">
+        <ellipse cx="80" cy="160" rx="6" ry="2.5" transform="rotate(20 80 160)"/>
+        <ellipse cx="200" cy="173" rx="5" ry="2" transform="rotate(-15 200 173)"/>
+        <ellipse cx="290" cy="158" rx="6" ry="2.5" transform="rotate(30 290 158)"/>
+      </g>
+      <g fill="#94A3B8" opacity="0.75">
+        <ellipse cx="40" cy="190" rx="10" ry="4"/>
+        <ellipse cx="55" cy="194" rx="8" ry="3"/>
+        <ellipse cx="320" cy="190" rx="9" ry="3.5"/>
+      </g>`,
+
+    /* 一日清泉：远岸 + 湖面 + 涟漪同心圆 + 滴落的水滴 × 5 */
+    water: `
+      <path d="M0 138 Q 70 110 140 130 T 280 120 T 360 130 V 200 H 0 Z" fill="#A5F3FC" opacity="0.45"/>
+      <path d="M0 165 Q 90 160 180 165 T 360 165 V 200 H 0 Z" fill="#22D3EE" opacity="0.55"/>
+      <g stroke="#FFFFFF" stroke-width="1.8" fill="none" opacity="0.75">
+        <ellipse cx="240" cy="182" rx="36" ry="6"/>
+        <ellipse cx="240" cy="182" rx="22" ry="4"/>
+        <ellipse cx="240" cy="182" rx="11" ry="2.2"/>
+      </g>
+      <g fill="#0891B2" opacity="0.78">
+        <path d="M 240 145 q -3 -8 0 -16 q 3 8 0 16 z"/>
+        <circle cx="180" cy="100" r="3"/>
+        <circle cx="200" cy="118" r="2.2"/>
+        <circle cx="160" cy="128" r="2.5"/>
+        <circle cx="285" cy="132" r="2.2"/>
+      </g>`,
+
+    /* 千江有水，呼吸成莲：莲池 + 涟漪 + 莲叶 × 3 + 莲花 */
+    breath: `
+      <path d="M0 138 Q 70 110 140 130 T 280 120 T 360 130 V 200 H 0 Z" fill="#E9D5FF" opacity="0.55"/>
+      <path d="M0 158 Q 90 153 180 158 T 360 158 V 200 H 0 Z" fill="#C4B5FD" opacity="0.6"/>
+      <g stroke="#FFFFFF" stroke-width="1" fill="none" opacity="0.55">
+        <ellipse cx="200" cy="182" rx="46" ry="6"/>
+        <ellipse cx="200" cy="182" rx="30" ry="4"/>
+        <ellipse cx="200" cy="182" rx="16" ry="2.5"/>
+      </g>
+      <g transform="translate(80 178)">
+        <ellipse cx="0" cy="0" rx="16" ry="5" fill="#34D399" opacity="0.88"/>
+      </g>
+      <g transform="translate(290 175)">
+        <ellipse cx="0" cy="0" rx="14" ry="4" fill="#34D399" opacity="0.88"/>
+      </g>
+      <g transform="translate(180 188)">
+        <ellipse cx="0" cy="0" rx="20" ry="6" fill="#10B981" opacity="0.85"/>
+      </g>
+      <g transform="translate(180 175)">
+        <ellipse cx="-4" cy="0" rx="3.5" ry="6" fill="#F9A8D4" transform="rotate(-30 -4 0)"/>
+        <ellipse cx="4" cy="0" rx="3.5" ry="6" fill="#F9A8D4" transform="rotate(30 4 0)"/>
+        <ellipse cx="0" cy="-2" rx="3.5" ry="7" fill="#FBCFE8"/>
+        <circle cx="0" cy="-1" r="2" fill="#FCD34D"/>
+      </g>`,
+
+    /* 晨光晒背：金黄地平线 + 朝阳光柱 */
+    morning: `
+      <path d="M0 138 Q 70 110 140 130 T 280 120 T 360 130 V 200 H 0 Z" fill="#FDE68A" opacity="0.55"/>
+      <path d="M0 168 Q 60 145 140 162 T 280 155 T 360 168 V 200 H 0 Z" fill="#FB923C" opacity="0.7"/>
+      <g stroke="#FFD93D" stroke-width="3" stroke-linecap="round" opacity="0.45">
+        <line x1="80" y1="80" x2="200" y2="180"/>
+        <line x1="100" y1="80" x2="220" y2="180"/>
+        <line x1="120" y1="80" x2="240" y2="180"/>
+      </g>`,
+
+    /* 站立：田野 + 卡通伸展小人 */
+    stand: `
+      <path d="M0 138 Q 70 110 140 130 T 280 120 T 360 130 V 200 H 0 Z" fill="#FEF08A" opacity="0.55"/>
+      <path d="M0 168 Q 60 145 140 162 T 280 155 T 360 168 V 200 H 0 Z" fill="#FACC15" opacity="0.7"/>
+      <g stroke="#1F2937" stroke-width="2" stroke-linecap="round" fill="none">
+        <circle cx="200" cy="138" r="5" fill="#1F2937"/>
+        <line x1="200" y1="143" x2="200" y2="160"/>
+        <line x1="200" y1="148" x2="188" y2="135"/>
+        <line x1="200" y1="148" x2="212" y2="135"/>
+        <line x1="200" y1="160" x2="194" y2="172"/>
+        <line x1="200" y1="160" x2="206" y2="172"/>
+      </g>`
+  };
+
+  const fg = scenes[id] || scenes.sheep;
+  return `<svg class="h-scene" viewBox="0 0 360 200" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${sky}${fg}</svg>`;
+}
+
 function renderHero(id, m, d, joinedTag, peopleLbl, emoji, title, sub){
   const joined = joinedTag ? `<div class="h-joined">${joinedTag}</div>` : '';
   return `<div class="lv-hero" onclick="openChallenge('${id}')">
-    <div class="h-bg ${CHALLENGES[id].bg}"></div>
+    <div class="h-bg ${CHALLENGES[id].bg}">${renderHeroScene(id)}</div>
     <div class="h-cal"><span class="m">${m}</span><span class="d">${d}</span></div>
     ${joined}
     <div class="h-people">
@@ -2632,7 +3197,6 @@ function renderHero(id, m, d, joinedTag, peopleLbl, emoji, title, sub){
       </div>
       <div class="h-num">${peopleLbl}</div>
     </div>
-    <div class="h-art">${emoji}</div>
     <div class="h-foot">
       <div class="h-badge">${emoji}</div>
       <div class="h-text"><div class="t">${title}</div><div class="s">${sub}</div></div>
@@ -2706,6 +3270,71 @@ function renderAllChallenges(){
       </div>
     </div>`;
   }).join('');
+}
+
+/* L1.F 月度挑战 · "加载更多" 追加的第二批 6 张卡。
+   前 4 张复用 renderMcard（IDs 取自 CHALLENGES：breath / stand / postmeal / annual，可点击进 L2），
+   后 2 张作为占位写直出 HTML（点击仅 toast）。 */
+function loadMoreMonthlyChallenges(){
+  const list = document.getElementById('monthChList');
+  if(!list) return;
+  const more = [
+    renderMcard('breath',  '🪷','bg-breath', false,'血压平稳','bp', '莲华','瑜伽老师',     'linear-gradient(135deg,#c084fc,#9333ea)','2,184 呼吸者',   '+12 XP / 10 min'),
+    renderMcard('stand',   '🧍','bg-stand',  false,'久坐恢复','sed','站立小姐','人体工学顾问','linear-gradient(135deg,#facc15,#f59e0b)','1,602 起立族',   '+5 XP / 起身'),
+    renderMcard('postmeal','🩸','bg-stream', false,'降餐后血糖','glu','糖糖医师','内分泌科',  'linear-gradient(135deg,#34d399,#10b981)','3,728 慢糖友',   '+8 XP / 餐后步'),
+    renderMcard('annual',  '🦄','bg-runner', false,'心血管','car','AIRing 官方','官方挑战', 'linear-gradient(135deg,#6c5ce7,#a855f7)','50,920 步行者', '+50 XP / 完赛'),
+    /* 占位 1 · 骑行（不在 CHALLENGES 中，独立 HTML） */
+    `<div class="lv-mcard" onclick="toast('🚴 骑行 30km · 详情建设中')">
+       <div class="mc-art bg-runner"><div class="mc-emoji">🚴</div></div>
+       <div class="mc-body">
+         <div class="mc-t">乘风骑行，丈量城市</div>
+         <div class="mc-d">📅 4/01-4/30 · <span class="goal-pill car">提升心肺</span></div>
+         <div class="mc-founder">
+           <span class="fav" style="background:linear-gradient(135deg,#fb923c,#dc2626)">风</span>
+           <span class="fname">风行者</span> 发起 · <span class="fkol">单车教练</span>
+         </div>
+         <div class="mc-people">2,860 骑行者</div>
+         <span class="mc-xp">+15 XP / 公里</span>
+       </div>
+     </div>`,
+    /* 占位 2 · 瑜伽（不在 CHALLENGES 中，独立 HTML） */
+    `<div class="lv-mcard" onclick="toast('🧘 每日瑜伽 · 详情建设中')">
+       <div class="mc-art bg-breath"><div class="mc-emoji">🧘</div></div>
+       <div class="mc-body">
+         <div class="mc-t">舒展之间，身心同安</div>
+         <div class="mc-d">📅 4/01-4/30 · <span class="goal-pill anx">焦虑减压</span></div>
+         <div class="mc-founder">
+           <span class="fav" style="background:linear-gradient(135deg,#a78bfa,#6366f1)">瑜</span>
+           <span class="fname">莹瑜</span> 发起 · <span class="fkol">瑜伽老师</span>
+         </div>
+         <div class="mc-people">4,108 习瑜者</div>
+         <span class="mc-xp">+10 XP / 15 min</span>
+       </div>
+     </div>`
+  ].join('');
+  list.insertAdjacentHTML('beforeend', more);
+  /* 加载完隐藏自身（避免重复加载） */
+  const btn = document.getElementById('lvLoadMoreBtn');
+  if(btn) btn.style.display = 'none';
+  toast('已加载 6 个新挑战');
+}
+
+/* L3' 已加入全部挑战 · 列表（10 项；与首页 L1.E 同款 lv-jrow 行结构） */
+function renderJoinedAll(){
+  const rows = [
+    { id:'sakura', ico:'🌸', icoBg:'linear-gradient(135deg,#f9a8d4,#c084fc)', spon:'缓解久坐',  pct:92, val:'133,721 / 100,000 步 🏆', fill:'linear-gradient(90deg,#ec4899,#a855f7)' },
+    { id:'sheep',  ico:'🌙', icoBg:'linear-gradient(135deg,#6366f1,#a78bfa)', spon:'深睡修复',  pct:76, val:'23 / 30 天达标',           fill:'linear-gradient(90deg,#6366f1,#a78bfa)' },
+    { id:'water',  ico:'💧', icoBg:'linear-gradient(135deg,#06b6d4,#3b82f6)', spon:'代谢平衡',  pct:60, val:'18 / 30 天达标',           fill:'linear-gradient(90deg,#06b6d4,#3b82f6)' },
+    { id:'annual', ico:'🦄', icoBg:'linear-gradient(135deg,#fb923c,#dc2626)', spon:'心血管',    pct:11, val:'237,178 / 200 万步',       fill:'linear-gradient(90deg,#fb923c,#dc2626)' },
+    { id:'runner', ico:'🏃', icoBg:'linear-gradient(135deg,#fb923c,#dc2626)', spon:'提升心肺',  pct:45, val:'13.5 / 30 km',              fill:'linear-gradient(90deg,#fb923c,#dc2626)' },
+    { id:'stream', ico:'🦦', icoBg:'linear-gradient(135deg,#34d399,#06b6d4)', spon:'焦虑减压',  pct:80, val:'24 / 30 分钟达标',         fill:'linear-gradient(90deg,#34d399,#06b6d4)' },
+    { id:'breath', ico:'🪷', icoBg:'linear-gradient(135deg,#c084fc,#9333ea)', spon:'血压平稳',  pct:67, val:'20 / 30 天达标',           fill:'linear-gradient(90deg,#c084fc,#9333ea)' },
+    { id:'morning',ico:'🌅', icoBg:'linear-gradient(135deg,#fbbf24,#f97316)', spon:'免疫节律',  pct:50, val:'15 / 30 天达标',           fill:'linear-gradient(90deg,#fbbf24,#f97316)' },
+    { id:'stand',  ico:'🧍', icoBg:'linear-gradient(135deg,#facc15,#f59e0b)', spon:'久坐恢复',  pct:33, val:'10 / 30 天达标',           fill:'linear-gradient(90deg,#facc15,#f59e0b)' },
+    { id:'postmeal',ico:'🩸',icoBg:'linear-gradient(135deg,#34d399,#10b981)', spon:'降餐后血糖',pct:27, val:'8 / 30 天达标',            fill:'linear-gradient(90deg,#34d399,#10b981)' }
+  ];
+  document.getElementById('joinedAllList').innerHTML =
+    rows.map(r => renderJrow(r.id, r.ico, r.icoBg, r.spon, r.pct, r.val, r.fill)).join('');
 }
 
 function renderTutList(){
@@ -2785,6 +3414,33 @@ function switchLbTab(el){
    挑战详情
    ========================================================== */
 let currentFounderId = 'sakura';
+/* 本会话刚通过"立即加入"按钮加入的挑战 ID 集合（覆盖 c.joined / is-no-joined 状态） */
+const SESSION_JOINED = new Set();
+
+/* 计算 L2 当前应展示的"已加入"语义 */
+function computeEffectiveJoined(id){
+  const c = CHALLENGES[id]; if(!c) return false;
+  if(SESSION_JOINED.has(id)) return true;  // 本会话刚加入 → 永远显示已加入
+  const isNoJoinedState = document.getElementById('phone').classList.contains('is-no-joined');
+  return !isNoJoinedState && c.joined;
+}
+
+/* 仅刷新 L2 与"是否已加入"相关的两处 DOM —— 你的进度区块 + 底部 CTA。
+   与 openChallenge 完整渲染分离，避免重新滚动到顶。 */
+function refreshChallengeJoinedState(id){
+  const c = CHALLENGES[id]; if(!c) return;
+  const eff = computeEffectiveJoined(id);
+  document.getElementById('cdProgressBlock').style.display = eff ? '' : 'none';
+  const cta = document.getElementById('cdCtaArea');
+  if(eff){
+    cta.innerHTML = `<div class="cd-btn invite" onclick="inviteFriend('${id}')">📤 邀请好友 · 已加入</div>
+                     <div class="cd-btn quit" onclick="toast('已退出挑战')">退出挑战</div>`;
+  } else {
+    cta.innerHTML = `<div class="cd-btn join" onclick="joinChallenge('${id}')">立即加入</div>
+                     <div class="cd-btn quit" onclick="inviteFriend('${id}')">📤 邀请好友加入</div>`;
+  }
+}
+
 function openChallenge(id){
   const c = CHALLENGES[id];
   if(!c) return;
@@ -2815,6 +3471,9 @@ function openChallenge(id){
   document.getElementById('cdMetricFill').style.width = '0%';
   setTimeout(()=>{ document.getElementById('cdMetricFill').style.width = c.metric.pct + '%'; }, 50);
 
+  /* 「你的进度」区块 + CTA 双按钮：交给 refreshChallengeJoinedState 统一处理 */
+  refreshChallengeJoinedState(id);
+
   /* 发起人 */
   const f = FOUNDERS[id];
   if(f){
@@ -2844,22 +3503,34 @@ function openChallenge(id){
     </div>`;
   }).join('');
 
-  /* CTA */
-  const cta = document.getElementById('cdCtaArea');
-  if(c.joined){
-    cta.innerHTML = `<div class="cd-btn invite" onclick="inviteFriend('${id}')">📤 邀请好友 · 已加入</div>
-                     <div class="cd-btn quit" onclick="toast('已退出挑战')">退出挑战</div>`;
-  } else {
-    cta.innerHTML = `<div class="cd-btn join" onclick="joinChallenge('${id}')">加入挑战</div>
-                     <div class="cd-btn invite" onclick="inviteFriend('${id}')" style="margin-top:8px">📤 分享给朋友</div>`;
-  }
-
   openOverlay('cdOverlay');
   document.getElementById('cdOverlay').scrollTop = 0;
 }
+
+/* ==========================================================
+   立即加入 → 弹出"加入成功"居中弹窗
+   ========================================================== */
+let joinSuccessChallengeId = null;
 function joinChallenge(id){
-  toast('🎉 已加入「' + CHALLENGES[id].title + '」');
-  closeOverlay('cdOverlay');
+  SESSION_JOINED.add(id);                       // 标记本会话已加入
+  joinSuccessChallengeId = id;
+  document.getElementById('joinSuccessModal').classList.add('show');
+}
+/* 关闭加入成功弹窗 → 刷新底层 L2，让其切换到"已加入"态 */
+function closeJoinSuccess(){
+  document.getElementById('joinSuccessModal').classList.remove('show');
+  if(joinSuccessChallengeId){
+    refreshChallengeJoinedState(joinSuccessChallengeId);
+  }
+  joinSuccessChallengeId = null;
+}
+/* 加入成功弹窗 → 点"邀请"：先关本弹窗 + 刷新底层 L2 + 打开 L6 邀请好友模态 */
+function joinSuccessInvite(){
+  const id = joinSuccessChallengeId;
+  document.getElementById('joinSuccessModal').classList.remove('show');
+  if(id){ refreshChallengeJoinedState(id); }
+  joinSuccessChallengeId = null;
+  setTimeout(()=>{ if(id) inviteFriend(id); }, 220);
 }
 
 /* ==========================================================
@@ -2887,39 +3558,73 @@ function genInviteCode(){
   let s = ''; for(let i=0;i<6;i++) s += chars[Math.floor(Math.random()*chars.length)];
   return 'CHL-' + s;
 }
+/* L6 邀请好友加入挑战 · 当前激活的邀请码（由 inviteFriend 写入，被 copyInviteCode 读取） */
+let currentInviteCode = '';
 function inviteFriend(id){
   const c = CHALLENGES[id] || CHALLENGES.sakura;
-  const code = genInviteCode();
-  document.getElementById('inviteCodeVal').textContent = code;
-  document.getElementById('inviteMsgVal').innerHTML =
-    `嗨！我刚加入「${c.title}」挑战 ${c.emoji} 一起来吧，已经有 ${c.people} 在打卡。
-
-挑战邀请码：<span class="ekey">${code}</span>
-打开 AIRing → 练级 → 粘贴邀请码
-
-👉 一起完赛抽${c.sponsor.name}！`;
+  currentInviteCode = genInviteCode();
+  /* 邀请码徽章（顶部小胶囊） */
+  document.getElementById('inviteCodeBadge').textContent = 'AIRING · ' + currentInviteCode;
+  /* 邀请文案（preview 引语区） */
+  document.getElementById('inviteQuoteVal').innerHTML =
+    `💞 我刚加入「${c.title}」${c.emoji}，复制邀请码 <b style="color:var(--color-brand-primary)">${currentInviteCode}</b>，打开 AIRing 一起来挑战吧！`;
   openOverlay('inviteChModal');
 }
 function copyInviteCode(){
-  const code = document.getElementById('inviteCodeVal').textContent;
-  navigator.clipboard?.writeText(code); toast('📋 邀请码已复制');
+  if(!currentInviteCode) return;
+  navigator.clipboard?.writeText(currentInviteCode);
+  toast('📋 已复制邀请码 ' + currentInviteCode);
 }
+/* copyInviteMsg：旧 L6 模态的"复制全文"按钮回调；新版 C3 风格 L6 已废弃此入口，
+   改读 invite-prev-quote 文本兼容性保留（如未来再恢复"复制全文"按钮可继续用） */
 function copyInviteMsg(){
-  const msg = document.getElementById('inviteMsgVal').innerText;
-  navigator.clipboard?.writeText(msg); toast('📋 邀请文案已复制 · 去微信粘贴');
+  const node = document.getElementById('inviteQuoteVal');
+  const msg = node ? node.innerText : '';
+  if(!msg) return;
+  navigator.clipboard?.writeText(msg);
+  toast('📋 邀请文案已复制');
 }
+/* L7 加入挑战二次确认 · 当前待加入的挑战 ID（点确认后用于 toast 文案 + 标记 SESSION_JOINED） */
+let pendingJoinChallengeId = 'sakura';
+
+/* 由外部预填弹窗（如自动识别剪贴板邀请码 / 或左侧导航点击）。
+   如果不传参，默认演示用的是「樱花漫步 + CHL-K8M3X9」。 */
+function populatePasteConfirm(challengeId, code){
+  const id = (challengeId && CHALLENGES[challengeId]) ? challengeId : 'sakura';
+  const c = CHALLENGES[id];
+  pendingJoinChallengeId = id;
+  document.getElementById('confirmChCover').className = 'confirm-cover ' + c.bg;
+  document.getElementById('confirmChEmoji').textContent = c.emoji;
+  document.getElementById('confirmChName').textContent = c.title;
+  document.getElementById('confirmChSrc').textContent = '通过邀请码：' + (code || 'CHL-K8M3X9');
+}
+
+/* （旧 API 保留）从剪贴板自动识别 CHL-XXXXXX，识别到就预填弹窗 */
 function autoFillFromClip(){
   navigator.clipboard?.readText?.().then(txt=>{
     const m = (txt||'').match(/CHL-[A-Z0-9]{6}/i);
-    if(m){ document.getElementById('pasteCodeInput').value = m[0].toUpperCase(); toast('✅ 已识别邀请码'); }
-    else { document.getElementById('pasteCodeInput').value = 'CHL-K8M3X9'; toast('演示码已填入'); }
-  }).catch(()=>{ document.getElementById('pasteCodeInput').value = 'CHL-K8M3X9'; toast('演示码已填入'); });
+    populatePasteConfirm('sakura', m ? m[0].toUpperCase() : 'CHL-K8M3X9');
+    toast(m ? '✅ 已识别邀请码' : '演示码已填入');
+  }).catch(()=>{
+    populatePasteConfirm('sakura', 'CHL-K8M3X9');
+    toast('演示码已填入');
+  });
 }
+
+/* 点"确认加入" → 关闭弹窗 + 标记本会话已加入（L2 自动切已加入态） + toast */
 function submitInviteChCode(){
-  const v = document.getElementById('pasteCodeInput').value.trim();
-  if(!v){ toast('请输入邀请码'); return; }
+  const id = pendingJoinChallengeId || 'sakura';
+  const c = CHALLENGES[id];
   closeOverlay('pasteChModal');
-  toast('🎉 已加入「樱花漫步」挑战');
+  if(typeof SESSION_JOINED !== 'undefined') SESSION_JOINED.add(id);
+  toast('🎉 已加入「' + c.title + '」');
+}
+
+/* 点"查看详情" → 关闭弹窗 + 打开 L2 挑战详情（仍是未加入态，用户可在详情页再决定） */
+function viewPendingChallengeDetail(){
+  const id = pendingJoinChallengeId || 'sakura';
+  closeOverlay('pasteChModal');
+  setTimeout(()=>openChallenge(id), 220);
 }
 
 /* ==========================================================
@@ -3018,6 +3723,7 @@ document.querySelectorAll('.state-btn').forEach(btn=>{
    ========================================================== */
 renderLevelupPage();
 renderAllChallenges();
+renderJoinedAll();
 renderTutList();
 renderStoryList();
 </script>

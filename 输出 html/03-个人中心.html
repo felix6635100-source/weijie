@@ -876,6 +876,14 @@
       font-weight: 600;
       flex-shrink: 0;
     }
+    .login-input-row.with-suffix .login-picker-arrow {
+      font-size: 16px;
+      color: #A5AEC2;
+      font-weight: 500;
+      line-height: 1;
+      margin-left: 2px;
+      flex-shrink: 0;
+    }
     .login-shuffle-btn {
       width: 22px;
       height: 22px;
@@ -1118,6 +1126,12 @@
       font-weight: var(--weight-bold);
       color: var(--color-text-primary);
     }
+    .profile-section-head-title .meta {
+      color: #94A3B8;
+      font-weight: 500;
+      font-size: 12px;
+      margin-left: 6px;
+    }
     .profile-section-head-sub {
       font-size: var(--font-xs);
       color: var(--color-text-tertiary);
@@ -1219,15 +1233,22 @@
     .notice-bar strong { font-weight: 700; color: var(--color-brand-secondary); }
 
     /* 动态发送行 */
+    .profile-share-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
     .profile-row-share {
       display: flex;
       flex-direction: column;
       gap: var(--space-xs);
       padding: var(--space-md) var(--space-lg);
       cursor: default;
-      border-bottom: 1px solid var(--color-border-subtle);
+      background: var(--color-bg-surface);
+      border: 1px solid var(--color-border-subtle);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-card);
     }
-    .profile-row-share:last-child { border-bottom: none; }
     .profile-row-share-head {
       display: flex;
       align-items: center;
@@ -1271,33 +1292,184 @@
     }
     .profile-share-preview {
       display: none;
-      margin-top: 6px;
-      padding: 12px 14px;
-      background: var(--color-bg-surface-muted);
-      border-radius: var(--radius-md);
+      margin-top: 10px;
+      flex-direction: column;
       gap: 10px;
-      align-items: center;
     }
     .profile-row-share.is-on .profile-share-preview { display: flex; }
+    .profile-share-preview-note {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: var(--font-xs);
+      color: var(--color-brand-primary);
+      font-weight: var(--weight-semi);
+    }
+    .profile-share-preview-note svg {
+      width: 13px;
+      height: 13px;
+      flex-shrink: 0;
+    }
+    .profile-share-preview-card {
+      border-radius: 18px;
+      padding: 14px 16px 16px;
+      border: 1px solid rgba(58, 111, 224, 0.10);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.72);
+      background: linear-gradient(135deg, #F9FFFD 0%, #F1FFF8 52%, #EEFDF7 100%);
+    }
+    .profile-share-preview-card.theme-sleep {
+      border-color: rgba(113, 79, 247, 0.12);
+      background: linear-gradient(135deg, #FAF8FF 0%, #F4F0FF 52%, #F2EEFF 100%);
+    }
+    .profile-share-preview-card.theme-burn {
+      border-color: rgba(255, 120, 81, 0.12);
+      background: linear-gradient(135deg, #FFF9F6 0%, #FFF4EE 52%, #FFF1EA 100%);
+    }
+    .profile-share-preview-card.theme-med {
+      border-color: rgba(255, 163, 26, 0.12);
+      background: linear-gradient(135deg, #FFFDF7 0%, #FFF9EC 52%, #FFF6E5 100%);
+    }
+    .profile-share-preview-card.theme-water {
+      border-color: rgba(17, 211, 255, 0.14);
+      background: linear-gradient(135deg, #F5FDFF 0%, #EEFAFF 52%, #E9F8FF 100%);
+    }
+    .profile-share-preview-top {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
     .profile-share-preview-icon {
-      width: 32px; height: 32px;
-      border-radius: var(--radius-md);
-      background: var(--color-primary-tint-10);
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      font-size: 18px;
+      font-size: 24px;
       flex-shrink: 0;
+      box-shadow: 0 10px 18px rgba(58, 111, 224, 0.12);
+      background: linear-gradient(135deg, #9CF7CF 0%, #53E9C0 100%);
     }
-    .profile-share-preview-text {
+    .profile-share-preview-card.theme-sleep .profile-share-preview-icon {
+      background: linear-gradient(135deg, #BDA8FF 0%, #754CFF 100%);
+      color: #fff;
+    }
+    .profile-share-preview-card.theme-burn .profile-share-preview-icon {
+      background: linear-gradient(135deg, #FFD2C0 0%, #FF9F7B 100%);
+    }
+    .profile-share-preview-card.theme-med .profile-share-preview-icon {
+      background: linear-gradient(135deg, #FFE7B5 0%, #FFC457 100%);
+    }
+    .profile-share-preview-card.theme-water .profile-share-preview-icon {
+      background: linear-gradient(135deg, #C9F4FF 0%, #77DFFF 100%);
+    }
+    .profile-share-preview-main {
       flex: 1;
-      font-size: var(--font-xs);
-      line-height: 1.5;
-      color: var(--color-text-secondary);
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
     }
-    .profile-share-preview-text strong {
-      color: var(--color-brand-primary);
+    .profile-share-preview-title {
+      font-size: 15px;
       font-weight: var(--weight-bold);
+      color: var(--color-text-primary);
+      line-height: 1.3;
+    }
+    .profile-share-preview-tag {
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: var(--weight-semi);
+      color: #0E9F6E;
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.18);
+    }
+    .profile-share-preview-card.theme-sleep .profile-share-preview-tag {
+      color: #5B5CE6;
+      background: rgba(113, 79, 247, 0.10);
+      border-color: rgba(113, 79, 247, 0.16);
+    }
+    .profile-share-preview-card.theme-burn .profile-share-preview-tag {
+      color: #E46C40;
+      background: rgba(255, 120, 81, 0.10);
+      border-color: rgba(255, 120, 81, 0.16);
+    }
+    .profile-share-preview-card.theme-med .profile-share-preview-tag {
+      color: #C98205;
+      background: rgba(255, 163, 26, 0.12);
+      border-color: rgba(255, 163, 26, 0.18);
+    }
+    .profile-share-preview-card.theme-water .profile-share-preview-tag {
+      color: #0F95B8;
+      background: rgba(17, 211, 255, 0.12);
+      border-color: rgba(17, 211, 255, 0.18);
+    }
+    .profile-share-preview-status {
+      align-self: flex-start;
+      padding: 6px 14px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: var(--weight-bold);
+      color: #0E9F6E;
+      background: linear-gradient(135deg, #D8FFE8 0%, #B5F7CB 100%);
+      border: 1px solid rgba(16, 185, 129, 0.26);
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.10);
+      white-space: nowrap;
+    }
+    .profile-share-preview-bar-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .profile-share-preview-bar {
+      flex: 1;
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(16, 185, 129, 0.12);
+      overflow: hidden;
+    }
+    .profile-share-preview-card.theme-sleep .profile-share-preview-bar { background: rgba(113, 79, 247, 0.12); }
+    .profile-share-preview-card.theme-burn .profile-share-preview-bar { background: rgba(255, 120, 81, 0.12); }
+    .profile-share-preview-card.theme-med .profile-share-preview-bar { background: rgba(255, 163, 26, 0.12); }
+    .profile-share-preview-card.theme-water .profile-share-preview-bar { background: rgba(17, 211, 255, 0.12); }
+    .profile-share-preview-bar-fill {
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #4EE9BC 0%, #15DDB0 100%);
+    }
+    .profile-share-preview-card.theme-sleep .profile-share-preview-bar-fill {
+      background: linear-gradient(90deg, #B39BFF 0%, #6E4EF9 100%);
+    }
+    .profile-share-preview-card.theme-burn .profile-share-preview-bar-fill {
+      background: linear-gradient(90deg, #FFB396 0%, #FF7F58 100%);
+    }
+    .profile-share-preview-card.theme-med .profile-share-preview-bar-fill {
+      background: linear-gradient(90deg, #FFD47B 0%, #FFB830 100%);
+    }
+    .profile-share-preview-card.theme-water .profile-share-preview-bar-fill {
+      background: linear-gradient(90deg, #8EEBFF 0%, #1FCFFF 100%);
+    }
+    .profile-share-preview-percent {
+      font-size: 18px;
+      font-weight: var(--weight-heavy);
+      color: #10B981;
+      letter-spacing: -0.04em;
+      line-height: 1;
+    }
+    .profile-share-preview-card.theme-sleep .profile-share-preview-percent { color: #4C5CD8; }
+    .profile-share-preview-card.theme-burn .profile-share-preview-percent { color: #FF7851; }
+    .profile-share-preview-card.theme-med .profile-share-preview-percent { color: #D68B0A; }
+    .profile-share-preview-card.theme-water .profile-share-preview-percent { color: #1298BE; }
+    .profile-share-preview-desc {
+      margin-top: 12px;
+      font-size: 13px;
+      line-height: 1.55;
+      color: var(--color-text-secondary);
     }
 
     .profile-logout-btn {
@@ -2566,6 +2738,12 @@
       <div class="nav-item" data-page="P3">
         <span class="nav-id">P3</span><span class="nav-name">设置登录密码</span><span class="nav-tag tag-sub">子步骤</span>
       </div>
+      <div class="nav-item" data-page="P2.reset">
+        <span class="nav-id">P2-R</span><span class="nav-name">忘记密码 · 验证码输入</span><span class="nav-tag tag-sub">重置流程</span>
+      </div>
+      <div class="nav-item" data-page="P3.reset">
+        <span class="nav-id">P3-R</span><span class="nav-name">忘记密码 · 重置密码</span><span class="nav-tag tag-sub">重置流程</span>
+      </div>
       <div class="nav-item" data-page="P4">
         <span class="nav-id">P4</span><span class="nav-name">完善个人资料</span><span class="nav-tag tag-sub">子步骤</span>
       </div>
@@ -2703,7 +2881,7 @@
               <div class="login-input-row has-value">
                 <span class="login-phone-cc">+86<span class="login-phone-cc-arrow">▾</span></span>
                 <span class="login-input-divider"></span>
-                <input class="login-input" type="tel" inputmode="numeric" maxlength="11" placeholder="请输入手机号" value="138 0000 0000" />
+                <input class="login-input" data-auth-phone="true" type="tel" inputmode="numeric" maxlength="13" placeholder="请输入手机号" value="${formatPhone(authFlowState.phone)}" />
                 <button class="login-clear" type="button" aria-label="清空">×</button>
               </div>
               <div class="login-hint">未注册的手机号验证后自动创建 AIRing 账号</div>
@@ -2713,7 +2891,7 @@
                 </span>
                 <span>我已阅读并同意<a href="#">《用户协议》</a>和<a href="#">《隐私政策》</a></span>
               </div>
-              <button class="login-primary-btn" type="button" data-goto="P2">
+              <button class="login-primary-btn" type="button" data-auth-action="sms-login">
                 <span class="login-primary-spinner"></span>
                 <span class="login-primary-text">获取短信验证码</span>
               </button>
@@ -2735,7 +2913,7 @@
               <div class="login-input-row has-value">
                 <span class="login-phone-cc">+86<span class="login-phone-cc-arrow">▾</span></span>
                 <span class="login-input-divider"></span>
-                <input class="login-input" type="tel" inputmode="numeric" maxlength="11" placeholder="请输入手机号" value="138 0000 0000" />
+                <input class="login-input" data-auth-phone="true" type="tel" inputmode="numeric" maxlength="13" placeholder="请输入手机号" value="${formatPhone(authFlowState.phone)}" />
                 <button class="login-clear" type="button">×</button>
               </div>
               <div class="login-input-row has-value">
@@ -2744,7 +2922,7 @@
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
                 </button>
               </div>
-              <div class="login-error show">手机号或密码错误，请检查后重试</div>
+              <div class="login-error ${authFlowState.error ? 'show' : ''}" id="loginPwdError">${authFlowState.error || '手机号或密码错误，请检查后重试'}</div>
               <div class="login-agree checked" role="checkbox" aria-checked="true" tabindex="0">
                 <span class="login-agree-box">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12 10 17 19 8"/></svg>
@@ -2757,7 +2935,7 @@
               </button>
               <div class="login-tertiary-row">
                 <button class="login-secondary-link" type="button" data-goto="P1.1">验证码登录</button>
-                <button class="login-secondary-link muted" type="button" data-goto="P1.1">忘记密码？</button>
+                <button class="login-secondary-link" type="button" data-auth-action="forgot-password">忘记密码？</button>
               </div>
             </div>
           </div>
@@ -2766,14 +2944,15 @@
 
     // === P2 验证码 ===
     function pageP2() {
+      const isReset = authFlowState.mode === 'reset';
       return `
         ${statusBar()}
-        ${loginTopbar(true, true, 'P1.1')}
+        ${loginTopbar(true, false, isReset ? 'P1.2' : 'P1.1')}
         <div class="scroll-area" data-step="code">
           <div class="login-step login-step-code">
             <div class="login-body">
-              <div class="login-title">输入验证码</div>
-              <div class="login-subtitle">验证码已发送至 +86 138 0000 0000</div>
+              <div class="login-title">${isReset ? '验证手机号' : '输入验证码'}</div>
+              <div class="login-subtitle">${isReset ? `请输入发送至 +86 ${formatPhone(authFlowState.phone)} 的验证码，以重置登录密码` : `验证码已发送至 +86 ${formatPhone(authFlowState.phone)}`}</div>
               <div class="login-code-row" id="loginCodeRow">
                 <div class="login-code-cell is-active" data-i="0"></div>
                 <div class="login-code-cell" data-i="1"></div>
@@ -2786,7 +2965,6 @@
               <div class="login-error" id="loginCodeError">验证码错误，请重新输入</div>
               <div class="login-meta-row">
                 <span id="loginCodeResend">重新获取 (<span id="loginCodeCount">60</span>s)</span>
-                <button class="login-link" type="button">手机号已停用？</button>
               </div>
             </div>
           </div>
@@ -2795,14 +2973,15 @@
 
     // === P3 设置密码 ===
     function pageP3() {
+      const isReset = authFlowState.mode === 'reset';
       return `
         ${statusBar()}
         ${loginTopbar(true, false, 'P2')}
         <div class="scroll-area" data-step="setpwd">
           <div class="login-step login-step-setpwd">
             <div class="login-body">
-              <div class="login-title">设置登录密码</div>
-              <div class="login-subtitle">为账号 +86 138 0000 0000 设置登录密码，方便下次快速登录</div>
+              <div class="login-title">${isReset ? '重置登录密码' : '设置登录密码'}</div>
+              <div class="login-subtitle">${isReset ? `请为账号 +86 ${formatPhone(authFlowState.phone)} 设置新的登录密码` : `为账号 +86 ${formatPhone(authFlowState.phone)} 设置登录密码，方便下次快速登录`}</div>
               <div class="login-input-row has-value">
                 <input class="login-input is-cn" type="password" maxlength="20" placeholder="请输入新密码（6-20 位）" value="••••••••" />
                 <button class="login-eye" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button>
@@ -2819,14 +2998,24 @@
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="8 12 11 15 16 9"/></svg>
                 <span>两次输入一致</span>
               </div>
-              <button class="login-primary-btn" type="button" data-goto="P4">
+              <button class="login-primary-btn" type="button" data-goto="${isReset ? 'P1.2' : 'P4'}">
                 <span class="login-primary-spinner"></span>
-                <span class="login-primary-text">完成</span>
+                <span class="login-primary-text">${isReset ? '完成重置' : '完成'}</span>
               </button>
-              <button class="login-secondary-link muted" type="button" data-goto="P4">跳过，下次再设置</button>
+              <button class="login-secondary-link muted" type="button" data-goto="${isReset ? 'P1.2' : 'P4'}">${isReset ? '取消重置' : '跳过，下次再设置'}</button>
             </div>
           </div>
         </div>`;
+    }
+
+    function pageP2Reset() {
+      authFlowState.mode = 'reset';
+      return pageP2();
+    }
+
+    function pageP3Reset() {
+      authFlowState.mode = 'reset';
+      return pageP3();
     }
 
     // === P4 完善资料 ===
@@ -2843,8 +3032,8 @@
               <div class="login-title">完善个人资料</div>
               <div class="login-subtitle">让 AIRing 更懂你 · 资料仅你可见</div>
               <div class="login-avatar-block">
-                <div class="login-avatar-circle" data-goto="P5.2">🦊</div>
-                <button class="login-avatar-shuffle" type="button" data-goto="P5.2">
+                <div class="login-avatar-circle" data-goto="P4.1">${profileState.avatar}</div>
+                <button class="login-avatar-shuffle" type="button" data-goto="P4.1">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="10" r="3"/><path d="M5.5 19.5c1.5-3 4-4.5 6.5-4.5s5 1.5 6.5 4.5"/></svg>
                   选择头像
                 </button>
@@ -2852,30 +3041,33 @@
               <div class="login-form-block">
                 <label class="login-form-label">昵称<span class="req">*</span></label>
                 <div class="login-input-row has-value">
-                  <input class="login-input is-cn" type="text" maxlength="16" value="清晨的雾" />
+                  <input class="login-input is-cn" type="text" maxlength="16" value="${profileState.nickname}" data-profile-field="nickname" />
                   <button class="login-shuffle-btn" type="button" title="随机一个">🎲</button>
                 </div>
               </div>
               <div class="login-trio">
                 <div class="login-form-block">
                   <label class="login-form-label">年龄</label>
-                  <div class="login-input-row with-suffix login-wheel-trigger">
-                    <input class="login-input" type="text" readonly value="28" />
+                  <div class="login-input-row with-suffix login-wheel-trigger" data-goto="P4.2">
+                    <input class="login-input" type="text" readonly value="${profileState.age}" />
                     <span class="login-suffix">岁</span>
+                    <span class="login-picker-arrow">›</span>
                   </div>
                 </div>
                 <div class="login-form-block">
                   <label class="login-form-label">身高</label>
-                  <div class="login-input-row with-suffix login-wheel-trigger">
-                    <input class="login-input" type="text" readonly value="172" />
+                  <div class="login-input-row with-suffix login-wheel-trigger" data-goto="P4.3">
+                    <input class="login-input" type="text" readonly value="${profileState.height}" />
                     <span class="login-suffix">cm</span>
+                    <span class="login-picker-arrow">›</span>
                   </div>
                 </div>
                 <div class="login-form-block">
                   <label class="login-form-label">体重</label>
-                  <div class="login-input-row with-suffix login-wheel-trigger">
-                    <input class="login-input" type="text" readonly value="65.0" />
+                  <div class="login-input-row with-suffix login-wheel-trigger" data-goto="P4.4">
+                    <input class="login-input" type="text" readonly value="${profileState.weight}" />
                     <span class="login-suffix">kg</span>
+                    <span class="login-picker-arrow">›</span>
                   </div>
                 </div>
               </div>
@@ -2899,14 +3091,15 @@
 
     // === P5 个人设置 ===
     function pageP5() {
-      const healthTags = ['失眠','减脂','慢性病'];
+      const healthTags = ['高血压关注','糖尿病关注','备孕中','失眠','慢性病','减脂','增肌','孕期','哺乳期','老年关怀'];
+      const selectedHealthTags = new Set(['失眠','减脂','慢性病']);
       const socialTags = ['#步数挑战者','#早起伙伴','#饮水达人'];
       const habits = [
-        { id:'walk', icon:'👟', name:'走路', on:true,  show:'今日步数目标已达成', hide:'具体步数 / 路线 / 配速', preview:'已完成 · 8,520 → 显示为「目标已达成」' },
-        { id:'sleep', icon:'🌙', name:'睡眠', on:true,  show:'睡眠目标完成 + 时长区间（如 7~8h）', hide:'具体入睡 / 起床时间、深睡比例', preview:'昨晚 7~8h · 入睡时间已脱敏' },
-        { id:'burn', icon:'🔥', name:'消耗', on:false, show:'"燃脂达 500 千卡" 徽章', hide:'心率、运动时长、具体千卡值', preview:'未开启 · 数据不会同步到关心圈' },
-        { id:'med', icon:'💊', name:'吃药打卡', on:false, show:'"按时打卡" 累计天数', hide:'药品名称、剂量、服药时间', preview:'未开启 · 数据不会同步到关心圈' },
-        { id:'water', icon:'💧', name:'喝水', on:false, show:'"饮水目标已达成"', hide:'具体饮水量 / 时间分布', preview:'未开启 · 数据不会同步到关心圈' }
+        { id:'walk', icon:'👟', name:'走路', on:true, show:'今日步数目标已达成', hide:'具体步数 / 路线 / 配速', theme:'walk', cardTitle:'完成步数挑战', cardTag:'🚶 10,000 步目标', cardStatus:'已完成', percent:'100%', progress:100, desc:'今日步数目标已达成 · 中低强度活动稳定保持' },
+        { id:'sleep', icon:'🌙', name:'睡眠', on:true, show:'睡眠目标完成 + 时长区间（如 7~8h）', hide:'具体入睡 / 起床时间、深睡比例', theme:'sleep', cardTitle:'修复深度睡眠', cardTag:'💤 8 小时睡眠目标', cardStatus:'已完成', percent:'100%', progress:100, desc:'昨晚睡眠目标已达成 · 深度修复节奏保持稳定' },
+        { id:'burn', icon:'🔥', name:'消耗', on:false, show:'"燃脂达 500 千卡" 徽章', hide:'心率、运动时长、具体千卡值', theme:'burn', cardTitle:'点亮燃脂成就', cardTag:'🔥 500 千卡徽章', cardStatus:'进行中', percent:'62%', progress:62, desc:'今日燃脂达成 500 千卡目标 · 活跃消耗已补齐' },
+        { id:'med', icon:'💊', name:'吃药打卡', on:false, show:'"按时打卡" 累计天数', hide:'药品名称、剂量、服药时间', theme:'med', cardTitle:'坚持按时打卡', cardTag:'💊 用药打卡习惯', cardStatus:'进行中', percent:'80%', progress:80, desc:'今日按时打卡已完成 · 用药习惯保持稳定' },
+        { id:'water', icon:'💧', name:'喝水', on:false, show:'"饮水目标已达成"', hide:'具体饮水量 / 时间分布', theme:'water', cardTitle:'喝水目标进行中', cardTag:'💧 2L 饮水目标', cardStatus:'进行中', percent:'70%', progress:70, desc:'今日饮水目标持续推进 · 补水节奏保持在线' }
       ];
 
       const habitRows = habits.map(h => `
@@ -2923,8 +3116,27 @@
             <div class="profile-share-line is-hide"><span class="profile-share-dot no"></span><span><strong>不显示：</strong>${h.hide}</span></div>
           </div>
           <div class="profile-share-preview">
-            <div class="profile-share-preview-icon">${h.icon}</div>
-            <div class="profile-share-preview-text"><strong>脱敏预览</strong> · ${h.preview}</div>
+            <div class="profile-share-preview-note">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+              <span>好友在「关心圈」会看到</span>
+            </div>
+            <div class="profile-share-preview-card theme-${h.theme}">
+              <div class="profile-share-preview-top">
+                <div class="profile-share-preview-icon">${h.icon}</div>
+                <div class="profile-share-preview-main">
+                  <div class="profile-share-preview-title">${h.cardTitle}</div>
+                  <div class="profile-share-preview-tag">${h.cardTag}</div>
+                </div>
+                <div class="profile-share-preview-status">${h.cardStatus}</div>
+              </div>
+              <div class="profile-share-preview-bar-row">
+                <div class="profile-share-preview-bar">
+                  <div class="profile-share-preview-bar-fill" style="width:${h.progress}%"></div>
+                </div>
+                <div class="profile-share-preview-percent">${h.percent}</div>
+              </div>
+              <div class="profile-share-preview-desc">${h.desc}</div>
+            </div>
           </div>
         </div>`).join('');
 
@@ -2956,52 +3168,47 @@
               <div class="profile-section">
                 <div class="profile-row" data-goto="P5.2">
                   <div class="profile-row-main"><div class="profile-row-label">头像</div></div>
-                  <div class="profile-avatar-display">🦊</div>
+                  <div class="profile-avatar-display">${profileState.avatar}</div>
                   <span class="profile-row-arrow">›</span>
                 </div>
                 <div class="profile-row" data-goto="P5.3">
                   <div class="profile-row-main"><div class="profile-row-label">昵称</div></div>
-                  <div class="profile-row-value">清晨的雾</div>
+                  <div class="profile-row-value">${profileState.nickname}</div>
                   <span class="profile-row-arrow">›</span>
                 </div>
                 <div class="profile-row" data-goto="P5.1">
                   <div class="profile-row-main"><div class="profile-row-label">年龄</div></div>
-                  <div class="profile-row-value">28 岁</div>
+                  <div class="profile-row-value">${profileState.age} 岁</div>
                   <span class="profile-row-arrow">›</span>
                 </div>
-                <div class="profile-row" data-goto="P5.1">
+                <div class="profile-row" data-goto="P5.6">
                   <div class="profile-row-main"><div class="profile-row-label">身高</div></div>
-                  <div class="profile-row-value">172 cm</div>
+                  <div class="profile-row-value">${profileState.height} cm</div>
                   <span class="profile-row-arrow">›</span>
                 </div>
-                <div class="profile-row" data-goto="P5.1">
+                <div class="profile-row" data-goto="P5.7">
                   <div class="profile-row-main"><div class="profile-row-label">体重</div></div>
-                  <div class="profile-row-value">65.0 kg</div>
+                  <div class="profile-row-value">${profileState.weight} kg</div>
                   <span class="profile-row-arrow">›</span>
                 </div>
               </div>
 
-              <!-- 健康标签 -->
-              <div class="profile-section-title">健康标签</div>
               <div class="profile-section">
                 <div class="profile-section-with-tags">
                   <div class="profile-section-head">
-                    <span class="profile-section-head-title">健康标签</span>
+                    <span class="profile-section-head-title">健康标签<span class="meta">可多选</span></span>
                     <span class="profile-tag-privacy-pill">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
                       仅你可见
                     </span>
                   </div>
                   <div class="profile-section-tip">用于个性化健康分析，<strong>不会同步到关心圈</strong>。</div>
-                  <div class="profile-tags-list">
-                    ${healthTags.map(t=>`<span class="profile-tag-chip">${t}</span>`).join('')}
-                    <span class="profile-tag-chip is-off">+ 添加</span>
+                  <div class="login-tags-grid">
+                    ${healthTags.map(t => `<span class="login-tag-chip ${selectedHealthTags.has(t) ? 'selected' : ''}">${t}</span>`).join('')}
                   </div>
                 </div>
               </div>
 
-              <!-- 社交标签（自动生成） -->
-              <div class="profile-section-title">社交标签</div>
               <div class="profile-section">
                 <div class="profile-section-with-tags">
                   <div class="profile-section-head">
@@ -3020,7 +3227,7 @@
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="12"/><circle cx="12" cy="16" r="0.5" fill="currentColor"/></svg>
                 <span>为保护你的身体指标隐私，关心圈<strong>仅展示完成状态与进度</strong>，不展示具体数值与时间细节。</span>
               </div>
-              <div class="profile-section">
+              <div class="profile-share-list">
                 ${habitRows}
               </div>
 
@@ -3033,7 +3240,7 @@
                     <div class="profile-row-label">谁可以看到我的动态</div>
                     <div class="profile-row-sub">控制关心圈中谁能看到你的挑战完成状态</div>
                   </div>
-                  <div class="profile-row-value">仅亲友</div>
+                  <div class="profile-row-value">${profileState.shareAudience}</div>
                   <span class="profile-row-arrow">›</span>
                 </div>
               </div>
@@ -3046,48 +3253,129 @@
         </div>`;
     }
 
-    // === P5.1 滚轮选择器（叠加在 P5 之上） ===
-    function pageP51() {
+    function renderPickerOverlay(basePage, returnPage, config) {
       const opts = [];
-      for (let i=10;i<=100;i++) {
-        const cls = i===28 ? 'is-active' : (Math.abs(i-28)===1?'is-near':'');
-        opts.push(`<div class="picker-option ${cls}">${i}</div>`);
+      for (let i = config.min; i <= config.max; i += config.step) {
+        const value = Number(i.toFixed(config.decimals ?? 0));
+        const label = (config.decimals ?? 0) > 0 ? value.toFixed(config.decimals) : String(value);
+        const current = Number(profileState[config.field]);
+        const isActive = Math.abs(value - current) < 0.001;
+        const isNear = !isActive && Math.abs(value - current) <= config.step + 0.001;
+        const cls = isActive ? 'is-active' : (isNear ? 'is-near' : '');
+        opts.push(`<div class="picker-option ${cls}" data-value="${label}">${label}</div>`);
       }
-      return pageP5() + `
+      return basePage() + `
         <div class="modal-overlay show">
           <div class="picker-sheet">
             <div class="picker-header">
-              <button class="picker-cancel" data-goto="P5">取消</button>
-              <span class="picker-title">选择年龄</span>
-              <button class="picker-confirm" data-goto="P5">完成</button>
+              <button class="picker-cancel" data-goto="${returnPage}">取消</button>
+              <span class="picker-title">${config.title}</span>
+              <button class="picker-confirm" type="button" data-picker-field="${config.field}" data-goto="${returnPage}">完成</button>
             </div>
-            <div class="picker-stage">
+            <div class="picker-stage" data-picker-field="${config.field}">
               <div class="picker-mask top"></div>
               <div class="picker-mask bottom"></div>
               <div class="picker-highlight"></div>
-              <div class="picker-suffix">岁</div>
+              <div class="picker-suffix">${config.suffix}</div>
               <div class="picker-wheel">${opts.join('')}</div>
             </div>
           </div>
         </div>`;
     }
 
-    // === P5.2 头像选择器 ===
-    function pageP52() {
+    function renderAvatarOverlay(basePage, returnPage) {
       const emojis = ['🦊','🐱','🐶','🐼','🐰','🐯','🦁','🐻','🐨','🐮','🐷','🐸','🦉','🦄','🐢','🐙','🦋','🐝','🌸','⭐'];
-      const grid = emojis.map((e,i)=>`<div class="avatar-grid-item ${i===0?'selected':''}">${e}</div>`).join('');
-      return pageP5() + `
+      const grid = emojis.map(e=>`<div class="avatar-grid-item ${e===profileState.avatar?'selected':''}">${e}</div>`).join('');
+      return basePage() + `
         <div class="modal-overlay show">
           <div class="sheet-edit">
             <div class="sheet-edit-title">选择头像</div>
             <div class="avatar-picker-tip">点击下方头像试试</div>
             <div class="avatar-grid">${grid}</div>
             <div class="sheet-edit-actions">
-              <button class="sheet-edit-btn cancel" data-goto="P5">取消</button>
-              <button class="sheet-edit-btn confirm" data-goto="P5">确定</button>
+              <button class="sheet-edit-btn cancel" data-goto="${returnPage}">取消</button>
+              <button class="sheet-edit-btn confirm" type="button" data-avatar-confirm="true" data-goto="${returnPage}">确定</button>
             </div>
           </div>
         </div>`;
+    }
+
+    // === P5.1 滚轮选择器（叠加在 P5 之上） ===
+    function pageP51() {
+      return renderPickerOverlay(pageP5, 'P5', {
+        field: 'age',
+        title: '选择年龄',
+        suffix: '岁',
+        min: 10,
+        max: 100,
+        step: 1
+      });
+    }
+
+    // === P5.2 头像选择器 ===
+    function pageP52() {
+      return renderAvatarOverlay(pageP5, 'P5');
+    }
+
+    function pageP56() {
+      return renderPickerOverlay(pageP5, 'P5', {
+        field: 'height',
+        title: '选择身高',
+        suffix: 'cm',
+        min: 120,
+        max: 220,
+        step: 1
+      });
+    }
+
+    function pageP57() {
+      return renderPickerOverlay(pageP5, 'P5', {
+        field: 'weight',
+        title: '选择体重',
+        suffix: 'kg',
+        min: 30,
+        max: 150,
+        step: 0.5,
+        decimals: 1
+      });
+    }
+
+    function pageP41() {
+      return renderAvatarOverlay(pageP4, 'P4');
+    }
+
+    function pageP42() {
+      return renderPickerOverlay(pageP4, 'P4', {
+        field: 'age',
+        title: '选择年龄',
+        suffix: '岁',
+        min: 10,
+        max: 100,
+        step: 1
+      });
+    }
+
+    function pageP43() {
+      return renderPickerOverlay(pageP4, 'P4', {
+        field: 'height',
+        title: '选择身高',
+        suffix: 'cm',
+        min: 120,
+        max: 220,
+        step: 1
+      });
+    }
+
+    function pageP44() {
+      return renderPickerOverlay(pageP4, 'P4', {
+        field: 'weight',
+        title: '选择体重',
+        suffix: 'kg',
+        min: 30,
+        max: 150,
+        step: 0.5,
+        decimals: 1
+      });
     }
 
     // === P5.3 单字段编辑（昵称） ===
@@ -3111,6 +3399,11 @@
 
     // === P5.4 操作菜单（动态显示范围） ===
     function pageP54() {
+      const options = [
+        { value: '仅亲友', desc: '推荐 · 只对你的关注亲友可见' },
+        { value: '亲友 + 关注的好友', desc: '扩展到你主动关注的所有戒指好友' },
+        { value: '仅自己', desc: '不分享 · 仅在本地查看' }
+      ];
       return pageP5() + `
         <div class="modal-overlay show is-action">
           <div class="action-sheet">
@@ -3119,18 +3412,11 @@
                 <div class="action-sheet-extra-title">谁可以看到我的动态</div>
                 <div class="action-sheet-extra-desc">控制关心圈中谁能看到你的挑战完成状态</div>
               </div>
-              <button class="action-sheet-item is-selected" data-goto="P5">
-                <span class="action-sheet-item-text">仅亲友</span>
-                <span class="action-sheet-item-desc">推荐 · 只对你的关注亲友可见</span>
-              </button>
-              <button class="action-sheet-item" data-goto="P5">
-                <span class="action-sheet-item-text">亲友 + 关注的好友</span>
-                <span class="action-sheet-item-desc">扩展到你主动关注的所有戒指好友</span>
-              </button>
-              <button class="action-sheet-item" data-goto="P5">
-                <span class="action-sheet-item-text">仅自己</span>
-                <span class="action-sheet-item-desc">不分享 · 仅在本地查看</span>
-              </button>
+              ${options.map(opt => `
+              <button class="action-sheet-item ${profileState.shareAudience === opt.value ? 'is-selected' : ''}" type="button" data-share-audience="${opt.value}" data-goto="P5">
+                <span class="action-sheet-item-text">${opt.value}</span>
+                <span class="action-sheet-item-desc">${opt.desc}</span>
+              </button>`).join('')}
             </div>
             <div class="action-sheet-group">
               <button class="action-sheet-item is-cancel" data-goto="P5">取消</button>
@@ -3425,10 +3711,18 @@
       'P1.2': pageP12,
       'P2':   pageP2,
       'P3':   pageP3,
+      'P2.reset': pageP2Reset,
+      'P3.reset': pageP3Reset,
       'P4':   pageP4,
+      'P4.1': pageP41,
+      'P4.2': pageP42,
+      'P4.3': pageP43,
+      'P4.4': pageP44,
       'P5':   pageP5,
       'P5.1': pageP51,
       'P5.2': pageP52,
+      'P5.6': pageP56,
+      'P5.7': pageP57,
       'P5.3': pageP53,
       'P5.4': pageP54,
       'P5.5': pageP55,
@@ -3442,6 +3736,34 @@
 
     const stage = document.getElementById('phoneStage');
     let toastTimer = null;
+    const authFlowState = {
+      phone: '13800000000',
+      mode: 'login',
+      error: ''
+    };
+    const profileState = {
+      avatar: '🦊',
+      nickname: '清晨的雾',
+      age: '28',
+      height: '172',
+      weight: '65.0',
+      shareAudience: '仅亲友'
+    };
+
+    function sanitizePhone(value) {
+      return (value || '').replace(/\D/g, '').slice(0, 11);
+    }
+
+    function formatPhone(value) {
+      const digits = sanitizePhone(value);
+      if (digits.length <= 3) return digits;
+      if (digits.length <= 7) return `${digits.slice(0, 3)} ${digits.slice(3)}`;
+      return `${digits.slice(0, 3)} ${digits.slice(3, 7)} ${digits.slice(7)}`;
+    }
+
+    function isValidMainlandPhone(value) {
+      return /^1[3-9]\d{9}$/.test(sanitizePhone(value));
+    }
 
     // 切到指定 page，并同步左侧导航高亮
     function navigateTo(key) {
@@ -3557,6 +3879,12 @@
       });
     }
 
+    function getActivePickerValue(trigger) {
+      const overlay = trigger.closest('.modal-overlay');
+      const active = overlay && overlay.querySelector('.picker-option.is-active');
+      return active?.dataset.value || active?.textContent?.trim() || '';
+    }
+
     /* ============================================================
        左侧导航联动
        ============================================================ */
@@ -3599,6 +3927,17 @@
       if (input) {
         input.value = '';
         row.classList.remove('has-value');
+        if (input.dataset.authPhone) {
+          authFlowState.phone = '';
+          if (authFlowState.error) {
+            authFlowState.error = '';
+            const errorEl = stage.querySelector('#loginPwdError');
+            if (errorEl) {
+              errorEl.textContent = '手机号或密码错误，请检查后重试';
+              errorEl.classList.remove('show');
+            }
+          }
+        }
       }
     });
 
@@ -3607,17 +3946,75 @@
       if (!e.target.matches('.login-input, .sheet-edit-input')) return;
       const row = e.target.closest('.login-input-row, .sheet-edit-row');
       if (!row) return;
+      if (e.target.dataset.authPhone) {
+        authFlowState.phone = sanitizePhone(e.target.value);
+        e.target.value = formatPhone(authFlowState.phone);
+        if (authFlowState.error) {
+          authFlowState.error = '';
+          const errorEl = stage.querySelector('#loginPwdError');
+          if (errorEl) {
+            errorEl.textContent = '手机号或密码错误，请检查后重试';
+            errorEl.classList.remove('show');
+          }
+        }
+      }
       row.classList.toggle('has-value', !!e.target.value);
+      if (e.target.dataset.profileField) {
+        profileState[e.target.dataset.profileField] = e.target.value;
+      }
     });
 
     // 统一路由：data-goto 触发页面切换（含主按钮 spinner 过渡）
     stage.addEventListener('click', (e) => {
-      const trigger = e.target.closest('[data-goto]');
+      const trigger = e.target.closest('[data-goto], [data-auth-action]');
       if (!trigger) return;
       e.preventDefault();
       e.stopPropagation();
       const target = trigger.dataset.goto;
+      const action = trigger.dataset.authAction;
+      if (action === 'sms-login') {
+        authFlowState.mode = 'login';
+        authFlowState.error = '';
+        navigateTo('P2');
+        return;
+      }
+      if (action === 'forgot-password') {
+        const phoneInput = stage.querySelector('[data-auth-phone="true"]');
+        const phone = phoneInput ? sanitizePhone(phoneInput.value) : sanitizePhone(authFlowState.phone);
+        if (!isValidMainlandPhone(phone)) {
+          authFlowState.error = '请输入正确的手机号后再重置密码';
+          const errorEl = stage.querySelector('#loginPwdError');
+          if (errorEl) {
+            errorEl.textContent = authFlowState.error;
+            errorEl.classList.add('show');
+          }
+          if (phoneInput) phoneInput.focus({ preventScroll: true });
+          return;
+        }
+        authFlowState.phone = phone;
+        authFlowState.mode = 'reset';
+        authFlowState.error = '';
+        navigateTo('P2');
+        return;
+      }
       if (!target) return;
+      if (trigger.dataset.avatarConfirm === 'true') {
+        const selected = stage.querySelector('.avatar-grid-item.selected');
+        if (selected) profileState.avatar = selected.textContent.trim();
+        navigateTo(target);
+        return;
+      }
+      if (trigger.dataset.shareAudience) {
+        profileState.shareAudience = trigger.dataset.shareAudience;
+        navigateTo(target);
+        return;
+      }
+      if (trigger.dataset.pickerField) {
+        const value = getActivePickerValue(trigger);
+        if (value) profileState[trigger.dataset.pickerField] = value;
+        navigateTo(target);
+        return;
+      }
       if (trigger.classList.contains('login-primary-btn')) {
         trigger.classList.add('is-loading');
         setTimeout(() => navigateTo(target), 700);

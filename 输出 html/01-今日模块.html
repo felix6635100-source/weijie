@@ -991,6 +991,295 @@ body.is-dark-mode .ios-status-bar .iss-battery::after { background: #fff; }
   color: var(--color-text-primary);
 }
 
+/* ==========================================================
+   C4 — 已登录态 7 张挑战卡（来源：历史存档/今日+关心+登录-v2.html）
+   说明：visual 直接迁移，去掉依赖 IntersectionObserver 的初始动画，
+        让进度条 / XP 标签静态显示，无 JS 兜底也能看完整视觉。
+   ========================================================== */
+.habit-card {
+  background: rgba(255,255,255,0.95);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 18px 18px 16px;
+  box-shadow: none;
+  transition: transform 0.2s;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+.habit-card:active { transform: scale(0.99); }
+#phone.is-offline .habit-card { opacity: 0.55; filter: grayscale(0.4); }
+
+.habit-head {
+  display: flex;
+  gap: 13px;
+  align-items: flex-start;
+}
+.habit-icon {
+  width: 44px; height: 44px;
+  border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+  color: #fff;
+}
+.habit-mid {
+  flex: 1; min-width: 0;
+  padding-top: 1px;
+}
+.habit-name {
+  font-size: 18px;
+  font-weight: var(--weight-bold);
+  color: var(--color-text-primary);
+  letter-spacing: -0.2px;
+  line-height: 1.25;
+}
+.habit-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 9px;
+  border-radius: var(--radius-pill);
+  font-size: 11px;
+  font-weight: var(--weight-bold);
+  margin-top: 7px;
+  line-height: 1.4;
+  max-width: 100%;
+}
+.habit-right {
+  display: flex; flex-direction: row;
+  align-items: center; justify-content: flex-end;
+  gap: 10px;
+  flex-shrink: 0;
+  padding-top: 1px;
+}
+.habit-manual-btn {
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  background: rgba(255,255,255,0.82);
+  color: #475569;
+  display: inline-flex;
+  align-items: center; justify-content: center;
+  font-size: 18px;
+  line-height: 1;
+  box-shadow: 0 8px 20px rgba(148, 163, 184, 0.10);
+  order: 2;
+  cursor: pointer;
+}
+.habit-xp {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: var(--radius-md);
+  font-size: 12px;
+  font-weight: var(--weight-bold);
+  letter-spacing: 0.2px;
+  line-height: 1.2;
+  white-space: nowrap;
+  order: 1;
+  /* 默认未获得：低饱和、灰色描边 */
+  background: rgba(148, 163, 184, 0.12);
+  color: #94A3B8;
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  box-shadow: none;
+}
+.habit-xp::before {
+  content: '🔒';
+  font-size: 10px;
+  filter: grayscale(0.4);
+  transform: translateY(-0.5px);
+}
+/* 已获得（进度 100%）：绿色标签 + ✅ */
+.habit-xp.earned {
+  background: linear-gradient(135deg, #D9F7E2 0%, #9DE9B6 100%);
+  color: #157A3D;
+  border: 1px solid rgba(57, 193, 108, 0.36);
+  box-shadow: 0 2px 6px rgba(57, 193, 108, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+.habit-xp.earned::before {
+  content: '✅';
+  font-size: 11px;
+  filter: none;
+  transform: translateY(-0.5px);
+  color: inherit;
+}
+.habit-progress-row {
+  display: flex; align-items: center;
+  gap: 10px;
+  margin-top: 14px;
+}
+.habit-progress-row .habit-progress-bar { flex: 1; }
+.habit-progress-bar {
+  height: 6px;
+  background: rgba(76, 92, 216, 0.16);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+  position: relative;
+}
+.habit-progress-fill {
+  height: 100%;
+  border-radius: var(--radius-pill);
+  position: relative;
+  overflow: hidden;
+}
+.habit-percent {
+  font-family: var(--font-sans);
+  font-size: 22px;
+  font-weight: var(--weight-semi);
+  letter-spacing: -0.3px;
+  flex-shrink: 0;
+  min-width: 58px;
+  text-align: right;
+  line-height: 1;
+}
+.habit-desc {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  margin-top: 12px;
+  line-height: 1.65;
+}
+
+/* —— 卡片底部：点赞 + 评论（仅已登录态显示）—— */
+.habit-social-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(148, 163, 184, 0.14);
+}
+.habit-social-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.habit-social-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  text-align: left;
+}
+.habit-social-line.like { justify-content: space-between; gap: 10px; }
+.habit-social-line-main {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+.habit-social-line-icon { flex-shrink: 0; font-size: 14px; line-height: 1; }
+.habit-social-line-text {
+  min-width: 0;
+  font-size: 12px;
+  line-height: 1.55;
+  color: #64748B;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.habit-social-line-text .habit-social-name-link { color: #3A6FE0; font-weight: var(--weight-bold); }
+.habit-social-line.like .habit-social-line-text { color: #5B6B93; font-weight: var(--weight-bold); }
+.habit-social-line.comment-line .habit-social-line-text {
+  color: #51617E;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+}
+
+/* —— ⋯ 按钮 + 弹出菜单（已登录态自赞 / 自评） —— */
+.habit-social-menu-wrap { position: relative; flex-shrink: 0; }
+.habit-social-button {
+  appearance: none;
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  background: rgba(255,255,255,0.7);
+  color: var(--color-text-secondary);
+  border-radius: 999px;
+  padding: 7px 11px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: var(--weight-bold);
+  line-height: 1;
+  box-shadow: 0 6px 18px rgba(148, 163, 184, 0.08);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.habit-social-button.more {
+  color: #475569;
+  padding: 7px 9px;
+  min-width: 38px;
+  justify-content: center;
+}
+.habit-social-button.like.is-active {
+  color: #E11D48;
+  background: rgba(255, 241, 242, 0.92);
+  border-color: rgba(244, 63, 94, 0.22);
+}
+.habit-social-button.comment {
+  color: var(--color-brand-primary);
+  background: rgba(239, 246, 255, 0.92);
+  border-color: rgba(58, 111, 224, 0.18);
+}
+.habit-social-menu {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 8px);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  border-radius: 16px;
+  background: rgba(255,255,255,0.96);
+  border: 1px solid rgba(226, 232, 240, 0.92);
+  box-shadow: 0 14px 30px rgba(148, 163, 184, 0.18);
+  backdrop-filter: blur(10px);
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(0, 4px);
+  transition: opacity 0.18s ease, transform 0.18s ease;
+  z-index: 3;
+  white-space: nowrap;
+}
+.habit-social-menu.show {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translate(0, 0);
+}
+
+/* 内联评论输入条 */
+.habit-social-inline-compose {
+  display: none;                       /* 默认隐藏，点"评论"才显示 */
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  margin-top: 2px;
+}
+.habit-social-inline-compose.show { display: grid; }
+.habit-social-inline-input {
+  width: 100%;
+  border: 1px solid rgba(191, 219, 254, 0.92);
+  background: rgba(255,255,255,0.96);
+  border-radius: 14px;
+  padding: 10px 12px;
+  font-size: 12px;
+  color: #1F2A5C;
+  outline: none;
+}
+.habit-social-inline-send {
+  border: 0;
+  border-radius: 14px;
+  padding: 0 14px;
+  background: linear-gradient(135deg, #4F88FF, #6B7CFF);
+  color: #fff;
+  font-size: 12px;
+  font-weight: var(--weight-heavy);
+  box-shadow: 0 8px 18px rgba(79, 136, 255, 0.18);
+  cursor: pointer;
+}
+
 /* 未登录引导卡 */
 .login-card {
   display: none;
@@ -1000,7 +1289,8 @@ body.is-dark-mode .ios-status-bar .iss-battery::after { background: #fff; }
   margin-bottom: var(--space-md); cursor: pointer;
 }
 #phone.is-logged-out .login-card { display: flex; }
-#phone.is-logged-out .challenges-list { display: none; }
+/* 未登录态：7 张挑战卡仍显示，仅隐藏点赞 / 评论（社交互动需登录） */
+#phone.is-logged-out .habit-social-actions { display: none; }
 .login-card .login-avatar {
   width: 36px; height: 36px; border-radius: 50%;
   background: var(--color-bg-surface-muted);
@@ -2326,7 +2616,7 @@ body.is-dark-mode .ios-status-bar .iss-battery::after { background: #fff; }
   <div class="nav-section-label">状态切换</div>
   <div class="state-grid">
     <button class="state-btn is-active" data-state="default">
-      <span class="icon">🟢</span><span>已连接·今天</span>
+      <span class="icon">🟢</span><span>已连接·已登录</span>
     </button>
     <button class="state-btn" data-state="low-battery">
       <span class="icon">🔋</span><span>已连接·低电量</span>
@@ -2761,111 +3051,307 @@ body.is-dark-mode .ios-status-bar .iss-battery::after { background: #fff; }
     <div class="challenges-list" id="challengesList">
 
       <!-- 走路 -->
-      <div class="challenge-card bg-walk" data-challenge="走路" data-xp="30" onclick="openChallenge('走路')">
-        <div class="challenge-row1">
-          <div class="ch-icon">👟</div>
-          <div class="ch-name">走出健康节奏</div>
-          <div class="ch-xp"></div>
+      <div class="habit-card" data-habit="walk" data-challenge="走路" data-xp="30" onclick="openChallenge('走路')" style="background: linear-gradient(135deg, #ffffff 0%, #F5FEF9 100%)">
+        <div class="habit-head">
+          <div class="habit-icon" style="background: var(--gradient-challenge-green); box-shadow: 0 5px 12px rgba(11, 255, 207, 0.22)">👟</div>
+          <div class="habit-mid">
+            <div class="habit-name">走路</div>
+            <span class="habit-chip" style="background: rgba(171, 255, 204, 0.22); color: #159B75; border: 1px solid rgba(11, 255, 207, 0.22)">🚶 10,000 步目标</span>
+          </div>
+          <div class="habit-right">
+            <span class="habit-xp">+30 XP</span>
+          </div>
         </div>
-        <div class="ch-subtitle">10,000 步 · 中等强度</div>
-        <div class="challenge-row2">
-          <div class="ch-progress"><div class="ch-fill" style="width:85%"></div></div>
-          <div class="ch-percent">85%</div>
+        <div class="habit-progress-row">
+          <div class="habit-progress-bar"><div class="habit-progress-fill" style="width: 85%; background: var(--gradient-challenge-green)"></div></div>
+          <div class="habit-percent" style="color: #159B75">85%</div>
         </div>
-        <div class="challenge-row3">已走 <strong>8,520 步</strong>/10,000 步，距离 <strong>1,480 步</strong>。每天 <strong>8,000 步以上</strong> 可显著降低心血管疾病风险。</div>
+        <div class="habit-desc">已完成 <b style="color: #22C55E">8,520</b> / 10,000 步，还差约 1,480 步。继续保持中低强度步行，可以进一步改善循环和日常活动消耗。</div>
+        <div class="habit-social-actions" onclick="event.stopPropagation()">
+          <div class="habit-social-lines">
+            <div class="habit-social-line like">
+              <span class="habit-social-line-main">
+                <span class="habit-social-line-icon">🤍</span>
+                <span class="habit-social-line-text">阿宁、Luna、嘉禾 等3个赞</span>
+              </span>
+              <span class="habit-social-menu-wrap">
+                <button class="habit-social-button more" type="button" onclick="toggleHabitSocialMenu(this)" aria-label="更多互动">⋯</button>
+                <span class="habit-social-menu">
+                  <button class="habit-social-button like" type="button" onclick="quickLikeMyChallenge(this)">
+                    <span>👍</span><span>点赞</span>
+                  </button>
+                  <button class="habit-social-button comment" type="button" onclick="openInlineCompose(this)">
+                    <span>💬</span><span>评论</span>
+                  </button>
+                </span>
+              </span>
+            </div>
+            <div class="habit-social-line comment-line">
+              <span class="habit-social-line-text"><span class="habit-social-name-link">阿宁</span>：今天已经快完成了，晚饭后再散步一小段就稳了。</span>
+            </div>
+            <div class="habit-social-line comment-line">
+              <span class="habit-social-line-text"><span class="habit-social-name-link">Luna</span>：看到你的步数在涨，我也被带动起来了。</span>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <!-- 睡眠（演示完成态：进度 100% → XP 自动变绿色 ✅ 已发放） -->
-      <div class="challenge-card bg-sleep" data-challenge="睡眠" data-xp="40" onclick="openChallenge('睡眠')">
-        <div class="challenge-row1">
-          <div class="ch-icon">🌙</div>
-          <div class="ch-name">修复深度睡眠</div>
-          <div class="ch-xp"></div>
+      <!-- 睡眠 -->
+      <div class="habit-card" data-habit="sleep" data-challenge="睡眠" data-xp="40" onclick="openChallenge('睡眠')" style="background: linear-gradient(135deg, #ffffff 0%, #F5F2FF 100%)">
+        <div class="habit-head">
+          <div class="habit-icon" style="background: var(--gradient-challenge-purple); box-shadow: 0 5px 12px rgba(113, 79, 247, 0.22)">🌙</div>
+          <div class="habit-mid">
+            <div class="habit-name">睡眠</div>
+            <span class="habit-chip" style="background: rgba(192, 176, 255, 0.24); color: var(--color-brand-secondary); border: 1px solid rgba(113, 79, 247, 0.20)">💤 8 小时睡眠目标</span>
+          </div>
+          <div class="habit-right">
+            <span class="habit-xp">+40 XP</span>
+          </div>
         </div>
-        <div class="ch-subtitle">22:30 早睡 · 30min 睡前准备</div>
-        <div class="challenge-row2">
-          <div class="ch-progress"><div class="ch-fill" style="width:100%"></div></div>
-          <div class="ch-percent">100%</div>
+        <div class="habit-progress-row">
+          <div class="habit-progress-bar"><div class="habit-progress-fill" style="width: 94%; background: var(--gradient-challenge-purple)"></div></div>
+          <div class="habit-percent" style="color: var(--color-brand-secondary)">94%</div>
         </div>
-        <div class="challenge-row3">深睡已累积 <strong>1h42m</strong>/1.5h，超过目标 <strong>12 分钟</strong>。深睡是清除大脑代谢废物、巩固长期记忆的关键时段。</div>
+        <div class="habit-desc">昨夜已睡 <b style="color: #6366F1">7h33m</b> / 8 小时，完成度很高。再把入睡时间再提前一点，深睡与恢复质量会更稳定。</div>
+        <div class="habit-social-actions" onclick="event.stopPropagation()">
+          <div class="habit-social-lines">
+            <div class="habit-social-line like">
+              <span class="habit-social-line-main">
+                <span class="habit-social-line-icon">🤍</span>
+                <span class="habit-social-line-text">Mia、程程 等2个赞</span>
+              </span>
+              <span class="habit-social-menu-wrap">
+                <button class="habit-social-button more" type="button" onclick="toggleHabitSocialMenu(this)" aria-label="更多互动">⋯</button>
+                <span class="habit-social-menu">
+                  <button class="habit-social-button like" type="button" onclick="quickLikeMyChallenge(this)">
+                    <span>👍</span><span>点赞</span>
+                  </button>
+                  <button class="habit-social-button comment" type="button" onclick="openInlineCompose(this)">
+                    <span>💬</span><span>评论</span>
+                  </button>
+                </span>
+              </span>
+            </div>
+            <div class="habit-social-line comment-line">
+              <span class="habit-social-line-text"><span class="habit-social-name-link">Mia</span>：今晚如果继续提前准备，明早状态会更轻松。</span>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- 消耗 -->
-      <div class="challenge-card bg-burn" data-challenge="消耗" data-xp="35" onclick="openChallenge('消耗')">
-        <div class="challenge-row1">
-          <div class="ch-icon">🔥</div>
-          <div class="ch-name">提升基础代谢</div>
-          <div class="ch-xp"></div>
+      <div class="habit-card" data-habit="burn" data-challenge="消耗" data-xp="35" onclick="openChallenge('消耗')" style="background: linear-gradient(135deg, #ffffff 0%, #FFF4EA 100%)">
+        <div class="habit-head">
+          <div class="habit-icon" style="background: var(--gradient-challenge-orange); box-shadow: 0 5px 12px rgba(255, 106, 10, 0.22)">🔥</div>
+          <div class="habit-mid">
+            <div class="habit-name">消耗</div>
+            <span class="habit-chip" style="background: rgba(255, 182, 106, 0.24); color: #D96200; border: 1px solid rgba(255, 106, 10, 0.22)">⚡ 500 kcal 日消耗</span>
+          </div>
+          <div class="habit-right">
+            <span class="habit-xp">+35 XP</span>
+          </div>
         </div>
-        <div class="ch-subtitle">中等强度 40min · 上下楼梯</div>
-        <div class="challenge-row2">
-          <div class="ch-progress"><div class="ch-fill" style="width:62%"></div></div>
-          <div class="ch-percent">62%</div>
+        <div class="habit-progress-row">
+          <div class="habit-progress-bar"><div class="habit-progress-fill" style="width: 77%; background: var(--gradient-challenge-orange)"></div></div>
+          <div class="habit-percent" style="color: #D96200">77%</div>
         </div>
-        <div class="challenge-row3">已消耗 <strong>310 kcal</strong>/500 kcal，再消耗 <strong>190 kcal</strong> 可激活 <strong>EPOC</strong> 燃脂窗口。</div>
+        <div class="habit-desc">已消耗 <b style="color: #F97316">385</b> / 500 kcal。再补一段轻有氧或晚间散步，就能把今天的活跃消耗补齐。</div>
+        <div class="habit-social-actions" onclick="event.stopPropagation()">
+          <div class="habit-social-lines">
+            <div class="habit-social-line like">
+              <span class="habit-social-line-main">
+                <span class="habit-social-line-icon">🤍</span>
+                <span class="habit-social-line-text">阿泽 等1个赞</span>
+              </span>
+              <span class="habit-social-menu-wrap">
+                <button class="habit-social-button more" type="button" onclick="toggleHabitSocialMenu(this)" aria-label="更多互动">⋯</button>
+                <span class="habit-social-menu">
+                  <button class="habit-social-button like" type="button" onclick="quickLikeMyChallenge(this)">
+                    <span>👍</span><span>点赞</span>
+                  </button>
+                  <button class="habit-social-button comment" type="button" onclick="openInlineCompose(this)">
+                    <span>💬</span><span>评论</span>
+                  </button>
+                </span>
+              </span>
+            </div>
+            <div class="habit-social-line comment-line">
+              <span class="habit-social-line-text"><span class="habit-social-name-link">阿泽</span>：今天活跃度很好，再补一点轻有氧就更完整了。</span>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- 喝水 -->
-      <div class="challenge-card bg-water" data-challenge="喝水" data-xp="20" onclick="openChallenge('喝水')">
-        <div class="challenge-row1">
-          <div class="ch-icon">💧</div>
-          <div class="ch-name">保持水分平衡</div>
-          <div class="ch-xp"></div>
-          <button class="ch-add" onclick="event.stopPropagation();openSheet('sheetT71')">+</button>
+      <div class="habit-card" data-habit="water" data-challenge="喝水" data-xp="20" onclick="openChallenge('喝水')" style="background: linear-gradient(135deg, #ffffff 0%, #ECF9FF 100%)">
+        <div class="habit-head">
+          <div class="habit-icon" style="background: var(--gradient-challenge-cyan); box-shadow: 0 5px 12px rgba(10, 212, 255, 0.22)">💧</div>
+          <div class="habit-mid">
+            <div class="habit-name">喝水</div>
+            <span class="habit-chip" style="background: rgba(123, 252, 255, 0.24); color: #0A9AD8; border: 1px solid rgba(10, 212, 255, 0.22)">🥤 2,000 毫升饮水目标</span>
+          </div>
+          <div class="habit-right">
+            <button class="habit-manual-btn" type="button" aria-label="手动记录喝水" onclick="event.stopPropagation();openSheet('sheetT71')">+</button>
+            <span class="habit-xp">+20 XP</span>
+          </div>
         </div>
-        <div class="ch-subtitle">2,000 ml · 每 2 小时一次</div>
-        <div class="challenge-row2">
-          <div class="ch-progress"><div class="ch-fill" style="width:55%"></div></div>
-          <div class="ch-percent">55%</div>
+        <div class="habit-progress-row">
+          <div class="habit-progress-bar"><div class="habit-progress-fill" style="width: 62%; background: var(--gradient-challenge-cyan)"></div></div>
+          <div class="habit-percent" style="color: #0A9AD8">62%</div>
         </div>
-        <div class="challenge-row3">已饮 <strong>1,100 ml</strong>/2,000 ml，距目标还差 <strong>900 ml</strong>。下次提醒 <strong>15:00</strong>。</div>
+        <div class="habit-desc">今天已喝 <b style="color: #06B6D4">1,250</b> / 2,000 毫升，建议在傍晚前补足剩余 750 毫升，避免临睡前一次性大量饮水影响夜间睡眠。</div>
+        <div class="habit-social-actions" onclick="event.stopPropagation()">
+          <div class="habit-social-lines">
+            <div class="habit-social-line like">
+              <span class="habit-social-line-main">
+                <span class="habit-social-line-icon">🤍</span>
+                <span class="habit-social-line-text">Suki、豆豆 等2个赞</span>
+              </span>
+              <span class="habit-social-menu-wrap">
+                <button class="habit-social-button more" type="button" onclick="toggleHabitSocialMenu(this)" aria-label="更多互动">⋯</button>
+                <span class="habit-social-menu">
+                  <button class="habit-social-button like" type="button" onclick="quickLikeMyChallenge(this)">
+                    <span>👍</span><span>点赞</span>
+                  </button>
+                  <button class="habit-social-button comment" type="button" onclick="openInlineCompose(this)">
+                    <span>💬</span><span>评论</span>
+                  </button>
+                </span>
+              </span>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- 站立 -->
-      <div class="challenge-card bg-stand" data-challenge="站立" data-xp="25" onclick="openChallenge('站立')">
-        <div class="challenge-row1">
-          <div class="ch-icon">🧍</div>
-          <div class="ch-name">打破久坐魔咒</div>
-          <div class="ch-xp"></div>
+      <div class="habit-card" data-habit="stand" data-challenge="站立" data-xp="25" onclick="openChallenge('站立')" style="background: linear-gradient(135deg, #ffffff 0%, #F7F3FF 100%)">
+        <div class="habit-head">
+          <div class="habit-icon" style="background: var(--gradient-challenge-purple); box-shadow: 0 5px 12px rgba(113, 79, 247, 0.22)">🧍</div>
+          <div class="habit-mid">
+            <div class="habit-name">站立</div>
+            <span class="habit-chip" style="background: rgba(192, 176, 255, 0.24); color: var(--color-brand-secondary); border: 1px solid rgba(113, 79, 247, 0.20)">🪑 每小时起身一次</span>
+          </div>
+          <div class="habit-right">
+            <span class="habit-xp">+25 XP</span>
+          </div>
         </div>
-        <div class="ch-subtitle">每小时起身 · 站立 2min</div>
-        <div class="challenge-row2">
-          <div class="ch-progress"><div class="ch-fill" style="width:75%"></div></div>
-          <div class="ch-percent">75%</div>
+        <div class="habit-progress-row">
+          <div class="habit-progress-bar"><div class="habit-progress-fill" style="width: 75%; background: var(--gradient-challenge-purple)"></div></div>
+          <div class="habit-percent" style="color: var(--color-brand-secondary)">75%</div>
         </div>
-        <div class="challenge-row3">已起身 <strong>9 次</strong>/12 次。每小时起身可降低 <strong>下肢血栓</strong> 风险，再坚持 <strong>3 小时</strong> 即达成。</div>
+        <div class="habit-desc">已完成 <b style="color: #A855F7">6</b> / 8 小时站立目标。继续打断久坐，有助于减轻腰背压力，并改善下肢循环状态。</div>
+        <div class="habit-social-actions" onclick="event.stopPropagation()">
+          <div class="habit-social-lines">
+            <div class="habit-social-line like">
+              <span class="habit-social-line-main">
+                <span class="habit-social-line-icon">🤍</span>
+                <span class="habit-social-line-text">JoJo 等1个赞</span>
+              </span>
+              <span class="habit-social-menu-wrap">
+                <button class="habit-social-button more" type="button" onclick="toggleHabitSocialMenu(this)" aria-label="更多互动">⋯</button>
+                <span class="habit-social-menu">
+                  <button class="habit-social-button like" type="button" onclick="quickLikeMyChallenge(this)">
+                    <span>👍</span><span>点赞</span>
+                  </button>
+                  <button class="habit-social-button comment" type="button" onclick="openInlineCompose(this)">
+                    <span>💬</span><span>评论</span>
+                  </button>
+                </span>
+              </span>
+            </div>
+            <div class="habit-social-line comment-line">
+              <span class="habit-social-line-text"><span class="habit-social-name-link">JoJo</span>：久坐打断得不错，下午继续保持。</span>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- 跑步 -->
-      <div class="challenge-card bg-run" data-challenge="跑步" data-xp="30" onclick="openChallenge('跑步')">
-        <div class="challenge-row1">
-          <div class="ch-icon">🏃</div>
-          <div class="ch-name">提升最大摄氧量</div>
-          <div class="ch-xp"></div>
-          <button class="ch-add" onclick="event.stopPropagation();openRun()">+</button>
+      <div class="habit-card" data-habit="run" data-challenge="跑步" data-xp="30" onclick="openChallenge('跑步')" style="background: linear-gradient(135deg, #ffffff 0%, #FFF1F6 100%)">
+        <div class="habit-head">
+          <div class="habit-icon" style="background: linear-gradient(135deg, #FFA8C9 0%, #F25EFF 100%); box-shadow: 0 5px 12px rgba(242, 94, 255, 0.22)">🏃</div>
+          <div class="habit-mid">
+            <div class="habit-name">跑步</div>
+            <span class="habit-chip" style="background: rgba(255, 168, 201, 0.26); color: #D83DA8; border: 1px solid rgba(242, 94, 255, 0.20)">🏃 5 公里训练计划</span>
+          </div>
+          <div class="habit-right">
+            <button class="habit-manual-btn" type="button" aria-label="手动记录跑步" onclick="event.stopPropagation();openRun()">+</button>
+            <span class="habit-xp">+30 XP</span>
+          </div>
         </div>
-        <div class="ch-subtitle">慢跑 6km · 心率区间 2</div>
-        <div class="challenge-row2">
-          <div class="ch-progress"><div class="ch-fill" style="width:53%"></div></div>
-          <div class="ch-percent">53%</div>
+        <div class="habit-progress-row">
+          <div class="habit-progress-bar"><div class="habit-progress-fill" style="width: 50%; background: linear-gradient(135deg, #FFA8C9 0%, #F25EFF 100%)"></div></div>
+          <div class="habit-percent" style="color: var(--color-peak-pink)">50%</div>
         </div>
-        <div class="challenge-row3">已跑 <strong>3.2 km</strong>/6 km，配速 <strong>6:08</strong>。保持心率在 <strong>138-152 bpm</strong> 区间，可刺激线粒体增殖，让 <strong>VO2 Max</strong> 从 <strong>46.8</strong> 向 <strong>80</strong> 突破。</div>
+        <div class="habit-desc">目前已跑 <b style="color: #EC4899">2.5</b> / 5 公里，刚好完成一半。若今晚状态不错，可以补一组轻松跑把训练闭环做完。</div>
+        <div class="habit-social-actions" onclick="event.stopPropagation()">
+          <div class="habit-social-lines">
+            <div class="habit-social-line like">
+              <span class="habit-social-line-main">
+                <span class="habit-social-line-icon">🤍</span>
+                <span class="habit-social-line-text">Aaron、Yuki 等2个赞</span>
+              </span>
+              <span class="habit-social-menu-wrap">
+                <button class="habit-social-button more" type="button" onclick="toggleHabitSocialMenu(this)" aria-label="更多互动">⋯</button>
+                <span class="habit-social-menu">
+                  <button class="habit-social-button like" type="button" onclick="quickLikeMyChallenge(this)">
+                    <span>👍</span><span>点赞</span>
+                  </button>
+                  <button class="habit-social-button comment" type="button" onclick="openInlineCompose(this)">
+                    <span>💬</span><span>评论</span>
+                  </button>
+                </span>
+              </span>
+            </div>
+            <div class="habit-social-line comment-line">
+              <span class="habit-social-line-text"><span class="habit-social-name-link">Yuki</span>：今晚补一组轻松跑应该正合适。</span>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- 吃药 -->
-      <div class="challenge-card bg-pill" data-challenge="吃药" data-xp="20" onclick="openChallenge('吃药')">
-        <div class="challenge-row1">
-          <div class="ch-icon">💊</div>
-          <div class="ch-name">按时按量服药</div>
-          <div class="ch-xp"></div>
-          <button class="ch-add" onclick="event.stopPropagation();toast('已记录今日服药')">+</button>
+      <div class="habit-card" data-habit="medicine" data-challenge="吃药" data-xp="20" onclick="openChallenge('吃药')" style="background: linear-gradient(135deg, #ffffff 0%, #EEF5FF 100%)">
+        <div class="habit-head">
+          <div class="habit-icon" style="background: linear-gradient(135deg, #7FBBFF 0%, #3A6FE0 100%); box-shadow: 0 5px 12px rgba(58, 111, 224, 0.22)">💊</div>
+          <div class="habit-mid">
+            <div class="habit-name">吃药</div>
+            <span class="habit-chip" style="background: rgba(127, 187, 255, 0.22); color: var(--color-brand-primary); border: 1px solid rgba(58, 111, 224, 0.20)">💊 今日服药计划</span>
+          </div>
+          <div class="habit-right">
+            <button class="habit-manual-btn" type="button" aria-label="手动记录服药" onclick="event.stopPropagation();toast('已记录今日服药')">+</button>
+            <span class="habit-xp earned">+20 XP</span>
+          </div>
         </div>
-        <div class="ch-subtitle">早 8:00 · 晚 18:00</div>
-        <div class="challenge-row2">
-          <div class="ch-progress"><div class="ch-fill" style="width:50%"></div></div>
-          <div class="ch-percent">50%</div>
+        <div class="habit-progress-row">
+          <div class="habit-progress-bar"><div class="habit-progress-fill" style="width: 100%; background: linear-gradient(135deg, #7FBBFF 0%, #3A6FE0 100%)"></div></div>
+          <div class="habit-percent" style="color: var(--color-brand-primary)">100%</div>
         </div>
-        <div class="challenge-row3">今天已服 <strong>1 次</strong>/2 次，下次提醒 <strong>18:00</strong>。规律服药能稳定血药浓度，避免效力波动。</div>
+        <div class="habit-desc">今天的用药任务已全部完成，<b style="color: #3B82F6">1 / 1 次</b> 准时达成。规律服药有助于维持身体状态的稳定基线。</div>
+        <div class="habit-social-actions" onclick="event.stopPropagation()">
+          <div class="habit-social-lines">
+            <div class="habit-social-line like">
+              <span class="habit-social-line-main">
+                <span class="habit-social-line-icon">🤍</span>
+                <span class="habit-social-line-text">妈妈、小安 等2个赞</span>
+              </span>
+              <span class="habit-social-menu-wrap">
+                <button class="habit-social-button more" type="button" onclick="toggleHabitSocialMenu(this)" aria-label="更多互动">⋯</button>
+                <span class="habit-social-menu">
+                  <button class="habit-social-button like" type="button" onclick="quickLikeMyChallenge(this)">
+                    <span>👍</span><span>点赞</span>
+                  </button>
+                  <button class="habit-social-button comment" type="button" onclick="openInlineCompose(this)">
+                    <span>💬</span><span>评论</span>
+                  </button>
+                </span>
+              </span>
+            </div>
+            <div class="habit-social-line comment-line">
+              <span class="habit-social-line-text"><span class="habit-social-name-link">妈妈</span>：今天准时完成得很好，继续保持。</span>
+            </div>
+          </div>
+        </div>
       </div>
 
     </div>
@@ -5150,6 +5636,114 @@ function toast(msg) {
     document.getElementById('toastOverlay').classList.remove('show');
   }, 1500);
 }
+
+/* ==========================================================
+   挑战卡 ⋯ 菜单 / 自赞 / 自评
+   - ⋯ 按钮：toggle 显隐弹出菜单（同时关闭其他菜单）
+   - 点击菜单外区域：自动关闭
+   - 点赞按钮：把"我"加进点赞名字 + 计数 +1，再次点取消
+   - 评论按钮：在 social-lines 末尾插入评论输入条；发送后追加"我：xxx"评论行
+   ========================================================== */
+function toggleHabitSocialMenu(btn) {
+  const menu = btn.parentElement && btn.parentElement.querySelector('.habit-social-menu');
+  if (!menu) return;
+  document.querySelectorAll('.habit-social-menu.show').forEach(m => {
+    if (m !== menu) m.classList.remove('show');
+  });
+  menu.classList.toggle('show');
+}
+
+function quickLikeMyChallenge(btn) {
+  const card = btn.closest('.habit-card');
+  if (!card) return;
+  const likeRow = card.querySelector('.habit-social-line.like');
+  const iconEl = likeRow && likeRow.querySelector('.habit-social-line-icon');
+  const textEl = likeRow && likeRow.querySelector('.habit-social-line-text');
+  if (!iconEl || !textEl) return;
+  // 第一次点赞前，先把当前文本拆出 baseNames / baseCount 缓存到 dataset，便于来回切换
+  if (!card.dataset.likeBaseNames) {
+    const m = textEl.textContent.match(/^(.+?)\s+等(\d+)个赞$/);
+    if (m) {
+      card.dataset.likeBaseNames = m[1];
+      card.dataset.likeBaseCount = m[2];
+    } else {
+      card.dataset.likeBaseNames = textEl.textContent;
+      card.dataset.likeBaseCount = '0';
+    }
+  }
+  const baseNames = card.dataset.likeBaseNames || '';
+  const baseCount = parseInt(card.dataset.likeBaseCount || '0', 10);
+  const liked = iconEl.textContent.trim() === '❤️';
+  if (liked) {
+    iconEl.textContent = '🤍';
+    textEl.textContent = `${baseNames} 等${baseCount}个赞`;
+  } else {
+    iconEl.textContent = '❤️';
+    textEl.textContent = `我、${baseNames} 等${baseCount + 1}个赞`;
+  }
+  // 同步更新菜单内"点赞"按钮的激活态
+  const likeBtn = btn.closest('.habit-social-menu') && btn.closest('.habit-social-menu').querySelector('.habit-social-button.like');
+  if (likeBtn) likeBtn.classList.toggle('is-active', !liked);
+  const menu = btn.closest('.habit-social-menu');
+  if (menu) menu.classList.remove('show');
+}
+
+function openInlineCompose(btn) {
+  const card = btn.closest('.habit-card');
+  if (!card) return;
+  const lines = card.querySelector('.habit-social-lines');
+  if (!lines) return;
+  let composer = lines.querySelector('.habit-social-inline-compose');
+  if (!composer) {
+    composer = document.createElement('div');
+    composer.className = 'habit-social-inline-compose';
+    composer.innerHTML = '<input class="habit-social-inline-input" type="text" maxlength="80" placeholder="写下你的评论" />'
+      + '<button class="habit-social-inline-send" type="button" onclick="sendInlineComment(this)">发送</button>';
+    lines.appendChild(composer);
+    // 输入条内点击 / 输入不要再冒泡到 .habit-card
+    composer.addEventListener('click', e => e.stopPropagation());
+    const input = composer.querySelector('input');
+    if (input) {
+      input.addEventListener('keydown', e => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          sendInlineComment(composer.querySelector('.habit-social-inline-send'));
+        }
+      });
+    }
+  }
+  composer.classList.add('show');
+  const input = composer.querySelector('input');
+  if (input) input.focus();
+  const menu = btn.closest('.habit-social-menu');
+  if (menu) menu.classList.remove('show');
+}
+
+function sendInlineComment(sendBtn) {
+  const composer = sendBtn.closest('.habit-social-inline-compose');
+  if (!composer) return;
+  const input = composer.querySelector('input');
+  const text = (input && input.value || '').trim();
+  if (!text) {
+    composer.classList.remove('show');
+    return;
+  }
+  const lines = composer.parentElement;
+  const newLine = document.createElement('div');
+  newLine.className = 'habit-social-line comment-line';
+  const safe = text.replace(/[<>&"']/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;'}[c]));
+  newLine.innerHTML = '<span class="habit-social-line-text"><span class="habit-social-name-link">我</span>：' + safe + '</span>';
+  lines.insertBefore(newLine, composer);
+  input.value = '';
+  composer.classList.remove('show');
+}
+
+// 点击菜单 / 输入条以外区域，关闭所有打开的菜单
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.habit-social-menu-wrap')) {
+    document.querySelectorAll('.habit-social-menu.show').forEach(m => m.classList.remove('show'));
+  }
+});
 
 </script>
 </body>
