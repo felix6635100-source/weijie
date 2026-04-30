@@ -1,0 +1,3025 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>唯戒 · 练级模块</title>
+<style>
+/* ==========================================================
+   设计 Token  —— 与 00-设计规范.md / 01-今日模块.html 同源
+   （练级模块原型在内层手机里继续使用紫粉色调，与 01 蓝色系互不影响）
+   ========================================================== */
+:root {
+  --color-brand-primary: #3A6FE0;
+  --color-brand-secondary: #4C5CD8;
+  --color-brand-accent: #1E8FFF;
+  --color-semantic-success: #39C16C;
+  --color-semantic-warning: #FFA31A;
+  --color-semantic-danger: #FF7851;
+  --color-text-primary: #141619;
+  --color-text-secondary: #8A8DA4;
+  --color-text-tertiary: #9AA2B8;
+  --color-text-on-dark: #FFFFFF;
+  --color-bg-page: #EAF3FF;
+  --color-bg-surface: #FFFFFF;
+  --color-bg-surface-muted: #F5F7FB;
+  --color-border-subtle: #E6EDF4;
+  --color-tag-success-bg: #E8F9F2;
+  --color-tag-warning-bg: #FFF3DC;
+  --color-peak-pink: #F25EFF;
+  --gradient-day-today: linear-gradient(135deg, #4C5CD8 0%, #3A6FE0 100%);
+  --space-xxs: 2px; --space-xs: 4px; --space-sm: 8px; --space-md: 12px;
+  --space-lg: 16px; --space-xl: 20px; --space-xxl: 24px;
+  --radius-xs: 4px; --radius-sm: 8px; --radius-md: 12px;
+  --radius-lg: 16px; --radius-xl: 22px; --radius-pill: 999px;
+  --font-xs: 11px; --font-sm: 13px; --font-md: 14px; --font-lg: 16px;
+  --font-xl: 18px; --font-2xl: 22px; --font-3xl: 28px;
+  --weight-regular: 400; --weight-medium: 500; --weight-semi: 600; --weight-bold: 700;
+  --font-sans: Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-sans-cjk: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --shadow-card: 0 4px 12px rgba(0, 0, 0, 0.05);
+  --shadow-card-elevated: 0 8px 24px rgba(0, 0, 0, 0.08);
+  --shadow-tabbar: 0 12px 28px rgba(58, 111, 224, 0.10);
+  --shadow-modal: 0 20px 60px rgba(0, 0, 0, 0.22);
+  --primary: var(--color-brand-primary);
+  --primary-dark: var(--color-brand-secondary);
+  --bg: linear-gradient(180deg, #f4f5f7 0%, #f8f7fc 60%, #ffffff 100%);
+  --card: var(--color-bg-surface);
+  --text: var(--color-text-primary);
+  --text-secondary: var(--color-text-secondary);
+  --text-tertiary: var(--color-text-tertiary);
+  --border: var(--color-border-subtle);
+}
+
+/* ==========================================================
+   基础
+   ========================================================== */
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  background: #E5E9F2;
+  font-family: var(--font-sans-cjk), var(--font-sans);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+button { font: inherit; color: inherit; background: transparent; border: 0; padding: 0; cursor: pointer; }
+
+/* ==========================================================
+   双栏布局：左侧导航 + 右侧手机原型
+   ========================================================== */
+.layout { display: flex; min-height: 100vh; }
+.side-nav {
+  width: 280px; flex-shrink: 0;
+  background: #fff;
+  border-right: 1px solid var(--border);
+  padding: 24px 16px;
+  position: sticky; top: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+.side-nav::-webkit-scrollbar { width: 4px; }
+.side-nav::-webkit-scrollbar-thumb { background: var(--color-bg-surface-muted); border-radius: 2px; }
+.nav-brand {
+  display: flex; align-items: center; gap: 8px;
+  padding: 0 8px 16px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 12px;
+}
+.nav-brand .nav-logo {
+  width: 32px; height: 32px; border-radius: 8px;
+  background: linear-gradient(135deg, #6c5ce7, #a855f7);
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-weight: 700; font-size: 14px;
+}
+.nav-brand .nav-title { font-size: 14px; font-weight: 700; }
+.nav-brand .nav-version { font-size: 10px; color: var(--text-tertiary); }
+.nav-section-label {
+  font-size: 10px; font-weight: 700;
+  color: var(--text-tertiary);
+  letter-spacing: 0.08em; text-transform: uppercase;
+  padding: 12px 8px 6px;
+}
+
+/* 状态切换器 */
+.state-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 6px;
+  padding: 0 4px 8px;
+}
+.state-btn {
+  padding: 8px 6px; font-size: 11px;
+  border-radius: 8px;
+  background: var(--color-bg-surface-muted);
+  color: var(--text-secondary);
+  font-weight: 500;
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  text-align: center; line-height: 1.2;
+}
+.state-btn .icon { font-size: 14px; }
+.state-btn.is-active {
+  background: linear-gradient(135deg, #6c5ce7, #a855f7); color: #fff;
+}
+
+/* 导航项 */
+.nav-list { display: flex; flex-direction: column; gap: 1px; }
+.nav-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 10px; border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--text);
+  transition: background 0.15s;
+}
+.nav-item:hover { background: var(--color-bg-surface-muted); }
+.nav-item.is-active {
+  background: rgba(108, 92, 231, 0.10);
+  color: #6c5ce7;
+  font-weight: 600;
+}
+.nav-item .nav-id {
+  width: 42px; flex-shrink: 0;
+  font-family: var(--font-sans);
+  font-size: 11px; font-weight: 700;
+  color: var(--text-tertiary);
+}
+.nav-item.is-active .nav-id { color: #6c5ce7; }
+.nav-item .nav-name { flex: 1; }
+.nav-item .nav-tag {
+  font-size: 9px; padding: 1px 6px;
+  border-radius: 99px;
+  background: var(--color-bg-surface-muted);
+  color: var(--text-tertiary);
+  font-weight: 500;
+  white-space: nowrap;
+}
+.nav-item .nav-tag.tag-page  { background: rgba(58,111,224,0.10); color: var(--color-brand-primary); }
+.nav-item .nav-tag.tag-sheet { background: rgba(108,92,231,0.12); color: #6c5ce7; }
+.nav-item .nav-tag.tag-modal { background: rgba(168,85,247,0.12); color: #a855f7; }
+.nav-item .nav-tag.tag-sub   { background: rgba(57,193,108,0.12); color: var(--color-semantic-success); }
+.nav-item .nav-tag.tag-full  { background: rgba(242,94,255,0.14); color: var(--color-peak-pink); }
+
+.nav-foot {
+  margin-top: 12px; padding: 12px 10px;
+  border-top: 1px solid var(--border);
+  font-size: 10px; color: var(--text-tertiary); line-height: 1.6;
+}
+.nav-foot strong { color: var(--text-secondary); }
+
+/* 右侧主区 */
+.preview-area {
+  flex: 1; min-width: 0;
+  display: flex; align-items: flex-start; justify-content: center;
+  padding: 32px 16px 60px;
+}
+
+/* ---------- 手机外壳 ---------- */
+.phone-frame {
+  width: 375px; height: 812px;
+  border-radius: 44px;
+  background: var(--bg);
+  position: relative; overflow: hidden;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.18), 0 0 0 8px #1c1f2b, 0 0 0 10px #2c3142;
+}
+.notch {
+  position: absolute; top: 8px; left: 50%; transform: translateX(-50%);
+  width: 110px; height: 28px; background: #1c1f2b; border-radius: 16px; z-index: 8;
+}
+
+/* ==========================================================
+   iOS 系统状态栏（独立组件，复刻 iOS 16+ 原生形态）
+   ========================================================== */
+.ios-status-bar {
+  height: 44px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 22px;
+  font-family: var(--font-sans);
+  color: var(--color-text-primary);
+  user-select: none;
+  position: absolute; top: 0; left: 0; right: 0; z-index: 7;
+}
+.ios-status-bar.is-on-glass {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+}
+.ios-status-bar .iss-time {
+  font-size: 17px; font-weight: 600;
+  letter-spacing: -0.4px;
+  font-feature-settings: "tnum" 1;
+}
+.ios-status-bar .iss-right {
+  display: inline-flex; align-items: center; gap: 5px;
+}
+.ios-status-bar .iss-signal {
+  display: inline-flex; align-items: flex-end; gap: 2px; height: 11px;
+}
+.ios-status-bar .iss-bar {
+  width: 3px; background: currentColor; border-radius: 1px;
+}
+.ios-status-bar .iss-bar:nth-child(1) { height: 3px; }
+.ios-status-bar .iss-bar:nth-child(2) { height: 5px; }
+.ios-status-bar .iss-bar:nth-child(3) { height: 7px; }
+.ios-status-bar .iss-bar:nth-child(4) { height: 9px; }
+.ios-status-bar .iss-network { font-size: 15px; font-weight: 600; letter-spacing: -0.4px; }
+.ios-status-bar .iss-battery {
+  position: relative;
+  width: 26px; height: 13px;
+  background: var(--color-text-primary);
+  color: var(--color-text-on-dark);
+  border-radius: 3.5px;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.ios-status-bar .iss-battery::after {
+  content: ""; position: absolute;
+  right: -2.5px; top: 4px;
+  width: 1.5px; height: 5px;
+  background: var(--color-text-primary);
+  border-radius: 0 1px 1px 0;
+}
+.ios-status-bar .iss-battery-pct {
+  font-size: 10px; font-weight: 700;
+  letter-spacing: -0.5px; line-height: 1;
+  font-feature-settings: "tnum" 1;
+}
+
+/* ---------- 一级页面顶栏（白底 70% 毛玻璃） ---------- */
+.app-topbar {
+  position: absolute; top: 44px; left: 0; right: 0; height: 52px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 var(--space-lg);
+  z-index: 6;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+}
+.topbar-left {
+  display: flex; align-items: center; gap: var(--space-sm);
+  flex: 1; min-width: 0;
+}
+.topbar-title {
+  font-size: var(--font-3xl); font-weight: 800;
+  color: var(--text); line-height: 1; white-space: nowrap;
+}
+.ring-tag {
+  display: inline-flex; align-items: center; gap: 4px;
+  height: 24px; padding: 0 10px;
+  border-radius: var(--radius-pill);
+  font-size: var(--font-xs); font-weight: var(--weight-semi);
+  cursor: pointer;
+}
+.ring-tag.is-connected { background: var(--color-tag-success-bg); color: var(--color-semantic-success); }
+.ring-tag.is-not-connected { background: var(--color-tag-warning-bg); color: var(--color-semantic-warning); }
+.topbar-right {
+  display: inline-flex; align-items: center; gap: var(--space-sm);
+}
+.topbar-icon-btn {
+  width: 36px; height: 36px; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 16px;
+  background: rgba(255, 255, 255, 0.6);
+}
+.topbar-icon-btn.profile {
+  background: #fff; box-shadow: var(--shadow-card);
+  font-weight: 700; font-size: 13px;
+  background: linear-gradient(135deg, #6c5ce7, #a855f7); color: #fff;
+}
+
+/* ---------- 主滚动区（在状态栏 + 顶栏之下，TabBar 之上） ---------- */
+.scroll-area {
+  position: absolute; top: 0; left: 0; right: 0; bottom: 80px;
+  overflow-y: auto; -webkit-overflow-scrolling: touch;
+  padding-top: 96px;
+  padding-bottom: 24px;
+}
+.scroll-area::-webkit-scrollbar { display: none; }
+
+/* ---------- 底部 Tab Bar ---------- */
+.tab-bar {
+  position: absolute; bottom: 0; left: 0; right: 0; height: 80px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  display: flex; justify-content: space-around; align-items: flex-start;
+  padding-top: 10px; z-index: 5;
+  border-top: 1px solid var(--border);
+}
+.tab-bar .tb-item {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  cursor: pointer; opacity: 0.5;
+  flex: 1;
+}
+.tab-bar .tb-item.is-active { opacity: 1; }
+.tab-bar .tb-item .ico { font-size: 22px; }
+.tab-bar .tb-item .lbl { font-size: 10px; font-weight: 600; color: var(--text-secondary); }
+.tab-bar .tb-item.is-active .lbl { color: #6c5ce7; }
+
+/* ==========================================================
+   练级页 · 内容样式（来自原 第四版 练级页.html，限定在手机内）
+   ========================================================== */
+.lv-empty {
+  margin: 60px 24px 40px;
+  text-align: center;
+  color: var(--text-tertiary);
+}
+.lv-empty .ico { font-size: 48px; margin-bottom: 12px; }
+.lv-empty .ttl { font-size: 16px; font-weight: 700; color: var(--text-secondary); }
+.lv-empty .body { font-size: 13px; margin-top: 8px; line-height: 1.6; }
+.lv-empty .cta {
+  display: inline-block; margin-top: 16px;
+  padding: 12px 28px; border-radius: var(--radius-pill);
+  background: linear-gradient(135deg, #6c5ce7, #a855f7);
+  color: #fff; font-size: 14px; font-weight: 700;
+  box-shadow: 0 6px 18px rgba(108, 92, 231, 0.32);
+  cursor: pointer;
+}
+
+/* 练级专用色 */
+.phone-frame {
+  --accent: #6c5ce7;
+  --accent2: #a855f7;
+  --pink: #ec4899;
+  --green: #22c55e;
+  --orange: #f59e0b;
+  --red: #ef4444;
+  --cyan: #06b6d4;
+  --rose: #f43f5e;
+  --border-soft: #eef0f3;
+  --text2: #5b6370;
+  --text3: #9ca3af;
+}
+
+.lv-head { padding: 0 22px 8px; display: none; }  /* 顶栏已由 .app-topbar 承担，这里隐藏原标题 */
+
+/* 我的等级 / XP 概览条 */
+.lv-mestrip {
+  margin: 6px 16px 14px;
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #6c5ce7 0%, #a855f7 55%, #ec4899 100%);
+  color: #fff;
+  display: flex; align-items: center; gap: 14px;
+  box-shadow: 0 6px 18px rgba(108,92,231,0.28);
+  position: relative; overflow: hidden;
+}
+.lv-mestrip::before {
+  content: ''; position: absolute; top: -30px; right: -30px;
+  width: 140px; height: 140px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,255,255,0.22), transparent 70%);
+}
+.lv-mestrip .lv-medal {
+  width: 54px; height: 54px; border-radius: 50%;
+  background: rgba(255,255,255,0.18);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 26px; flex-shrink: 0;
+  border: 2px solid rgba(255,255,255,0.45);
+}
+.lv-mestrip .lv-info { flex: 1; position: relative; min-width: 0; }
+.lv-mestrip .lv-lvtitle { font-size: 11px; font-weight: 800; letter-spacing: 1px; opacity: 0.85; }
+.lv-mestrip .lv-lvname {
+  font-size: 18px; font-weight: 800; letter-spacing: -0.3px;
+  margin-top: 2px;
+  display: flex; align-items: center; gap: 8px;
+}
+.lv-mestrip .lv-lvname .lv-tag {
+  font-size: 10px; font-weight: 800;
+  background: rgba(255,255,255,0.22);
+  padding: 2px 8px; border-radius: 8px;
+  letter-spacing: 0.4px;
+}
+.lv-mestrip .lv-bar {
+  margin-top: 8px; height: 6px;
+  background: rgba(255,255,255,0.22);
+  border-radius: 4px; overflow: hidden;
+}
+.lv-mestrip .lv-bar .fill {
+  height: 100%; background: #fff;
+  border-radius: 4px; width: 62%;
+}
+.lv-mestrip .lv-meta {
+  font-size: 11px; margin-top: 6px;
+  font-weight: 600; opacity: 0.92;
+  display: flex; justify-content: space-between;
+}
+
+/* Hero 横向轮播 */
+.lv-hero-rail { margin: 6px 0 14px; position: relative; }
+.lv-rail-inner {
+  display: flex; gap: 12px;
+  overflow-x: auto; scroll-snap-type: x mandatory;
+  padding: 4px 16px 8px;
+  -webkit-overflow-scrolling: touch;
+}
+.lv-rail-inner::-webkit-scrollbar { display: none; }
+.lv-rail-dots {
+  display: flex; justify-content: center; gap: 6px; margin-top: 6px;
+}
+.lv-rail-dots .dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: rgba(108,92,231,0.22); transition: all 0.25s;
+}
+.lv-rail-dots .dot.active {
+  width: 18px; border-radius: 3px;
+  background: linear-gradient(135deg, #6c5ce7, #a855f7);
+}
+
+.lv-hero {
+  flex: 0 0 86%; scroll-snap-align: center;
+  border-radius: 22px; overflow: hidden;
+  cursor: pointer; position: relative;
+  height: 200px;
+  box-shadow: 0 6px 18px rgba(80,60,140,0.14);
+}
+.lv-hero .h-art {
+  position: absolute; font-size: 140px;
+  right: -10px; top: 50%; transform: translateY(-58%);
+  opacity: 0.92;
+  filter: drop-shadow(0 6px 14px rgba(0,0,0,0.25));
+  pointer-events: none; z-index: 1;
+}
+.lv-hero .h-bg { position: absolute; inset: 0; }
+.lv-hero .h-cal {
+  position: absolute; top: 14px; left: 14px;
+  width: 46px; background: #fff;
+  border-radius: 8px; text-align: center;
+  padding: 4px 0 6px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.18);
+  font-family: 'Inter', sans-serif;
+}
+.lv-hero .h-cal .m {
+  font-size: 9px; font-weight: 800;
+  color: #f43f5e; letter-spacing: 1px;
+  background: #fce7f3;
+  padding: 1px 0; display: block;
+  border-radius: 6px 6px 0 0;
+  margin: -4px -4px 4px;
+}
+.lv-hero .h-cal .d {
+  font-size: 18px; font-weight: 800;
+  color: var(--text); line-height: 1;
+}
+.lv-hero .h-people {
+  position: absolute; top: 14px; right: 14px;
+  display: flex; flex-direction: column; align-items: flex-end; gap: 4px;
+  color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+}
+.lv-hero .h-avs { display: flex; }
+.lv-hero .h-avs .av {
+  width: 24px; height: 24px; border-radius: 50%;
+  border: 2px solid #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px;
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  margin-left: -6px;
+}
+.lv-hero .h-avs .av:first-child { margin-left: 0; }
+.lv-hero .h-num { font-size: 12px; font-weight: 700; }
+.lv-hero .h-foot {
+  position: absolute; left: 0; right: 0; bottom: 0;
+  padding: 14px 16px;
+  display: flex; align-items: center; gap: 12px;
+  color: #fff;
+}
+.lv-hero .h-badge {
+  width: 46px; height: 46px; border-radius: 50%;
+  background: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px; flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+  border: 2px solid rgba(255,255,255,0.6);
+}
+.lv-hero .h-text { flex: 1; min-width: 0; }
+.lv-hero .h-text .t {
+  font-size: 18px; font-weight: 800;
+  letter-spacing: -0.2px;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.35);
+  line-height: 1.2;
+}
+.lv-hero .h-text .s {
+  font-size: 12px; font-weight: 600;
+  margin-top: 3px; opacity: 0.96;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+.lv-hero .h-joined {
+  position: absolute; top: 14px; left: 74px;
+  background: rgba(0,0,0,0.55); color: #fff;
+  font-size: 11px; font-weight: 700;
+  padding: 4px 9px; border-radius: 10px;
+  display: flex; align-items: center; gap: 4px;
+}
+.lv-hero .h-joined::before { content: '✓'; font-size: 10px; }
+
+/* 主题渐变 */
+.bg-night   { background: linear-gradient(135deg, #312e81 0%, #6366f1 60%, #a78bfa 100%); }
+.bg-sakura  { background: linear-gradient(135deg, #fce7f3 0%, #f9a8d4 50%, #c084fc 100%); }
+.bg-stream  { background: linear-gradient(135deg, #a7f3d0 0%, #6ee7b7 50%, #22c55e 100%); }
+.bg-runner  { background: linear-gradient(135deg, #fde68a 0%, #fb923c 60%, #dc2626 100%); }
+.bg-morning { background: linear-gradient(135deg, #fef3c7 0%, #fbbf24 50%, #f97316 100%); }
+.bg-water   { background: linear-gradient(135deg, #cffafe 0%, #22d3ee 50%, #0891b2 100%); }
+.bg-breath  { background: linear-gradient(135deg, #fae8ff 0%, #d8b4fe 50%, #9333ea 100%); }
+.bg-stand   { background: linear-gradient(135deg, #fef9c3 0%, #fde047 50%, #facc15 100%); }
+
+/* 我的练级容器（练级进度入口 + 成就勋章入口，左右两栏） */
+.lv-mesect {
+  margin: 6px 16px 14px;
+  display: flex; gap: 8px;
+}
+.lv-mecard {
+  flex: 1; min-width: 0;
+  border-radius: 18px;
+  padding: 12px 12px 14px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+/* 入口 1：练级进度（浅紫粉淡彩底，深色文字） */
+.lv-me-progress {
+  background: linear-gradient(135deg, #f3e8ff 0%, #fae8ff 55%, #fce7f3 100%);
+  color: var(--text);
+  border: 1px solid rgba(168,85,247,0.18);
+  box-shadow: 0 2px 8px rgba(108,92,231,0.10);
+}
+.lv-me-progress::before {
+  content: ''; position: absolute; top: -30px; right: -30px;
+  width: 90px; height: 90px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(168,85,247,0.18), transparent 70%);
+}
+.lv-me-progress .lv-medal {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: rgba(168,85,247,0.16);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  border: 1.5px solid rgba(168,85,247,0.32);
+  margin-bottom: 6px;
+  position: relative; z-index: 1;
+}
+.lv-me-progress .lv-lvtitle {
+  font-size: 10px; font-weight: 800; letter-spacing: 0.5px;
+  color: #7c3aed;
+  position: relative; z-index: 1;
+}
+.lv-me-progress .lv-lvname {
+  font-size: 14px; font-weight: 800; margin-top: 2px;
+  color: var(--text);
+  display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+  position: relative; z-index: 1;
+}
+.lv-me-progress .lv-lvname .lv-tag {
+  font-size: 9px; font-weight: 800;
+  background: rgba(168,85,247,0.18);
+  color: #7c3aed;
+  padding: 1px 6px; border-radius: 6px;
+  letter-spacing: 0.4px;
+}
+.lv-me-progress .lv-bar {
+  margin-top: 8px; height: 5px;
+  background: rgba(168,85,247,0.18);
+  border-radius: 3px; overflow: hidden;
+  position: relative; z-index: 1;
+}
+.lv-me-progress .lv-bar .fill {
+  height: 100%; background: linear-gradient(90deg, #a855f7, #ec4899);
+  width: 62%; border-radius: 3px;
+}
+.lv-me-progress .lv-meta {
+  font-size: 10px; margin-top: 5px;
+  font-weight: 700;
+  color: var(--text2);
+  display: flex; justify-content: space-between;
+  position: relative; z-index: 1;
+}
+/* 入口 2：成就勋章（浅金淡彩底，深色文字） */
+.lv-me-medals {
+  background: linear-gradient(135deg, #fffaf0 0%, #fef3c7 100%);
+  border: 1px solid rgba(245,158,11,0.18);
+  color: var(--text);
+  box-shadow: 0 2px 8px rgba(245,158,11,0.08);
+}
+.lv-me-medals .m-ico {
+  width: 32px; height: 32px; border-radius: 10px;
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; color: #fff;
+  border: 1px solid rgba(255,255,255,0.6);
+  margin-bottom: 6px;
+  box-shadow: 0 2px 6px rgba(245,158,11,0.28);
+}
+.lv-me-medals .m-t {
+  font-size: 14px; font-weight: 800;
+  color: var(--text); letter-spacing: -0.2px;
+}
+.lv-me-medals .m-s {
+  font-size: 11px; color: #92400e;
+  margin-top: 2px; font-weight: 700;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.lv-me-medals .m-row { display: flex; align-items: center; margin-top: 6px; }
+.lv-me-medals .m-mini {
+  width: 18px; height: 18px; border-radius: 50%;
+  border: 2px solid #fff;
+  background: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px;
+  margin-right: -6px;
+  box-shadow: 0 1px 3px rgba(245,158,11,0.2);
+}
+.lv-me-medals .m-arrow {
+  position: absolute; top: 12px; right: 12px;
+  color: #92400e; font-size: 16px; font-weight: 700;
+}
+
+/* 成就徽章入口 */
+.lv-medals {
+  margin: 0 16px 14px;
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 18px; padding: 14px 16px;
+  display: flex; align-items: center; gap: 12px;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(15,23,42,0.04);
+}
+.lv-medals .m-ico {
+  width: 42px; height: 42px; border-radius: 13px;
+  background: linear-gradient(135deg, #fef3c7, #fde68a);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; flex-shrink: 0;
+  border: 1px solid rgba(245,158,11,0.28);
+}
+.lv-medals .m-body { flex: 1; min-width: 0; }
+.lv-medals .m-t { font-size: 15px; font-weight: 800; color: var(--text); letter-spacing: -0.2px; }
+.lv-medals .m-s { font-size: 12px; color: var(--text3); margin-top: 2px; font-weight: 600; }
+.lv-medals .m-row { display: flex; align-items: center; margin-top: 6px; }
+.lv-medals .m-mini {
+  width: 22px; height: 22px; border-radius: 50%;
+  border: 2px solid #fff;
+  background: #fef3c7;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px;
+  margin-right: -8px;
+}
+.lv-medals .m-arrow { color: var(--text3); font-size: 18px; font-weight: 600; margin-left: 8px; }
+
+/* 年度大挑战 */
+.lv-annual {
+  margin: 0 16px 14px;
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 18px; padding: 16px;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(15,23,42,0.04);
+}
+.lv-annual .a-row { display: flex; align-items: center; gap: 14px; }
+.lv-annual .a-emblem {
+  width: 56px; height: 56px; border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, #fff5f0, #fed7aa 60%, #fb923c);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px; flex-shrink: 0;
+  box-shadow: 0 4px 10px rgba(251,146,60,0.25);
+  border: 2px solid #fff;
+}
+.lv-annual .a-body { flex: 1; min-width: 0; }
+.lv-annual .a-t { font-size: 16px; font-weight: 800; color: var(--text); letter-spacing: -0.2px; }
+.lv-annual .a-spon {
+  font-size: 12px; color: var(--accent);
+  font-weight: 700; margin-top: 3px;
+  display: flex; align-items: center; gap: 4px;
+}
+.lv-annual .a-spon::before { content: '🎁'; font-size: 11px; }
+.lv-annual .a-meta {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-top: 10px; font-size: 12px;
+  color: var(--text2); font-weight: 700;
+}
+.lv-annual .a-pct { color: var(--green); font-weight: 800; }
+.lv-annual .a-pb {
+  margin-top: 8px; height: 6px;
+  background: #eef0f3; border-radius: 4px; overflow: hidden;
+}
+.lv-annual .a-pb .fill {
+  height: 100%; background: linear-gradient(90deg, #22c55e, #06b6d4);
+  border-radius: 4px;
+}
+
+/* 已加入挑战 列表卡（标题已外提为 .lv-sect-head#joinedSect，列表内不再有 .j-head） */
+.lv-joined {
+  margin: 0 16px 14px;
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 18px; padding: 4px 16px 12px;
+  box-shadow: 0 1px 2px rgba(15,23,42,0.04);
+}
+.lv-jrow {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 0;
+  border-top: 1px solid var(--border-soft);
+  cursor: pointer;
+}
+.lv-jrow:first-of-type { border-top: none; }
+.lv-jrow .j-ico {
+  width: 42px; height: 42px; border-radius: 13px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 21px; flex-shrink: 0;
+  color: #fff;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+}
+.lv-jrow .j-body { flex: 1; min-width: 0; }
+.lv-jrow .j-name {
+  font-size: 14px; font-weight: 800;
+  color: var(--text); letter-spacing: -0.2px;
+}
+.lv-jrow .j-spon {
+  font-size: 11px; color: var(--accent);
+  font-weight: 700; margin-top: 2px;
+}
+.lv-jrow .j-prog {
+  display: flex; align-items: center; gap: 8px;
+  margin-top: 6px;
+}
+.lv-jrow .j-prog .pb {
+  flex: 1; height: 5px;
+  background: #eef0f3;
+  border-radius: 3px; overflow: hidden;
+}
+.lv-jrow .j-prog .pb .fill {
+  height: 100%; border-radius: 3px;
+}
+.lv-jrow .j-prog .v {
+  font-size: 11px; font-weight: 700;
+  color: var(--text2); min-width: 90px;
+  text-align: right; letter-spacing: -0.1px;
+}
+
+/* 月度挑战 / 已加入挑战 / 使用入门 / 健康故事 通用区段头（左右内边距统一 16px，与卡片列表对齐） */
+.lv-sect-head {
+  padding: 6px 16px 10px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.lv-sect-head .t { font-size: 20px; font-weight: 800; color: var(--text); letter-spacing: -0.3px; }
+.lv-sect-head .t .t-meta {
+  font-size: 12px; font-weight: 700;
+  color: var(--text3); margin-left: 6px; letter-spacing: 0;
+}
+.lv-sect-head .more { font-size: 12px; color: var(--accent); font-weight: 700; cursor: pointer; }
+.section-sub {
+  font-size: 12px; color: var(--text3);
+  margin-top: -2px; padding: 0 16px 8px;
+}
+
+/* 目标筛选 tabs */
+.lv-goal-tabs {
+  margin: 0 16px 12px;
+  display: flex; gap: 8px;
+  overflow-x: auto; padding-bottom: 2px;
+}
+.lv-goal-tabs::-webkit-scrollbar { display: none; }
+.lv-gtab {
+  padding: 8px 14px; border-radius: 14px;
+  background: var(--card); border: 1px solid var(--border);
+  font-size: 12px; font-weight: 700;
+  color: var(--text2);
+  white-space: nowrap; cursor: pointer; flex-shrink: 0;
+  display: flex; align-items: center; gap: 5px;
+}
+.lv-gtab.active {
+  background: linear-gradient(135deg, #6c5ce7, #a855f7);
+  color: #fff; border-color: transparent;
+  box-shadow: 0 3px 10px rgba(108,92,231,0.28);
+}
+.lv-gtab .e { font-size: 13px; }
+
+/* 月度挑战 卡片列表 */
+.lv-mlist { padding: 0 16px 6px; }
+.lv-mcard {
+  display: flex; align-items: stretch;
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 18px; overflow: hidden;
+  margin-bottom: 12px;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(15,23,42,0.04);
+}
+.lv-mcard .mc-art {
+  width: 130px; flex-shrink: 0;
+  position: relative; overflow: hidden;
+}
+.lv-mcard .mc-art .joined-tag {
+  position: absolute; top: 8px; left: 8px;
+  background: rgba(0,0,0,0.6); color: #fff;
+  font-size: 10px; font-weight: 800;
+  padding: 3px 7px; border-radius: 8px;
+  display: flex; align-items: center; gap: 3px;
+  z-index: 2;
+}
+.lv-mcard .mc-art .joined-tag::before { content: '✓'; font-size: 9px; }
+.lv-mcard .mc-art .mc-emoji {
+  position: absolute;
+  font-size: 54px; left: 50%; top: 50%;
+  transform: translate(-50%, -46%);
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.18));
+}
+.lv-mcard .mc-body {
+  flex: 1; min-width: 0;
+  padding: 14px 14px 12px;
+  display: flex; flex-direction: column; justify-content: center; gap: 4px;
+}
+.lv-mcard .mc-t {
+  font-size: 15px; font-weight: 800;
+  color: var(--text); letter-spacing: -0.2px; line-height: 1.25;
+}
+.lv-mcard .mc-d {
+  font-size: 11px; color: var(--text3);
+  font-weight: 600;
+  display: flex; align-items: center; gap: 4px;
+}
+.goal-pill {
+  padding: 2px 7px; border-radius: 8px;
+  font-size: 10px; font-weight: 800;
+  letter-spacing: 0.1px;
+  display: inline-block;
+}
+.goal-pill.sed { background: rgba(108,92,231,0.12); color: var(--accent); }
+.goal-pill.glu { background: rgba(34,197,94,0.12);  color: #15803d; }
+.goal-pill.bp  { background: rgba(239,68,68,0.12);  color: #dc2626; }
+.goal-pill.anx { background: rgba(168,85,247,0.12); color: var(--accent2); }
+.goal-pill.slp { background: rgba(99,102,241,0.12); color: #4f46e5; }
+.goal-pill.car { background: rgba(245,158,11,0.12); color: #b45309; }
+.goal-pill.met { background: rgba(6,182,212,0.12);  color: #0e7490; }
+.goal-pill.imm { background: rgba(236,72,153,0.12); color: var(--pink); }
+
+.lv-mcard .mc-people {
+  font-size: 11px; color: var(--text2);
+  font-weight: 700; margin-top: 2px;
+  display: flex; align-items: center; gap: 6px;
+}
+.lv-mcard .mc-people .avs { display: flex; }
+.lv-mcard .mc-people .avs .av {
+  width: 18px; height: 18px; border-radius: 50%;
+  border: 2px solid var(--card);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 9px; color: #fff; font-weight: 800;
+  margin-left: -5px;
+}
+.lv-mcard .mc-people .avs .av:first-child { margin-left: 0; }
+.lv-mcard .mc-xp {
+  margin-top: 4px; display: inline-block;
+  background: linear-gradient(135deg, #fff4d1, #fde68a);
+  color: #b45309;
+  border: 1px solid rgba(245,158,11,0.28);
+  padding: 2px 8px; border-radius: 10px;
+  font-size: 10px; font-weight: 800;
+  align-self: flex-start;
+}
+
+.mc-founder {
+  margin-top: 6px; display: flex; align-items: center; gap: 6px;
+  font-size: 11px; color: var(--text2); font-weight: 700;
+}
+.mc-founder .fav {
+  width: 18px; height: 18px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; color: #fff; font-weight: 800;
+  flex-shrink: 0;
+}
+.mc-founder .fname { color: var(--text); font-weight: 800; }
+.mc-founder .fkol {
+  padding: 1px 6px; border-radius: 6px;
+  font-size: 9px; font-weight: 800;
+  background: linear-gradient(135deg, #fce7f3, #f3e8ff);
+  color: #9d174d;
+  letter-spacing: 0.2px;
+}
+
+/* "查看全部" 通用按钮 */
+.lv-allbtn {
+  margin: 0 16px 16px;
+  padding: 14px; border-radius: 16px;
+  background: var(--card); border: 1px solid var(--border);
+  text-align: center;
+  font-size: 14px; font-weight: 800;
+  color: var(--accent);
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(15,23,42,0.04);
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+}
+.lv-allbtn .arr { font-size: 18px; font-weight: 600; }
+
+/* 使用入门 横向卡 */
+.lv-tut { padding: 0 0 8px; }
+.lv-tut-rail {
+  display: flex; gap: 10px;
+  overflow-x: auto;
+  padding: 4px 16px 8px;
+  scroll-snap-type: x mandatory;
+}
+.lv-tut-rail::-webkit-scrollbar { display: none; }
+.lv-tut-card {
+  flex: 0 0 160px; scroll-snap-align: start;
+  background: #eaeef5;
+  border-radius: 18px; padding: 14px;
+  cursor: pointer;
+  display: flex; flex-direction: column; gap: 8px;
+  box-shadow: 0 1px 2px rgba(15,23,42,0.04);
+  min-height: 200px;
+}
+.lv-tut-card .tic {
+  font-size: 60px; line-height: 1;
+  text-align: center; margin-top: 8px;
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
+}
+.lv-tut-card .tt {
+  font-size: 13px; font-weight: 800;
+  color: var(--text); letter-spacing: -0.1px;
+  line-height: 1.4; margin-top: auto;
+}
+
+/* KOL 故事卡 */
+.lv-kol { padding: 0 0 16px; }
+.lv-kol-intro {
+  padding: 0 16px 12px;
+  font-size: 13px; color: var(--text3);
+  font-weight: 600; line-height: 1.6;
+}
+.lv-kol-rail {
+  display: flex; gap: 10px;
+  overflow-x: auto;
+  padding: 4px 16px 8px;
+  scroll-snap-type: x mandatory;
+}
+.lv-kol-rail::-webkit-scrollbar { display: none; }
+.lv-kol-card {
+  flex: 0 0 220px; scroll-snap-align: start;
+  border-radius: 18px; overflow: hidden;
+  cursor: pointer; position: relative;
+  height: 280px;
+  box-shadow: 0 4px 14px rgba(80,60,140,0.12);
+}
+.lv-kol-card .kbg {
+  position: absolute; inset: 0;
+  background-size: cover; background-position: center;
+}
+.lv-kol-card .kov {
+  position: absolute; inset: 0;
+  background: linear-gradient(to bottom, transparent 40%, rgba(0,0,0,0.65));
+}
+.lv-kol-card .kt {
+  position: absolute; left: 14px; right: 14px; bottom: 14px;
+  color: #fff; font-size: 15px; font-weight: 800;
+  letter-spacing: -0.1px; line-height: 1.3;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+}
+.lv-kol-card .ktag {
+  position: absolute; top: 12px; left: 12px;
+  background: rgba(255,255,255,0.92);
+  color: var(--text);
+  font-size: 10px; font-weight: 800;
+  padding: 3px 8px; border-radius: 8px;
+  letter-spacing: 0.3px;
+}
+
+/* ==========================================================
+   弹层（覆盖在手机内的二级 / 全屏页面）
+   ========================================================== */
+
+/* —— 全屏滑入页（挑战详情、全部挑战、教程列表、故事列表、教程文章、故事文章）—— */
+.fs-overlay {
+  position: absolute; inset: 0;
+  background: var(--card);
+  z-index: 50;
+  transform: translateX(100%);
+  transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
+  overflow-y: auto;
+  border-radius: 44px;
+}
+.fs-overlay.show { transform: translateX(0); }
+.fs-overlay::-webkit-scrollbar { display: none; }
+.fs-back {
+  position: sticky; top: 18px; left: 14px;
+  width: 36px; height: 36px; border-radius: 50%;
+  background: rgba(255,255,255,0.95);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  z-index: 5;
+  margin: 18px 14px 0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  border: 1px solid var(--border);
+  font-size: 18px;
+  color: var(--text);
+}
+
+/* 挑战详情 */
+.cd-overlay { background: #fff; }
+.cd-hero {
+  position: relative; width: 100%; height: 280px; overflow: hidden;
+}
+.cd-hero .cd-bg { position: absolute; inset: 0; }
+.cd-hero .cd-back {
+  position: absolute; top: 18px; left: 14px;
+  width: 40px; height: 40px; border-radius: 50%;
+  background: rgba(255,255,255,0.85);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; z-index: 5;
+  font-size: 18px;
+}
+.cd-hero .cd-share {
+  position: absolute; top: 18px; right: 14px;
+  width: 40px; height: 40px; border-radius: 50%;
+  background: rgba(255,255,255,0.85);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; z-index: 5;
+  font-size: 16px;
+}
+.cd-hero .cd-emoji {
+  position: absolute;
+  font-size: 120px; left: 50%; top: 44%;
+  transform: translate(-50%, -50%);
+  filter: drop-shadow(0 8px 18px rgba(0,0,0,0.22));
+}
+.cd-hero .cd-medal {
+  position: absolute; left: 50%; bottom: -50px;
+  transform: translateX(-50%);
+  width: 110px; height: 110px;
+  border-radius: 50%;
+  background: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 50px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+  border: 6px solid #fff;
+}
+.cd-meta { padding: 62px 24px 8px; text-align: center; }
+.cd-meta .cd-dates { font-size: 13px; color: var(--text3); font-weight: 700; }
+.cd-meta .cd-title {
+  font-size: 24px; font-weight: 800;
+  color: var(--text); letter-spacing: -0.5px;
+  margin-top: 6px; line-height: 1.2;
+}
+.cd-meta .cd-purpose {
+  margin-top: 10px;
+  display: inline-block;
+  padding: 5px 12px; border-radius: 14px;
+  font-size: 12px; font-weight: 800;
+}
+.cd-section { padding: 18px 20px 8px; }
+.cd-section .cd-sect-h {
+  font-size: 16px; font-weight: 800;
+  color: var(--text); margin-bottom: 10px;
+  letter-spacing: -0.2px;
+  display: flex; justify-content: space-between;
+}
+.cd-section .cd-sect-h .more {
+  font-size: 12px; color: var(--accent);
+  font-weight: 700; cursor: pointer;
+}
+.cd-card {
+  background: #fff; border: 1px solid var(--border);
+  border-radius: 18px; padding: 14px 16px;
+  box-shadow: 0 1px 2px rgba(15,23,42,0.04);
+}
+
+.cd-founder {
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px 16px;
+  background: #fff; border: 1px solid var(--border);
+  border-radius: 16px; cursor: pointer;
+  box-shadow: 0 1px 2px rgba(15,23,42,0.04);
+}
+.cd-founder .fa {
+  width: 48px; height: 48px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; color: #fff; font-weight: 800;
+  flex-shrink: 0;
+  border: 2px solid #fff;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+}
+.cd-founder .fb { flex: 1; min-width: 0; }
+.cd-founder .fn {
+  font-size: 15px; font-weight: 800;
+  color: var(--text); letter-spacing: -0.2px;
+  display: flex; align-items: center; gap: 8px;
+}
+.cd-founder .fn .kol {
+  padding: 2px 7px; border-radius: 8px;
+  font-size: 10px; font-weight: 800;
+  background: linear-gradient(135deg, #fce7f3, #f3e8ff);
+  color: #9d174d;
+}
+.cd-founder .fs {
+  font-size: 11px; color: var(--text3);
+  margin-top: 3px; font-weight: 600; line-height: 1.5;
+}
+.cd-founder .ftag {
+  font-size: 11px; color: var(--accent); font-weight: 700;
+  background: rgba(108,92,231,0.10);
+  padding: 5px 10px; border-radius: 10px;
+  flex-shrink: 0;
+}
+
+.cd-callouts {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 10px; margin-top: 10px;
+}
+.cd-callout {
+  background: #fff; border: 1px solid var(--border);
+  border-radius: 14px; padding: 12px 14px;
+  box-shadow: 0 1px 2px rgba(15,23,42,0.04);
+}
+.cd-callout .lbl { font-size: 11px; color: var(--text3); font-weight: 700; }
+.cd-callout .val { font-size: 14px; font-weight: 800; color: var(--text); margin-top: 4px; }
+
+.cd-why {
+  margin-top: 10px;
+  background: linear-gradient(135deg, rgba(108,92,231,0.05), rgba(168,85,247,0.05));
+  border: 1px solid rgba(108,92,231,0.15);
+  border-radius: 14px; padding: 14px;
+}
+.cd-why .wt { font-size: 13px; font-weight: 800; color: var(--accent); }
+.cd-why .wb { font-size: 12.5px; color: var(--text2); line-height: 1.6; margin-top: 8px; }
+.cd-why .ws { font-size: 11px; color: var(--text3); font-weight: 700; margin-top: 8px; }
+
+.cd-row {
+  display: flex; align-items: center; gap: 14px;
+  padding: 10px 0;
+  border-top: 1px solid var(--border-soft);
+}
+.cd-row:first-child { border-top: none; padding-top: 4px; }
+.cd-row .ric {
+  width: 34px; height: 34px; border-radius: 10px;
+  background: rgba(108,92,231,0.10);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; color: var(--accent);
+  flex-shrink: 0;
+}
+.cd-row .rt { flex: 1; font-size: 14px; font-weight: 700; color: var(--text); }
+.cd-row .rv { font-size: 12px; color: var(--text3); font-weight: 700; }
+
+.cd-spon {
+  margin-top: 10px;
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 14px;
+  background: #fff; border: 1px solid var(--border);
+  border-radius: 14px;
+}
+.cd-spon .si {
+  width: 38px; height: 38px; border-radius: 10px;
+  background: linear-gradient(135deg, #86efac, #10b981);
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-size: 18px; font-weight: 800;
+  flex-shrink: 0;
+}
+.cd-spon .sb { flex: 1; min-width: 0; }
+.cd-spon .sn { font-size: 14px; font-weight: 800; color: var(--text); }
+.cd-spon .ss { font-size: 11px; color: var(--text3); margin-top: 2px; }
+
+.cd-reward {
+  margin-top: 10px;
+  background: #fff; border: 1px solid var(--border);
+  border-radius: 18px; padding: 18px 16px;
+  text-align: center;
+  box-shadow: 0 1px 2px rgba(15,23,42,0.04);
+}
+.cd-reward .rh { font-size: 13px; color: var(--text3); font-weight: 700; }
+.cd-reward .rname { font-size: 18px; font-weight: 800; color: var(--text); margin-top: 6px; }
+.cd-reward .rgrid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 12px; margin: 14px 0;
+}
+.cd-reward .rgrid .ri {
+  aspect-ratio: 1;
+  background: linear-gradient(135deg, #f4f5f7, #eef0f3);
+  border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 36px;
+}
+.cd-reward .rmeta {
+  display: flex; justify-content: space-around;
+  margin-top: 6px; padding-top: 12px;
+  border-top: 1px solid var(--border-soft);
+}
+.cd-reward .rmeta .c { text-align: center; }
+.cd-reward .rmeta .l { font-size: 11px; color: var(--text3); font-weight: 700; }
+.cd-reward .rmeta .v { font-size: 15px; font-weight: 800; color: var(--text); margin-top: 3px; }
+
+.cd-lb {
+  margin-top: 10px;
+  background: #fff; border: 1px solid var(--border);
+  border-radius: 18px; padding: 14px;
+}
+.cd-lb-tabs {
+  display: flex; background: #f4f5f7;
+  border-radius: 14px; padding: 4px;
+  margin-bottom: 14px;
+}
+.cd-lb-tabs .lt {
+  flex: 1; text-align: center;
+  padding: 8px 0;
+  font-size: 13px; font-weight: 800;
+  color: var(--text2);
+  border-radius: 10px; cursor: pointer;
+}
+.cd-lb-tabs .lt.active { background: #fff; color: var(--text); box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+.cd-podium {
+  display: flex; justify-content: center; align-items: center; gap: 6px;
+  padding: 14px 0; position: relative;
+}
+.cd-podium .laurel { font-size: 36px; opacity: 0.85; transform: scaleX(-1); align-self: center; }
+.cd-podium .laurel.r { transform: none; }
+.cd-podium .pc { text-align: center; }
+.cd-podium .pav {
+  width: 64px; height: 64px; border-radius: 50%;
+  margin: 0 auto;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-size: 26px; font-weight: 800;
+  border: 3px solid #fff;
+  box-shadow: 0 4px 12px rgba(245,158,11,0.32);
+}
+.cd-podium .pv { font-size: 22px; font-weight: 800; color: var(--text); margin-top: 8px; }
+.cd-podium .pn { font-size: 13px; color: var(--text2); margin-top: 2px; font-weight: 700; }
+.cd-rank {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 6px;
+  border-top: 1px solid var(--border-soft);
+}
+.cd-rank .rk {
+  width: 30px; flex-shrink: 0; text-align: center;
+  font-size: 16px; font-weight: 800;
+  color: var(--text3); font-family: 'Inter', sans-serif;
+}
+.cd-rank .rk.t1 { font-size: 20px; }
+.cd-rank .av {
+  width: 36px; height: 36px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px; color: #fff; font-weight: 800;
+  flex-shrink: 0;
+}
+.cd-rank .rb { flex: 1; min-width: 0; }
+.cd-rank .rn { display: flex; justify-content: space-between; align-items: center; }
+.cd-rank .rname { font-size: 14px; font-weight: 800; color: var(--text); }
+.cd-rank .rvalue { font-size: 13px; font-weight: 800; color: var(--text2); }
+.cd-rank .pb {
+  margin-top: 6px; height: 5px;
+  background: #eef0f3; border-radius: 3px; overflow: hidden;
+}
+.cd-rank .pb .fill {
+  height: 100%; background: linear-gradient(90deg, #22c55e, #06b6d4); border-radius: 3px;
+}
+.cd-rank.me {
+  background: rgba(108,92,231,0.06);
+  border-radius: 12px; padding: 10px;
+  margin: 8px -6px 0;
+}
+.cd-rank.me .rname { color: var(--accent); }
+.cd-rank.me .pb .fill { background: linear-gradient(90deg, #6c5ce7, #a855f7); }
+
+.cd-cta {
+  position: sticky; bottom: 0; left: 0; right: 0;
+  background: linear-gradient(to top, rgba(255,255,255,0.96) 60%, rgba(255,255,255,0));
+  padding: 14px 20px 22px;
+}
+.cd-btn {
+  width: 100%; padding: 14px;
+  border-radius: 16px;
+  font-size: 15px; font-weight: 800;
+  text-align: center; cursor: pointer;
+}
+.cd-btn.join {
+  background: linear-gradient(135deg, #6c5ce7, #a855f7);
+  color: #fff;
+  box-shadow: 0 6px 18px rgba(108,92,231,0.32);
+}
+.cd-btn.invite {
+  background: linear-gradient(135deg, #ec4899, #f43f5e);
+  color: #fff;
+  box-shadow: 0 6px 18px rgba(236,72,153,0.32);
+}
+.cd-btn.quit {
+  background: #fff; color: var(--text2);
+  border: 1px solid var(--border);
+  margin-top: 8px; font-weight: 700;
+}
+
+/* —— 全部挑战 列表头 —— */
+.list-head {
+  padding: 18px 20px 12px;
+  display: flex; align-items: center; gap: 10px;
+  position: sticky; top: 0;
+  background: var(--bg);
+  z-index: 4;
+  backdrop-filter: blur(10px);
+}
+.list-head .ov-back {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--card); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; flex-shrink: 0;
+  font-size: 18px; color: var(--text);
+}
+.list-head .ov-title { font-size: 18px; font-weight: 800; }
+
+/* 教程列表行 */
+.tut-list-body { padding: 0 20px 30px; }
+.tut-list-row {
+  display: flex; align-items: flex-start; gap: 14px;
+  padding: 14px 0;
+  border-top: 1px solid var(--border-soft);
+  cursor: pointer;
+}
+.tut-list-row:first-of-type { border-top: none; }
+.tut-list-row .tic {
+  width: 60px; height: 60px; border-radius: 14px;
+  background: #eaeef5;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 32px; flex-shrink: 0;
+}
+.tut-list-row .tb { flex: 1; min-width: 0; }
+.tut-list-row .tt { font-size: 15px; font-weight: 800; color: var(--text); }
+.tut-list-row .ts {
+  font-size: 13px; color: var(--text3);
+  font-weight: 500; line-height: 1.55;
+  margin-top: 4px;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.tut-list-row .arr { color: var(--text3); font-size: 18px; align-self: center; }
+
+/* 故事列表行 */
+.kol-list-body { padding: 0 20px 30px; }
+.kol-list-row {
+  display: flex; align-items: flex-start; gap: 14px;
+  padding: 12px 0;
+  border-top: 1px solid var(--border-soft);
+  cursor: pointer;
+}
+.kol-list-row:first-of-type { border-top: none; }
+.kol-list-row .kic {
+  width: 80px; height: 80px; border-radius: 14px;
+  background: #eaeef5;
+  flex-shrink: 0;
+  background-size: cover; background-position: center;
+}
+.kol-list-row .kb { flex: 1; min-width: 0; }
+.kol-list-row .kt { font-size: 15px; font-weight: 800; color: var(--text); }
+.kol-list-row .kss {
+  font-size: 13px; color: var(--text3);
+  font-weight: 500; line-height: 1.55; margin-top: 6px;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.kol-list-row .arr { color: var(--text3); font-size: 18px; align-self: center; }
+
+/* 教程文章 */
+.tut-art-overlay { background: #fff; }
+.tut-hero {
+  position: relative; height: 200px;
+  background: linear-gradient(135deg, #6c5ce7, #a855f7);
+  background-size: cover;
+  overflow: hidden;
+}
+.tut-hero .ic {
+  position: absolute; right: 18px; bottom: 14px;
+  width: 56px; height: 56px; border-radius: 50%;
+  background: rgba(255,255,255,0.92);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+}
+.tut-body { padding: 24px 24px 80px; }
+.tut-body h1 { font-size: 22px; font-weight: 800; line-height: 1.25; margin: 0 0 16px; }
+.tut-body h2 { font-size: 17px; font-weight: 800; margin: 24px 0 10px; }
+.tut-body p { font-size: 14px; line-height: 1.75; margin-bottom: 14px; color: var(--text); }
+.tut-body p b { font-weight: 800; }
+.tut-body .tut-callout {
+  background: linear-gradient(135deg, rgba(108,92,231,0.06), rgba(168,85,247,0.06));
+  border: 1px solid rgba(108,92,231,0.18);
+  border-radius: 14px;
+  padding: 16px 18px;
+  margin: 18px 0;
+}
+.tut-body .tut-callout .ct { font-size: 13px; font-weight: 800; color: var(--accent); margin-bottom: 8px; }
+.tut-body .tut-callout .cb { font-size: 14px; color: var(--text2); line-height: 1.7; }
+.tut-body ul { margin: 8px 0 14px; padding-left: 0; list-style: none; }
+.tut-body ul li {
+  position: relative; padding: 8px 0 8px 20px;
+  font-size: 14px; color: var(--text); line-height: 1.6;
+}
+.tut-body ul li::before {
+  content: ''; position: absolute;
+  left: 4px; top: 17px;
+  width: 6px; height: 6px;
+  border-radius: 50%; background: var(--accent);
+}
+.tut-body .tut-quote {
+  background: #f4f5f7; border-left: 3px solid var(--accent);
+  padding: 14px 16px; margin: 18px 0;
+  font-style: italic; color: var(--text2);
+  font-size: 13px; line-height: 1.7;
+  border-radius: 0 12px 12px 0;
+}
+
+/* 故事文章 */
+.kol-art-overlay { background: #fff; }
+.kol-art-hero {
+  position: relative; width: 100%; height: 280px;
+  background: linear-gradient(135deg, #ec4899, #a855f7);
+  background-size: cover; background-position: center;
+}
+.kol-art-hero .kah-back {
+  position: absolute; top: 18px; left: 14px;
+  width: 40px; height: 40px; border-radius: 50%;
+  background: rgba(255,255,255,0.95);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; z-index: 5;
+  font-size: 18px;
+}
+.kol-art-hero .kah-author {
+  position: absolute; left: 0; right: 0; bottom: 0;
+  padding: 14px 18px;
+  background: linear-gradient(to top, rgba(255,255,255,0.95), transparent);
+  display: flex; align-items: center; gap: 10px;
+}
+.kol-art-hero .kah-author .ka {
+  width: 36px; height: 36px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; color: #fff; font-weight: 800;
+  background: linear-gradient(135deg, #ec4899, #a855f7);
+}
+.kol-art-hero .kah-author .knm { flex: 1; }
+.kol-art-hero .kah-author .knm .lbl { font-size: 10px; color: var(--text3); font-weight: 700; }
+.kol-art-hero .kah-author .knm .nm { font-size: 14px; font-weight: 800; color: var(--text); }
+.kol-art-body { padding: 18px 24px 24px; }
+.kol-art-body h1 { font-size: 22px; font-weight: 800; line-height: 1.25; margin: 0 0 18px; }
+.kol-art-body p { font-size: 14px; line-height: 1.85; margin-bottom: 16px; color: var(--text); }
+.kol-art-body .kol-tagline {
+  padding: 14px 18px;
+  background: linear-gradient(135deg, #fff5f9, #f3e8ff);
+  border-radius: 14px;
+  font-size: 13px; color: #9d174d; line-height: 1.7; font-weight: 700;
+  margin: 18px 0;
+  border: 1px solid rgba(236,72,153,0.18);
+}
+
+/* —— 模态弹层（邀请码 / 粘贴码） —— */
+.modal-overlay {
+  position: absolute; inset: 0;
+  background: rgba(15,23,42,0.45);
+  z-index: 80;
+  display: flex; align-items: flex-end; justify-content: center;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.3s;
+  border-radius: 44px;
+}
+.modal-overlay.show { opacity: 1; pointer-events: auto; }
+.modal-card {
+  position: relative; width: 100%;
+  background: var(--bg);
+  border-radius: 24px 24px 44px 44px;
+  padding: 20px 20px 30px;
+  transform: translateY(100%);
+  transition: transform 0.4s cubic-bezier(0.22,0.95,0.4,1);
+  max-height: 88%; overflow-y: auto;
+  box-shadow: 0 -8px 30px rgba(15,23,42,0.18);
+}
+.modal-overlay.show .modal-card { transform: translateY(0); }
+.modal-handle {
+  width: 40px; height: 4px; border-radius: 3px;
+  background: #d1d5db;
+  margin: 0 auto 16px;
+}
+.modal-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 16px;
+}
+.modal-title { font-size: 18px; font-weight: 800; letter-spacing: -0.3px; }
+.modal-close {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: var(--card); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 18px; color: var(--text3);
+}
+
+/* 邀请码卡 */
+.invite-card {
+  background: linear-gradient(135deg, #fff5f9 0%, #fce7f3 50%, #f3e8ff 100%);
+  border: 1px solid #f5d5e4;
+  border-radius: 16px; padding: 18px;
+  position: relative; overflow: hidden;
+}
+.invite-card .ilbl { font-size: 11px; color: #be185d; font-weight: 800; letter-spacing: 0.5px; }
+.invite-card .ival {
+  font-size: 24px; font-weight: 800;
+  color: #9d174d; letter-spacing: 3px;
+  font-family: 'SF Mono', monospace;
+  text-align: center; padding: 8px 0;
+}
+.invite-card .ihint { font-size: 11px; color: #be185d; text-align: center; margin-top: 6px; font-weight: 600; }
+.invite-msg {
+  margin-top: 12px;
+  background: #fff; border: 1px dashed var(--border);
+  border-radius: 14px; padding: 14px;
+  font-size: 13px; color: var(--text2); line-height: 1.7;
+  white-space: pre-wrap; font-family: inherit;
+}
+.invite-msg .ekey { color: var(--pink); font-weight: 800; }
+.btn-row { display: flex; gap: 10px; margin-top: 16px; }
+.btn {
+  flex: 1; padding: 14px 12px;
+  border-radius: 14px;
+  font-size: 14px; font-weight: 800;
+  text-align: center; cursor: pointer;
+}
+.btn.primary {
+  background: linear-gradient(135deg, #ec4899, #a855f7);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(236,72,153,0.32);
+}
+.btn.secondary {
+  background: var(--card); color: var(--text);
+  border: 1px solid var(--border);
+}
+.steps {
+  margin-top: 18px;
+  background: var(--card); border: 1px solid var(--border-soft);
+  border-radius: 14px; padding: 14px 16px;
+}
+.step-row { display: flex; align-items: flex-start; gap: 10px; padding: 6px 0; }
+.step-num {
+  width: 22px; height: 22px; border-radius: 50%;
+  background: linear-gradient(135deg, #ec4899, #a855f7);
+  color: #fff; font-size: 11px; font-weight: 800;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; margin-top: 1px;
+}
+.step-txt { flex: 1; font-size: 12px; color: var(--text2); line-height: 1.6; }
+.step-txt b { color: var(--text); font-weight: 700; }
+
+.paste-input {
+  width: 100%; padding: 18px 16px;
+  border-radius: 14px;
+  background: var(--card); border: 1.5px solid var(--border);
+  font-size: 22px; font-weight: 800;
+  color: var(--text); letter-spacing: 3px;
+  text-align: center;
+  font-family: 'SF Mono', monospace;
+  text-transform: uppercase;
+  outline: none;
+}
+.paste-input:focus { border-color: var(--accent); }
+.paste-clip {
+  margin-top: 10px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: rgba(108,92,231,0.08);
+  border: 1px dashed rgba(108,92,231,0.35);
+  display: flex; align-items: center; gap: 10px;
+  cursor: pointer;
+}
+.paste-clip .ic { font-size: 18px; }
+.paste-clip .tx { flex: 1; font-size: 12px; color: var(--accent); font-weight: 700; }
+.paste-clip .tx small { color: var(--text3); font-weight: 600; display: block; margin-top: 2px; }
+
+/* —— 发起人主页 (底部弹层) —— */
+.founder-ov {
+  position: absolute; inset: 0;
+  background: rgba(15,23,42,0.45);
+  z-index: 90;
+  display: flex; align-items: flex-end; justify-content: center;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.3s;
+  border-radius: 44px;
+}
+.founder-ov.show { opacity: 1; pointer-events: auto; }
+.founder-card {
+  position: relative; width: 100%;
+  background: var(--bg);
+  border-radius: 24px 24px 44px 44px;
+  padding: 0 0 30px;
+  transform: translateY(100%);
+  transition: transform 0.4s cubic-bezier(0.22,0.95,0.4,1);
+  max-height: 88%;
+  overflow-y: auto;
+}
+.founder-ov.show .founder-card { transform: translateY(0); }
+.founder-handle {
+  width: 40px; height: 4px; border-radius: 3px;
+  background: #d1d5db; margin: 10px auto 16px;
+}
+.founder-hero {
+  padding: 0 24px 18px;
+  display: flex; flex-direction: column; align-items: center;
+  text-align: center;
+  background: linear-gradient(180deg, #fff5f9, transparent);
+}
+.founder-hero .av {
+  width: 76px; height: 76px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 32px; color: #fff; font-weight: 800;
+  margin-bottom: 12px;
+  border: 3px solid #fff;
+  box-shadow: 0 6px 18px rgba(236,72,153,0.22);
+}
+.founder-hero .nm {
+  font-size: 20px; font-weight: 800; color: var(--text);
+  display: flex; align-items: center; gap: 8px;
+}
+.founder-hero .nm .kol-tag {
+  padding: 3px 10px; border-radius: 10px;
+  font-size: 11px; font-weight: 800;
+  background: linear-gradient(135deg, #fce7f3, #f3e8ff);
+  color: #9d174d;
+}
+.founder-hero .bio {
+  font-size: 13px; color: var(--text2);
+  margin-top: 8px; line-height: 1.6;
+  max-width: 300px; font-weight: 600;
+}
+.founder-tags {
+  display: flex; flex-wrap: wrap;
+  justify-content: center; gap: 6px;
+  margin-top: 10px;
+}
+.founder-tags .tg {
+  font-size: 11px; font-weight: 700;
+  padding: 4px 10px; border-radius: 10px;
+  background: #fff; color: var(--text2);
+  border: 1px solid var(--border);
+}
+.founder-stats {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 8px; padding: 0 24px;
+  margin-top: 16px;
+}
+.founder-stats .st {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 14px; padding: 12px 8px; text-align: center;
+}
+.founder-stats .st .v { font-size: 18px; font-weight: 800; color: var(--text); }
+.founder-stats .st .l { font-size: 10px; color: var(--text3); font-weight: 700; margin-top: 4px; }
+.founder-cta {
+  display: flex; gap: 10px; padding: 16px 24px 0;
+}
+.founder-cta .btn { padding: 13px; }
+.founder-cta .add {
+  background: linear-gradient(135deg, #6c5ce7, #a855f7); color: #fff;
+}
+.founder-cta .msg {
+  background: var(--card); color: var(--text);
+  border: 1px solid var(--border);
+}
+
+/* —— Toast —— */
+.toast-bar {
+  position: absolute; bottom: 100px; left: 50%;
+  transform: translate(-50%, 10px);
+  background: rgba(15,23,42,0.92);
+  color: #fff;
+  padding: 10px 18px;
+  border-radius: 22px;
+  font-size: 13px; font-weight: 700;
+  opacity: 0; pointer-events: none;
+  transition: all 0.3s;
+  z-index: 200;
+  white-space: nowrap;
+  max-width: 80%;
+}
+.toast-bar.show { opacity: 1; transform: translate(-50%, 0); }
+
+/* —— 进度条通用 —— */
+.progress-bar {
+  height: 7px; background: rgba(0,0,0,0.06);
+  border-radius: 4px; overflow: hidden;
+  position: relative;
+}
+.progress-bar .fill {
+  height: 100%; border-radius: 4px;
+}
+
+/* 状态切换 -- 未登录与无加入挑战 */
+.phone-frame.is-logged-out .lv-mesect,
+.phone-frame.is-logged-out .lv-hero-rail,
+.phone-frame.is-logged-out .lv-joined,
+.phone-frame.is-logged-out .lv-sect-head,
+.phone-frame.is-logged-out .lv-goal-tabs,
+.phone-frame.is-logged-out .lv-mlist,
+.phone-frame.is-logged-out .lv-allbtn,
+.phone-frame.is-logged-out .lv-tut,
+.phone-frame.is-logged-out .lv-kol,
+.phone-frame.is-logged-out .lv-kol-intro,
+.phone-frame.is-logged-out .section-sub { display: none; }
+.phone-frame.is-logged-out .empty-logged-out { display: block; }
+
+/* 无加入态：隐藏整段已加入挑战（标题 + 列表卡），并去掉练级进度入口的"连击 N 天"小标签 */
+.phone-frame.is-no-joined #joinedSect,
+.phone-frame.is-no-joined .lv-joined,
+.phone-frame.is-no-joined .lv-me-progress .lv-tag { display: none; }
+.phone-frame.is-no-joined .empty-no-joined { display: block; }
+
+.empty-logged-out, .empty-no-joined { display: none; }
+</style>
+</head>
+<body>
+
+<div class="layout">
+
+<!-- =========================================================
+     左侧导航
+     ========================================================= -->
+<aside class="side-nav">
+  <div class="nav-brand">
+    <div class="nav-logo">练</div>
+    <div>
+      <div class="nav-title">唯戒 · 练级模块</div>
+      <div class="nav-version">v1.1 · 2026-04-30</div>
+    </div>
+  </div>
+
+  <div class="nav-section-label">状态切换</div>
+  <div class="state-grid">
+    <button class="state-btn is-active" data-state="default">
+      <span class="icon">🟢</span><span>已登录·进行中</span>
+    </button>
+    <button class="state-btn" data-state="no-joined">
+      <span class="icon">🆕</span><span>已登录·无加入</span>
+    </button>
+    <button class="state-btn" data-state="logged-out" style="grid-column:span 2">
+      <span class="icon">👤</span><span>未登录（空态 + CTA）</span>
+    </button>
+  </div>
+
+  <div class="nav-section-label">页面 / 区段</div>
+  <div class="nav-list">
+    <div class="nav-item is-active" data-target="page" data-section="top">
+      <span class="nav-id">L1</span><span class="nav-name">练级首页</span><span class="nav-tag tag-page">一级页面</span>
+    </div>
+    <div class="nav-item" data-target="scroll" data-anchor="meSect">
+      <span class="nav-id">L1.A</span><span class="nav-name">我的练级（双入口）</span>
+    </div>
+    <div class="nav-item" data-target="scroll" data-anchor="heroRail">
+      <span class="nav-id">L1.B</span><span class="nav-name">本月主推（轮播）</span>
+    </div>
+    <div class="nav-item" data-target="scroll" data-anchor="joinedSect">
+      <span class="nav-id">L1.E</span><span class="nav-name">已加入挑战</span>
+    </div>
+    <div class="nav-item" data-target="scroll" data-anchor="monthSect">
+      <span class="nav-id">L1.F</span><span class="nav-name">月度挑战 + 筛选</span>
+    </div>
+    <div class="nav-item" data-target="scroll" data-anchor="tutSect">
+      <span class="nav-id">L1.G</span><span class="nav-name">使用入门</span>
+    </div>
+    <div class="nav-item" data-target="scroll" data-anchor="kolSect">
+      <span class="nav-id">L1.H</span><span class="nav-name">健康故事</span>
+    </div>
+  </div>
+
+  <div class="nav-section-label">二级页面</div>
+  <div class="nav-list">
+    <div class="nav-item" data-target="overlay" data-overlay="cdOverlay" data-cid="sakura">
+      <span class="nav-id">L2</span><span class="nav-name">挑战详情（樱花漫步·已加入）</span><span class="nav-tag tag-page">二级页面</span>
+    </div>
+    <div class="nav-item" data-target="overlay" data-overlay="cdOverlay" data-cid="runner">
+      <span class="nav-id">L2'</span><span class="nav-name">挑战详情（燕成排飞·未加入）</span><span class="nav-tag tag-sub">变体</span>
+    </div>
+    <div class="nav-item" data-target="overlay" data-overlay="cdOverlay" data-cid="annual">
+      <span class="nav-id">L2''</span><span class="nav-name">挑战详情（年度官方·已加入行）</span><span class="nav-tag tag-sub">变体</span>
+    </div>
+    <div class="nav-item" data-target="overlay" data-overlay="allChOverlay">
+      <span class="nav-id">L3</span><span class="nav-name">全部挑战（24 项）</span><span class="nav-tag tag-page">二级页面</span>
+    </div>
+    <div class="nav-item" data-target="overlay" data-overlay="tutListOv">
+      <span class="nav-id">L4</span><span class="nav-name">使用入门列表</span><span class="nav-tag tag-page">二级页面</span>
+    </div>
+    <div class="nav-item" data-target="overlay" data-overlay="tutArtOv" data-tid="path">
+      <span class="nav-id">L4.1</span><span class="nav-name">使用入门 · 文章</span><span class="nav-tag tag-sub">详情</span>
+    </div>
+    <div class="nav-item" data-target="overlay" data-overlay="storyListOv">
+      <span class="nav-id">L5</span><span class="nav-name">健康故事列表</span><span class="nav-tag tag-page">二级页面</span>
+    </div>
+    <div class="nav-item" data-target="overlay" data-overlay="kolArtOv" data-sid="fibro">
+      <span class="nav-id">L5.1</span><span class="nav-name">健康故事 · 文章</span><span class="nav-tag tag-sub">详情</span>
+    </div>
+  </div>
+
+  <div class="nav-section-label">底部弹层 / 模态</div>
+  <div class="nav-list">
+    <div class="nav-item" data-target="founder" data-cid="sakura">
+      <span class="nav-id">L2.1</span><span class="nav-name">挑战发起人主页</span><span class="nav-tag tag-sheet">底部弹层</span>
+    </div>
+    <div class="nav-item" data-target="invite" data-cid="sakura">
+      <span class="nav-id">L6</span><span class="nav-name">邀请好友加入挑战</span><span class="nav-tag tag-modal">模态</span>
+    </div>
+    <div class="nav-item" data-target="overlay" data-overlay="pasteChModal">
+      <span class="nav-id">L7</span><span class="nav-name">粘贴邀请码加入</span><span class="nav-tag tag-modal">模态</span>
+    </div>
+  </div>
+
+  <div class="nav-foot">
+    <strong>使用提示：</strong><br>
+    • 点击导航项 → 在右侧手机里直接打开对应页面 / 弹层<br>
+    • 状态切换会改变首页表现（已加入 / 无加入 / 未登录）<br>
+    • 详情 / 列表 / 文章 走全屏滑入；发起人 / 邀请码 / 粘贴码走底部弹层<br>
+    • 点击关闭按钮 / 遮罩可逐级返回
+  </div>
+</aside>
+
+<!-- =========================================================
+     右侧手机原型
+     ========================================================= -->
+<main class="preview-area">
+<div class="phone-frame" id="phone">
+  <div class="notch"></div>
+
+  <!-- iOS 系统状态栏 -->
+  <div class="ios-status-bar is-on-glass">
+    <div class="iss-time">9:41</div>
+    <div class="iss-right">
+      <div class="iss-signal">
+        <span class="iss-bar"></span><span class="iss-bar"></span>
+        <span class="iss-bar"></span><span class="iss-bar"></span>
+      </div>
+      <div class="iss-network">5G</div>
+      <div class="iss-battery"><span class="iss-battery-pct">85</span></div>
+    </div>
+  </div>
+
+  <!-- 一级页面顶栏 -->
+  <div class="app-topbar">
+    <div class="topbar-left">
+      <div class="topbar-title">练级</div>
+      <div class="ring-tag is-connected" onclick="toast('跳 P6.1 设备详情')">
+        <span style="width:6px;height:6px;border-radius:50%;background:currentColor;display:inline-block"></span>
+        已连接 · 85%
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="topbar-icon-btn" title="主题切换">🌙</div>
+      <div class="topbar-icon-btn profile" title="个人设置">L</div>
+    </div>
+  </div>
+
+  <!-- 主滚动内容区 -->
+  <div class="scroll-area" id="scrollArea">
+    <!-- 内容 placeholder，下一步注入 -->
+    <div id="lvContent"></div>
+  </div>
+
+  <!-- 底部 Tab Bar -->
+  <div class="tab-bar">
+    <div class="tb-item" onclick="toast('切到 今日 Tab（需在 01-今日模块.html 查看）')">
+      <span class="ico">☀️</span><span class="lbl">今日</span>
+    </div>
+    <div class="tb-item is-active">
+      <span class="ico">📚</span><span class="lbl">练级</span>
+    </div>
+    <div class="tb-item" onclick="toast('切到 关心 Tab（需在 02-关心模块.html 查看）')">
+      <span class="ico">❤️</span><span class="lbl">关心</span>
+    </div>
+    <div class="tb-item" onclick="toast('收获 Tab 暂未实现')">
+      <span class="ico">🎁</span><span class="lbl">收获</span>
+    </div>
+  </div>
+
+  <!-- ===== 全屏滑入：挑战详情 / 全部挑战 / 教程列表 / 故事列表 / 教程文章 / 故事文章 ===== -->
+  <div class="fs-overlay cd-overlay" id="cdOverlay">
+    <div class="cd-hero">
+      <div class="cd-bg" id="cdHeroBg"></div>
+      <div class="cd-back" onclick="closeOverlay('cdOverlay')">‹</div>
+      <div class="cd-share" onclick="toast('🔗 分享链接已复制')">↗</div>
+      <div class="cd-emoji" id="cdEmoji">🌸</div>
+      <div class="cd-medal" id="cdMedal">🌸</div>
+    </div>
+    <div class="cd-meta">
+      <div class="cd-dates" id="cdDates">4 月 01 日 - 4 月 30 日 · 剩余 1 天</div>
+      <div class="cd-title" id="cdTitle">樱花漫步，落英缤纷</div>
+      <div class="cd-purpose goal-pill sed" id="cdPurpose">缓解久坐</div>
+    </div>
+
+    <div class="cd-section">
+      <div class="cd-sect-h">挑战发起人</div>
+      <div class="cd-founder" id="cdFounder" onclick="openFounder()">
+        <div class="fa" id="cdFounderAv" style="background:linear-gradient(135deg,#f9a8d4,#ec4899)">林</div>
+        <div class="fb">
+          <div class="fn"><span id="cdFounderName">林深</span><span class="kol" id="cdFounderKol">物理治疗师</span></div>
+          <div class="fs" id="cdFounderBio">在三甲医院做了 12 年康复治疗</div>
+        </div>
+        <div class="ftag">+ 加好友</div>
+      </div>
+    </div>
+
+    <div class="cd-section">
+      <div class="cd-sect-h">你的进度</div>
+      <div class="cd-card">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px">
+          <div>
+            <div style="font-size:17px;font-weight:800;color:var(--text)"><span id="cdTargetIcon">🚶</span> <span id="cdTargetTitle">累计步行 100,000 步</span></div>
+            <div style="font-size:12px;color:var(--text3);font-weight:600;margin-top:4px"><span id="cdMetricPct">92%</span> 已完成</div>
+          </div>
+        </div>
+        <div style="margin:14px 0 8px;height:8px;background:#eef0f3;border-radius:4px;overflow:hidden">
+          <div id="cdMetricFill" style="height:100%;background:linear-gradient(90deg,#22c55e,#06b6d4);border-radius:4px;width:0;transition:width 1.4s"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:flex-end">
+          <div>
+            <div style="font-size:20px;font-weight:800;color:var(--text);font-family:'Inter',sans-serif" id="cdMetricCur">133,721</div>
+            <div style="font-size:11px;color:var(--text3);font-weight:600;margin-top:2px">当前</div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-size:16px;font-weight:800;color:var(--text2);font-family:'Inter',sans-serif" id="cdMetricTotal">100,000</div>
+            <div style="font-size:11px;color:var(--text3);font-weight:600;margin-top:2px">目标</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="cd-callouts">
+        <div class="cd-callout">
+          <div class="lbl">📡 用到的硬件</div>
+          <div class="val" id="cdHardware">步数 · 加速度计</div>
+        </div>
+        <div class="cd-callout">
+          <div class="lbl">🎯 改善目标</div>
+          <div class="val" id="cdGoal">激活核心 · 缓解腰痛</div>
+        </div>
+      </div>
+
+      <div class="cd-why">
+        <div class="wt">🔬 <span id="cdWhyTitle">为什么这样能缓解腰痛</span></div>
+        <div class="wb" id="cdWhyBody">WHO 与哈佛医学院 2023 年研究：每日累计步行 8,000 步以上，4 周后久坐人群腰痛评分平均下降 47%。</div>
+        <div class="ws" id="cdWhySource">— WHO 2023 · 哈佛医学院</div>
+      </div>
+    </div>
+
+    <div class="cd-section">
+      <div class="cd-sect-h">挑战详情</div>
+      <div class="cd-card">
+        <div class="cd-row">
+          <div class="ric">📅</div>
+          <div class="rt" id="cdDateRange">4 月 01 日 - 4 月 30 日</div>
+          <div class="rv">30 天</div>
+        </div>
+        <div class="cd-row">
+          <div class="ric">🚩</div>
+          <div class="rt">完成目标</div>
+          <div class="rv" id="cdTargetSummary"><span>🚶</span></div>
+        </div>
+        <div class="cd-row">
+          <div class="ric">👥</div>
+          <div class="rt"><span id="cdPeopleNum">14,632</span></div>
+          <div class="rv">›</div>
+        </div>
+      </div>
+
+      <div class="cd-spon">
+        <div class="si">G</div>
+        <div class="sb">
+          <div class="sn" id="cdSponsorName">Apple Watch Series 11</div>
+          <div class="ss" id="cdSponsorSub">限量 3 份 · 戒指厂商联合赞助</div>
+        </div>
+        <div style="font-size:11px;color:var(--text3);font-weight:700">小红书</div>
+      </div>
+    </div>
+
+    <div class="cd-section">
+      <div class="cd-sect-h"><span>奖品</span><span class="more" onclick="toast('📜 抽奖规则：完赛后系统自动抽取，3 日内通知')">如何获奖？</span></div>
+      <div class="cd-reward">
+        <div class="rh">⌚ AI RING POWERED</div>
+        <div class="rname" id="cdRewardName">AI Ring Pro × 3</div>
+        <div class="rgrid" id="cdRewardGrid">
+          <div class="ri">⌚</div><div class="ri">⌚</div><div class="ri">⌚</div>
+        </div>
+        <div class="rmeta">
+          <div class="c"><div class="l">数量</div><div class="v">x 3</div></div>
+          <div class="c"><div class="l">类型</div><div class="v">实体</div></div>
+          <div class="c"><div class="l">抽签</div><div class="v">完赛后</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cd-section">
+      <div class="cd-sect-h"><span>排行榜</span><span class="more" onclick="toast('查看完整排行榜')">查看全部 ›</span></div>
+      <div class="cd-lb">
+        <div class="cd-lb-tabs">
+          <div class="lt active" onclick="switchLbTab(this)">全部</div>
+          <div class="lt" onclick="switchLbTab(this)">男生</div>
+          <div class="lt" onclick="switchLbTab(this)">女生</div>
+        </div>
+        <div class="cd-podium">
+          <div class="laurel">🌿</div>
+          <div class="pc">
+            <div class="pav" id="cdPodiumAv">J</div>
+            <div class="pv" id="cdPodiumVal">238,400</div>
+            <div class="pn" id="cdPodiumName">Jing</div>
+          </div>
+          <div class="laurel r">🌿</div>
+        </div>
+        <div id="cdLeaders"></div>
+      </div>
+    </div>
+
+    <div class="cd-cta" id="cdCtaArea">
+      <div class="cd-btn join">加入挑战</div>
+    </div>
+  </div>
+
+  <!-- 全部挑战 -->
+  <div class="fs-overlay" id="allChOverlay" style="background:var(--bg)">
+    <div class="list-head">
+      <div class="ov-back" onclick="closeOverlay('allChOverlay')">‹</div>
+      <div class="ov-title">全部挑战 · 24 项</div>
+    </div>
+    <div class="lv-goal-tabs" style="margin:0 16px 12px">
+      <div class="lv-gtab active"><span class="e">✨</span>全部</div>
+      <div class="lv-gtab"><span class="e">🪑</span>办公久坐</div>
+      <div class="lv-gtab"><span class="e">🩸</span>降血糖</div>
+      <div class="lv-gtab"><span class="e">❤️</span>心血管</div>
+      <div class="lv-gtab"><span class="e">😌</span>焦虑减压</div>
+      <div class="lv-gtab"><span class="e">😴</span>睡眠</div>
+      <div class="lv-gtab"><span class="e">⚡</span>体能</div>
+    </div>
+    <div class="lv-mlist" id="allChList"></div>
+  </div>
+
+  <!-- 教程列表 -->
+  <div class="fs-overlay" id="tutListOv" style="background:var(--bg)">
+    <div class="list-head">
+      <div class="ov-back" onclick="closeOverlay('tutListOv')">‹</div>
+      <div class="ov-title">使用入门</div>
+    </div>
+    <div class="tut-list-body" id="tutListBody"></div>
+  </div>
+
+  <!-- 故事列表 -->
+  <div class="fs-overlay" id="storyListOv" style="background:var(--bg)">
+    <div class="list-head">
+      <div class="ov-back" onclick="closeOverlay('storyListOv')">‹</div>
+      <div class="ov-title">健康故事</div>
+    </div>
+    <div class="kol-list-body" id="storyListBody"></div>
+  </div>
+
+  <!-- 教程文章 -->
+  <div class="fs-overlay tut-art-overlay" id="tutArtOv">
+    <div class="tut-hero" id="tutHero" style="margin-top:0">
+      <div class="cd-back" onclick="closeOverlay('tutArtOv')" style="position:absolute;top:18px;left:14px;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.95);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px">‹</div>
+      <div class="ic" id="tutHeroIc">🛤️</div>
+    </div>
+    <div class="tut-body" id="tutBody"></div>
+  </div>
+
+  <!-- 故事文章 -->
+  <div class="fs-overlay kol-art-overlay" id="kolArtOv">
+    <div class="kol-art-hero" id="kolHero">
+      <div class="kah-back" onclick="closeOverlay('kolArtOv')">‹</div>
+      <div class="kah-author">
+        <div class="ka" id="kolAuthAv">T</div>
+        <div class="knm">
+          <div class="lbl" id="kolAuthLbl">个人故事</div>
+          <div class="nm" id="kolAuthName">Tami Stackelhouse</div>
+        </div>
+      </div>
+    </div>
+    <div class="kol-art-body" id="kolBody"></div>
+  </div>
+
+  <!-- ===== 模态：邀请码 ===== -->
+  <div class="modal-overlay" id="inviteChModal">
+    <div class="modal-card" onclick="event.stopPropagation()">
+      <div class="modal-handle"></div>
+      <div class="modal-header">
+        <div class="modal-title">邀请好友加入挑战</div>
+        <div class="modal-close" onclick="closeOverlay('inviteChModal')">×</div>
+      </div>
+      <div class="invite-card">
+        <div class="ilbl">挑战邀请码</div>
+        <div class="ival" id="inviteCodeVal">CHL-K8M3X9</div>
+        <div class="ihint">有效期 24 小时 · 朋友粘贴到 AIRing 即可加入</div>
+      </div>
+      <div class="invite-msg" id="inviteMsgVal">嗨！我刚加入「樱花漫步，落英缤纷」挑战 🌸 一起来吧。
+
+挑战邀请码：<span class="ekey">CHL-K8M3X9</span>
+打开 AIRing → 练级 → 粘贴邀请码
+
+👉 一起完赛抽 Apple Watch！</div>
+      <div class="btn-row">
+        <div class="btn secondary" onclick="copyInviteCode()">复制邀请码</div>
+        <div class="btn primary" onclick="copyInviteMsg()">📋 复制全文</div>
+      </div>
+      <div class="steps">
+        <div class="step-row"><div class="step-num">1</div><div class="step-txt">点击 <b>复制全文</b> → 黏贴到微信发给朋友</div></div>
+        <div class="step-row"><div class="step-num">2</div><div class="step-txt">朋友复制邀请码后打开 AIRing，App 会<b>自动识别</b>剪贴板</div></div>
+        <div class="step-row"><div class="step-num">3</div><div class="step-txt">朋友确认 → 加入挑战 → 你们的进度互相可见</div></div>
+      </div>
+    </div>
+    <div style="position:absolute;inset:0;z-index:-1" onclick="closeOverlay('inviteChModal')"></div>
+  </div>
+
+  <!-- ===== 模态：粘贴邀请码 ===== -->
+  <div class="modal-overlay" id="pasteChModal">
+    <div class="modal-card" onclick="event.stopPropagation()">
+      <div class="modal-handle"></div>
+      <div class="modal-header">
+        <div class="modal-title">粘贴邀请码</div>
+        <div class="modal-close" onclick="closeOverlay('pasteChModal')">×</div>
+      </div>
+      <div style="font-size:12px;color:var(--text2);margin-bottom:8px;font-weight:600">从朋友消息里复制了 CHL-XXXXXX 之类的码：</div>
+      <input class="paste-input" id="pasteCodeInput" placeholder="CHL-XXXXXX" maxlength="12">
+      <div class="paste-clip" onclick="autoFillFromClip()">
+        <div class="ic">📋</div>
+        <div class="tx">从剪贴板自动识别<small>App 启动也会自动识别</small></div>
+        <div style="font-size:12px;color:var(--accent);font-weight:800">读取 ›</div>
+      </div>
+      <div class="btn-row">
+        <div class="btn secondary" onclick="closeOverlay('pasteChModal')">取消</div>
+        <div class="btn primary" onclick="submitInviteChCode()">加入挑战</div>
+      </div>
+    </div>
+    <div style="position:absolute;inset:0;z-index:-1" onclick="closeOverlay('pasteChModal')"></div>
+  </div>
+
+  <!-- ===== 发起人主页 ===== -->
+  <div class="founder-ov" id="founderOv">
+    <div class="founder-card" onclick="event.stopPropagation()">
+      <div class="founder-handle"></div>
+      <div class="founder-hero">
+        <div class="av" id="fdAv">林</div>
+        <div class="nm"><span id="fdName">林深</span><span class="kol-tag" id="fdKol">物理治疗师</span></div>
+        <div class="bio" id="fdBio">在三甲医院做了 12 年康复治疗，专攻颈腰椎和久坐综合征。</div>
+        <div class="founder-tags" id="fdTags"></div>
+      </div>
+      <div class="founder-stats">
+        <div class="st"><div class="v" id="fdSt1">8</div><div class="l">发起挑战</div></div>
+        <div class="st"><div class="v" id="fdSt2">23k</div><div class="l">参与者</div></div>
+        <div class="st"><div class="v" id="fdSt3">4.9</div><div class="l">评分</div></div>
+      </div>
+      <div class="founder-cta">
+        <div class="btn msg" onclick="toast('💬 私信功能建设中')">💬 私信</div>
+        <div class="btn add" onclick="toast('🎉 已发送好友申请，等对方通过');closeOverlay('founderOv')">+ 加好友</div>
+      </div>
+    </div>
+    <div style="position:absolute;inset:0;z-index:-1" onclick="closeOverlay('founderOv')"></div>
+  </div>
+
+  <!-- ===== Toast ===== -->
+  <div class="toast-bar" id="toastBar"></div>
+
+</div>
+</main>
+
+</div>
+
+<script>
+/* ==========================================================
+   数据：挑战 / 发起人 / 教程 / 故事
+   ========================================================== */
+const CHALLENGES = {
+  sakura: {
+    emoji:'🌸', bg:'bg-sakura', title:'樱花漫步，落英缤纷',
+    dates:'4 月 01 日 - 4 月 30 日', remain:'剩余 1 天',
+    purpose:'缓解久坐 · 激活核心', purposeColor:'sed',
+    targetTitle:'累计步行 100,000 步', targetIcon:'🚶',
+    metric:{cur:'133,721 步', total:'100,000 步', pct:92},
+    people:'14,632 漫步者', joined:true,
+    hardware:'步数 · 加速度计', goal:'激活久坐人群核心肌群',
+    why:{title:'为什么这样能缓解腰痛',
+         body:'WHO 与哈佛医学院 2023 年研究：每日累计步行 8,000 步以上，4 周后久坐人群腰痛评分平均下降 47%。',
+         source:'WHO 2023 · 哈佛医学院'},
+    sponsor:{name:'Apple Watch Series 11', sub:'限量 3 份 · 戒指厂商联合赞助'},
+    rewardEmojis:['⌚','⌚','⌚'], rewardName:'AI Ring Pro × 3',
+    leaders:[
+      {name:'Jing', av:'J', avBg:'#ec4899', val:'238,400', pct:100},
+      {name:'泉均', av:'😊', avBg:'#a855f7', val:'192,160', pct:96},
+      {name:'乙平', av:'乙', avBg:'#6366f1', val:'185,540', pct:93},
+      {name:'健平', av:'🐶', avBg:'#fbbf24', val:'170,940', pct:85},
+      {name:'阿明 (我)', av:'阿', avBg:'#6c5ce7', val:'133,721', pct:67, me:true}
+    ]
+  },
+  sheep: {
+    emoji:'🐑', bg:'bg-night', title:'绵羊咩咩，数着入眠',
+    dates:'4 月 01 日 - 4 月 30 日', remain:'剩余 1 天',
+    purpose:'深睡修复', purposeColor:'slp',
+    targetTitle:'22:30 前入睡 30 天', targetIcon:'🌙',
+    metric:{cur:'23 天', total:'30 天', pct:76},
+    people:'16,176 梦想家', joined:true,
+    hardware:'睡眠分期 + 心率监测', goal:'重建昼夜节律 · 提升深睡比',
+    why:{title:'为什么早睡能让大脑「换油」',
+         body:'美国睡眠基金会 2024 研究：22:30 前入睡可让深睡占比从 14% 提升至 22%，深睡阶段脑脊液冲刷可清除 60% 以上 β-淀粉样蛋白。',
+         source:'美国睡眠基金会 2024'},
+    sponsor:{name:'Eight Sleep 智能床垫', sub:'冠军独享 · 价值 ¥18,000'},
+    rewardEmojis:['🛏️','🛏️','🛏️'], rewardName:'Eight Sleep × 3',
+    leaders:[
+      {name:'M', av:'M', avBg:'#6366f1', val:'30 天', pct:100},
+      {name:'有点好笑', av:'😄', avBg:'#a855f7', val:'29 天', pct:97},
+      {name:'阿明 (我)', av:'阿', avBg:'#6c5ce7', val:'23 天', pct:76, me:true}
+    ]
+  },
+  runner: {
+    emoji:'🏃', bg:'bg-runner', title:'燕成排飞，人追风跑',
+    dates:'4 月 01 日 - 4 月 30 日', remain:'剩余 1 天',
+    purpose:'提升心肺', purposeColor:'car',
+    targetTitle:'累计跑步 60 公里', targetIcon:'🏃',
+    metric:{cur:'22 公里', total:'60 公里', pct:37},
+    people:'5,716 跑者', joined:false,
+    hardware:'心率 · 距离 · 配速', goal:'扩张毛细血管 · 强化心肌',
+    why:{title:'为什么有氧能让心肺更年轻',
+         body:'柳叶刀 2022 研究：每周 150 分钟中等强度有氧训练 12 周后，VO2 Max 提升 7-10%，相当于生理年龄回拨 5 岁。',
+         source:'柳叶刀 2022'},
+    sponsor:{name:'Garmin Forerunner', sub:'限量 5 份 · 跑者首选 GPS 表'},
+    rewardEmojis:['⌚','⌚','⌚'], rewardName:'Garmin Forerunner × 5',
+    leaders:[
+      {name:'风', av:'风', avBg:'#dc2626', val:'68 km', pct:100},
+      {name:'Lee', av:'L', avBg:'#a855f7', val:'52 km', pct:87},
+      {name:'阿明 (我)', av:'阿', avBg:'#6c5ce7', val:'22 km', pct:37, me:true}
+    ]
+  },
+  stream: {
+    emoji:'🦦', bg:'bg-stream', title:'溪边放空，发呆冥想',
+    dates:'4 月 01 日 - 4 月 30 日', remain:'剩余 1 天',
+    purpose:'焦虑减压', purposeColor:'anx',
+    targetTitle:'累计冥想 600 分钟', targetIcon:'🧘',
+    metric:{cur:'180 分钟', total:'600 分钟', pct:30},
+    people:'5,277 冥想者', joined:false,
+    hardware:'HRV · 呼吸节律', goal:'激活副交感神经 · 缓解焦虑',
+    why:{title:'为什么呼吸能驯服焦虑',
+         body:'Nature 2023 研究：每天 10 分钟慢呼吸（4-7-8）连续 8 周，焦虑评分平均下降 31%，HRV 提升 12-18ms。',
+         source:'Nature 2023'},
+    sponsor:{name:'Calm 年度会员', sub:'前 100 名免费'},
+    rewardEmojis:['🧘','🧘','🧘'], rewardName:'Calm × 100',
+    leaders:[
+      {name:'禅一', av:'禅', avBg:'#06b6d4', val:'600 min', pct:100},
+      {name:'阿明 (我)', av:'阿', avBg:'#6c5ce7', val:'180 min', pct:30, me:true}
+    ]
+  },
+  water: {
+    emoji:'💧', bg:'bg-water', title:'一日清泉，润物无声',
+    dates:'4 月 01 日 - 4 月 30 日', remain:'剩余 1 天',
+    purpose:'代谢平衡', purposeColor:'met',
+    targetTitle:'每天饮水 2000 ml × 30 天', targetIcon:'💧',
+    metric:{cur:'18 天达标', total:'30 天', pct:60},
+    people:'7,890 饮水族', joined:true,
+    hardware:'手动记录 + 提醒', goal:'稳定肾功能 · 改善皮肤',
+    why:{title:'为什么饮水能稳代谢',
+         body:'JAMA 2023：日饮水 ≥2L 人群较 <1.5L 人群，10 年内肾结石风险下降 38%，皮肤角质层含水量提升 22%。',
+         source:'JAMA 2023'},
+    sponsor:{name:'Stanley 真空水杯', sub:'前 50 名包邮赠送'},
+    rewardEmojis:['🥤','🥤','🥤'], rewardName:'Stanley × 50',
+    leaders:[
+      {name:'水若', av:'水', avBg:'#0891b2', val:'30 天', pct:100},
+      {name:'阿明 (我)', av:'阿', avBg:'#6c5ce7', val:'18 天', pct:60, me:true}
+    ]
+  },
+  breath: {
+    emoji:'🪷', bg:'bg-breath', title:'千江有水，呼吸成莲',
+    dates:'4 月 01 日 - 4 月 30 日', remain:'剩余 1 天',
+    purpose:'血压平稳', purposeColor:'bp',
+    targetTitle:'每天呼吸训练 10 分钟', targetIcon:'🪷',
+    metric:{cur:'8 天', total:'30 天', pct:27},
+    people:'2,184 呼吸者', joined:false,
+    hardware:'HRV · 呼吸频率', goal:'调节自主神经 · 稳血压',
+    why:{title:'为什么腹式呼吸能稳血压',
+         body:'Hypertension 2024：每日 10 分钟慢节律呼吸（6 次/分钟）8 周后，收缩压平均下降 6-8 mmHg。',
+         source:'Hypertension 2024'},
+    sponsor:{name:'Lululemon 瑜伽垫', sub:'前 30 名'},
+    rewardEmojis:['🧘','🧘','🧘'], rewardName:'Lululemon × 30',
+    leaders:[
+      {name:'莲华', av:'莲', avBg:'#9333ea', val:'30 天', pct:100},
+      {name:'阿明 (我)', av:'阿', avBg:'#6c5ce7', val:'8 天', pct:27, me:true}
+    ]
+  },
+  morning: {
+    emoji:'🌅', bg:'bg-morning', title:'晨光晒背，唤醒元气',
+    dates:'4 月 01 日 - 4 月 30 日', remain:'剩余 1 天',
+    purpose:'免疫节律', purposeColor:'imm',
+    targetTitle:'每天晨光 15 分钟 × 30 天', targetIcon:'🌅',
+    metric:{cur:'12 天', total:'30 天', pct:40},
+    people:'3,421 晨练者', joined:false,
+    hardware:'光照传感 · 体温', goal:'锚定昼夜节律 · 维生素 D 合成',
+    why:{title:'为什么晨光能调节免疫',
+         body:'Nature 2024：晨间 15-30 分钟蓝光暴露可使皮质醇日节律振幅提升 18%，3 个月后感冒次数下降 27%。',
+         source:'Nature 2024'},
+    sponsor:{name:'飞利浦光疗灯', sub:'前 20 名'},
+    rewardEmojis:['💡','💡','💡'], rewardName:'飞利浦光疗灯 × 20',
+    leaders:[
+      {name:'日初', av:'日', avBg:'#f97316', val:'30 天', pct:100},
+      {name:'阿明 (我)', av:'阿', avBg:'#6c5ce7', val:'12 天', pct:40, me:true}
+    ]
+  },
+  stand: {
+    emoji:'🌿', bg:'bg-stand', title:'起身踏青，办公室解放',
+    dates:'4 月 01 日 - 4 月 30 日', remain:'剩余 1 天',
+    purpose:'久坐恢复', purposeColor:'sed',
+    targetTitle:'每天 12 次起身 × 30 天', targetIcon:'🪑',
+    metric:{cur:'14 天', total:'30 天', pct:47},
+    people:'9,348 站立达人', joined:false,
+    hardware:'加速度计 · 久坐提醒', goal:'缓解腰椎压力 · 下肢回流',
+    why:{title:'为什么每小时起身能保护腰椎',
+         body:'Spine 2023：连续坐姿 60+ 分钟会使椎间盘内压上升 40%。每小时起身 2 分钟可让椎间盘回弹率提升 18%。',
+         source:'Spine 2023'},
+    sponsor:{name:'人体工学椅', sub:'前 10 名'},
+    rewardEmojis:['🪑','🪑','🪑'], rewardName:'人体工学椅 × 10',
+    leaders:[
+      {name:'站立小姐', av:'站', avBg:'#f59e0b', val:'30 天', pct:100},
+      {name:'阿明 (我)', av:'阿', avBg:'#6c5ce7', val:'14 天', pct:47, me:true}
+    ]
+  },
+  postmeal: {
+    emoji:'🍽️', bg:'bg-stream', title:'餐后步语，血糖徐徐',
+    dates:'4 月 01 日 - 4 月 30 日', remain:'剩余 1 天',
+    purpose:'降餐后血糖', purposeColor:'glu',
+    targetTitle:'三餐后步行 15 分钟 × 30 天', targetIcon:'🍽️',
+    metric:{cur:'9 天', total:'30 天', pct:30},
+    people:'4,612 控糖者', joined:false,
+    hardware:'步数 · 心率', goal:'削峰餐后血糖 · 改善胰岛素敏感度',
+    why:{title:'为什么饭后散步能控糖',
+         body:'Diabetes Care 2022：餐后 15 分钟散步可使餐后血糖峰值平均下降 17%，HbA1c 90 天下降 0.4。',
+         source:'Diabetes Care 2022'},
+    sponsor:{name:'CGM 动态血糖仪', sub:'前 15 名'},
+    rewardEmojis:['🩸','🩸','🩸'], rewardName:'CGM × 15',
+    leaders:[
+      {name:'糖糖医师', av:'糖', avBg:'#10b981', val:'30 天', pct:100},
+      {name:'阿明 (我)', av:'阿', avBg:'#6c5ce7', val:'9 天', pct:30, me:true}
+    ]
+  },
+  annual: {
+    emoji:'🦄', bg:'bg-runner', title:'2026 心动 200 万步',
+    dates:'1 月 01 日 - 12 月 31 日', remain:'剩余 245 天',
+    purpose:'心血管 · 全年长跑', purposeColor:'car',
+    targetTitle:'年度累计 2,026,000 步', targetIcon:'🏃',
+    metric:{cur:'237,178 步', total:'2,026,000 步', pct:11},
+    people:'50,920 步行者', joined:true,
+    hardware:'步数 · 长期心率', goal:'保护心血管 · VO2 Max 维持',
+    why:{title:'为什么 200 万步是心血管的护城河',
+         body:'柳叶刀 2024 大型队列研究：年均步数超 200 万的人群，10 年内心血管事件风险下降 39%，全因死亡率下降 27%。',
+         source:'柳叶刀 2024'},
+    sponsor:{name:'Apple Watch Series 11', sub:'Grow · 你的 Watch 贴心好伙伴'},
+    rewardEmojis:['⌚','⌚','⌚'], rewardName:'Apple Watch × 3',
+    leaders:[
+      {name:'Jing', av:'J', avBg:'#ec4899', val:'11.27M', pct:100},
+      {name:'泉均', av:'😊', avBg:'#a855f7', val:'9.49M', pct:84},
+      {name:'阿明 (我)', av:'阿', avBg:'#6c5ce7', val:'237,178', pct:11, me:true}
+    ]
+  }
+};
+
+const FOUNDERS = {
+  sakura:{name:'林深', kol:'物理治疗师', avText:'林', avBg:'linear-gradient(135deg,#f9a8d4,#ec4899)',
+    bio:'在三甲医院做了 12 年康复治疗，专攻颈腰椎和久坐综合征。',
+    tags:['🏥 三甲医院','📍 上海','🎓 康复医学硕士'], stats:['8','23k','4.9']},
+  sheep:{name:'月白晚安', kol:'睡眠咨询师', avText:'月', avBg:'linear-gradient(135deg,#a78bfa,#6366f1)',
+    bio:'国家二级心理咨询师，认证睡眠治疗师，写过两本失眠科普书。',
+    tags:['💤 睡眠 12 年','📍 北京'], stats:['12','41k','4.8']},
+  runner:{name:'陈逐风', kol:'马拉松教练', avText:'陈', avBg:'linear-gradient(135deg,#fb923c,#dc2626)',
+    bio:'前国家队 800m 选手，现专注帮普通人完成第一个全马。',
+    tags:['🏃 PB 2:38','📍 厦门'], stats:['6','15k','4.9']},
+  stream:{name:'禅一', kol:'正念导师', avText:'禅', avBg:'linear-gradient(135deg,#34d399,#06b6d4)',
+    bio:'10 年禅修经验，融合内观与现代神经科学。',
+    tags:['🧘 10 年禅修','📍 大理'], stats:['10','12k','4.9']},
+  water:{name:'水若', kol:'营养师', avText:'水', avBg:'linear-gradient(135deg,#22d3ee,#0891b2)',
+    bio:'注册营养师，帮 200+ 上班族建立饮水节律。',
+    tags:['💧 注册营养师','📍 广州'], stats:['4','9k','4.8']},
+  breath:{name:'莲华', kol:'瑜伽老师', avText:'莲', avBg:'linear-gradient(135deg,#c084fc,#9333ea)',
+    bio:'阿斯汤加 + 调息法专家，专为高压人群设计 5 分钟方案。',
+    tags:['🪷 15 年瑜伽','📍 上海'], stats:['7','6k','4.8']},
+  morning:{name:'日初', kol:'中医养生', avText:'日', avBg:'linear-gradient(135deg,#fbbf24,#f97316)',
+    bio:'三代中医世家，主张「子午流注」与现代节律学结合。',
+    tags:['🌅 中医世家','📍 杭州'], stats:['5','8k','4.7']},
+  stand:{name:'站立小姐', kol:'人体工学顾问', avText:'站', avBg:'linear-gradient(135deg,#facc15,#f59e0b)',
+    bio:'帮 50+ 大厂改造工位，「站起来」是她的口头禅。',
+    tags:['🪑 工学顾问','📍 深圳'], stats:['3','9k','4.7']},
+  postmeal:{name:'糖糖医师', kol:'内分泌科', avText:'糖', avBg:'linear-gradient(135deg,#34d399,#10b981)',
+    bio:'三甲医院内分泌主治，糖前期人群干预专家。',
+    tags:['🩺 主治医师','📍 北京'], stats:['9','11k','4.9']},
+  annual:{name:'AIRing 官方', kol:'官方挑战', avText:'A', avBg:'linear-gradient(135deg,#6c5ce7,#a855f7)',
+    bio:'AIRing 联合 Apple Watch、戒指品牌官方发起的年度大挑战。',
+    tags:['🎁 官方'], stats:['1','51k','—']}
+};
+
+const TUTORIALS = {
+  path:{icon:'🛤️', bg:'#e8f4ec', title:'你的练级路径能告诉你什么',
+    body:`<h1>你的练级路径能告诉你什么</h1>
+<p>练级路径是「练级」标签页里贯穿屏幕的<b>那条曲线</b>，每一个节点是一个挑战、一次连击、一个等级。它有三个视图：每天 / 10 天 / 30 天。</p>
+<h2>1. 每天视图：你今天到底走到哪了</h2>
+<p>每天视图会把你今天获得的 XP、完成的挑战、连击状态压在一条线上。<b>这不是步数总数</b>——它告诉你的是"你今天朝目标推进了多远"。</p>
+<div class="tut-callout"><div class="ct">💡 小环提示</div><div class="cb">每天 21:00 后，路径会标一个⭐——那是当日「关键时刻」，错过它今天就断连击了。</div></div>
+<h2>2. 10 天视图：找到自己的节奏</h2>
+<p>10 天视图能直接告诉你最近的状态。绿色高峰是高完成日，灰色低谷是状态差日。<b>规律的、可持续的节奏比偶尔爆发更值钱。</b></p>
+<h2>3. 30 天视图：看到自己变了</h2>
+<p>这个视图最大的功能不是「卷」，是<b>看到自己变了</b>。一个月前你的低谷比山顶还低吗？一个月后你的低谷已经在山顶之上了？</p>
+<div class="tut-quote">练级路径不是统计图，是一张「自我对照表」——上周的你 vs 这周的你。</div>`},
+  privacy:{icon:'🔒', bg:'#f1ecff', title:'你的隐私至上',
+    body:`<h1>你的隐私至上</h1>
+<p>App 收集、存储、出售用户数据是这几年最热议的话题。AIRing 的态度很简单：<b>你的健康数据是你的，不是我们的</b>。</p>
+<h2>原始数据 · 全部本地</h2>
+<p>戒指传给手机的所有原始数据（心率、HRV、步数、温度、加速度），<b>默认存在你自己的手机</b>。卸载 App = 数据清零。</p>
+<h2>云端 · 只存「脱敏摘要」</h2>
+<ul><li>每日 XP 累计值（不含来源细节）</li><li>挑战完成度百分比</li><li>你设置的昵称和头像</li></ul>
+<h2>关心圈 · 每个数据你单独决定</h2>
+<p>家人能看你哪些挑战，<b>你逐项决定</b>。</p>
+<div class="tut-quote">不卖数据 · 写进协议。如果有一天 AIRing 倒闭了，我们承诺：开源数据导出工具，你能完整带走自己的数据。</div>`},
+  fit:{icon:'🎯', bg:'#ffe8da', title:'这款 App 适合你吗？',
+    body:`<h1>这款 App 适合你吗？</h1>
+<p>培养新习惯不容易。但只要不停地<b>跟踪、调整、复盘</b>，就算最初的热情消退了，也能稳定推进——这就是 AIRing 想帮你做的事。</p>
+<h2>我们的用户大概是这几种人</h2>
+<ul>
+<li><b>办公室久坐党</b>：腰痛、颈椎、低体能 → 「樱花漫步」「起身踏青」</li>
+<li><b>糖前期 / 高血压人群</b>：需要稳节律 → 「餐后步语」「千江有水」</li>
+<li><b>慢性焦虑 / 失眠</b>：HRV 低 → 「溪边放空」「绵羊咩咩」</li>
+<li><b>体能上升期</b>：心肺、力量 → 「燕成排飞」「年度心动 200 万」</li>
+</ul>
+<div class="tut-callout"><div class="ct">💍 一个简单判断方法</div><div class="cb">先用 7 天免费版。如果 7 天后你能说出"我今天比上周三 HRV 高了 5"——你就是这款 App 的用户。</div></div>`},
+  vitality:{icon:'⚡', bg:'#dff7e8', title:'解锁「活力」的强大功能',
+    body:`<h1>解锁「活力」的强大功能</h1>
+<p>"活力"是 AIRing 主页正中央那个圆——绿黄红三色的渐变环。它告诉你<b>当下你有多适合发力</b>。</p>
+<h2>它是怎么算出来的</h2>
+<ul><li><b>40%</b> 来自夜间 HRV（自主神经恢复）</li><li><b>30%</b> 来自深睡时长与比例</li><li><b>20%</b> 来自昨日训练负荷</li><li><b>10%</b> 来自今晨静息心率</li></ul>
+<h2>怎么用它调整今天的强度</h2>
+<p>活力 ≥ 70：放心冲刺，目标可以拉满。活力 40-70：保持基础节奏，别加码。活力 < 40：今天主动「减负」，专注睡眠 / 散步。</p>`},
+  journal:{icon:'📓', bg:'#fff4d1', title:'体能训练日志的强大功能',
+    body:`<h1>体能训练日志的强大功能</h1>
+<p>通过添加个人元素打造高度个性化的训练摘要。例如自定义标题、添加照片、地点。</p>
+<p>不仅仅是数字——你可以为每次训练加一段心情，比如"今天大风顶风跑，但状态出奇地好"。</p>`},
+  te:{icon:'🧭', bg:'#e3eaff', title:'了解你的训练耗力 (TE)',
+    body:`<h1>了解你的训练耗力 (TE)</h1>
+<p>训练耗力本质上是一个量化指标，能精确反映特定活动对身体产生的压力水平。</p>
+<h2>TE 的范围</h2>
+<ul><li><b>0-1</b> 极低 · 散步 / 拉伸</li><li><b>2-3</b> 中等 · 慢跑 / 骑行</li><li><b>4</b> 较高 · 间歇训练</li><li><b>5</b> 极限 · 比赛级</li></ul>`},
+  share:{icon:'🚲', bg:'#d6eef7', title:'与家人共享',
+    body:`<h1>与家人共享</h1>
+<p>把家人加入你的关心圈，他们能看到你的挑战完成情况，并通过点赞回复鼓励你。</p>
+<p>你逐项决定家人能看到哪些挑战——隐私和陪伴可以并存。</p>`},
+  xiaohuan:{icon:'💍', bg:'#fce8f1', title:'小环 AI 是怎么读懂你的',
+    body:`<h1>小环 AI 是怎么读懂你的</h1>
+<p>小环不是医生，是基于你的数据 + 用户画像生成的健康助手。</p>
+<p>她结合你过去 30 天的睡眠、心率、活动节律，对照你设置的健康目标，给出每日个性化建议。</p>`}
+};
+
+const STORIES = {
+  fibro:{lbl:'个人故事', name:'Tami Stackelhouse', avBg:'linear-gradient(135deg,#ec4899,#a855f7)',
+    bg:'linear-gradient(135deg,#a3a3a3,#d4d4d4)',
+    body:`<h1>找到应对纤维肌痛症的平衡之道</h1>
+<p>2007 年我被确诊纤维肌痛症，从那以后我学会了用戒指数据「调节节奏」。</p>
+<div class="kol-tagline">每天我都要跟身体「谈判」——HRV 告诉我今天能给的预算，我决定怎么花。</div>
+<p>我把 HRV 看作每天的「能量预算」。HRV 高的日子，可以做计划里的事；HRV 低的日子，先休息再说。慢慢地，我的疼痛日数从一周 5 天降到 2 天。</p>`},
+  chronic:{lbl:'慢性病', name:'王大叔', avBg:'linear-gradient(135deg,#f59e0b,#dc2626)',
+    bg:'linear-gradient(135deg,#dc2626,#f59e0b)',
+    body:`<h1>和高血压共处 8 年，我学会用呼吸驯服它</h1>
+<p>从 158/96 到 132/82，没有靠加药——我每天做的事很简单：清晨醒来的 10 分钟慢呼吸。</p>
+<div class="kol-tagline">血压不是吃药压住的，是被你的呼吸节律慢慢驯服的。</div>`},
+  runner:{lbl:'康复', name:'阿杰', avBg:'linear-gradient(135deg,#22c55e,#10b981)',
+    bg:'linear-gradient(135deg,#10b981,#22c55e)',
+    body:`<h1>膝伤后再次充满自信地跑步</h1>
+<p>过去几年我和跑步状态不稳定较量，今年冬天 HRV 让我学会怎么正确恢复。</p>
+<p>恢复不是停下来，是让身体告诉你今天能跑多远。</p>`},
+  focus:{lbl:'焦虑', name:'设计师 Lin', avBg:'linear-gradient(135deg,#a855f7,#6366f1)',
+    bg:'linear-gradient(135deg,#6366f1,#a855f7)',
+    body:`<h1>设计师的焦虑日常，被 HRV 改写了</h1>
+<p>从前我不敢承认焦虑，HRV 数据让我面对它——而且竟然能慢慢解决。</p>`},
+  weight:{lbl:'代谢', name:'李姐', avBg:'linear-gradient(135deg,#10b981,#06b6d4)',
+    bg:'linear-gradient(135deg,#06b6d4,#10b981)',
+    body:`<h1>餐后散步 90 天，糖化下降 0.4</h1>
+<p>52 岁的我没有去健身房，只做了一件事——三餐后走 15 分钟。</p>`},
+  sleep:{lbl:'睡眠', name:'阿康', avBg:'linear-gradient(135deg,#312e81,#6366f1)',
+    bg:'linear-gradient(135deg,#312e81,#6366f1)',
+    body:`<h1>熬夜十年的程序员，我换回了深睡</h1>
+<p>不是少喝咖啡，不是早睡——而是把入睡时间「锚」住了。每天同一时刻睡，同一时刻起。</p>`},
+  back:{lbl:'康复', name:'白领 K', avBg:'linear-gradient(135deg,#f97316,#f59e0b)',
+    bg:'linear-gradient(135deg,#f59e0b,#f97316)',
+    body:`<h1>久坐 8 年的腰痛，4 周明显缓解</h1>
+<p>物理治疗师告诉我：核心肌群是腰椎的护城河，戒指帮我把它建起来。</p>`}
+};
+
+/* ==========================================================
+   渲染：练级首页内容（注入到 #lvContent）
+   ========================================================== */
+function renderLevelupPage(){
+  const c = document.getElementById('lvContent');
+  c.innerHTML = `
+    <!-- 未登录空态 -->
+    <div class="lv-empty empty-logged-out">
+      <div class="ico">🎮</div>
+      <div class="ttl">登录后开启你的练级之路</div>
+      <div class="body">加入官方与 KOL 发起的挑战，和同行者一起完成<br>每日完成挑战可获得 XP，等级越高奖励越多</div>
+      <div class="cta" onclick="toast('跳 P1 登录主页')">立即登录</div>
+    </div>
+
+    <!-- L1.B 本月主推（横向轮播） -->
+    <div class="lv-hero-rail" id="heroRail">
+      <div class="lv-rail-inner">
+        ${renderHero('sheep','APR','01','已加入','16,176 梦想家','🐑','绵羊咩咩，数着入眠','4 月 01 日 - 4 月 30 日 · 30 天')}
+        ${renderHero('sakura','APR','22','已加入','14,632 漫步者','🌸','樱花漫步，落英缤纷','4 月 01 日 - 4 月 30 日 · 30 天')}
+        ${renderHero('runner','APR','15','','5,716 跑者','🏃','燕成排飞，人追风跑','4 月 01 日 - 4 月 30 日 · 30 天')}
+        ${renderHero('stream','APR','10','','5,277 冥想者','🦦','溪边放空，发呆冥想','4 月 01 日 - 4 月 30 日 · 30 天')}
+        ${renderHero('water','APR','05','已加入','7,890 饮水族','💧','一日清泉，润物无声','4 月 01 日 - 4 月 30 日 · 30 天')}
+        ${renderHero('breath','APR','12','','2,184 呼吸者','🪷','千江有水，呼吸成莲','4 月 01 日 - 4 月 30 日 · 30 天')}
+      </div>
+      <div class="lv-rail-dots">
+        <span class="dot active"></span><span class="dot"></span><span class="dot"></span>
+        <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+      </div>
+    </div>
+
+    <!-- L1.A 我的练级（容器，含两个并列入口） -->
+    <div class="lv-mesect" id="meSect">
+      <!-- 入口 1：练级进度 -->
+      <div class="lv-mecard lv-me-progress" onclick="toast('等级详情建设中')">
+        <div class="lv-medal">🏅</div>
+        <div class="lv-lvtitle">LV 12 · 健康探索者</div>
+        <div class="lv-lvname">练级之路 <span class="lv-tag">连击 7 天</span></div>
+        <div class="lv-bar"><div class="fill"></div></div>
+        <div class="lv-meta"><span>1,840 XP</span><span>距 LV 13 · 660</span></div>
+      </div>
+      <!-- 入口 2：成就勋章 -->
+      <div class="lv-mecard lv-me-medals" onclick="toast('🏅 徽章墙建设中')">
+        <div class="m-ico">🏅</div>
+        <div class="m-t">成就勋章</div>
+        <div class="m-s">已获 6 枚 · 连击 21 天</div>
+        <div class="m-row">
+          <div class="m-mini">🔥</div>
+          <div class="m-mini">🌙</div>
+          <div class="m-mini">💧</div>
+          <div class="m-mini">🚶</div>
+          <div class="m-mini">🧘</div>
+        </div>
+        <div class="m-arrow">›</div>
+      </div>
+    </div>
+
+    <!-- L1.E 已加入挑战 · 区段头（标题外提，不放在卡内） -->
+    <div class="lv-sect-head" id="joinedSect">
+      <div class="t">已加入挑战 <span class="t-meta">进行中 · 4 项</span></div>
+      <div class="more" onclick="openOverlay('allChOverlay')">查看全部 ›</div>
+    </div>
+    <!-- L1.E 已加入挑战 · 列表卡（年度官方挑战「2026 心动 200 万步」作为列表中一行参与） -->
+    <div class="lv-joined" id="joinedList">
+      ${renderJrow('sakura','🌸','linear-gradient(135deg,#f9a8d4,#c084fc)','缓解久坐',92,'133,721 / 100,000 步 🏆','linear-gradient(90deg,#ec4899,#a855f7)')}
+      ${renderJrow('sheep','🌙','linear-gradient(135deg,#6366f1,#a78bfa)','深睡修复',76,'23 / 30 天达标','linear-gradient(90deg,#6366f1,#a78bfa)')}
+      ${renderJrow('water','💧','linear-gradient(135deg,#06b6d4,#3b82f6)','代谢平衡',60,'18 / 30 天达标','linear-gradient(90deg,#06b6d4,#3b82f6)')}
+      ${renderJrow('annual','🦄','linear-gradient(135deg,#fb923c,#dc2626)','心血管',11,'237,178 / 200 万步','linear-gradient(90deg,#fb923c,#dc2626)')}
+    </div>
+
+    <!-- L1.F 月度挑战 -->
+    <div class="lv-sect-head" id="monthSect">
+      <div class="t">月度挑战</div>
+      <div class="more" onclick="openOverlay('allChOverlay')">查看全部 24 项 ›</div>
+    </div>
+    <div class="lv-goal-tabs">
+      <div class="lv-gtab active"><span class="e">✨</span>全部</div>
+      <div class="lv-gtab"><span class="e">🪑</span>办公久坐</div>
+      <div class="lv-gtab"><span class="e">🩸</span>降血糖</div>
+      <div class="lv-gtab"><span class="e">❤️</span>心血管</div>
+      <div class="lv-gtab"><span class="e">😌</span>焦虑减压</div>
+      <div class="lv-gtab"><span class="e">😴</span>睡眠</div>
+      <div class="lv-gtab"><span class="e">⚡</span>体能</div>
+    </div>
+    <div class="lv-mlist">
+      ${renderMcard('sakura','🌸','bg-sakura',true, '缓解久坐','sed','林深','物理治疗师','linear-gradient(135deg,#f9a8d4,#ec4899)','14,632 漫步者','+5 XP / 1,000 步')}
+      ${renderMcard('runner','🏃','bg-runner',false,'提升心肺','car','陈逐风','马拉松教练','linear-gradient(135deg,#fb923c,#dc2626)','5,716 跑者','+10 XP / 公里')}
+      ${renderMcard('stream','🦦','bg-stream',false,'焦虑减压','anx','禅一','正念导师','linear-gradient(135deg,#34d399,#06b6d4)','5,277 冥想者','+8 XP / 10 min')}
+      ${renderMcard('sheep','🐑','bg-night',true, '深睡修复','slp','月白晚安','睡眠咨询师','linear-gradient(135deg,#a78bfa,#6366f1)','16,176 梦想家','+15 XP / 早睡')}
+      ${renderMcard('morning','🌅','bg-morning',false,'免疫节律','imm','日初','中医养生','linear-gradient(135deg,#fbbf24,#f97316)','3,421 晨练者','+12 XP / 日')}
+      ${renderMcard('water','💧','bg-water',true, '代谢平衡','met','水若','营养师','linear-gradient(135deg,#22d3ee,#0891b2)','7,890 饮水族','+5 XP / 200ml')}
+    </div>
+
+    <div class="lv-allbtn" onclick="openOverlay('allChOverlay')">
+      🗂️ 查看全部挑战 · 24 项 <span class="arr">›</span>
+    </div>
+    <div class="lv-allbtn" onclick="openOverlay('pasteChModal')" style="background:linear-gradient(135deg,#fff5f9,#f3e8ff);border-color:#f5d5e4;color:#9d174d;margin-top:-6px">
+      🔗 粘贴朋友的邀请码加入挑战 <span class="arr">›</span>
+    </div>
+
+    <!-- 已登录但还没加入任何挑战的空态 -->
+    <div class="lv-empty empty-no-joined" style="margin-top:-4px">
+      <div class="ico">🎯</div>
+      <div class="ttl">还没加入任何挑战</div>
+      <div class="body">先选一个本月主推的挑战开始你的练级之旅吧</div>
+    </div>
+
+    <!-- L1.G 使用入门（区段头与卡片左侧统一 16px） -->
+    <div class="lv-sect-head" id="tutSect" style="margin-top:18px">
+      <div class="t">使用入门</div>
+      <div class="more" onclick="openOverlay('tutListOv')">查看全部 ›</div>
+    </div>
+    <div class="section-sub">练级 / 戒指 / 小环 AI 的所有须知，让 AIRing 真正帮你。</div>
+    <div class="lv-tut">
+      <div class="lv-tut-rail">
+        <div class="lv-tut-card" style="background:#e8f4ec" onclick="openTutorial('path')"><div class="tic">🛤️</div><div class="tt">你的练级路径能告诉你什么</div></div>
+        <div class="lv-tut-card" style="background:#f1ecff" onclick="openTutorial('privacy')"><div class="tic">🔒</div><div class="tt">你的隐私至上</div></div>
+        <div class="lv-tut-card" style="background:#ffe8da" onclick="openTutorial('fit')"><div class="tic">🎯</div><div class="tt">这款 App 适合你吗？</div></div>
+        <div class="lv-tut-card" style="background:#dff7e8" onclick="openTutorial('vitality')"><div class="tic">⚡</div><div class="tt">解锁「活力」的强大功能</div></div>
+        <div class="lv-tut-card" style="background:#fff4d1" onclick="openTutorial('journal')"><div class="tic">📓</div><div class="tt">体能训练日志的强大功能</div></div>
+        <div class="lv-tut-card" style="background:#e3eaff" onclick="openTutorial('te')"><div class="tic">🧭</div><div class="tt">了解你的训练耗力 (TE)</div></div>
+      </div>
+    </div>
+
+    <!-- L1.H 健康故事（区段头与卡片左侧统一 16px） -->
+    <div class="lv-sect-head" id="kolSect" style="margin-top:14px">
+      <div class="t">健康故事</div>
+      <div class="more" onclick="openOverlay('storyListOv')">查看全部 ›</div>
+    </div>
+    <div class="lv-kol-intro">AIRing 用户分享他们如何用戒指 + 练级，撬动了一个具体的健康问题。来分享你的故事吧！</div>
+    <div class="lv-kol">
+      <div class="lv-kol-rail">
+        <div class="lv-kol-card" onclick="openStory('fibro')"><div class="kbg" style="background:linear-gradient(135deg,#a855f7,#6366f1)"></div><div class="kov"></div><div class="ktag">个人故事</div><div class="kt">找到应对纤维肌痛症的平衡之道</div></div>
+        <div class="lv-kol-card" onclick="openStory('chronic')"><div class="kbg" style="background:linear-gradient(135deg,#dc2626,#f59e0b)"></div><div class="kov"></div><div class="ktag">慢性病</div><div class="kt">和高血压共处 8 年，我学会用呼吸驯服它</div></div>
+        <div class="lv-kol-card" onclick="openStory('runner')"><div class="kbg" style="background:linear-gradient(135deg,#10b981,#22c55e)"></div><div class="kov"></div><div class="ktag">康复</div><div class="kt">膝伤后再次充满自信地跑步</div></div>
+        <div class="lv-kol-card" onclick="openStory('focus')"><div class="kbg" style="background:linear-gradient(135deg,#6366f1,#a855f7)"></div><div class="kov"></div><div class="ktag">焦虑</div><div class="kt">设计师的焦虑日常，被 HRV 改写了</div></div>
+        <div class="lv-kol-card" onclick="openStory('weight')"><div class="kbg" style="background:linear-gradient(135deg,#06b6d4,#10b981)"></div><div class="kov"></div><div class="ktag">代谢</div><div class="kt">餐后散步 90 天，糖化下降 0.4</div></div>
+      </div>
+    </div>
+  `;
+}
+
+function renderHero(id, m, d, joinedTag, peopleLbl, emoji, title, sub){
+  const joined = joinedTag ? `<div class="h-joined">${joinedTag}</div>` : '';
+  return `<div class="lv-hero" onclick="openChallenge('${id}')">
+    <div class="h-bg ${CHALLENGES[id].bg}"></div>
+    <div class="h-cal"><span class="m">${m}</span><span class="d">${d}</span></div>
+    ${joined}
+    <div class="h-people">
+      <div class="h-avs">
+        <div class="av" style="background:linear-gradient(135deg,#fbbf24,#f59e0b)">😊</div>
+        <div class="av" style="background:linear-gradient(135deg,#ec4899,#f43f5e)">😄</div>
+        <div class="av" style="background:linear-gradient(135deg,#a78bfa,#6366f1)">😁</div>
+        <div class="av" style="background:linear-gradient(135deg,#34d399,#10b981)">🥰</div>
+      </div>
+      <div class="h-num">${peopleLbl}</div>
+    </div>
+    <div class="h-art">${emoji}</div>
+    <div class="h-foot">
+      <div class="h-badge">${emoji}</div>
+      <div class="h-text"><div class="t">${title}</div><div class="s">${sub}</div></div>
+    </div>
+  </div>`;
+}
+
+function renderJrow(id, ico, icoBg, sponLbl, pct, valTxt, fillBg){
+  const c = CHALLENGES[id];
+  return `<div class="lv-jrow" onclick="openChallenge('${id}')">
+    <div class="j-ico" style="background:${icoBg}">${ico}</div>
+    <div class="j-body">
+      <div class="j-name">${c.title}</div>
+      <div class="j-spon">📅 ${c.remain} · ${sponLbl}</div>
+      <div class="j-prog">
+        <div class="pb"><div class="fill" style="width:${pct}%;background:${fillBg}"></div></div>
+        <div class="v">${valTxt}</div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderMcard(id, emoji, bgClass, joined, goalLabel, goalCls, founderName, founderKol, founderBg, peopleLbl, xpLbl){
+  const c = CHALLENGES[id];
+  const joinedTag = joined ? `<div class="joined-tag">已加入</div>` : '';
+  const initial = founderName.charAt(0);
+  return `<div class="lv-mcard" onclick="openChallenge('${id}')">
+    <div class="mc-art ${bgClass}">${joinedTag}<div class="mc-emoji">${emoji}</div></div>
+    <div class="mc-body">
+      <div class="mc-t">${c.title}</div>
+      <div class="mc-d">📅 4/01-4/30 · <span class="goal-pill ${goalCls}">${goalLabel}</span></div>
+      <div class="mc-founder">
+        <span class="fav" style="background:${founderBg}">${initial}</span>
+        <span class="fname">${founderName}</span> 发起 ·
+        <span class="fkol">${founderKol}</span>
+      </div>
+      <div class="mc-people">${peopleLbl}</div>
+      <span class="mc-xp">${xpLbl}</span>
+    </div>
+  </div>`;
+}
+
+/* ==========================================================
+   全部挑战 列表 / 教程列表 / 故事列表 注入
+   ========================================================== */
+function renderAllChallenges(){
+  const ids = ['sakura','runner','stream','sheep','morning','water','breath','stand','postmeal'];
+  const goalMap = {
+    sakura:['缓解久坐','sed'], runner:['提升心肺','car'], stream:['焦虑减压','anx'],
+    sheep:['深睡修复','slp'], morning:['免疫节律','imm'], water:['代谢平衡','met'],
+    breath:['血压平稳','bp'], stand:['久坐恢复','sed'], postmeal:['降餐后血糖','glu']
+  };
+  const founderInitMap = {
+    sakura:'林', runner:'陈', stream:'禅', sheep:'月', morning:'日',
+    water:'水', breath:'莲', stand:'站', postmeal:'糖'
+  };
+  document.getElementById('allChList').innerHTML = ids.map(id=>{
+    const c = CHALLENGES[id], f = FOUNDERS[id];
+    const [gLabel, gCls] = goalMap[id];
+    const joined = c.joined ? `<div class="joined-tag">已加入</div>` : '';
+    return `<div class="lv-mcard" onclick="openChallenge('${id}')">
+      <div class="mc-art ${c.bg}">${joined}<div class="mc-emoji">${c.emoji}</div></div>
+      <div class="mc-body">
+        <div class="mc-t">${c.title}</div>
+        <div class="mc-d">📅 4/01-4/30 · <span class="goal-pill ${gCls}">${gLabel}</span></div>
+        <div class="mc-founder">
+          <span class="fav" style="background:${f.avBg}">${founderInitMap[id]}</span>
+          <span class="fname">${f.name}</span> · <span class="fkol">${f.kol}</span>
+        </div>
+        <div class="mc-people">${c.people}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderTutList(){
+  const order = ['path','privacy','fit','vitality','journal','te','share','xiaohuan'];
+  const subMap = {
+    path:'练级路径是「练级」标签页上的横跨屏幕条带。它以每天、10 天或 30 天视图，呈现你与目标的距离',
+    privacy:'App 收集、存储和出售用户数据是热议话题，AIRing 的所有数据默认本地、加密、不上云',
+    fit:'培养新习惯并不容易，但只要不懈地管理和跟踪，就能保持稳定推进',
+    vitality:'智能戒指以实时健康指标重塑了我们对身体的认识。如何把这些数据用来调整每日强度',
+    journal:'通过添加个人元素打造高度个性化的体能训练摘要',
+    te:'训练耗力本质上是一个量化指标，能精确反映特定活动对身体产生的压力水平',
+    share:'把家人加入你的关心圈，他们能看到你的挑战完成情况，并通过点赞回复鼓励你',
+    xiaohuan:'小环不是医生，是基于你的数据 + 用户画像生成的健康助手'
+  };
+  document.getElementById('tutListBody').innerHTML = order.map(id=>{
+    const t = TUTORIALS[id];
+    return `<div class="tut-list-row" onclick="openTutorial('${id}')">
+      <div class="tic" style="background:${t.bg}">${t.icon}</div>
+      <div class="tb"><div class="tt">${t.title}</div><div class="ts">${subMap[id]}</div></div>
+      <div class="arr">›</div>
+    </div>`;
+  }).join('');
+}
+
+function renderStoryList(){
+  const order = ['fibro','chronic','runner','focus','weight','sleep','back'];
+  const titleMap = {
+    fibro:'找到应对纤维肌痛症的平衡之道',
+    chronic:'和高血压共处 8 年，我学会用呼吸驯服它',
+    runner:'膝伤后再次充满自信地跑步',
+    focus:'设计师的焦虑日常，被 HRV 改写了',
+    weight:'餐后散步 90 天，糖化下降 0.4',
+    sleep:'熬夜十年的程序员，我换回了深睡',
+    back:'久坐 8 年的腰痛，4 周明显缓解'
+  };
+  const subMap = {
+    fibro:'2007 年我被确诊纤维肌痛症，从那以后我学会了用戒指数据「调节节奏」',
+    chronic:'从 158/96 到 132/82，没有靠加药——我每天做的事很简单',
+    runner:'过去几年我和跑步状态不稳定较量，今年冬天 HRV 让我学会怎么正确恢复',
+    focus:'从前我不敢承认焦虑，HRV 数据让我面对它——而且竟然能慢慢解决',
+    weight:'52 岁的我没有去健身房，只做了一件事——三餐后走 15 分钟',
+    sleep:'不是少喝咖啡，不是早睡——而是把入睡时间「锚」住了',
+    back:'物理治疗师告诉我：核心肌群是腰椎的护城河，戒指帮我把它建起来'
+  };
+  document.getElementById('storyListBody').innerHTML = order.map(id=>{
+    const s = STORIES[id];
+    return `<div class="kol-list-row" onclick="openStory('${id}')">
+      <div class="kic" style="background:${s.bg}"></div>
+      <div class="kb"><div class="kt">${titleMap[id]}</div><div class="kss">${subMap[id]}</div></div>
+      <div class="arr">›</div>
+    </div>`;
+  }).join('');
+}
+
+/* ==========================================================
+   通用 overlay 控制 + Toast
+   ========================================================== */
+function openOverlay(id){
+  document.getElementById(id)?.classList.add('show');
+}
+function closeOverlay(id){
+  document.getElementById(id)?.classList.remove('show');
+}
+function toast(msg){
+  const t = document.getElementById('toastBar');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(window._toastTimer);
+  window._toastTimer = setTimeout(()=>t.classList.remove('show'), 1600);
+}
+function switchLbTab(el){
+  el.parentElement.querySelectorAll('.lt').forEach(x=>x.classList.remove('active'));
+  el.classList.add('active');
+}
+
+/* ==========================================================
+   挑战详情
+   ========================================================== */
+let currentFounderId = 'sakura';
+function openChallenge(id){
+  const c = CHALLENGES[id];
+  if(!c) return;
+  currentFounderId = id;
+  document.getElementById('cdHeroBg').className = 'cd-bg ' + c.bg;
+  document.getElementById('cdEmoji').textContent = c.emoji;
+  document.getElementById('cdMedal').textContent = c.emoji;
+  document.getElementById('cdDates').textContent = c.dates + ' · ' + c.remain;
+  document.getElementById('cdTitle').textContent = c.title;
+  const purposeEl = document.getElementById('cdPurpose');
+  purposeEl.textContent = c.purpose;
+  purposeEl.className = 'cd-purpose goal-pill ' + c.purposeColor;
+  document.getElementById('cdTargetTitle').textContent = c.targetTitle;
+  document.getElementById('cdTargetIcon').textContent = c.targetIcon;
+  document.getElementById('cdPeopleNum').textContent = c.people;
+  document.getElementById('cdHardware').textContent = c.hardware;
+  document.getElementById('cdGoal').textContent = c.goal;
+  document.getElementById('cdWhyTitle').textContent = c.why.title;
+  document.getElementById('cdWhyBody').textContent = c.why.body;
+  document.getElementById('cdWhySource').textContent = '— ' + c.why.source;
+  document.getElementById('cdSponsorName').textContent = c.sponsor.name;
+  document.getElementById('cdSponsorSub').textContent = c.sponsor.sub;
+  document.getElementById('cdRewardName').textContent = c.rewardName;
+  document.getElementById('cdRewardGrid').innerHTML = c.rewardEmojis.map(e=>`<div class="ri">${e}</div>`).join('');
+  document.getElementById('cdMetricCur').textContent = c.metric.cur;
+  document.getElementById('cdMetricTotal').textContent = c.metric.total;
+  document.getElementById('cdMetricPct').textContent = c.metric.pct + '%';
+  document.getElementById('cdMetricFill').style.width = '0%';
+  setTimeout(()=>{ document.getElementById('cdMetricFill').style.width = c.metric.pct + '%'; }, 50);
+
+  /* 发起人 */
+  const f = FOUNDERS[id];
+  if(f){
+    document.getElementById('cdFounderAv').textContent = f.avText;
+    document.getElementById('cdFounderAv').style.background = f.avBg;
+    document.getElementById('cdFounderName').textContent = f.name;
+    document.getElementById('cdFounderKol').textContent = f.kol;
+    document.getElementById('cdFounderBio').textContent = f.bio;
+  }
+
+  /* 排行榜 */
+  const top = c.leaders[0];
+  document.getElementById('cdPodiumAv').textContent = top.av;
+  document.getElementById('cdPodiumAv').style.background = top.avBg;
+  document.getElementById('cdPodiumVal').textContent = top.val;
+  document.getElementById('cdPodiumName').textContent = top.name;
+  const trophyIcons = ['🥇','🥈','🥉'];
+  document.getElementById('cdLeaders').innerHTML = c.leaders.map((l,i)=>{
+    const rk = i<3 ? `<div class="rk t1">${trophyIcons[i]}</div>` : `<div class="rk">${i+1}</div>`;
+    return `<div class="cd-rank ${l.me?'me':''}">
+      ${rk}
+      <div class="av" style="background:${l.avBg}">${l.av}</div>
+      <div class="rb">
+        <div class="rn"><span class="rname">${l.name}</span><span class="rvalue">${l.val}</span></div>
+        <div class="pb"><div class="fill" style="width:${l.pct}%"></div></div>
+      </div>
+    </div>`;
+  }).join('');
+
+  /* CTA */
+  const cta = document.getElementById('cdCtaArea');
+  if(c.joined){
+    cta.innerHTML = `<div class="cd-btn invite" onclick="inviteFriend('${id}')">📤 邀请好友 · 已加入</div>
+                     <div class="cd-btn quit" onclick="toast('已退出挑战')">退出挑战</div>`;
+  } else {
+    cta.innerHTML = `<div class="cd-btn join" onclick="joinChallenge('${id}')">加入挑战</div>
+                     <div class="cd-btn invite" onclick="inviteFriend('${id}')" style="margin-top:8px">📤 分享给朋友</div>`;
+  }
+
+  openOverlay('cdOverlay');
+  document.getElementById('cdOverlay').scrollTop = 0;
+}
+function joinChallenge(id){
+  toast('🎉 已加入「' + CHALLENGES[id].title + '」');
+  closeOverlay('cdOverlay');
+}
+
+/* ==========================================================
+   发起人主页
+   ========================================================== */
+function openFounder(){
+  const f = FOUNDERS[currentFounderId]; if(!f) return;
+  document.getElementById('fdAv').textContent = f.avText;
+  document.getElementById('fdAv').style.background = f.avBg;
+  document.getElementById('fdName').textContent = f.name;
+  document.getElementById('fdKol').textContent = f.kol;
+  document.getElementById('fdBio').textContent = f.bio;
+  document.getElementById('fdTags').innerHTML = f.tags.map(t=>`<span class="tg">${t}</span>`).join('');
+  document.getElementById('fdSt1').textContent = f.stats[0];
+  document.getElementById('fdSt2').textContent = f.stats[1];
+  document.getElementById('fdSt3').textContent = f.stats[2];
+  openOverlay('founderOv');
+}
+
+/* ==========================================================
+   邀请码 / 粘贴码
+   ========================================================== */
+function genInviteCode(){
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let s = ''; for(let i=0;i<6;i++) s += chars[Math.floor(Math.random()*chars.length)];
+  return 'CHL-' + s;
+}
+function inviteFriend(id){
+  const c = CHALLENGES[id] || CHALLENGES.sakura;
+  const code = genInviteCode();
+  document.getElementById('inviteCodeVal').textContent = code;
+  document.getElementById('inviteMsgVal').innerHTML =
+    `嗨！我刚加入「${c.title}」挑战 ${c.emoji} 一起来吧，已经有 ${c.people} 在打卡。
+
+挑战邀请码：<span class="ekey">${code}</span>
+打开 AIRing → 练级 → 粘贴邀请码
+
+👉 一起完赛抽${c.sponsor.name}！`;
+  openOverlay('inviteChModal');
+}
+function copyInviteCode(){
+  const code = document.getElementById('inviteCodeVal').textContent;
+  navigator.clipboard?.writeText(code); toast('📋 邀请码已复制');
+}
+function copyInviteMsg(){
+  const msg = document.getElementById('inviteMsgVal').innerText;
+  navigator.clipboard?.writeText(msg); toast('📋 邀请文案已复制 · 去微信粘贴');
+}
+function autoFillFromClip(){
+  navigator.clipboard?.readText?.().then(txt=>{
+    const m = (txt||'').match(/CHL-[A-Z0-9]{6}/i);
+    if(m){ document.getElementById('pasteCodeInput').value = m[0].toUpperCase(); toast('✅ 已识别邀请码'); }
+    else { document.getElementById('pasteCodeInput').value = 'CHL-K8M3X9'; toast('演示码已填入'); }
+  }).catch(()=>{ document.getElementById('pasteCodeInput').value = 'CHL-K8M3X9'; toast('演示码已填入'); });
+}
+function submitInviteChCode(){
+  const v = document.getElementById('pasteCodeInput').value.trim();
+  if(!v){ toast('请输入邀请码'); return; }
+  closeOverlay('pasteChModal');
+  toast('🎉 已加入「樱花漫步」挑战');
+}
+
+/* ==========================================================
+   教程文章 / 故事文章
+   ========================================================== */
+function openTutorial(id){
+  const t = TUTORIALS[id]; if(!t) return;
+  const hero = document.getElementById('tutHero');
+  hero.style.background = t.bg;
+  document.getElementById('tutHeroIc').textContent = t.icon;
+  document.getElementById('tutBody').innerHTML = t.body;
+  openOverlay('tutArtOv');
+  document.getElementById('tutArtOv').scrollTop = 0;
+}
+function openStory(id){
+  const s = STORIES[id]; if(!s) return;
+  document.getElementById('kolHero').style.background = s.bg;
+  document.getElementById('kolAuthAv').textContent = s.name.charAt(0);
+  document.getElementById('kolAuthAv').style.background = s.avBg;
+  document.getElementById('kolAuthLbl').textContent = s.lbl;
+  document.getElementById('kolAuthName').textContent = s.name;
+  document.getElementById('kolBody').innerHTML = s.body;
+  openOverlay('kolArtOv');
+  document.getElementById('kolArtOv').scrollTop = 0;
+}
+
+/* ==========================================================
+   左侧导航
+   ========================================================== */
+function setActiveNav(item){
+  document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('is-active'));
+  item.classList.add('is-active');
+}
+function closeAllOverlays(){
+  document.querySelectorAll('.fs-overlay.show, .modal-overlay.show, .founder-ov.show')
+    .forEach(o=>o.classList.remove('show'));
+}
+function scrollToAnchor(anchor){
+  const scroll = document.getElementById('scrollArea');
+  if(anchor === 'top'){ scroll.scrollTo({top:0, behavior:'smooth'}); return; }
+  const target = document.getElementById(anchor);
+  if(!target) return;
+  scroll.scrollTo({top: target.offsetTop - 30, behavior:'smooth'});
+}
+document.querySelectorAll('.nav-item').forEach(item=>{
+  item.addEventListener('click', ()=>{
+    const target = item.dataset.target;
+    setActiveNav(item);
+    closeAllOverlays();
+    if(target === 'page'){
+      scrollToAnchor(item.dataset.section || 'top');
+    } else if(target === 'scroll'){
+      scrollToAnchor(item.dataset.anchor);
+    } else if(target === 'overlay'){
+      const ov = item.dataset.overlay;
+      if(ov === 'cdOverlay'){
+        openChallenge(item.dataset.cid || 'sakura');
+      } else if(ov === 'tutArtOv'){
+        openTutorial(item.dataset.tid || 'path');
+      } else if(ov === 'kolArtOv'){
+        openStory(item.dataset.sid || 'fibro');
+      } else if(ov === 'allChOverlay' || ov === 'tutListOv' || ov === 'storyListOv' || ov === 'pasteChModal'){
+        openOverlay(ov);
+      } else {
+        openOverlay(ov);
+      }
+    } else if(target === 'founder'){
+      currentFounderId = item.dataset.cid || 'sakura';
+      openFounder();
+    } else if(target === 'invite'){
+      inviteFriend(item.dataset.cid || 'sakura');
+    }
+  });
+});
+
+/* ==========================================================
+   状态切换
+   ========================================================== */
+const STATE_CLASSES = ['is-logged-out','is-no-joined'];
+function setState(state){
+  document.querySelectorAll('.state-btn').forEach(b=>b.classList.remove('is-active'));
+  const btn = document.querySelector(`.state-btn[data-state="${state}"]`);
+  if(btn) btn.classList.add('is-active');
+  const phone = document.getElementById('phone');
+  STATE_CLASSES.forEach(c=>phone.classList.remove(c));
+  closeAllOverlays();
+  if(state === 'logged-out'){ phone.classList.add('is-logged-out'); }
+  else if(state === 'no-joined'){ phone.classList.add('is-no-joined'); }
+}
+document.querySelectorAll('.state-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>setState(btn.dataset.state));
+});
+
+/* ==========================================================
+   初始化
+   ========================================================== */
+renderLevelupPage();
+renderAllChallenges();
+renderTutList();
+renderStoryList();
+</script>
+</body>
+</html>

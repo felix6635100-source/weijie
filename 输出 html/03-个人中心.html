@@ -1,0 +1,3682 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>AIRing · 个人中心</title>
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💜</text></svg>">
+  <style>
+    /* ============================================================
+       Design Tokens · 与 00-设计规范.md / 今日+关心+登录-v2.html 同源
+       ============================================================ */
+    :root {
+      --color-brand-primary: #3A6FE0;
+      --color-brand-secondary: #4C5CD8;
+      --color-brand-accent: #1E8FFF;
+      --color-brand-cyan: #11D3FF;
+
+      --color-semantic-success: #39C16C;
+      --color-semantic-mint: #26D49A;
+      --color-semantic-warning: #FFA31A;
+      --color-semantic-danger: #FF7851;
+      --color-semantic-info: #7FBBFF;
+
+      --color-text-primary: #141619;
+      --color-text-secondary: #8A8DA4;
+      --color-text-tertiary: #9AA2B8;
+      --color-text-on-dark: #FFFFFF;
+      --color-text-link: #3A6FE0;
+
+      --color-bg-page: #EAF3FF;
+      --color-bg-surface: #FFFFFF;
+      --color-bg-surface-muted: #F5F7FB;
+      --color-bg-overlay-dark: #141619;
+
+      --color-border-subtle: #E6EDF4;
+      --color-border-strong: #14204A;
+
+      --color-tag-success-bg: #E8F9F2;
+      --color-tag-warning-bg: #FFF3DC;
+
+      --color-overlay: rgba(15, 23, 42, 0.42);
+      --color-overlay-light: rgba(15, 23, 42, 0.28);
+
+      --color-primary-tint-04: rgba(58, 111, 224, 0.04);
+      --color-primary-tint-08: rgba(58, 111, 224, 0.08);
+      --color-primary-tint-10: rgba(58, 111, 224, 0.10);
+      --color-primary-tint-25: rgba(58, 111, 224, 0.25);
+      --color-success-tint-18: rgba(57, 193, 108, 0.18);
+      --color-success-tint-36: rgba(57, 193, 108, 0.36);
+      --color-success-tint-45: rgba(57, 193, 108, 0.45);
+
+      --color-toggle-off: #DDE3EE;
+      --color-fill-neutral: #F2F3F5;
+
+      --gradient-brand: linear-gradient(135deg, #4C5CD8 0%, #1E8FFF 100%);
+      --gradient-success: linear-gradient(135deg, #3ED27E 0%, #10B981 100%);
+
+      --radius-xs: 4px;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --radius-xl: 22px;
+      --radius-pill: 999px;
+
+      --space-xxs: 2px;
+      --space-xs: 4px;
+      --space-sm: 8px;
+      --space-md: 12px;
+      --space-lg: 16px;
+      --space-xl: 20px;
+      --space-xxl: 24px;
+      --space-xxxl: 32px;
+
+      --font-xs: 11px;
+      --font-sm: 13px;
+      --font-md: 14px;
+      --font-lg: 16px;
+      --font-xl: 18px;
+      --font-2xl: 22px;
+      --font-3xl: 28px;
+      --font-4xl: 36px;
+
+      --weight-regular: 400;
+      --weight-medium: 500;
+      --weight-semi: 600;
+      --weight-bold: 700;
+      --weight-heavy: 800;
+
+      --font-sans: Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+      --font-sans-cjk: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+
+      --shadow-card: 0 4px 12px rgba(0, 0, 0, 0.05);
+      --shadow-card-elevated: 0 8px 24px rgba(0, 0, 0, 0.08);
+      --shadow-sheet: 0 -18px 44px rgba(15, 23, 42, 0.16);
+      --shadow-modal: 0 20px 60px rgba(0, 0, 0, 0.22);
+
+      --z-sheet: 200;
+      --z-picker: 400;
+      --z-alert: 600;
+      --z-critical: 800;
+
+      --primary: var(--color-brand-primary);
+      --primary-light: #8EA9FF;
+      --primary-dark: var(--color-brand-secondary);
+      --success: var(--color-semantic-success);
+      --warning: var(--color-semantic-warning);
+      --danger: var(--color-semantic-danger);
+      --text: var(--color-text-primary);
+      --text-secondary: var(--color-text-secondary);
+      --text-tertiary: var(--color-text-tertiary);
+      --border: var(--color-border-subtle);
+      --bg: linear-gradient(180deg, #eef4ff 0%, #eff3ff 18%, #f7f9ff 46%, #fbfcff 100%);
+
+      /* 三环色 · T1 今日页 */
+      --ring-habit: #1FA86A;
+      --ring-care: #F25EFF;
+      --ring-growth: #714FF7;
+      --gradient-day-today: linear-gradient(135deg, #4C5CD8 0%, #3A6FE0 100%);
+      --shadow-card-challenge: 0 2px 10px rgba(0, 0, 0, 0.04);
+      --shadow-tabbar: 0 12px 28px rgba(58, 111, 224, 0.10);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      background: #E5E9F2;
+      font-family: var(--font-sans-cjk), var(--font-sans);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    }
+    button { font: inherit; color: inherit; background: transparent; border: 0; padding: 0; cursor: pointer; }
+
+    /* ============================================================
+       双栏布局：左侧导航 + 右侧手机原型（与今日模块.html 一致）
+       ============================================================ */
+    .layout {
+      display: flex;
+      min-height: 100vh;
+    }
+    .side-nav {
+      width: 280px;
+      flex-shrink: 0;
+      background: #fff;
+      border-right: 1px solid var(--border);
+      padding: 24px 16px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+    }
+    .side-nav::-webkit-scrollbar { width: 4px; }
+    .side-nav::-webkit-scrollbar-thumb { background: var(--color-bg-surface-muted); border-radius: 2px; }
+    .nav-brand {
+      display: flex; align-items: center; gap: 8px;
+      padding: 0 8px 16px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 12px;
+    }
+    .nav-brand .nav-logo {
+      width: 32px; height: 32px; border-radius: 8px;
+      background: linear-gradient(135deg, #4C5CD8 0%, #3A6FE0 100%);
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-weight: 700; font-size: 14px;
+    }
+    .nav-brand .nav-title { font-size: 14px; font-weight: 700; }
+    .nav-brand .nav-version { font-size: 10px; color: var(--text-tertiary); }
+
+    .nav-section-label {
+      font-size: 10px; font-weight: 700;
+      color: var(--text-tertiary);
+      letter-spacing: 0.08em; text-transform: uppercase;
+      padding: 12px 8px 6px;
+    }
+
+    /* 状态切换器 */
+    .state-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 6px;
+      padding: 0 4px 8px;
+    }
+    .state-btn {
+      padding: 8px 6px; font-size: 11px;
+      border-radius: 8px;
+      background: var(--color-bg-surface-muted);
+      color: var(--text-secondary);
+      font-weight: 500;
+      display: flex; flex-direction: column; align-items: center; gap: 2px;
+      text-align: center; line-height: 1.2;
+      cursor: pointer;
+      border: none;
+      font-family: inherit;
+    }
+    .state-btn .icon { font-size: 14px; }
+    .state-btn.is-active {
+      background: linear-gradient(135deg, #4C5CD8 0%, #3A6FE0 100%);
+      color: #fff;
+    }
+
+    /* 导航项 */
+    .nav-list { display: flex; flex-direction: column; gap: 1px; }
+    .nav-item {
+      display: flex; align-items: center; gap: 8px;
+      padding: 8px 10px; border-radius: 8px;
+      cursor: pointer;
+      font-size: 13px;
+      color: var(--text);
+      transition: background 0.15s;
+    }
+    .nav-item:hover { background: var(--color-bg-surface-muted); }
+    .nav-item.is-active {
+      background: rgba(58,111,224,0.10);
+      color: var(--color-brand-primary);
+      font-weight: 600;
+    }
+    .nav-item .nav-id {
+      width: 56px; flex-shrink: 0;
+      font-family: var(--font-sans);
+      font-size: 11px; font-weight: 700;
+      color: var(--text-tertiary);
+    }
+    .nav-item.is-active .nav-id { color: var(--color-brand-primary); }
+    .nav-item .nav-name { flex: 1; }
+    .nav-item .nav-tag {
+      font-size: 9px; padding: 1px 6px;
+      border-radius: 99px;
+      background: var(--color-bg-surface-muted);
+      color: var(--text-tertiary);
+      font-weight: 500;
+    }
+    .nav-item .nav-tag.tag-page  { background: rgba(58,111,224,0.10); color: var(--color-brand-primary); }
+    .nav-item .nav-tag.tag-sub   { background: rgba(76,92,216,0.10); color: var(--color-brand-secondary); }
+    .nav-item .nav-tag.tag-sheet { background: rgba(76,92,216,0.10); color: var(--color-brand-secondary); }
+    .nav-item .nav-tag.tag-pick  { background: rgba(57,193,108,0.12); color: var(--color-semantic-success); }
+    .nav-item .nav-tag.tag-act   { background: rgba(255,163,26,0.16); color: #B07206; }
+    .nav-item .nav-tag.tag-alert { background: rgba(255,120,81,0.14); color: var(--color-semantic-danger); }
+    .nav-item .nav-tag.tag-toast { background: rgba(57,193,108,0.12); color: var(--color-semantic-success); }
+    .nav-item .nav-tag.tag-full  { background: rgba(242,94,255,0.14); color: #C53AD0; }
+
+    .nav-foot {
+      margin-top: 12px; padding: 12px 10px;
+      border-top: 1px solid var(--border);
+      font-size: 10px; color: var(--text-tertiary); line-height: 1.6;
+    }
+    .nav-foot strong { color: var(--text-secondary); }
+
+    /* ============================================================
+       右侧主区：单个手机原型
+       ============================================================ */
+    .preview-area {
+      flex: 1; min-width: 0;
+      display: flex; align-items: flex-start; justify-content: center;
+      padding: 32px 16px 60px;
+    }
+
+    .phone-frame {
+      width: 375px; height: 812px;
+      border-radius: 44px;
+      background: var(--bg);
+      position: relative; overflow: hidden;
+      box-shadow: 0 24px 60px rgba(15, 23, 42, 0.18), 0 0 0 8px #1c1f2b, 0 0 0 10px #2c3142;
+      flex-shrink: 0;
+    }
+    .notch {
+      position: absolute;
+      top: 8px; left: 50%;
+      transform: translateX(-50%);
+      width: 110px; height: 28px;
+      background: #1c1f2b;
+      border-radius: 16px;
+      z-index: 8;
+      pointer-events: none;
+    }
+
+    /* 手机内的页面舞台：每次切换替换内容 */
+    .phone-stage {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .phone-stage > .ios-status-bar {
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      z-index: 100;
+    }
+
+    /* 深色模式（顶栏 + 手机底） */
+    body.is-dark-mode .phone-frame { background: linear-gradient(180deg, #181b22 0%, #14161B 60%, #101218 100%); }
+    body.is-dark-mode .phone-stage > .ios-status-bar,
+    body.is-dark-mode .app-topbar { background: rgba(20, 22, 25, 0.7); color: #fff; }
+    body.is-dark-mode .ios-status-bar { color: #fff; }
+    body.is-dark-mode .ios-status-bar .iss-battery { background: #fff; color: #141619; }
+    body.is-dark-mode .ios-status-bar .iss-battery::after { background: #fff; }
+    body.is-dark-mode .ios-status-bar .iss-battery-pct { color: #141619; }
+    body.is-dark-mode .app-topbar-title,
+    body.is-dark-mode .app-topbar-back { color: #fff; }
+
+    /* ============================================================
+       § 6.1 iOS 系统状态栏 .ios-status-bar
+       ============================================================ */
+    .ios-status-bar {
+      height: 44px;
+      padding: 0 22px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: var(--color-text-primary);
+      flex-shrink: 0;
+      position: relative;
+      user-select: none;
+    }
+    .iss-time {
+      font-family: var(--font-sans);
+      font-size: 17px;
+      font-weight: 600;
+      letter-spacing: -0.4px;
+      font-feature-settings: "tnum";
+    }
+    .iss-right {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .iss-signal {
+      display: inline-flex;
+      align-items: flex-end;
+      gap: 2px;
+      height: 11px;
+    }
+    .iss-bar {
+      width: 3px;
+      background: currentColor;
+      border-radius: 1px;
+    }
+    .iss-bar:nth-child(1) { height: 3px; }
+    .iss-bar:nth-child(2) { height: 5px; }
+    .iss-bar:nth-child(3) { height: 7px; }
+    .iss-bar:nth-child(4) { height: 9px; }
+    .iss-network {
+      font-family: var(--font-sans);
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: -0.4px;
+    }
+    .iss-battery {
+      width: 26px;
+      height: 13px;
+      background: var(--color-text-primary);
+      border-radius: 3.5px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .iss-battery::after {
+      content: "";
+      position: absolute;
+      right: -3px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 1.5px;
+      height: 5px;
+      background: var(--color-text-primary);
+      border-radius: 0 1.5px 1.5px 0;
+    }
+    .iss-battery-pct {
+      font-family: var(--font-sans);
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--color-text-on-dark);
+      font-feature-settings: "tnum";
+      line-height: 1;
+    }
+
+    /* ============================================================
+       § 6.1 二级页面顶栏 .app-topbar--secondary
+       ============================================================ */
+    .app-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 14px;
+      height: 48px;
+      flex-shrink: 0;
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      position: relative;
+      z-index: 50;
+    }
+    .app-topbar-back, .app-topbar-action {
+      width: 32px;
+      height: 32px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-text-primary);
+      padding: 0;
+      font-family: inherit;
+    }
+    .app-topbar-back svg, .app-topbar-action svg { width: 22px; height: 22px; }
+    .app-topbar-center {
+      flex: 1;
+      text-align: center;
+    }
+    .app-topbar-title {
+      font-size: var(--font-lg);
+      font-weight: var(--weight-semi);
+      color: var(--color-text-primary);
+      letter-spacing: -0.01em;
+    }
+    .app-topbar-spacer { width: 32px; }
+
+    /* ============================================================
+       通用按钮 / 卡片 / 列表
+       ============================================================ */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      gap: var(--space-xs);
+      border: 0; cursor: pointer; font-family: inherit;
+      font-size: var(--font-md); font-weight: var(--weight-semi);
+      padding: var(--space-md) var(--space-xl);
+      border-radius: var(--radius-pill);
+      transition: transform 0.12s ease, opacity 0.12s ease;
+    }
+    .btn:active { transform: scale(0.98); }
+    .btn-primary { background: var(--gradient-brand); color: var(--color-text-on-dark); }
+    .btn-secondary { background: var(--color-fill-neutral); color: var(--text); }
+    .btn-block { width: 100%; }
+
+    /* ============================================================
+       页面容器：每个手机里一个 .scroll-area
+       ============================================================ */
+    .scroll-area {
+      flex: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      position: relative;
+    }
+    .scroll-area::-webkit-scrollbar { width: 0; }
+
+    /* ============================================================
+       P1 登录主页 / 子步骤
+       ============================================================ */
+    .login-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 18px 8px;
+      flex-shrink: 0;
+    }
+    .login-topbar-left {
+      width: 40px;
+      height: 40px;
+      border: none;
+      background: rgba(20, 22, 25, 0.04);
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      padding: 0;
+      color: #18203D;
+      font-family: inherit;
+    }
+    .login-topbar-left.is-back { background: transparent; }
+    .login-topbar-left svg { width: 18px; height: 18px; }
+    .login-topbar-help {
+      font-size: 14px;
+      color: #18203D;
+      font-weight: 500;
+      background: transparent;
+      border: none;
+      padding: 8px 4px;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .login-body {
+      padding: 24px 24px 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    .login-title {
+      font-size: 28px;
+      font-weight: 800;
+      color: #18203D;
+      letter-spacing: -0.04em;
+      line-height: 1.2;
+    }
+    .login-subtitle {
+      font-size: 13px;
+      color: #7B86A0;
+      line-height: 1.5;
+      margin-top: -8px;
+    }
+
+    /* 灰色 pill 输入框 */
+    .login-input-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 18px;
+      height: 52px;
+      background: #F2F3F5;
+      border-radius: 999px;
+      transition: background 0.2s ease;
+    }
+    .login-input-row:focus-within { background: #ECEDF0; }
+    .login-phone-cc {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 16px;
+      font-weight: 700;
+      color: #18203D;
+      flex-shrink: 0;
+      cursor: default;
+      font-family: var(--font-sans);
+    }
+    .login-phone-cc-arrow {
+      font-size: 9px;
+      color: #18203D;
+      margin-left: 2px;
+    }
+    .login-input-divider {
+      width: 1px;
+      height: 18px;
+      background: rgba(0, 0, 0, 0.10);
+      flex-shrink: 0;
+    }
+    .login-input {
+      flex: 1;
+      border: none;
+      outline: none;
+      background: transparent;
+      font-size: 16px;
+      font-weight: 600;
+      color: #18203D;
+      letter-spacing: 0.02em;
+      font-family: var(--font-sans);
+      min-width: 0;
+      padding: 0;
+    }
+    .login-input::placeholder {
+      color: #B8C0D0;
+      font-weight: 500;
+      letter-spacing: normal;
+    }
+    .login-input.is-cn {
+      font-family: inherit;
+      letter-spacing: 0;
+    }
+    .login-clear {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: rgba(120, 134, 160, 0.32);
+      color: #FFFFFF;
+      font-size: 12px;
+      border: none;
+      cursor: pointer;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      line-height: 1;
+      padding: 0;
+    }
+    .login-input-row.has-value .login-clear { display: inline-flex; }
+
+    .login-eye {
+      width: 22px;
+      height: 22px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      flex-shrink: 0;
+      color: #94A3B8;
+      padding: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .login-eye svg { width: 18px; height: 18px; }
+
+    .login-hint {
+      font-size: 12px;
+      color: #94A3B8;
+      line-height: 1.5;
+      padding: 0 6px;
+      margin-top: -8px;
+    }
+
+    .login-agree {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      font-size: 12px;
+      color: #7B86A0;
+      line-height: 1.5;
+      cursor: pointer;
+      user-select: none;
+      padding: 4px 6px;
+    }
+    .login-agree-box {
+      width: 16px;
+      height: 16px;
+      border-radius: 4px;
+      border: 1.5px solid #C4CADB;
+      flex-shrink: 0;
+      margin-top: 1px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      background: #FFFFFF;
+    }
+    .login-agree.checked .login-agree-box {
+      background: var(--color-brand-primary);
+      border-color: var(--color-brand-primary);
+    }
+    .login-agree-box svg { width: 9px; height: 9px; stroke: #FFFFFF; opacity: 0; transition: opacity 0.2s ease; }
+    .login-agree.checked .login-agree-box svg { opacity: 1; }
+    .login-agree.shake { animation: loginShake 0.32s ease-in-out; }
+    .login-agree a {
+      color: var(--color-brand-primary);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .login-primary-btn {
+      margin-top: 4px;
+      width: 100%;
+      height: 50px;
+      border: none;
+      border-radius: 999px;
+      background: var(--gradient-brand);
+      color: #FFFFFF;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      cursor: pointer;
+      font-family: inherit;
+      box-shadow: 0 12px 22px rgba(58, 111, 224, 0.22);
+      transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .login-primary-btn:active {
+      transform: translateY(1px);
+      box-shadow: 0 6px 12px rgba(58, 111, 224, 0.18);
+    }
+    .login-primary-btn:disabled {
+      background: #DDE3EE;
+      color: #FFFFFF;
+      box-shadow: none;
+      cursor: not-allowed;
+      transform: none;
+    }
+    .login-primary-spinner {
+      display: none;
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(255,255,255,0.4);
+      border-top-color: #FFFFFF;
+      border-radius: 50%;
+      animation: connectSpin 0.7s linear infinite;
+    }
+    .login-primary-btn.is-loading .login-primary-spinner { display: inline-block; }
+
+    .login-secondary-link {
+      align-self: center;
+      background: transparent;
+      border: none;
+      font-size: 14px;
+      color: var(--color-brand-primary);
+      font-weight: 600;
+      cursor: pointer;
+      padding: 12px 8px;
+      margin-top: 4px;
+      font-family: inherit;
+    }
+    .login-secondary-link.muted { color: #94A3B8; font-weight: 500; }
+    .login-tertiary-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 0 6px;
+      margin-top: -4px;
+    }
+    .login-tertiary-row .login-secondary-link { padding: 8px 0; margin: 0; }
+
+    /* 6 位验证码 cells */
+    .login-code-row {
+      display: flex;
+      gap: 10px;
+      justify-content: space-between;
+      position: relative;
+      margin-top: 4px;
+    }
+    .login-code-cell {
+      flex: 1;
+      aspect-ratio: 1 / 1.05;
+      max-width: 50px;
+      border-radius: 12px;
+      background: #F2F3F5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      font-weight: 700;
+      color: #18203D;
+      font-family: var(--font-sans);
+      transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+      border: 1.5px solid transparent;
+    }
+    .login-code-cell.is-active {
+      background: #FFFFFF;
+      border-color: var(--color-brand-primary);
+      box-shadow: 0 0 0 4px rgba(58, 111, 224, 0.10);
+    }
+    .login-code-cell.has-value {
+      background: #FFFFFF;
+      border-color: rgba(58, 111, 224, 0.35);
+    }
+    .login-code-cell.is-error {
+      background: rgba(255, 120, 81, 0.10);
+      border-color: var(--color-semantic-danger);
+      animation: loginShake 0.32s ease-in-out;
+    }
+    @keyframes loginShake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-4px); }
+      50% { transform: translateX(4px); }
+      75% { transform: translateX(-2px); }
+    }
+    .login-code-hidden-input {
+      position: absolute; inset: 0; opacity: 0; border: none; outline: none;
+      background: transparent; font-size: 16px;
+      caret-color: transparent; color: transparent; width: 100%; height: 100%;
+      cursor: pointer; font-family: var(--font-sans); -webkit-appearance: none;
+    }
+    .login-meta-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 13px;
+      color: #94A3B8;
+      padding: 4px 2px;
+    }
+    .login-resend-btn {
+      background: transparent; border: none; font-size: 13px;
+      color: var(--color-brand-primary); font-weight: 600;
+      cursor: pointer; padding: 0; font-family: inherit;
+    }
+    .login-resend-btn:disabled { color: #B8C0D0; cursor: not-allowed; }
+    .login-link {
+      font-size: 13px; color: #94A3B8; background: transparent;
+      border: none; padding: 0; cursor: pointer; font-family: inherit;
+    }
+    .login-error {
+      display: none;
+      font-size: 12px;
+      color: var(--color-semantic-danger);
+      font-weight: 600;
+      padding: 0 6px;
+      margin-top: -8px;
+    }
+    .login-error.show { display: block; }
+
+    .login-pwd-rule {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: #94A3B8;
+      padding: 0 6px;
+      margin-top: -8px;
+    }
+    .login-pwd-rule.ok { color: var(--color-semantic-success); }
+    .login-pwd-rule svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+    /* 完善资料 */
+    .login-tags-privacy-note {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-sm);
+      padding: var(--space-sm) var(--space-md);
+      margin: var(--space-sm) 0 var(--space-md);
+      background: rgba(58, 111, 224, 0.06);
+      border-radius: var(--radius-md);
+      font-size: var(--font-xs);
+      line-height: 1.5;
+      color: var(--color-text-secondary);
+    }
+    .login-tags-privacy-note svg {
+      width: 14px;
+      height: 14px;
+      flex-shrink: 0;
+      color: var(--color-brand-primary);
+      margin-top: 1px;
+    }
+    .login-tags-privacy-note strong {
+      color: var(--color-brand-primary);
+      font-weight: 700;
+    }
+
+    .login-avatar-block {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      padding: 4px 0 0;
+    }
+    .login-avatar-circle {
+      width: 88px;
+      height: 88px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--color-brand-secondary), var(--color-brand-accent));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 44px;
+      box-shadow: 0 14px 28px rgba(58, 111, 224, 0.22);
+      transition: transform 0.15s ease;
+      cursor: pointer;
+      user-select: none;
+    }
+    .login-avatar-circle:active { transform: scale(0.95); }
+    .login-avatar-shuffle {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      color: var(--color-brand-primary);
+      font-weight: 600;
+      background: rgba(58, 111, 224, 0.08);
+      border: none;
+      border-radius: 999px;
+      padding: 6px 14px;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .login-avatar-shuffle svg { width: 14px; height: 14px; }
+
+    .login-form-label {
+      font-size: 13px;
+      font-weight: 700;
+      color: #18203D;
+      padding: 0 2px;
+    }
+    .login-form-label .req {
+      color: var(--color-semantic-danger);
+      font-weight: 700;
+      margin-left: 2px;
+    }
+    .login-form-label .meta {
+      color: #94A3B8;
+      font-weight: 500;
+      font-size: 12px;
+      margin-left: 6px;
+    }
+    .login-form-block { display: flex; flex-direction: column; gap: 8px; }
+    .login-input-row.with-suffix .login-suffix {
+      font-size: 13px;
+      color: #7B86A0;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+    .login-shuffle-btn {
+      width: 22px;
+      height: 22px;
+      border: none;
+      background: transparent;
+      color: var(--color-brand-primary);
+      cursor: pointer;
+      padding: 0;
+      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+
+    .login-trio {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .login-trio .login-form-block {
+      display: grid;
+      grid-template-columns: 56px 1fr;
+      align-items: center;
+      gap: 12px;
+    }
+    .login-trio .login-form-label {
+      margin: 0;
+      font-size: 14px;
+      font-weight: 700;
+      color: #18203D;
+    }
+    .login-trio .login-input-row { padding: 0 16px; height: 50px; }
+    .login-trio .login-input {
+      font-size: 16px;
+      text-align: left;
+      font-family: var(--font-sans);
+      letter-spacing: 0;
+    }
+    .login-wheel-trigger { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+    .login-wheel-trigger .login-input { cursor: pointer; pointer-events: none; }
+
+    .login-tags-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .login-tag-chip {
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: #F2F3F5;
+      color: #4F5970;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      user-select: none;
+      border: 1.5px solid transparent;
+      transition: all 0.18s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .login-tag-chip:active { transform: scale(0.96); }
+    .login-tag-chip.selected {
+      background: rgba(58, 111, 224, 0.10);
+      color: var(--color-brand-primary);
+      border-color: rgba(58, 111, 224, 0.35);
+    }
+    .login-tag-chip.selected::before {
+      content: "✓";
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    /* 步骤切换 */
+    .login-step { display: none; flex-direction: column; gap: 18px; }
+    .scroll-area[data-step="sms"] .login-step-sms,
+    .scroll-area[data-step="pwd"] .login-step-pwd,
+    .scroll-area[data-step="code"] .login-step-code,
+    .scroll-area[data-step="setpwd"] .login-step-setpwd,
+    .scroll-area[data-step="profile"] .login-step-profile {
+      display: flex;
+    }
+
+    /* ============================================================
+       P5 个人设置
+       ============================================================ */
+    .profile-page {
+      display: flex;
+      flex-direction: column;
+    }
+    .profile-body {
+      padding: 8px 16px 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .profile-section {
+      background: var(--color-bg-surface);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--color-border-subtle);
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+    }
+    .profile-section-title {
+      font-size: var(--font-sm);
+      font-weight: var(--weight-bold);
+      color: var(--color-text-secondary);
+      letter-spacing: 0.04em;
+      padding: 0 8px;
+      margin: 4px 0 -8px;
+    }
+    .profile-row {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      padding: var(--space-md) var(--space-lg);
+      cursor: pointer;
+      border-bottom: 1px solid var(--color-border-subtle);
+      -webkit-tap-highlight-color: transparent;
+      transition: background 0.15s ease;
+    }
+    .profile-row:last-child { border-bottom: none; }
+    .profile-row:active { background: var(--color-primary-tint-04); }
+
+    .profile-row-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-md);
+      background: var(--color-primary-tint-10);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: var(--font-xl);
+      color: var(--color-brand-primary);
+      flex-shrink: 0;
+    }
+    .profile-row-main {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-xxs);
+    }
+    .profile-row-label {
+      font-size: var(--font-md);
+      font-weight: var(--weight-bold);
+      color: var(--color-text-primary);
+    }
+    .profile-row-sub {
+      font-size: var(--font-sm);
+      color: var(--color-text-secondary);
+      line-height: 1.45;
+    }
+    .profile-row-sub.warn { color: var(--color-semantic-danger); }
+    .profile-row-value {
+      font-size: var(--font-md);
+      color: var(--color-text-secondary);
+      flex-shrink: 0;
+      max-width: 60%;
+      text-align: right;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .profile-row-arrow {
+      flex-shrink: 0;
+      color: var(--color-text-tertiary);
+      font-size: var(--font-xl);
+      line-height: 1;
+      font-weight: var(--weight-regular);
+    }
+
+    .profile-device-row .profile-row-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: var(--radius-md);
+      background: linear-gradient(135deg, rgba(76,92,216,0.14), rgba(30,143,255,0.12));
+      font-size: var(--font-2xl);
+    }
+    .profile-device-status {
+      font-size: var(--font-xs);
+      color: var(--color-semantic-success);
+      font-weight: var(--weight-bold);
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-xs);
+    }
+    .profile-device-status::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--color-semantic-success);
+      box-shadow: 0 0 0 0 var(--color-success-tint-45);
+      animation: statusPulseSuccess 1.8s ease-out infinite;
+    }
+    .profile-device-status.is-warn { color: var(--color-semantic-warning); }
+    .profile-device-status.is-warn::before {
+      background: var(--color-semantic-warning);
+      box-shadow: 0 0 0 0 rgba(255, 163, 26, 0.45);
+      animation: statusPulseWarning 1.8s ease-out infinite;
+    }
+    @keyframes statusPulseSuccess {
+      0%   { box-shadow: 0 0 0 0 rgba(57, 193, 108, 0.45); }
+      70%  { box-shadow: 0 0 0 6px rgba(57, 193, 108, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(57, 193, 108, 0); }
+    }
+    @keyframes statusPulseWarning {
+      0% { box-shadow: 0 0 0 0 rgba(255, 163, 26, 0.45); }
+      70% { box-shadow: 0 0 0 6px rgba(255, 163, 26, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(255, 163, 26, 0); }
+    }
+
+    .profile-avatar-display {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--color-brand-secondary), var(--color-brand-accent));
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: var(--font-2xl);
+      box-shadow: 0 4px 10px var(--color-primary-tint-25);
+      flex-shrink: 0;
+    }
+
+    /* 健康标签 / 社交标签 */
+    .profile-section-with-tags {
+      padding: 12px 16px;
+    }
+    .profile-section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    .profile-section-head-title {
+      font-size: var(--font-md);
+      font-weight: var(--weight-bold);
+      color: var(--color-text-primary);
+    }
+    .profile-section-head-sub {
+      font-size: var(--font-xs);
+      color: var(--color-text-tertiary);
+      font-weight: var(--weight-medium);
+    }
+    .profile-tag-privacy-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+      padding: 2px 8px;
+      border-radius: var(--radius-pill);
+      background: var(--color-primary-tint-10);
+      color: var(--color-brand-primary);
+      font-size: var(--font-xs);
+      font-weight: var(--weight-bold);
+      line-height: 1.2;
+    }
+    .profile-tag-privacy-pill svg { width: 11px; height: 11px; }
+    .profile-section-tip {
+      font-size: var(--font-xs);
+      color: var(--color-text-secondary);
+      line-height: 1.55;
+      margin: 2px 0 8px;
+    }
+    .profile-section-tip strong { color: var(--color-brand-primary); font-weight: var(--weight-bold); }
+    .profile-tag-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 6px 12px;
+      border-radius: var(--radius-pill);
+      background: var(--color-primary-tint-08);
+      color: var(--color-brand-primary);
+      font-size: var(--font-sm);
+      font-weight: var(--weight-semi);
+      line-height: 1.3;
+      cursor: pointer;
+      user-select: none;
+      border: 1.5px solid transparent;
+      transition: all 0.18s ease;
+    }
+    .profile-tag-chip.is-off {
+      background: var(--color-fill-neutral);
+      color: #4F5970;
+    }
+    .profile-tag-chip.social {
+      background: rgba(242, 94, 255, 0.10);
+      color: #C53AD0;
+    }
+    .profile-tags-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-sm);
+    }
+
+    /* Toggle */
+    .profile-toggle {
+      width: 44px;
+      height: 26px;
+      background: var(--color-toggle-off);
+      border-radius: var(--radius-pill);
+      position: relative;
+      flex-shrink: 0;
+      cursor: pointer;
+      transition: background 0.2s ease;
+      border: none;
+      padding: 0;
+    }
+    .profile-toggle::after {
+      content: "";
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 20px;
+      height: 20px;
+      background: var(--color-bg-surface);
+      border-radius: 50%;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+      transition: left 0.22s cubic-bezier(0.3, 1.2, 0.4, 1);
+    }
+    .profile-toggle.on {
+      background: linear-gradient(135deg, var(--color-brand-secondary) 0%, var(--color-brand-accent) 100%);
+    }
+    .profile-toggle.on::after { left: 21px; }
+
+    /* 通告栏 */
+    .notice-bar {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-sm);
+      padding: var(--space-md);
+      font-size: var(--font-sm);
+      line-height: 1.55;
+      border-radius: var(--radius-md);
+      background: #E6F0FF;
+      color: var(--color-brand-secondary);
+    }
+    .notice-bar svg { width: 16px; height: 16px; flex-shrink: 0; margin-top: 1px; color: var(--color-brand-primary); }
+    .notice-bar strong { font-weight: 700; color: var(--color-brand-secondary); }
+
+    /* 动态发送行 */
+    .profile-row-share {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-xs);
+      padding: var(--space-md) var(--space-lg);
+      cursor: default;
+      border-bottom: 1px solid var(--color-border-subtle);
+    }
+    .profile-row-share:last-child { border-bottom: none; }
+    .profile-row-share-head {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+    }
+    .profile-row-share-head .profile-row-main { gap: 0; }
+    .profile-share-detail {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      padding-left: 0;
+      margin-top: 2px;
+    }
+    .profile-share-line {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-xs);
+      font-size: var(--font-xs);
+      line-height: 1.5;
+      color: var(--color-text-secondary);
+    }
+    .profile-share-line.is-show { color: var(--color-text-primary); }
+    .profile-share-line.is-hide {
+      color: var(--color-text-tertiary);
+      text-decoration: line-through dotted rgba(154, 162, 184, 0.4);
+      text-decoration-thickness: 1px;
+    }
+    .profile-share-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      margin-top: 5px;
+    }
+    .profile-share-dot.ok {
+      background: var(--color-semantic-success);
+      box-shadow: 0 0 0 2px var(--color-success-tint-18);
+    }
+    .profile-share-dot.no {
+      background: transparent;
+      border: 1.5px dashed var(--color-text-tertiary);
+    }
+    .profile-share-preview {
+      display: none;
+      margin-top: 6px;
+      padding: 12px 14px;
+      background: var(--color-bg-surface-muted);
+      border-radius: var(--radius-md);
+      gap: 10px;
+      align-items: center;
+    }
+    .profile-row-share.is-on .profile-share-preview { display: flex; }
+    .profile-share-preview-icon {
+      width: 32px; height: 32px;
+      border-radius: var(--radius-md);
+      background: var(--color-primary-tint-10);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    .profile-share-preview-text {
+      flex: 1;
+      font-size: var(--font-xs);
+      line-height: 1.5;
+      color: var(--color-text-secondary);
+    }
+    .profile-share-preview-text strong {
+      color: var(--color-brand-primary);
+      font-weight: var(--weight-bold);
+    }
+
+    .profile-logout-btn {
+      margin-top: var(--space-sm);
+      background: var(--color-bg-surface);
+      color: var(--danger);
+      border: 1px solid var(--color-border-subtle);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-card);
+      font-size: var(--font-md);
+      font-weight: var(--weight-bold);
+      width: 100%;
+      height: 50px;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .profile-logout-btn:active { transform: scale(0.99); }
+
+    /* ============================================================
+       P5.1 滚轮选择器
+       ============================================================ */
+    .modal-overlay {
+      position: absolute;
+      inset: 0;
+      background: var(--color-overlay);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.22s ease, visibility 0.22s ease;
+      z-index: var(--z-alert);
+    }
+    .modal-overlay.show { opacity: 1; visibility: visible; }
+    .modal-overlay.is-center { align-items: center; }
+    .modal-overlay.is-action { align-items: flex-end; padding: 8px; }
+
+    .picker-sheet {
+      width: 100%;
+      max-width: 430px;
+      background: var(--color-bg-surface);
+      border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+      transform: translateY(100%);
+      transition: transform 0.32s cubic-bezier(0.2, 1.05, 0.3, 1);
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+    .modal-overlay.show .picker-sheet { transform: translateY(0); }
+    .picker-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 20px;
+      border-bottom: 1px solid var(--color-border-subtle);
+    }
+    .picker-header button {
+      background: transparent; border: none;
+      font-size: var(--font-md); cursor: pointer;
+      color: var(--color-text-secondary);
+      padding: 8px 4px;
+      font-family: inherit;
+      font-weight: var(--weight-semi);
+    }
+    .picker-header .picker-confirm {
+      color: var(--color-brand-primary);
+      font-weight: var(--weight-bold);
+    }
+    .picker-title {
+      font-size: var(--font-md);
+      font-weight: var(--weight-bold);
+      color: var(--color-text-primary);
+      letter-spacing: -0.01em;
+    }
+    .picker-stage {
+      position: relative;
+      height: 240px;
+      overflow: hidden;
+    }
+    .picker-highlight {
+      position: absolute;
+      left: 24px; right: 24px;
+      top: 50%; transform: translateY(-50%);
+      height: 48px;
+      border-radius: var(--radius-md);
+      background: rgba(226, 232, 240, 0.55);
+      pointer-events: none;
+      z-index: 1;
+    }
+    .picker-mask {
+      position: absolute;
+      left: 0; right: 0;
+      height: 96px;
+      pointer-events: none;
+      z-index: 2;
+    }
+    .picker-mask.top {
+      top: 0;
+      background: linear-gradient(to bottom, rgba(255,255,255,1) 0%, rgba(255,255,255,0.6) 60%, rgba(255,255,255,0) 100%);
+    }
+    .picker-mask.bottom {
+      bottom: 0;
+      background: linear-gradient(to top, rgba(255,255,255,1) 0%, rgba(255,255,255,0.6) 60%, rgba(255,255,255,0) 100%);
+    }
+    .picker-wheel {
+      position: relative;
+      height: 240px;
+      overflow-y: auto;
+      scroll-snap-type: y mandatory;
+      padding: 96px 0;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+      z-index: 0;
+    }
+    .picker-wheel::-webkit-scrollbar { display: none; }
+    .picker-option {
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      scroll-snap-align: center;
+      font-size: var(--font-2xl);
+      font-weight: var(--weight-semi);
+      color: var(--color-text-tertiary);
+      font-family: var(--font-sans);
+      transition: color 0.2s ease, transform 0.2s ease, opacity 0.2s ease;
+      opacity: 0.55;
+      letter-spacing: -0.01em;
+    }
+    .picker-option.is-active {
+      color: var(--color-text-primary);
+      transform: scale(1.05);
+      font-weight: var(--weight-bold);
+      opacity: 1;
+    }
+    .picker-option.is-near { opacity: 0.78; }
+    .picker-suffix {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(48px, -50%);
+      font-size: var(--font-md);
+      font-weight: var(--weight-semi);
+      color: var(--color-text-secondary);
+      pointer-events: none;
+      z-index: 3;
+    }
+
+    /* ============================================================
+       P5.2 头像选择器 (5×4)
+       ============================================================ */
+    .sheet-edit {
+      width: 100%;
+      max-width: 430px;
+      background: var(--color-bg-surface);
+      border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+      padding: 20px 20px 24px;
+      transform: translateY(100%);
+      transition: transform 0.32s cubic-bezier(0.2, 1.05, 0.3, 1);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding-bottom: calc(env(safe-area-inset-bottom) + 24px);
+    }
+    .modal-overlay.show .sheet-edit { transform: translateY(0); }
+    .sheet-edit-title {
+      font-size: var(--font-xl);
+      font-weight: var(--weight-heavy);
+      color: var(--color-text-primary);
+      text-align: center;
+      letter-spacing: -0.02em;
+    }
+    .sheet-edit-row {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      padding: 0 var(--space-lg);
+      height: 52px;
+      background: var(--color-fill-neutral);
+      border-radius: var(--radius-pill);
+    }
+    .sheet-edit-input {
+      flex: 1;
+      border: none;
+      outline: none;
+      background: transparent;
+      font-size: var(--font-lg);
+      font-weight: var(--weight-semi);
+      color: var(--color-text-primary);
+      font-family: inherit;
+      padding: 0;
+    }
+    .sheet-edit-suffix {
+      font-size: var(--font-md);
+      color: var(--color-text-secondary);
+      font-weight: var(--weight-semi);
+    }
+    .sheet-edit-error {
+      display: none;
+      font-size: 12px;
+      color: var(--color-semantic-danger);
+      font-weight: 600;
+      padding: 0 6px;
+    }
+    .sheet-edit-error.show { display: block; }
+    .sheet-edit-actions {
+      display: flex;
+      gap: var(--space-md);
+    }
+    .sheet-edit-btn {
+      flex: 1;
+      height: 48px;
+      border: none;
+      border-radius: var(--radius-pill);
+      font-size: var(--font-md);
+      font-weight: var(--weight-bold);
+      cursor: pointer;
+      font-family: inherit;
+      transition: transform 0.12s ease;
+    }
+    .sheet-edit-btn:active { transform: scale(0.98); }
+    .sheet-edit-btn.cancel {
+      background: var(--color-fill-neutral);
+      color: var(--color-text-primary);
+    }
+    .sheet-edit-btn.confirm {
+      background: var(--gradient-brand);
+      color: var(--color-text-on-dark);
+    }
+
+    .avatar-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
+      max-height: 60vh;
+      overflow-y: auto;
+    }
+    .avatar-grid-item {
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background: var(--color-bg-surface-muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: var(--font-3xl);
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: all 0.15s ease;
+    }
+    .avatar-grid-item.selected {
+      background: linear-gradient(135deg, var(--color-brand-secondary), var(--color-brand-accent));
+      border-color: var(--color-brand-primary);
+      box-shadow: 0 6px 14px var(--color-primary-tint-25);
+      transform: scale(1.05);
+    }
+    .avatar-picker-tip {
+      font-size: var(--font-xs);
+      color: var(--color-text-tertiary);
+      text-align: center;
+      margin: -4px 0 4px;
+      line-height: 1.5;
+    }
+
+    /* ============================================================
+       P5.4 操作菜单 (Action Sheet)
+       ============================================================ */
+    .action-sheet {
+      width: 100%;
+      max-width: 430px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      transform: translateY(100%);
+      transition: transform 0.25s cubic-bezier(0.22, 0.61, 0.36, 1);
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+    .modal-overlay.show .action-sheet { transform: translateY(0); }
+    .action-sheet-group {
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+    }
+    .action-sheet-extra {
+      padding: 12px 16px;
+      text-align: center;
+      border-bottom: 0.5px solid rgba(60, 60, 67, 0.18);
+    }
+    .action-sheet-extra-title {
+      font-size: var(--font-sm);
+      color: var(--color-text-primary);
+      font-weight: var(--weight-semi);
+    }
+    .action-sheet-extra-desc {
+      font-size: var(--font-xs);
+      color: var(--color-text-tertiary);
+      margin-top: 2px;
+      line-height: 1.5;
+    }
+    .action-sheet-item {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      padding: 12px 16px;
+      background: transparent;
+      border: 0;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: var(--font-lg);
+      color: #007AFF;
+      position: relative;
+    }
+    .action-sheet-item + .action-sheet-item {
+      border-top: 0.5px solid rgba(60, 60, 67, 0.18);
+    }
+    .action-sheet-item:active { background: rgba(0, 0, 0, 0.05); }
+    .action-sheet-item-text {
+      font-size: var(--font-lg);
+      line-height: 1.3;
+    }
+    .action-sheet-item-desc {
+      font-size: var(--font-xs);
+      color: var(--color-text-tertiary);
+      line-height: 1.4;
+    }
+    .action-sheet-item.is-cancel {
+      color: var(--color-text-primary);
+      font-weight: var(--weight-bold);
+    }
+    .action-sheet-item.is-selected::after {
+      content: '✓';
+      position: absolute;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--color-brand-primary);
+      font-weight: var(--weight-bold);
+    }
+
+    /* ============================================================
+       P5.5 / P6.3 iOS 确认框
+       ============================================================ */
+    .ios-alert {
+      width: 270px;
+      background: rgba(248, 248, 248, 0.94);
+      backdrop-filter: saturate(1.8) blur(24px);
+      -webkit-backdrop-filter: saturate(1.8) blur(24px);
+      border-radius: 14px;
+      overflow: hidden;
+      transform: scale(1.08);
+      opacity: 0;
+      transition: transform 0.22s ease, opacity 0.22s ease;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.22);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", var(--font-sans-cjk);
+    }
+    .modal-overlay.show .ios-alert {
+      transform: scale(1);
+      opacity: 1;
+    }
+    .ios-alert-header {
+      padding: 19px 16px 18px;
+      text-align: center;
+    }
+    .ios-alert-title {
+      font-size: 17px;
+      font-weight: 600;
+      color: #000000;
+      line-height: 1.3;
+      letter-spacing: -0.01em;
+    }
+    .ios-alert-message {
+      margin-top: 6px;
+      font-size: 13px;
+      color: #000000;
+      line-height: 1.45;
+      letter-spacing: -0.01em;
+    }
+    .ios-alert-actions {
+      display: flex;
+      border-top: 1px solid rgba(60, 60, 67, 0.28);
+    }
+    .ios-alert-action {
+      flex: 1;
+      min-height: 44px;
+      padding: 11px 8px;
+      border: none;
+      background: transparent;
+      font-size: 17px;
+      font-weight: 400;
+      color: #007AFF;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .ios-alert-action + .ios-alert-action {
+      border-left: 1px solid rgba(60, 60, 67, 0.28);
+    }
+    .ios-alert-action:active { background: rgba(0, 0, 0, 0.05); }
+    .ios-alert-action.is-destructive {
+      color: #FF3B30;
+      font-weight: 600;
+    }
+
+    /* ============================================================
+       P6 连接戒指页
+       ============================================================ */
+    .connect-page {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      padding: 4px 16px 24px;
+    }
+
+    .connect-status-card {
+      padding: 18px 18px 16px;
+      border-radius: 24px;
+      background: linear-gradient(180deg, #F7FAFF, #F3F7FF);
+      border: 1px solid rgba(226, 234, 247, 0.98);
+    }
+
+    .connect-hero {
+      padding: 10px 0 4px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .connect-search-visual {
+      position: relative;
+      width: 188px;
+      height: 188px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 10px;
+    }
+
+    .connect-search-ring,
+    .connect-search-ring::before,
+    .connect-search-ring::after {
+      position: absolute;
+      border-radius: 50%;
+      border: 2px solid rgba(58, 111, 224, 0.18);
+      content: '';
+    }
+    .connect-search-ring {
+      width: 176px;
+      height: 176px;
+      animation: searchPulse 2.2s ease-out infinite;
+    }
+    .connect-search-ring::before {
+      inset: 14px;
+      animation: searchPulse 2.2s ease-out 0.35s infinite;
+    }
+    .connect-search-ring::after {
+      inset: 28px;
+      animation: searchPulse 2.2s ease-out 0.7s infinite;
+    }
+    @keyframes searchPulse {
+      0% { transform: scale(0.9); opacity: 0.22; }
+      70% { transform: scale(1); opacity: 0.68; }
+      100% { transform: scale(1.05); opacity: 0.12; }
+    }
+
+    .connect-center {
+      position: relative;
+      z-index: 1;
+      width: 92px;
+      height: 92px;
+      border-radius: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,1), rgba(233, 241, 255, 0.96));
+      box-shadow: 0 18px 36px rgba(58, 111, 224, 0.14);
+      border: 1px solid rgba(205, 221, 247, 0.9);
+      font-size: 42px;
+    }
+
+    .connect-title {
+      font-size: 28px;
+      font-weight: 800;
+      line-height: 1.2;
+      color: #18203D;
+      letter-spacing: -0.04em;
+      margin-bottom: 14px;
+    }
+    .connect-desc {
+      margin-top: 8px;
+      font-size: 13px;
+      color: #7B86A0;
+      line-height: 1.7;
+    }
+    .connect-hint {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: 999px;
+      background: rgba(58, 111, 224, 0.10);
+      color: var(--color-brand-primary);
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .connect-hint::before {
+      content: "";
+      width: 10px;
+      height: 10px;
+      border: 1.6px solid rgba(58, 111, 224, 0.25);
+      border-top-color: var(--color-brand-primary);
+      border-radius: 50%;
+      animation: connectSpin 0.7s linear infinite;
+    }
+    @keyframes connectSpin {
+      to { transform: rotate(360deg); }
+    }
+
+    .connect-list {
+      display: grid;
+      gap: 12px;
+    }
+    .connect-found-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: #94A3B8;
+      padding: 0 4px;
+      letter-spacing: 0.02em;
+    }
+    .connect-found-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 14px 14px 16px;
+      width: 100%;
+      border: 1px solid rgba(58, 111, 224, 0.16);
+      border-radius: 18px;
+      background: #FFFFFF;
+      box-shadow: 0 8px 20px rgba(58, 111, 224, 0.08);
+    }
+    .connect-found-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, rgba(76,92,216,0.14), rgba(30,143,255,0.12));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+    .connect-found-info { flex: 1; min-width: 0; }
+    .connect-found-name {
+      font-size: 15px;
+      font-weight: 800;
+      color: #18203D;
+      line-height: 1.2;
+    }
+    .connect-found-serial {
+      margin-top: 4px;
+      font-size: 11px;
+      color: #7B86A0;
+      letter-spacing: 0.04em;
+      font-family: var(--font-sans);
+    }
+    .connect-signal {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 4px;
+      font-size: 11px;
+      color: #7B86A0;
+    }
+    .connect-signal-bars {
+      display: inline-flex;
+      align-items: flex-end;
+      gap: 1.5px;
+    }
+    .connect-signal-bars span {
+      width: 3px;
+      background: var(--color-brand-primary);
+      border-radius: 1px;
+    }
+    .connect-signal-bars span:nth-child(1) { height: 4px; }
+    .connect-signal-bars span:nth-child(2) { height: 7px; }
+    .connect-signal-bars span:nth-child(3) { height: 10px; opacity: 0.3; }
+
+    .connect-found-action {
+      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 9px 18px;
+      min-width: 72px;
+      border: none;
+      border-radius: 999px;
+      background: var(--gradient-brand);
+      color: #FFFFFF;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      cursor: pointer;
+      font-family: inherit;
+      box-shadow: 0 8px 16px rgba(58, 111, 224, 0.22);
+      transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.2s ease;
+    }
+    .connect-found-action:active {
+      transform: translateY(1px);
+      box-shadow: 0 4px 10px rgba(58, 111, 224, 0.18);
+    }
+    .connect-found-action-spinner {
+      display: none;
+      width: 12px;
+      height: 12px;
+      border: 2px solid rgba(255, 255, 255, 0.35);
+      border-top-color: #FFFFFF;
+      border-radius: 50%;
+      animation: connectSpin 0.7s linear infinite;
+    }
+    .connect-found-action.is-connecting .connect-found-action-spinner {
+      display: inline-block;
+    }
+
+    /* P6.1 已连接卡的「移除」按钮 */
+    .connect-remove-btn {
+      flex-shrink: 0;
+      padding: 9px 18px;
+      min-width: 64px;
+      border: none;
+      border-radius: 999px;
+      background: rgba(255, 59, 48, 0.10);
+      color: #FF3B30;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.15s ease;
+    }
+    .connect-remove-btn:active { background: rgba(255, 59, 48, 0.20); }
+
+    .connect-tips {
+      display: grid;
+      gap: 14px;
+      padding: 6px 2px 0;
+    }
+    .connect-tip {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    .connect-tip-index {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--color-brand-primary);
+      color: #FFFFFF;
+      font-size: 12px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 4px 10px rgba(58, 111, 224, 0.24);
+    }
+    .connect-tip-body { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+    .connect-tip-body strong {
+      font-size: 14px;
+      font-weight: 800;
+      color: #18203D;
+      line-height: 1.4;
+    }
+    .connect-tip-body span {
+      font-size: 12px;
+      color: #6B7693;
+      line-height: 1.65;
+    }
+
+    .connect-help-link {
+      text-align: center;
+      font-size: 12px;
+      color: var(--color-brand-primary);
+      font-weight: 600;
+      cursor: pointer;
+      padding: 12px 0;
+      background: transparent;
+      border: none;
+      font-family: inherit;
+    }
+
+    /* 已发现态：底部"继续搜索其他戒指..." */
+    .connect-still-searching {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 13px;
+      color: #94A3B8;
+      padding: 16px 0;
+      font-weight: 500;
+    }
+    .connect-still-searching::before {
+      content: "";
+      width: 12px;
+      height: 12px;
+      border: 1.6px solid rgba(148, 163, 184, 0.25);
+      border-top-color: #94A3B8;
+      border-radius: 50%;
+      animation: connectSpin 0.7s linear infinite;
+    }
+
+    /* 演示用：模拟过渡按钮（细弱链接样式） */
+    .demo-jump-link {
+      display: block;
+      width: 100%;
+      text-align: center;
+      font-size: 12px;
+      color: var(--color-text-tertiary);
+      background: transparent;
+      border: 1px dashed var(--color-border-subtle);
+      border-radius: 12px;
+      padding: 10px;
+      cursor: pointer;
+      font-family: inherit;
+      font-weight: 500;
+      margin-top: 8px;
+    }
+    .demo-jump-link:active { background: var(--color-bg-surface-muted); }
+
+    /* P6.1 已连接态 */
+    .connected-page { display: flex; flex-direction: column; gap: 16px; padding: 4px 16px 24px; }
+    .connected-visual {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px 16px 16px;
+    }
+    .connected-ring-img {
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 50% 50%, rgba(255,255,255,0.95) 30%, transparent 32%),
+        conic-gradient(from 0deg, #C5CFE8, #8DA1CC, #B6C3DD, #DDE4F2, #C5CFE8);
+      box-shadow: 0 20px 40px rgba(58, 111, 224, 0.2);
+      position: relative;
+      animation: connectVisualFloat 4s ease-in-out infinite;
+    }
+    .connected-ring-img::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 70px;
+      height: 70px;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      background: linear-gradient(135deg, #EAF3FF, #FFFFFF);
+      box-shadow: inset 0 4px 8px rgba(15, 23, 42, 0.05);
+    }
+    @keyframes connectVisualFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-4px); }
+    }
+
+    .connected-info-card {
+      background: var(--color-bg-surface);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--color-border-subtle);
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+    }
+    .connected-info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--color-border-subtle);
+      gap: 12px;
+    }
+    .connected-info-row:last-child { border-bottom: none; }
+    .connected-info-label {
+      font-size: var(--font-sm);
+      color: var(--color-text-secondary);
+      font-weight: var(--weight-medium);
+    }
+    .connected-info-value {
+      font-size: var(--font-md);
+      font-weight: var(--weight-bold);
+      color: var(--color-text-primary);
+      font-family: var(--font-sans);
+      letter-spacing: 0.02em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .connected-status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--color-semantic-success);
+      box-shadow: 0 0 0 2px var(--color-success-tint-18);
+    }
+    .battery-bar {
+      width: 60px;
+      height: 8px;
+      border-radius: 4px;
+      background: var(--color-bg-surface-muted);
+      overflow: hidden;
+      display: inline-block;
+    }
+    .battery-bar-fill {
+      height: 100%;
+      background: var(--color-semantic-success);
+      border-radius: 4px;
+    }
+
+    .connected-remove-btn {
+      align-self: center;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 999px;
+      background: rgba(255, 59, 48, 0.10);
+      color: #FF3B30;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.15s ease;
+      margin-top: 12px;
+    }
+    .connected-remove-btn:active { background: rgba(255, 59, 48, 0.20); }
+
+    /* ============================================================
+       全屏轻提示 (P-LOGIN-DONE / P-CONNECT-DONE)
+       ============================================================ */
+    .toast-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(15, 23, 42, 0.28);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+      z-index: var(--z-alert);
+      backdrop-filter: blur(4px);
+    }
+    .toast-overlay.show { opacity: 1; pointer-events: auto; }
+    .toast-card {
+      background: rgba(255, 255, 255, 0.98);
+      border-radius: 22px;
+      padding: 26px 36px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 20px 40px rgba(15, 23, 42, 0.22);
+      transform: scale(0.92);
+      transition: transform 0.3s cubic-bezier(0.2, 1.2, 0.3, 1);
+    }
+    .toast-overlay.show .toast-card { transform: scale(1); }
+    .toast-icon {
+      width: 52px; height: 52px; border-radius: 50%;
+      background: var(--gradient-success);
+      color: #FFFFFF;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 8px 18px rgba(16, 185, 129, 0.32);
+      animation: toastPop 0.42s cubic-bezier(0.2, 1.2, 0.3, 1) 0.08s both;
+    }
+    .toast-icon svg { width: 28px; height: 28px; }
+    @keyframes toastPop {
+      0%   { transform: scale(0); opacity: 0; }
+      60%  { transform: scale(1.15); opacity: 1; }
+      100% { transform: scale(1); }
+    }
+    .toast-text {
+      font-size: 16px; font-weight: 800; color: #18203D; letter-spacing: -0.01em;
+    }
+    .toast-sub { font-size: 12px; color: #7B86A0; font-weight: 600; }
+
+    /* ============================================================
+       T1 今日页（复制自今日模块，适配单 phone-stage）
+       ============================================================ */
+
+    /* T1 顶栏（一级页面，左标题 + 戒指标签 / 右 主题 + 头像） */
+    .t1-topbar {
+      position: relative;
+      z-index: 6;
+      height: 52px;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 16px;
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      flex-shrink: 0;
+    }
+    .t1-topbar-left { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; }
+    .t1-topbar-title { font-size: 28px; font-weight: 800; color: var(--text); line-height: 1; white-space: nowrap; }
+    .t1-topbar-right { display: flex; gap: 8px; }
+
+    /* 戒指连接状态标签 */
+    .ring-tag {
+      display: inline-flex; align-items: center; gap: 4px;
+      height: 24px; padding: 0 10px;
+      border-radius: var(--radius-pill);
+      font-size: 11px; font-weight: var(--weight-semi);
+      white-space: nowrap; cursor: pointer;
+      border: none; font-family: inherit;
+    }
+    .ring-tag.is-connected { background: var(--color-tag-success-bg); color: var(--color-semantic-success); }
+    .ring-tag.is-disconnected { background: var(--color-tag-warning-bg); color: var(--color-semantic-warning); }
+    .ring-tag.is-offline { background: var(--color-bg-surface-muted); color: var(--color-text-tertiary); }
+    .ring-tag .battery { display: inline-flex; align-items: center; gap: 4px; }
+    .ring-tag .dot { width: 6px; height: 6px; border-radius: 50%; }
+    .ring-tag.is-connected .dot { background: var(--color-semantic-success); }
+    .ring-tag.is-disconnected .dot { background: var(--color-semantic-warning); }
+    .battery-icon {
+      position: relative; display: inline-block;
+      width: 18px; height: 10px;
+      border: 1.2px solid currentColor;
+      border-radius: 2.5px; padding: 1px;
+      box-sizing: border-box;
+    }
+    .battery-icon::after {
+      content: ""; position: absolute;
+      right: -3px; top: 2.5px;
+      width: 2px; height: 4px;
+      background: currentColor;
+      border-radius: 0 1px 1px 0;
+    }
+    .battery-icon .battery-fill {
+      display: block;
+      width: var(--battery-pct, 100%);
+      height: 100%;
+      background: currentColor;
+      border-radius: 1px;
+    }
+
+    /* 顶栏右侧圆形按钮 */
+    .icon-btn {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: rgba(255,255,255,0.85);
+      backdrop-filter: blur(6px);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--text); font-size: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      flex-shrink: 0;
+      border: none;
+      cursor: pointer;
+    }
+    .icon-btn:active { transform: scale(0.95); }
+    .icon-btn.profile {
+      background: linear-gradient(135deg, #FFD27F 0%, #FF6BAA 100%);
+      color: #fff; font-weight: 700; font-size: 14px;
+    }
+    /* 未登录态：白底 + 通用 👤 */
+    .icon-btn.profile.is-logged-out {
+      background: #FFFFFF;
+      color: var(--text-secondary);
+      box-shadow: var(--shadow-card);
+      font-size: 18px;
+    }
+
+    /* T1 滚动主区 */
+    .t1-scroll {
+      flex: 1; min-height: 0;
+      overflow-y: auto; overflow-x: hidden;
+      padding: 12px 16px 24px;
+      scrollbar-width: none;
+    }
+    .t1-scroll::-webkit-scrollbar { display: none; }
+
+    /* C2 三环活动 */
+    .rings-section {
+      margin-bottom: 16px;
+      background: rgba(255,255,255,0.85);
+      border-radius: var(--radius-xl);
+      padding: 16px;
+      box-shadow: var(--shadow-card);
+      position: relative;
+    }
+    .rings-container {
+      display: flex; align-items: center; justify-content: center;
+      position: relative;
+      height: 180px;
+      cursor: pointer;
+    }
+    .ring-svg { width: 180px; height: 180px; }
+    .ring-progress {
+      fill: none; stroke-width: 14; stroke-linecap: round;
+      transform: rotate(-90deg); transform-origin: 100px 100px;
+    }
+    .ring-outer-bg  { stroke: var(--ring-growth); fill: none; stroke-width: 14; opacity: 0.15; }
+    .ring-middle-bg { stroke: var(--ring-care);   fill: none; stroke-width: 14; opacity: 0.15; }
+    .ring-inner-bg  { stroke: var(--ring-habit);  fill: none; stroke-width: 14; opacity: 0.15; }
+    .ring-outer  { stroke: var(--ring-growth); }
+    .ring-middle { stroke: var(--ring-care);   }
+    .ring-inner  { stroke: var(--ring-habit);  }
+    .ring-center-badge {
+      position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+      width: 52px; height: 52px; border-radius: 50%;
+      background: #fff; box-shadow: var(--shadow-card-elevated);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 26px;
+    }
+    .rings-summary {
+      text-align: center; font-size: var(--font-sm);
+      color: var(--text-secondary); margin-top: 8px;
+    }
+    .rings-legend {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-md); margin-top: var(--space-md);
+    }
+    .ring-legend-item { text-align: center; }
+    .ring-legend-label {
+      font-size: 12px; color: var(--text-secondary);
+      display: flex; align-items: center; justify-content: center; gap: 4px;
+    }
+    .ring-legend-label::before {
+      content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+    }
+    .ring-legend-item.ring-1 .ring-legend-label::before { background: var(--ring-habit);  }
+    .ring-legend-item.ring-2 .ring-legend-label::before { background: var(--ring-care);   }
+    .ring-legend-item.ring-3 .ring-legend-label::before { background: var(--ring-growth); }
+    .ring-legend-value { font-size: var(--font-xl); font-weight: 700; margin: 4px 0 2px; }
+    .ring-legend-item.ring-1 .ring-legend-value { color: var(--ring-habit);  }
+    .ring-legend-item.ring-2 .ring-legend-value { color: var(--ring-care);   }
+    .ring-legend-item.ring-3 .ring-legend-value { color: var(--ring-growth); }
+    .ring-legend-desc { font-size: 11px; color: var(--text-tertiary); }
+
+    /* 戒指未连接卡 */
+    .connect-ring-card {
+      background: #fff;
+      border-radius: var(--radius-xl);
+      padding: 20px 16px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow-card);
+    }
+    .connect-ring-card .visual {
+      margin: 0 auto 8px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .connect-ring-card .visual svg {
+      width: 180px; height: auto; display: block;
+    }
+    .connect-ring-card .connect-tag {
+      display: block; width: fit-content;
+      margin: 0 auto 10px;
+      padding: 3px 10px;
+      border-radius: var(--radius-pill);
+      background: var(--color-tag-warning-bg);
+      color: var(--color-semantic-warning);
+      font-size: 12px; font-weight: var(--weight-semi);
+    }
+    .connect-ring-card .title {
+      text-align: center; font-size: var(--font-lg);
+      font-weight: var(--weight-bold); color: var(--text);
+      margin-bottom: 4px;
+    }
+    .connect-ring-card .desc {
+      text-align: center; font-size: 12px; color: var(--text-secondary);
+      line-height: 1.5; margin-bottom: 14px;
+    }
+    .connect-ring-card .benefits {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: 6px; margin-bottom: 14px;
+    }
+    .connect-ring-card .benefit {
+      background: var(--color-bg-surface-muted); border-radius: var(--radius-md);
+      padding: 8px 4px;
+      display: flex; flex-direction: column; align-items: center; gap: 2px;
+      text-align: center;
+    }
+    .connect-ring-card .benefit-icon { font-size: 18px; line-height: 1; margin-bottom: 1px; }
+    .connect-ring-card .benefit-name {
+      font-size: 12px; font-weight: var(--weight-semi);
+      color: var(--color-text-primary);
+    }
+    .connect-ring-card .benefit-sub {
+      font-size: 9px; color: var(--color-text-tertiary);
+      line-height: 1.3;
+    }
+    .connect-ring-card .btn-connect {
+      width: 100%; height: 44px; border-radius: var(--radius-pill);
+      background: var(--gradient-day-today); color: #fff;
+      font-weight: 700; font-size: 14px;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      box-shadow: 0 8px 20px rgba(76, 92, 216, 0.32);
+      border: none; cursor: pointer; font-family: inherit;
+    }
+    .connect-ring-card .btn-connect:active { transform: translateY(1px); }
+    .connect-ring-card .help-link {
+      text-align: center; font-size: 12px; color: var(--color-brand-primary);
+      margin-top: 10px;
+    }
+
+    /* 未登录引导卡 */
+    .login-card {
+      background: #fff;
+      border-radius: var(--radius-lg);
+      padding: 12px 14px;
+      display: flex; align-items: center; gap: 10px;
+      box-shadow: var(--shadow-card-challenge);
+      margin-bottom: 12px;
+      cursor: pointer;
+    }
+    .login-card .login-card-avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: var(--color-bg-surface-muted);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; color: var(--text-secondary);
+    }
+    .login-card .login-card-text { flex: 1; }
+    .login-card .login-card-main { font-size: var(--font-md); font-weight: var(--weight-semi); }
+    .login-card .login-card-sub { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+    .login-card .login-card-arrow { color: var(--text-tertiary); font-size: 18px; }
+
+    /* 简化挑战卡 */
+    .section-head {
+      display: flex; align-items: center; justify-content: space-between;
+      margin: 4px 4px 12px;
+    }
+    .section-title { font-size: var(--font-2xl); font-weight: var(--weight-bold); color: var(--text); }
+    .challenges-list { display: flex; flex-direction: column; gap: 12px; }
+    .challenge-card {
+      border-radius: var(--radius-xl);
+      padding: 14px 16px;
+      color: #fff;
+      box-shadow: var(--shadow-card-challenge);
+      cursor: pointer;
+    }
+    .challenge-card.bg-walk { background: linear-gradient(135deg, #ABFFCC 0%, #0BFFCF 100%); color: #0A4D30; }
+    .challenge-card.bg-sleep { background: linear-gradient(135deg, #C0B0FF 0%, #714FF7 100%); }
+    .challenge-card.bg-burn { background: linear-gradient(135deg, #FFB66A 0%, #FF6A0A 100%); }
+    .challenge-card .ch-row1 {
+      display: flex; align-items: center; gap: 8px;
+      margin-bottom: 6px;
+    }
+    .challenge-card .ch-icon { font-size: 22px; }
+    .challenge-card .ch-name { font-size: 16px; font-weight: 800; flex: 1; }
+    .challenge-card .ch-xp {
+      font-size: 11px; font-weight: 700;
+      padding: 3px 8px; border-radius: 999px;
+      background: rgba(255,255,255,0.4);
+    }
+    .challenge-card .ch-subtitle { font-size: 11px; opacity: 0.85; margin-bottom: 8px; }
+    .challenge-card .ch-row2 {
+      display: flex; align-items: center; gap: 8px;
+      margin-bottom: 6px;
+    }
+    .challenge-card .ch-progress {
+      flex: 1; height: 6px; border-radius: 999px;
+      background: rgba(255,255,255,0.4);
+    }
+    .challenge-card .ch-fill {
+      height: 100%; border-radius: 999px;
+      background: rgba(255,255,255,0.95);
+    }
+    .challenge-card .ch-percent { font-size: 13px; font-weight: 800; }
+    .challenge-card .ch-row3 { font-size: 11px; opacity: 0.85; line-height: 1.5; }
+
+    /* Tab Bar */
+    .tab-bar {
+      position: absolute; left: 12px; right: 12px; bottom: 12px;
+      height: 60px; padding: 6px 12px; border-radius: 24px;
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(20px);
+      display: flex; align-items: center; justify-content: space-around;
+      box-shadow: var(--shadow-tabbar);
+      z-index: 4;
+    }
+    .tab-item {
+      display: flex; flex-direction: column; align-items: center;
+      gap: 2px; flex: 1; cursor: pointer;
+      color: var(--text-secondary);
+    }
+    .tab-item .tab-icon { font-size: 20px; }
+    .tab-item .tab-label { font-size: 10px; font-weight: var(--weight-medium); }
+    .tab-item.is-active { color: var(--color-brand-primary); font-weight: var(--weight-bold); }
+
+    /* T1 状态切换：未连接态隐藏三环 / 挑战 / 登录卡 */
+    .t1-page.is-not-connected .rings-section,
+    .t1-page.is-not-connected .challenges-list,
+    .t1-page.is-not-connected .section-head,
+    .t1-page.is-not-connected .login-card {
+      display: none !important;
+    }
+    .t1-page:not(.is-not-connected) .connect-ring-card {
+      display: none !important;
+    }
+    /* 已登录态隐藏登录卡 */
+    .t1-page:not(.is-logged-out) .login-card {
+      display: none !important;
+    }
+    /* 未连接 / 未登录时 tab-bar 仍展示，但底部留白 */
+    .t1-scroll { padding-bottom: 88px; }
+
+    /* ============================================================
+       响应式（移动端折叠 side-nav）
+       ============================================================ */
+    @media (max-width: 960px) {
+      .layout { flex-direction: column; }
+      .side-nav {
+        width: 100%;
+        height: auto;
+        max-height: 50vh;
+        position: relative;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+      }
+      .preview-area { padding: 16px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="layout">
+
+  <!-- =========================================================
+       左侧导航
+       ========================================================= -->
+  <aside class="side-nav">
+    <div class="nav-brand">
+      <div class="nav-logo">唯</div>
+      <div>
+        <div class="nav-title">唯戒 · 个人中心</div>
+        <div class="nav-version">v2.0 · 2026-04-29</div>
+      </div>
+    </div>
+
+    <div class="nav-section-label">深色模式</div>
+    <div class="state-grid">
+      <button class="state-btn" data-state="dark-mode" style="grid-column: span 2">
+        <span class="icon">🌙</span><span>切换深色模式</span>
+      </button>
+    </div>
+
+    <div class="nav-section-label">完整流转（建议从这里开始）</div>
+    <div class="nav-list">
+      <div class="nav-item is-active" data-page="T1.init">
+        <span class="nav-id">T1 ①</span><span class="nav-name">今日 · 未连接+未登录</span><span class="nav-tag tag-page">起点</span>
+      </div>
+      <div class="nav-item" data-page="T1.connected">
+        <span class="nav-id">T1 ②</span><span class="nav-name">今日 · 已连接+未登录</span><span class="nav-tag tag-page">中间态</span>
+      </div>
+      <div class="nav-item" data-page="T1.full">
+        <span class="nav-id">T1 ③</span><span class="nav-name">今日 · 已连接+已登录</span><span class="nav-tag tag-page">完整态</span>
+      </div>
+    </div>
+
+    <div class="nav-section-label">登录流程</div>
+    <div class="nav-list">
+      <div class="nav-item" data-page="P1.1">
+        <span class="nav-id">P1.1</span><span class="nav-name">短信验证码登录</span><span class="nav-tag tag-page">默认</span>
+      </div>
+      <div class="nav-item" data-page="P1.2">
+        <span class="nav-id">P1.2</span><span class="nav-name">密码登录</span><span class="nav-tag tag-sub">子步骤</span>
+      </div>
+      <div class="nav-item" data-page="P2">
+        <span class="nav-id">P2</span><span class="nav-name">验证码输入</span><span class="nav-tag tag-sub">子步骤</span>
+      </div>
+      <div class="nav-item" data-page="P3">
+        <span class="nav-id">P3</span><span class="nav-name">设置登录密码</span><span class="nav-tag tag-sub">子步骤</span>
+      </div>
+      <div class="nav-item" data-page="P4">
+        <span class="nav-id">P4</span><span class="nav-name">完善个人资料</span><span class="nav-tag tag-sub">子步骤</span>
+      </div>
+    </div>
+
+    <div class="nav-section-label">个人设置</div>
+    <div class="nav-list">
+      <div class="nav-item" data-page="P5">
+        <span class="nav-id">P5</span><span class="nav-name">个人设置</span><span class="nav-tag tag-page">二级页面</span>
+      </div>
+      <div class="nav-item" data-page="P5.1">
+        <span class="nav-id">P5.1</span><span class="nav-name">滚轮选择器</span><span class="nav-tag tag-pick">滚轮</span>
+      </div>
+      <div class="nav-item" data-page="P5.2">
+        <span class="nav-id">P5.2</span><span class="nav-name">头像选择器</span><span class="nav-tag tag-sheet">底部弹层</span>
+      </div>
+      <div class="nav-item" data-page="P5.3">
+        <span class="nav-id">P5.3</span><span class="nav-name">单字段编辑（昵称）</span><span class="nav-tag tag-sheet">底部弹层</span>
+      </div>
+      <div class="nav-item" data-page="P5.4">
+        <span class="nav-id">P5.4</span><span class="nav-name">动态显示范围</span><span class="nav-tag tag-act">操作菜单</span>
+      </div>
+      <div class="nav-item" data-page="P5.5">
+        <span class="nav-id">P5.5</span><span class="nav-name">退出登录二次确认</span><span class="nav-tag tag-alert">确认框</span>
+      </div>
+    </div>
+
+    <div class="nav-section-label">连接戒指页</div>
+    <div class="nav-list">
+      <div class="nav-item" data-page="P6.1">
+        <span class="nav-id">P6.1</span><span class="nav-name">已连接态（设备详情）</span><span class="nav-tag tag-page">二级页面</span>
+      </div>
+      <div class="nav-item" data-page="P6.2">
+        <span class="nav-id">P6.2 ①</span><span class="nav-name">搜索中（无设备）</span><span class="nav-tag tag-page">二级页面</span>
+      </div>
+      <div class="nav-item" data-page="P6.2.found">
+        <span class="nav-id">P6.2 ②</span><span class="nav-name">已发现 1 台戒指</span><span class="nav-tag tag-page">变体</span>
+      </div>
+      <div class="nav-item" data-page="P6.3">
+        <span class="nav-id">P6.3</span><span class="nav-name">移除戒指二次确认</span><span class="nav-tag tag-alert">确认框</span>
+      </div>
+    </div>
+
+    <div class="nav-section-label">轻提示</div>
+    <div class="nav-list">
+      <div class="nav-item" data-page="P-LOGIN-DONE">
+        <span class="nav-id">P-LD</span><span class="nav-name">登录成功</span><span class="nav-tag tag-toast">全屏轻提示</span>
+      </div>
+      <div class="nav-item" data-page="P-CONNECT-DONE">
+        <span class="nav-id">P-CD</span><span class="nav-name">戒指已连接</span><span class="nav-tag tag-toast">全屏轻提示</span>
+      </div>
+    </div>
+
+    <div class="nav-foot">
+      <strong>建议流转路径：</strong><br>
+      ① T1 起点 → 「立即连接戒指」<br>
+      ② P6.2 → 点「连接」→ 戒指已连接<br>
+      ③ T1 ② → 点「点击登录」<br>
+      ④ P1.1 → P2 → P3 → P4 → 登录成功<br>
+      ⑤ T1 ③ → 点头像 → P5
+    </div>
+  </aside>
+
+  <!-- =========================================================
+       右侧手机原型
+       ========================================================= -->
+  <main class="preview-area">
+    <div class="phone-frame" id="phone">
+      <div class="notch"></div>
+      <div class="phone-stage" id="phoneStage">
+        <!-- 由 JS 渲染 -->
+      </div>
+    </div>
+  </main>
+
+</div>
+
+  <script>
+    /* ============================================================
+       页面定义：每个 phone 是一个完整 iPhone 容器
+       ============================================================ */
+
+    // === 通用 iOS 状态栏 ===
+    function statusBar() {
+      return `
+        <div class="ios-status-bar">
+          <span class="iss-time">9:41</span>
+          <span class="iss-right">
+            <span class="iss-signal">
+              <span class="iss-bar"></span><span class="iss-bar"></span>
+              <span class="iss-bar"></span><span class="iss-bar"></span>
+            </span>
+            <span class="iss-network">5G</span>
+            <span class="iss-battery"><span class="iss-battery-pct">83</span></span>
+          </span>
+        </div>`;
+    }
+
+    // === 登录顶栏（关闭 / 返回 + 帮助） ===
+    // backGoto: 返回/关闭按钮指向的页面 key
+    function loginTopbar(showBack, showHelp, backGoto) {
+      const icon = showBack
+        ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>`
+        : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg>`;
+      const goto = backGoto ? ` data-goto="${backGoto}"` : '';
+      return `
+        <div class="login-topbar">
+          <button class="login-topbar-left ${showBack ? 'is-back' : ''}" type="button"${goto} aria-label="${showBack ? '返回' : '关闭'}">${icon}</button>
+          ${showHelp !== false ? '<button class="login-topbar-help" type="button">帮助</button>' : '<span></span>'}
+        </div>`;
+    }
+
+    // === 二级页顶栏 ===
+    function topbarSecondary(title, backGoto) {
+      const goto = backGoto ? ` data-goto="${backGoto}"` : '';
+      return `
+        <div class="app-topbar">
+          <button class="app-topbar-back" type="button"${goto} aria-label="返回">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+          <div class="app-topbar-center"><div class="app-topbar-title">${title}</div></div>
+          <div class="app-topbar-spacer"></div>
+        </div>`;
+    }
+
+    // === P1.1 短信登录 ===
+    function pageP11() {
+      return `
+        ${statusBar()}
+        ${loginTopbar(false, true, 'T1.connected')}
+        <div class="scroll-area" data-step="sms">
+          <div class="login-step login-step-sms">
+            <div class="login-body">
+              <div class="login-title">欢迎登录 AIRing</div>
+              <div class="login-input-row has-value">
+                <span class="login-phone-cc">+86<span class="login-phone-cc-arrow">▾</span></span>
+                <span class="login-input-divider"></span>
+                <input class="login-input" type="tel" inputmode="numeric" maxlength="11" placeholder="请输入手机号" value="138 0000 0000" />
+                <button class="login-clear" type="button" aria-label="清空">×</button>
+              </div>
+              <div class="login-hint">未注册的手机号验证后自动创建 AIRing 账号</div>
+              <div class="login-agree checked" role="checkbox" aria-checked="true" tabindex="0">
+                <span class="login-agree-box">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12 10 17 19 8"/></svg>
+                </span>
+                <span>我已阅读并同意<a href="#">《用户协议》</a>和<a href="#">《隐私政策》</a></span>
+              </div>
+              <button class="login-primary-btn" type="button" data-goto="P2">
+                <span class="login-primary-spinner"></span>
+                <span class="login-primary-text">获取短信验证码</span>
+              </button>
+              <button class="login-secondary-link" type="button" data-goto="P1.2">密码登录</button>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    // === P1.2 密码登录 ===
+    function pageP12() {
+      return `
+        ${statusBar()}
+        ${loginTopbar(false, true, 'T1.connected')}
+        <div class="scroll-area" data-step="pwd">
+          <div class="login-step login-step-pwd">
+            <div class="login-body">
+              <div class="login-title">密码登录</div>
+              <div class="login-input-row has-value">
+                <span class="login-phone-cc">+86<span class="login-phone-cc-arrow">▾</span></span>
+                <span class="login-input-divider"></span>
+                <input class="login-input" type="tel" inputmode="numeric" maxlength="11" placeholder="请输入手机号" value="138 0000 0000" />
+                <button class="login-clear" type="button">×</button>
+              </div>
+              <div class="login-input-row has-value">
+                <input class="login-input is-cn" type="password" maxlength="20" placeholder="请输入登录密码" value="••••••••" />
+                <button class="login-eye" type="button" aria-label="显示/隐藏密码">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+                </button>
+              </div>
+              <div class="login-error show">手机号或密码错误，请检查后重试</div>
+              <div class="login-agree checked" role="checkbox" aria-checked="true" tabindex="0">
+                <span class="login-agree-box">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12 10 17 19 8"/></svg>
+                </span>
+                <span>我已阅读并同意<a href="#">《用户协议》</a>和<a href="#">《隐私政策》</a></span>
+              </div>
+              <button class="login-primary-btn" type="button" data-goto="P-LOGIN-DONE">
+                <span class="login-primary-spinner"></span>
+                <span class="login-primary-text">登录</span>
+              </button>
+              <div class="login-tertiary-row">
+                <button class="login-secondary-link" type="button" data-goto="P1.1">验证码登录</button>
+                <button class="login-secondary-link muted" type="button" data-goto="P1.1">忘记密码？</button>
+              </div>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    // === P2 验证码 ===
+    function pageP2() {
+      return `
+        ${statusBar()}
+        ${loginTopbar(true, true, 'P1.1')}
+        <div class="scroll-area" data-step="code">
+          <div class="login-step login-step-code">
+            <div class="login-body">
+              <div class="login-title">输入验证码</div>
+              <div class="login-subtitle">验证码已发送至 +86 138 0000 0000</div>
+              <div class="login-code-row" id="loginCodeRow">
+                <div class="login-code-cell is-active" data-i="0"></div>
+                <div class="login-code-cell" data-i="1"></div>
+                <div class="login-code-cell" data-i="2"></div>
+                <div class="login-code-cell" data-i="3"></div>
+                <div class="login-code-cell" data-i="4"></div>
+                <div class="login-code-cell" data-i="5"></div>
+                <input class="login-code-hidden-input" id="loginCodeInput" type="tel" inputmode="numeric" maxlength="6" autocomplete="one-time-code" autofocus />
+              </div>
+              <div class="login-error" id="loginCodeError">验证码错误，请重新输入</div>
+              <div class="login-meta-row">
+                <span id="loginCodeResend">重新获取 (<span id="loginCodeCount">60</span>s)</span>
+                <button class="login-link" type="button">手机号已停用？</button>
+              </div>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    // === P3 设置密码 ===
+    function pageP3() {
+      return `
+        ${statusBar()}
+        ${loginTopbar(true, false, 'P2')}
+        <div class="scroll-area" data-step="setpwd">
+          <div class="login-step login-step-setpwd">
+            <div class="login-body">
+              <div class="login-title">设置登录密码</div>
+              <div class="login-subtitle">为账号 +86 138 0000 0000 设置登录密码，方便下次快速登录</div>
+              <div class="login-input-row has-value">
+                <input class="login-input is-cn" type="password" maxlength="20" placeholder="请输入新密码（6-20 位）" value="••••••••" />
+                <button class="login-eye" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button>
+              </div>
+              <div class="login-input-row has-value">
+                <input class="login-input is-cn" type="password" maxlength="20" placeholder="请再次输入新密码" value="••••••••" />
+                <button class="login-eye" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button>
+              </div>
+              <div class="login-pwd-rule ok">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="8 12 11 15 16 9"/></svg>
+                <span>6-20 位字母、数字或符号</span>
+              </div>
+              <div class="login-pwd-rule ok">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="8 12 11 15 16 9"/></svg>
+                <span>两次输入一致</span>
+              </div>
+              <button class="login-primary-btn" type="button" data-goto="P4">
+                <span class="login-primary-spinner"></span>
+                <span class="login-primary-text">完成</span>
+              </button>
+              <button class="login-secondary-link muted" type="button" data-goto="P4">跳过，下次再设置</button>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    // === P4 完善资料 ===
+    function pageP4() {
+      const tags = ['高血压关注','糖尿病关注','备孕中','失眠','慢性病','减脂','增肌','孕期','哺乳期','老年关怀'];
+      const selected = new Set(['失眠','减脂']);
+      const tagChips = tags.map(t => `<span class="login-tag-chip ${selected.has(t)?'selected':''}">${t}</span>`).join('');
+      return `
+        ${statusBar()}
+        ${loginTopbar(true, false, 'P3')}
+        <div class="scroll-area" data-step="profile">
+          <div class="login-step login-step-profile">
+            <div class="login-body">
+              <div class="login-title">完善个人资料</div>
+              <div class="login-subtitle">让 AIRing 更懂你 · 资料仅你可见</div>
+              <div class="login-avatar-block">
+                <div class="login-avatar-circle" data-goto="P5.2">🦊</div>
+                <button class="login-avatar-shuffle" type="button" data-goto="P5.2">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="10" r="3"/><path d="M5.5 19.5c1.5-3 4-4.5 6.5-4.5s5 1.5 6.5 4.5"/></svg>
+                  选择头像
+                </button>
+              </div>
+              <div class="login-form-block">
+                <label class="login-form-label">昵称<span class="req">*</span></label>
+                <div class="login-input-row has-value">
+                  <input class="login-input is-cn" type="text" maxlength="16" value="清晨的雾" />
+                  <button class="login-shuffle-btn" type="button" title="随机一个">🎲</button>
+                </div>
+              </div>
+              <div class="login-trio">
+                <div class="login-form-block">
+                  <label class="login-form-label">年龄</label>
+                  <div class="login-input-row with-suffix login-wheel-trigger">
+                    <input class="login-input" type="text" readonly value="28" />
+                    <span class="login-suffix">岁</span>
+                  </div>
+                </div>
+                <div class="login-form-block">
+                  <label class="login-form-label">身高</label>
+                  <div class="login-input-row with-suffix login-wheel-trigger">
+                    <input class="login-input" type="text" readonly value="172" />
+                    <span class="login-suffix">cm</span>
+                  </div>
+                </div>
+                <div class="login-form-block">
+                  <label class="login-form-label">体重</label>
+                  <div class="login-input-row with-suffix login-wheel-trigger">
+                    <input class="login-input" type="text" readonly value="65.0" />
+                    <span class="login-suffix">kg</span>
+                  </div>
+                </div>
+              </div>
+              <div class="login-form-block">
+                <label class="login-form-label">健康标签<span class="meta">可多选</span></label>
+                <div class="login-tags-privacy-note">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+                  <span>仅用于为你提供个性化健康分析，<strong>他人不可见</strong>。</span>
+                </div>
+                <div class="login-tags-grid">${tagChips}</div>
+              </div>
+              <button class="login-primary-btn" type="button" data-goto="P-LOGIN-DONE">
+                <span class="login-primary-spinner"></span>
+                <span class="login-primary-text">完成</span>
+              </button>
+              <button class="login-secondary-link muted" type="button" data-goto="P-LOGIN-DONE">稍后完善</button>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    // === P5 个人设置 ===
+    function pageP5() {
+      const healthTags = ['失眠','减脂','慢性病'];
+      const socialTags = ['#步数挑战者','#早起伙伴','#饮水达人'];
+      const habits = [
+        { id:'walk', icon:'👟', name:'走路', on:true,  show:'今日步数目标已达成', hide:'具体步数 / 路线 / 配速', preview:'已完成 · 8,520 → 显示为「目标已达成」' },
+        { id:'sleep', icon:'🌙', name:'睡眠', on:true,  show:'睡眠目标完成 + 时长区间（如 7~8h）', hide:'具体入睡 / 起床时间、深睡比例', preview:'昨晚 7~8h · 入睡时间已脱敏' },
+        { id:'burn', icon:'🔥', name:'消耗', on:false, show:'"燃脂达 500 千卡" 徽章', hide:'心率、运动时长、具体千卡值', preview:'未开启 · 数据不会同步到关心圈' },
+        { id:'med', icon:'💊', name:'吃药打卡', on:false, show:'"按时打卡" 累计天数', hide:'药品名称、剂量、服药时间', preview:'未开启 · 数据不会同步到关心圈' },
+        { id:'water', icon:'💧', name:'喝水', on:false, show:'"饮水目标已达成"', hide:'具体饮水量 / 时间分布', preview:'未开启 · 数据不会同步到关心圈' }
+      ];
+
+      const habitRows = habits.map(h => `
+        <div class="profile-row-share ${h.on?'is-on':''}" data-habit="${h.id}">
+          <div class="profile-row-share-head">
+            <div class="profile-row-icon">${h.icon}</div>
+            <div class="profile-row-main">
+              <div class="profile-row-label">${h.name}</div>
+            </div>
+            <button class="profile-toggle ${h.on?'on':''}" type="button" aria-label="开关 ${h.name}"></button>
+          </div>
+          <div class="profile-share-detail">
+            <div class="profile-share-line is-show"><span class="profile-share-dot ok"></span><span><strong>仅显示：</strong>${h.show}</span></div>
+            <div class="profile-share-line is-hide"><span class="profile-share-dot no"></span><span><strong>不显示：</strong>${h.hide}</span></div>
+          </div>
+          <div class="profile-share-preview">
+            <div class="profile-share-preview-icon">${h.icon}</div>
+            <div class="profile-share-preview-text"><strong>脱敏预览</strong> · ${h.preview}</div>
+          </div>
+        </div>`).join('');
+
+      return `
+        ${statusBar()}
+        ${topbarSecondary('个人设置', 'T1.full')}
+        <div class="scroll-area">
+          <div class="profile-page">
+            <div class="profile-body">
+
+              <!-- 我的设备 -->
+              <div class="profile-section-title">我的设备</div>
+              <div class="profile-section">
+                <div class="profile-row profile-device-row" data-goto="P6.1">
+                  <div class="profile-row-icon">💍</div>
+                  <div class="profile-row-main">
+                    <div class="profile-row-label">AIRing 戒指</div>
+                    <div class="profile-row-sub">
+                      <span class="profile-device-status">已连接</span>
+                      · AR-8F2C-1D40 · 电量 82%
+                    </div>
+                  </div>
+                  <span class="profile-row-arrow">›</span>
+                </div>
+              </div>
+
+              <!-- 个人资料 -->
+              <div class="profile-section-title">个人资料</div>
+              <div class="profile-section">
+                <div class="profile-row" data-goto="P5.2">
+                  <div class="profile-row-main"><div class="profile-row-label">头像</div></div>
+                  <div class="profile-avatar-display">🦊</div>
+                  <span class="profile-row-arrow">›</span>
+                </div>
+                <div class="profile-row" data-goto="P5.3">
+                  <div class="profile-row-main"><div class="profile-row-label">昵称</div></div>
+                  <div class="profile-row-value">清晨的雾</div>
+                  <span class="profile-row-arrow">›</span>
+                </div>
+                <div class="profile-row" data-goto="P5.1">
+                  <div class="profile-row-main"><div class="profile-row-label">年龄</div></div>
+                  <div class="profile-row-value">28 岁</div>
+                  <span class="profile-row-arrow">›</span>
+                </div>
+                <div class="profile-row" data-goto="P5.1">
+                  <div class="profile-row-main"><div class="profile-row-label">身高</div></div>
+                  <div class="profile-row-value">172 cm</div>
+                  <span class="profile-row-arrow">›</span>
+                </div>
+                <div class="profile-row" data-goto="P5.1">
+                  <div class="profile-row-main"><div class="profile-row-label">体重</div></div>
+                  <div class="profile-row-value">65.0 kg</div>
+                  <span class="profile-row-arrow">›</span>
+                </div>
+              </div>
+
+              <!-- 健康标签 -->
+              <div class="profile-section-title">健康标签</div>
+              <div class="profile-section">
+                <div class="profile-section-with-tags">
+                  <div class="profile-section-head">
+                    <span class="profile-section-head-title">健康标签</span>
+                    <span class="profile-tag-privacy-pill">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+                      仅你可见
+                    </span>
+                  </div>
+                  <div class="profile-section-tip">用于个性化健康分析，<strong>不会同步到关心圈</strong>。</div>
+                  <div class="profile-tags-list">
+                    ${healthTags.map(t=>`<span class="profile-tag-chip">${t}</span>`).join('')}
+                    <span class="profile-tag-chip is-off">+ 添加</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 社交标签（自动生成） -->
+              <div class="profile-section-title">社交标签</div>
+              <div class="profile-section">
+                <div class="profile-section-with-tags">
+                  <div class="profile-section-head">
+                    <span class="profile-section-head-title">社交标签</span>
+                    <span class="profile-section-head-sub">根据当前挑战自动生成</span>
+                  </div>
+                  <div class="profile-tags-list">
+                    ${socialTags.map(t=>`<span class="profile-tag-chip social">${t}</span>`).join('')}
+                  </div>
+                </div>
+              </div>
+
+              <!-- 动态发送到关心圈 -->
+              <div class="profile-section-title">动态发送到关心圈</div>
+              <div class="notice-bar">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="12"/><circle cx="12" cy="16" r="0.5" fill="currentColor"/></svg>
+                <span>为保护你的身体指标隐私，关心圈<strong>仅展示完成状态与进度</strong>，不展示具体数值与时间细节。</span>
+              </div>
+              <div class="profile-section">
+                ${habitRows}
+              </div>
+
+              <!-- 动态显示范围 -->
+              <div class="profile-section-title">谁可以看到我的动态</div>
+              <div class="profile-section">
+                <div class="profile-row" data-goto="P5.4">
+                  <div class="profile-row-icon">👥</div>
+                  <div class="profile-row-main">
+                    <div class="profile-row-label">谁可以看到我的动态</div>
+                    <div class="profile-row-sub">控制关心圈中谁能看到你的挑战完成状态</div>
+                  </div>
+                  <div class="profile-row-value">仅亲友</div>
+                  <span class="profile-row-arrow">›</span>
+                </div>
+              </div>
+
+              <!-- 退出登录 -->
+              <button class="profile-logout-btn" type="button" data-goto="P5.5">退出登录</button>
+
+            </div>
+          </div>
+        </div>`;
+    }
+
+    // === P5.1 滚轮选择器（叠加在 P5 之上） ===
+    function pageP51() {
+      const opts = [];
+      for (let i=10;i<=100;i++) {
+        const cls = i===28 ? 'is-active' : (Math.abs(i-28)===1?'is-near':'');
+        opts.push(`<div class="picker-option ${cls}">${i}</div>`);
+      }
+      return pageP5() + `
+        <div class="modal-overlay show">
+          <div class="picker-sheet">
+            <div class="picker-header">
+              <button class="picker-cancel" data-goto="P5">取消</button>
+              <span class="picker-title">选择年龄</span>
+              <button class="picker-confirm" data-goto="P5">完成</button>
+            </div>
+            <div class="picker-stage">
+              <div class="picker-mask top"></div>
+              <div class="picker-mask bottom"></div>
+              <div class="picker-highlight"></div>
+              <div class="picker-suffix">岁</div>
+              <div class="picker-wheel">${opts.join('')}</div>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    // === P5.2 头像选择器 ===
+    function pageP52() {
+      const emojis = ['🦊','🐱','🐶','🐼','🐰','🐯','🦁','🐻','🐨','🐮','🐷','🐸','🦉','🦄','🐢','🐙','🦋','🐝','🌸','⭐'];
+      const grid = emojis.map((e,i)=>`<div class="avatar-grid-item ${i===0?'selected':''}">${e}</div>`).join('');
+      return pageP5() + `
+        <div class="modal-overlay show">
+          <div class="sheet-edit">
+            <div class="sheet-edit-title">选择头像</div>
+            <div class="avatar-picker-tip">点击下方头像试试</div>
+            <div class="avatar-grid">${grid}</div>
+            <div class="sheet-edit-actions">
+              <button class="sheet-edit-btn cancel" data-goto="P5">取消</button>
+              <button class="sheet-edit-btn confirm" data-goto="P5">确定</button>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    // === P5.3 单字段编辑（昵称） ===
+    function pageP53() {
+      return pageP5() + `
+        <div class="modal-overlay show">
+          <div class="sheet-edit">
+            <div class="sheet-edit-title">编辑昵称</div>
+            <div class="sheet-edit-row has-value">
+              <input class="sheet-edit-input" type="text" maxlength="16" value="清晨的雾" />
+              <button class="login-clear" type="button" style="display:inline-flex">×</button>
+            </div>
+            <div class="sheet-edit-error">昵称不能为空</div>
+            <div class="sheet-edit-actions">
+              <button class="sheet-edit-btn cancel" data-goto="P5">取消</button>
+              <button class="sheet-edit-btn confirm" data-goto="P5">保存</button>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    // === P5.4 操作菜单（动态显示范围） ===
+    function pageP54() {
+      return pageP5() + `
+        <div class="modal-overlay show is-action">
+          <div class="action-sheet">
+            <div class="action-sheet-group">
+              <div class="action-sheet-extra">
+                <div class="action-sheet-extra-title">谁可以看到我的动态</div>
+                <div class="action-sheet-extra-desc">控制关心圈中谁能看到你的挑战完成状态</div>
+              </div>
+              <button class="action-sheet-item is-selected" data-goto="P5">
+                <span class="action-sheet-item-text">仅亲友</span>
+                <span class="action-sheet-item-desc">推荐 · 只对你的关注亲友可见</span>
+              </button>
+              <button class="action-sheet-item" data-goto="P5">
+                <span class="action-sheet-item-text">亲友 + 关注的好友</span>
+                <span class="action-sheet-item-desc">扩展到你主动关注的所有戒指好友</span>
+              </button>
+              <button class="action-sheet-item" data-goto="P5">
+                <span class="action-sheet-item-text">仅自己</span>
+                <span class="action-sheet-item-desc">不分享 · 仅在本地查看</span>
+              </button>
+            </div>
+            <div class="action-sheet-group">
+              <button class="action-sheet-item is-cancel" data-goto="P5">取消</button>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    // === P5.5 退出登录确认框 ===
+    function pageP55() {
+      return pageP5() + `
+        <div class="modal-overlay show is-center">
+          <div class="ios-alert">
+            <div class="ios-alert-header">
+              <div class="ios-alert-title">退出当前账号</div>
+              <div class="ios-alert-message">退出后将不再接收提醒，下次需重新登录。确认要退出吗？</div>
+            </div>
+            <div class="ios-alert-actions">
+              <button class="ios-alert-action" data-goto="P5">取消</button>
+              <button class="ios-alert-action is-destructive" data-goto="T1.connected">确认退出</button>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    // === P6.1 已连接态 ===
+    function pageP61() {
+      return `
+        ${statusBar()}
+        ${topbarSecondary('连接设备', 'P5')}
+        <div class="scroll-area">
+          <div class="connect-page">
+            <div class="connect-found-label">当前已连接</div>
+            <div class="connect-found-card">
+              <div class="connect-found-icon">💍</div>
+              <div class="connect-found-info">
+                <div class="connect-found-name">AIRing 戒指</div>
+                <div class="connect-found-serial">编号 AR-8F2C-1D40 · 电量 82%</div>
+              </div>
+              <button class="connect-remove-btn" type="button" data-goto="P6.3">移除</button>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    // === P6.2 搜索中态（无设备） ===
+    function pageP62Searching() {
+      return `
+        ${statusBar()}
+        ${topbarSecondary('连接设备', 'T1.init')}
+        <div class="scroll-area">
+          <div class="connect-page">
+            <div class="connect-status-card">
+              <div class="connect-hero">
+                <div class="connect-search-visual">
+                  <div class="connect-search-ring"></div>
+                  <div class="connect-center">💍</div>
+                </div>
+                <div class="connect-title">正在搜索设备</div>
+                <div class="connect-hint">蓝牙搜索中...</div>
+              </div>
+            </div>
+
+            <div class="connect-tips">
+              <div class="connect-tip">
+                <div class="connect-tip-index">1</div>
+                <div class="connect-tip-body">
+                  <strong>确保戒指已开机</strong>
+                  <span>若戒指长时间未佩戴可能已进入关机状态，请先将其唤醒后再尝试连接。</span>
+                </div>
+              </div>
+              <div class="connect-tip">
+                <div class="connect-tip-index">2</div>
+                <div class="connect-tip-body">
+                  <strong>搜不到？戒指可能已与其他手机配对</strong>
+                  <span>戒指同一时间只能连接一部手机。请先在原手机的 AIRing 中「移除设备」，再回到这里重新搜索即可被新手机识别。</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    // === P6.2 已发现态（找到 1 枚） ===
+    function pageP62Found() {
+      return `
+        ${statusBar()}
+        ${topbarSecondary('连接设备', 'T1.init')}
+        <div class="scroll-area">
+          <div class="connect-page">
+            <div class="connect-found-label">已发现 1 台戒指</div>
+            <div class="connect-found-card">
+              <div class="connect-found-icon">💍</div>
+              <div class="connect-found-info">
+                <div class="connect-found-name">AIRing 戒指</div>
+                <div class="connect-found-serial">编号 AR-8F2C-1D40</div>
+              </div>
+              <button class="connect-found-action" data-goto="P-CONNECT-DONE">
+                <span class="connect-found-action-spinner"></span>
+                <span>连接</span>
+              </button>
+            </div>
+            <div class="connect-still-searching">继续搜索其他戒指...</div>
+          </div>
+        </div>`;
+    }
+
+    // 别名：默认 P6.2 = 搜索中
+    function pageP62() { return pageP62Searching(); }
+
+    // === P6.3 移除戒指确认框（叠加在 P6.1 之上） ===
+    function pageP63() {
+      return pageP61() + `
+        <div class="modal-overlay show is-center">
+          <div class="ios-alert">
+            <div class="ios-alert-header">
+              <div class="ios-alert-title">移除戒指</div>
+              <div class="ios-alert-message">移除后将无法继续检测心率、HRV、睡眠等身体指标。已记录的历史数据不会丢失。</div>
+            </div>
+            <div class="ios-alert-actions">
+              <button class="ios-alert-action" data-goto="P6.1">取消</button>
+              <button class="ios-alert-action is-destructive" data-goto="P6.2">移除</button>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    // === P-LOGIN-DONE 全屏轻提示（叠加在 P4 完善资料完成时） ===
+    function pageLoginDone() {
+      return pageP4() + `
+        <div class="toast-overlay show">
+          <div class="toast-card">
+            <div class="toast-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 13 10 18 19 7"/></svg>
+            </div>
+            <div class="toast-text">登录成功</div>
+            <div class="toast-sub">即将进入「今日」页…</div>
+          </div>
+        </div>`;
+    }
+
+    // === P-CONNECT-DONE 全屏轻提示（叠加在 P6.2 已发现态上） ===
+    function pageConnectDone() {
+      return pageP62Found() + `
+        <div class="toast-overlay show">
+          <div class="toast-card">
+            <div class="toast-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 13 10 18 19 7"/></svg>
+            </div>
+            <div class="toast-text">戒指已连接</div>
+            <div class="toast-sub">即将回到「今日」页</div>
+          </div>
+        </div>`;
+    }
+
+    /* ============================================================
+       T1 今日页（三态：未连接+未登录 / 已连接+未登录 / 已连接+已登录）
+       ============================================================ */
+    function pageT1(state) {
+      // state: 'init' = 未连接 + 未登录；'connected' = 已连接 + 未登录；'full' = 已连接 + 已登录
+      const cls = [];
+      if (state === 'init')      cls.push('is-not-connected', 'is-logged-out');
+      if (state === 'connected') cls.push('is-logged-out');
+      const isLoggedOut = state !== 'full';
+      const isNotConnected = state === 'init';
+
+      // 顶栏戒指标签
+      const ringTag = isNotConnected
+        ? `<button class="ring-tag is-disconnected" type="button" data-goto="P6.2"><span class="dot"></span><span>未连接</span></button>`
+        : `<button class="ring-tag is-connected" type="button" data-goto="P6.1"><span class="dot"></span><span>已连接</span><span class="battery"><span class="battery-icon" style="--battery-pct:82%;"><span class="battery-fill"></span></span><span>82%</span></span></button>`;
+
+      // 顶栏头像
+      const profileBtn = isLoggedOut
+        ? `<button class="icon-btn profile is-logged-out" type="button" data-goto="P1.1" aria-label="登录">👤</button>`
+        : `<button class="icon-btn profile" type="button" data-goto="P5" aria-label="个人设置">L</button>`;
+
+      // 戒指未连接卡（仅 init 态）— 与今日模块插画一致
+      const connectCard = `
+        <div class="connect-ring-card">
+          <div class="visual">
+            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" fill="none" viewBox="0 0 240 152.90127563476562" aria-hidden="true"><defs><linearGradient x1="0.9800755977630615" y1="0" x2="-0.3452865195494162" y2="0.534278371401953" id="emp_g0"><stop offset="0%" stop-color="#EBEDF1" stop-opacity="0"/><stop offset="50.7%" stop-color="#D3D7DE" stop-opacity="1"/><stop offset="100%" stop-color="#D3D7DE" stop-opacity="0"/></linearGradient><linearGradient x1="-0.0144" y1="0.918" x2="0.8796" y2="0.9265" id="emp_g9"><stop offset="0%" stop-color="#CDD2DA" stop-opacity="0.53"/><stop offset="100%" stop-color="#BEC3CC" stop-opacity="0.18"/></linearGradient><linearGradient x1="-0.045" y1="1.265" x2="0.8" y2="1.336" id="emp_gb"><stop offset="0%" stop-color="#E1E5EB"/><stop offset="100%" stop-color="#BEC3CC"/></linearGradient><linearGradient x1="-0.395" y1="0.448" x2="0.116" y2="1.616" id="emp_gc"><stop offset="0%" stop-color="#F7F9FC"/><stop offset="100%" stop-color="#E1E5EB"/></linearGradient><linearGradient x1="-0.257" y1="0.705" x2="0.233" y2="1.525" id="emp_gd"><stop offset="0%" stop-color="#E1E5EB"/><stop offset="100%" stop-color="#BEC3CC"/></linearGradient><linearGradient x1="-0.257" y1="0.705" x2="0.774" y2="0.779" id="emp_gg"><stop offset="0%" stop-color="#E1E5EB"/><stop offset="100%" stop-color="#BEC3CC"/></linearGradient><linearGradient x1="-0.359" y1="0.138" x2="-0.359" y2="1.13" id="emp_gi"><stop offset="0%" stop-color="#F7F9FC"/><stop offset="100%" stop-color="#E1E5EB"/></linearGradient><linearGradient x1="-0.0198" y1="-0.0149" x2="0.305" y2="0.93" id="emp_gj"><stop offset="0%" stop-color="#E1E5EB"/><stop offset="100%" stop-color="#FFFFFF"/></linearGradient><linearGradient x1="-0.0806" y1="0.841" x2="0.908" y2="0.959" id="emp_gk"><stop offset="0%" stop-color="#E1E5EB"/><stop offset="100%" stop-color="#BEC3CC"/></linearGradient><linearGradient x1="-0.257" y1="0.705" x2="0.803" y2="0.916" id="emp_gm"><stop offset="0%" stop-color="#E1E5EB"/><stop offset="100%" stop-color="#BEC3CC"/></linearGradient><mask id="emp_m1" maskUnits="userSpaceOnUse" x="123.85" y="47.63" width="39.1" height="58.79"><path d="M156.19,87.2C156.19,82.41,156.19,49.73,156.19,49.73L124.73,64.59L124.73,106.42C124.73,106.42,151.76,90.4,155.71,88.06C156.01,87.88,156.19,87.55,156.19,87.2Z" fill="#FFFFFF"/></mask><mask id="emp_m2" maskUnits="userSpaceOnUse" x="86.45" y="30.67" width="82.34" height="64.46"><path d="M156.19,49.73L124.73,64.45L86.45,51.68L118.13,38.52L156.19,49.73Z" fill="#FFFFFF"/></mask></defs><path d="M236.58,67.36L238.27,66.29L237.73,65.45L236.05,66.52L236.58,67.36ZM224.56,75L228.01,72.81L227.47,71.96L224.02,74.15L224.56,75ZM212.46,82.68L215.94,80.47L215.4,79.62L211.93,81.83L212.46,82.68ZM200.43,90.31L203.88,88.12L203.34,87.28L199.9,89.47L200.43,90.31ZM188.43,97.94L191.88,95.75L191.34,94.9L187.89,97.09L188.43,97.94ZM176.34,105.61L179.79,103.42L179.25,102.58L175.8,104.77L176.34,105.61ZM164.25,113.29L167.7,111.1L167.16,110.26L163.71,112.44L164.25,113.29ZM152.16,120.97L155.61,118.78L155.07,117.93L151.62,120.12L152.16,120.97ZM140.15,128.59L143.6,126.4L143.07,125.55L139.62,127.74L140.15,128.59ZM128.1,136.24L131.57,134.04L131.04,133.19L127.56,135.4L128.1,136.24ZM116.03,143.91L119.48,141.72L118.94,140.87L115.49,143.06L116.03,143.91ZM105.77,150.42L107.45,149.35L106.92,148.51L105.23,149.58L105.77,150.42Z" fill="url(#emp_g0)"/><path d="M208.58,54.36L210.27,53.29L209.73,52.45L208.05,53.52L208.58,54.36ZM196.56,62L200.01,59.81L199.47,58.96L196.02,61.15L196.56,62ZM184.46,69.68L187.94,67.47L187.4,66.62L183.93,68.83L184.46,69.68ZM172.43,77.31L175.88,75.12L175.34,74.28L171.9,76.47L172.43,77.31ZM160.43,84.94L163.88,82.75L163.34,81.9L159.89,84.09L160.43,84.94ZM148.34,92.61L151.79,90.42L151.25,89.58L147.8,91.77L148.34,92.61ZM136.25,100.29L139.7,98.1L139.16,97.26L135.71,99.44L136.25,100.29ZM124.16,107.97L127.61,105.78L127.07,104.93L123.62,107.12L124.16,107.97ZM112.15,115.59L115.6,113.4L115.07,112.55L111.62,114.74L112.15,115.59ZM100.1,123.24L103.57,121.04L103.04,120.19L99.56,122.4L100.1,123.24ZM88.03,130.91L91.48,128.72L90.94,127.87L87.49,130.06L88.03,130.91ZM77.77,137.42L79.45,136.35L78.92,135.51L77.23,136.58L77.77,137.42Z" fill="url(#emp_g0)"/><path d="M171.58,40.36L173.27,39.29L172.73,38.45L171.05,39.52L171.58,40.36ZM159.56,48L163.01,45.81L162.47,44.96L159.02,47.15L159.56,48ZM147.46,55.68L150.94,53.47L150.4,52.62L146.93,54.83L147.46,55.68ZM135.43,63.31L138.88,61.12L138.34,60.28L134.9,62.47L135.43,63.31ZM123.43,70.94L126.88,68.75L126.34,67.9L122.89,70.09L123.43,70.94ZM111.34,78.61L114.79,76.42L114.25,75.58L110.8,77.77L111.34,78.61ZM99.25,86.29L102.7,84.1L102.16,83.26L98.71,85.44L99.25,86.29ZM87.16,93.97L90.61,91.78L90.07,90.93L86.62,93.12L87.16,93.97ZM75.15,101.59L78.6,99.4L78.07,98.55L74.62,100.74L75.15,101.59ZM63.1,109.24L66.57,107.04L66.04,106.19L62.56,108.4L63.1,109.24ZM51.03,116.91L54.48,114.72L53.94,113.87L50.49,116.06L51.03,116.91ZM40.77,123.42L42.45,122.35L41.92,121.51L40.23,122.58L40.77,123.42Z" fill="url(#emp_g0)"/><path d="M141.58,22.36L143.27,21.29L142.73,20.45L141.05,21.52L141.58,22.36ZM129.56,30L133.01,27.81L132.47,26.96L129.02,29.15L129.56,30ZM117.46,37.68L120.94,35.47L120.4,34.62L116.93,36.83L117.46,37.68ZM105.43,45.31L108.88,43.12L108.34,42.28L104.9,44.47L105.43,45.31ZM93.43,52.94L96.88,50.75L96.34,49.9L92.89,52.09L93.43,52.94ZM81.34,60.61L84.79,58.42L84.25,57.58L80.8,59.77L81.34,60.61ZM69.25,68.29L72.7,66.1L72.16,65.26L68.71,67.44L69.25,68.29ZM57.16,75.97L60.61,73.78L60.07,72.93L56.62,75.12L57.16,75.97ZM45.15,83.59L48.6,81.4L48.07,80.55L44.62,82.74L45.15,83.59ZM33.1,91.24L36.57,89.04L36.04,88.19L32.56,90.4L33.1,91.24ZM21.03,98.91L24.48,96.72L23.94,95.87L20.49,98.06L21.03,98.91ZM10.77,105.42L12.45,104.35L11.92,103.51L10.23,104.58L10.77,105.42Z" fill="url(#emp_g0)"/><path d="M196.67,92.61L156.33,117.39L124.37,106.47L156.19,78.24L196.67,92.61Z" fill="url(#emp_g9)" opacity="0.42"/><path d="M86.45,52.21L86.45,61.72C86.45,61.72,83.05,63.34,80.39,64.61C79.49,65.05,78.63,63.97,79.17,63.12C81.86,58.9,86.45,51.68,86.45,51.68L118.13,38.52L86.45,52.21Z" fill="url(#emp_gb)"/><path d="M124.73,106.42L124.73,64.45L86.45,51.68L86.45,91.28C86.45,91.7,86.71,92.05,87.1,92.2C92.11,94.1,124.73,106.42,124.73,106.42Z" fill="url(#emp_gc)"/><path d="M116.74,74.06C116.74,74.05,116.74,74.05,116.74,74.04C116.74,73.59,116.44,73.2,116.01,73.08C112.63,72.09,98.57,67.99,94.18,66.71C93.54,66.52,92.87,66.98,92.87,67.65C92.87,67.66,92.87,67.66,92.87,67.67C92.87,68.11,93.17,68.51,93.6,68.63C96.98,69.62,111.04,73.72,115.43,75C116.07,75.19,116.74,74.73,116.74,74.06Z" fill="#BEC3CC" opacity="0.65"/><path d="M109.42,80.74C109.42,80.74,109.42,80.73,109.42,80.73C109.42,80.28,109.11,79.89,108.68,79.77C106.1,79.02,97.48,76.55,94.17,75.6C93.53,75.41,92.87,75.88,92.87,76.54C92.87,76.55,92.87,76.55,92.87,76.56C92.87,77.01,93.17,77.4,93.6,77.52C96.18,78.26,104.8,80.74,108.11,81.69C108.75,81.88,109.42,81.41,109.42,80.75Z" fill="#BEC3CC" opacity="0.65"/><path d="M156.19,87.2C156.19,82.41,156.19,49.73,156.19,49.73L124.73,64.59L124.73,106.42C124.73,106.42,151.76,90.4,155.71,88.06C156.01,87.88,156.19,87.55,156.19,87.2Z" fill="url(#emp_gd)"/><g mask="url(#emp_m1)"><path d="M156.49,47.63L162.95,69.01L131.24,86.02L123.85,70.97L124.73,59.05L156.49,47.63Z" fill="#6F7785" opacity="0.4"/></g><path d="M156.19,49.73L124.73,64.45L86.45,51.68L118.13,38.52L156.19,49.73Z" fill="url(#emp_gg)"/><g mask="url(#emp_m2)"><path d="M168.79,95.13L168.79,33.93L118.13,30.67L118.13,93.82L168.79,95.13Z" fill="url(#emp_gi)"/><path d="M118.13,38.52L154.74,49.3L156.19,49.73L154.82,50.37L124.73,64.45L87.9,52.16L86.45,51.68L87.86,51.1L118.13,38.52ZM118.19,39.58L153.37,49.94L124.67,63.37L89.3,51.58L118.19,39.58Z" fill="url(#emp_gj)"/></g><path d="M165.07,66.13C160.01,68.44,137.91,78.52,133.25,80.65C132.77,80.87,132.18,80.65,131.94,80.18C130.3,77.01,124.68,66.15,124.68,66.15L124.73,64.45L156.19,49.73C156.19,49.73,163.36,61.24,165.51,64.69C165.83,65.2,165.62,65.88,165.07,66.13Z" fill="url(#emp_gk)"/><path d="M166.74,23.45Q166.96,22.88,167.12,22.32L166.17,22.03Q166.01,22.56,165.8,23.1L166.74,23.45ZM164.55,27.73Q165.21,26.7,165.75,25.67L164.86,25.21Q164.35,26.2,163.71,27.19L164.55,27.73ZM142.61,25.47Q141.44,25.26,140.11,25.39L140.21,26.38Q141.4,26.27,142.44,26.45L142.61,25.47ZM137.69,25.87Q136.52,26.22,135.41,26.78L135.86,27.67Q136.89,27.16,137.98,26.83L137.69,25.87ZM146.83,28.15Q146.11,27.03,144.99,26.35L144.47,27.2Q145.39,27.77,145.98,28.69L146.83,28.15ZM133.32,28.08Q132.26,28.88,131.52,29.8L132.29,30.43Q132.96,29.61,133.92,28.88L133.32,28.08ZM161.61,31.56Q162.42,30.66,163.15,29.71L162.36,29.1Q161.65,30.01,160.86,30.89L161.61,31.56ZM148.01,32.9Q148.01,31.59,147.77,30.48L146.79,30.7Q147.01,31.7,147.01,32.9L147.01,32.97L148.01,32.98L148.01,32.9ZM130.28,32.01Q129.87,33.34,130.2,34.61L131.17,34.35Q130.91,33.36,131.24,32.31L130.28,32.01ZM158.12,34.89Q159.05,34.13,159.93,33.29L159.24,32.57Q158.39,33.38,157.49,34.12L158.12,34.89ZM147.01,37.78Q147.5,36.64,147.76,35.44L146.78,35.23Q146.55,36.34,146.09,37.39L147.01,37.78ZM154.18,37.66Q155.21,37.06,156.21,36.35L155.63,35.54Q154.67,36.21,153.67,36.8L154.18,37.66ZM131.47,36.84Q132.23,37.67,133.39,38.4L133.92,37.56Q132.88,36.9,132.21,36.16L131.47,36.84ZM149.83,39.73Q150.95,39.32,152.06,38.79L151.63,37.89Q150.56,38.4,149.49,38.79L149.83,39.73ZM135.63,39.58Q136.75,40.06,137.92,40.39L138.19,39.43Q137.09,39.12,136.03,38.66L135.63,39.58ZM145.14,40.86Q144.74,41.35,144.3,41.83L143.57,41.15Q144.38,40.28,145,39.37L145.64,39.81Q146.46,39.67,147.28,39.47L147.52,40.44Q146.33,40.74,145.14,40.89L145.14,40.86ZM140.3,40.88Q141.49,41.05,142.72,41.05L142.72,40.05Q141.56,40.05,140.43,39.89L140.3,40.88ZM140.59,44.94Q141.63,44.24,142.53,43.49L141.89,42.72Q141.03,43.44,140.03,44.11L140.59,44.94ZM136.4,47.3Q137.52,46.77,138.53,46.2L138.04,45.33Q137.06,45.88,135.97,46.4L136.4,47.3ZM131.93,49.13Q133.1,48.72,134.2,48.27L133.83,47.34Q132.75,47.78,131.59,48.19L131.93,49.13ZM127.39,50.53Q128.55,50.22,129.65,49.88L129.36,48.92Q128.27,49.26,127.13,49.56L127.39,50.53ZM122.73,51.6Q123.9,51.37,125.07,51.1L124.85,50.13Q123.69,50.4,122.54,50.62L122.73,51.6ZM119.24,52.18Q119.67,52.13,120.42,52.01L120.26,51.02Q119.53,51.14,119.12,51.19L119.24,52.18Z" fill="url(#emp_gm)"/></svg>
+          </div>
+          <div class="connect-tag">🟡 未连接戒指</div>
+          <div class="title">连接戒指，开启今日健康追踪</div>
+          <div class="desc">实时监测心率、睡眠、压力与身体恢复，每天了解自己多一点。</div>
+          <div class="benefits">
+            <div class="benefit"><span class="benefit-icon">❤️</span><span class="benefit-name">心率</span><span class="benefit-sub">24 小时实时波动</span></div>
+            <div class="benefit"><span class="benefit-icon">🫁</span><span class="benefit-name">血氧</span><span class="benefit-sub">SpO2 睡眠参考</span></div>
+            <div class="benefit"><span class="benefit-icon">💜</span><span class="benefit-name">HRV</span><span class="benefit-sub">自主神经恢复</span></div>
+            <div class="benefit"><span class="benefit-icon">⋯</span><span class="benefit-name">更多</span><span class="benefit-sub">睡眠 / 压力 / 体温…</span></div>
+          </div>
+          <button class="btn-connect" type="button" data-goto="P6.2">🔗 立即连接戒指</button>
+        </div>`;
+
+      // 三环（仅已连接态）
+      const ringsCard = `
+        <section class="rings-section">
+          <div class="rings-container">
+            <svg class="ring-svg" viewBox="0 0 200 200">
+              <circle class="ring-outer-bg"  cx="100" cy="100" r="84"></circle>
+              <circle class="ring-middle-bg" cx="100" cy="100" r="62"></circle>
+              <circle class="ring-inner-bg"  cx="100" cy="100" r="40"></circle>
+              <circle class="ring-progress ring-outer"  cx="100" cy="100" r="84" stroke-dasharray="527.5" stroke-dashoffset="211"></circle>
+              <circle class="ring-progress ring-middle" cx="100" cy="100" r="62" stroke-dasharray="389.5" stroke-dashoffset="78"></circle>
+              <circle class="ring-progress ring-inner"  cx="100" cy="100" r="40" stroke-dasharray="251.3" stroke-dashoffset="38"></circle>
+            </svg>
+            <div class="ring-center-badge">🥈</div>
+          </div>
+          <div class="rings-summary">状态满满，继续加油！</div>
+          <div class="rings-legend">
+            <div class="ring-legend-item ring-1"><div class="ring-legend-label">习惯</div><div class="ring-legend-value">85%</div><div class="ring-legend-desc">持之以恒</div></div>
+            <div class="ring-legend-item ring-2"><div class="ring-legend-label">关心</div><div class="ring-legend-value">80%</div><div class="ring-legend-desc">心意相通</div></div>
+            <div class="ring-legend-item ring-3"><div class="ring-legend-label">成长</div><div class="ring-legend-value">60%</div><div class="ring-legend-desc">成长跃迁</div></div>
+          </div>
+        </section>`;
+
+      // 简化挑战卡
+      const challenges = `
+        <div class="section-head">
+          <div class="section-title">今日挑战</div>
+        </div>
+        <div class="login-card" data-goto="P1.1">
+          <div class="login-card-avatar">👤</div>
+          <div class="login-card-text">
+            <div class="login-card-main">点击登录</div>
+            <div class="login-card-sub">体验更个性化的挑战内容和好友互动</div>
+          </div>
+          <div class="login-card-arrow">›</div>
+        </div>
+        <div class="challenges-list">
+          <div class="challenge-card bg-walk">
+            <div class="ch-row1"><div class="ch-icon">👟</div><div class="ch-name">走出健康节奏</div><div class="ch-xp">+30 XP</div></div>
+            <div class="ch-subtitle">10,000 步 · 中等强度</div>
+            <div class="ch-row2"><div class="ch-progress"><div class="ch-fill" style="width:85%"></div></div><div class="ch-percent">85%</div></div>
+            <div class="ch-row3">已走 <strong>8,520 步</strong> / 10,000 步，距离 <strong>1,480 步</strong>。</div>
+          </div>
+          <div class="challenge-card bg-sleep">
+            <div class="ch-row1"><div class="ch-icon">🌙</div><div class="ch-name">睡个好觉</div><div class="ch-xp">+40 XP</div></div>
+            <div class="ch-subtitle">7-8 小时高质量睡眠</div>
+            <div class="ch-row2"><div class="ch-progress"><div class="ch-fill" style="width:100%"></div></div><div class="ch-percent">✓ 完成</div></div>
+            <div class="ch-row3">昨晚睡眠 <strong>7h 42m</strong>，深睡占比 22%。</div>
+          </div>
+          <div class="challenge-card bg-burn">
+            <div class="ch-row1"><div class="ch-icon">🔥</div><div class="ch-name">活力燃烧</div><div class="ch-xp">+25 XP</div></div>
+            <div class="ch-subtitle">日均消耗 500 千卡</div>
+            <div class="ch-row2"><div class="ch-progress"><div class="ch-fill" style="width:62%"></div></div><div class="ch-percent">62%</div></div>
+            <div class="ch-row3">已消耗 <strong>312 千卡</strong>，去散步 20 分钟即可达成。</div>
+          </div>
+        </div>`;
+
+      const tabBar = `
+        <div class="tab-bar">
+          <div class="tab-item is-active"><div class="tab-icon">☀️</div><div class="tab-label">今日</div></div>
+          <div class="tab-item"><div class="tab-icon">📚</div><div class="tab-label">练级</div></div>
+          <div class="tab-item"><div class="tab-icon">❤️</div><div class="tab-label">关心</div></div>
+          <div class="tab-item"><div class="tab-icon">🎁</div><div class="tab-label">收获</div></div>
+        </div>`;
+
+      return `
+        ${statusBar()}
+        <div class="t1-topbar">
+          <div class="t1-topbar-left">
+            <div class="t1-topbar-title">今日</div>
+            ${ringTag}
+          </div>
+          <div class="t1-topbar-right">
+            ${profileBtn}
+          </div>
+        </div>
+        <div class="t1-page ${cls.join(' ')}" style="flex:1;display:flex;flex-direction:column;min-height:0;">
+          <div class="t1-scroll">
+            ${connectCard}
+            ${ringsCard}
+            ${challenges}
+          </div>
+        </div>
+        ${tabBar}`;
+    }
+
+    function pageT1Init()      { return pageT1('init'); }
+    function pageT1Connected() { return pageT1('connected'); }
+    function pageT1Full()      { return pageT1('full'); }
+
+    /* ============================================================
+       页面注册表 + 渲染调度
+       ============================================================ */
+    const PAGE_RENDERERS = {
+      'T1.init':      pageT1Init,
+      'T1.connected': pageT1Connected,
+      'T1.full':      pageT1Full,
+      'P1.1': pageP11,
+      'P1.2': pageP12,
+      'P2':   pageP2,
+      'P3':   pageP3,
+      'P4':   pageP4,
+      'P5':   pageP5,
+      'P5.1': pageP51,
+      'P5.2': pageP52,
+      'P5.3': pageP53,
+      'P5.4': pageP54,
+      'P5.5': pageP55,
+      'P6.1': pageP61,
+      'P6.2': pageP62Searching,
+      'P6.2.found': pageP62Found,
+      'P6.3': pageP63,
+      'P-LOGIN-DONE':   pageLoginDone,
+      'P-CONNECT-DONE': pageConnectDone
+    };
+
+    const stage = document.getElementById('phoneStage');
+    let toastTimer = null;
+
+    // 切到指定 page，并同步左侧导航高亮
+    function navigateTo(key) {
+      if (!PAGE_RENDERERS[key]) return;
+      document.querySelectorAll('.nav-item').forEach(i => {
+        i.classList.toggle('is-active', i.dataset.page === key);
+      });
+      renderPage(key);
+    }
+
+    function renderPage(key) {
+      const fn = PAGE_RENDERERS[key];
+      if (!fn) return;
+      // 清掉上一次 toast 的自动跳转
+      if (toastTimer) { clearTimeout(toastTimer); toastTimer = null; }
+
+      stage.innerHTML = fn();
+
+      // 触发滚轮居中（如果存在 picker）
+      stage.querySelectorAll('.picker-wheel').forEach(wheel => {
+        const active = wheel.querySelector('.is-active');
+        if (active) wheel.scrollTop = active.offsetTop - 96;
+        bindPickerScroll(wheel);
+      });
+
+      // 全屏轻提示：1.5 秒后自动跳转到下一页
+      if (key === 'P-LOGIN-DONE') {
+        // 完成登录 → 跳到「今日 · 已连接 + 已登录」完整态
+        toastTimer = setTimeout(() => navigateTo('T1.full'), 1500);
+      } else if (key === 'P-CONNECT-DONE') {
+        // 戒指连接成功 → 跳回「今日 · 已连接 + 未登录」
+        toastTimer = setTimeout(() => navigateTo('T1.connected'), 1500);
+      } else if (key === 'P6.2') {
+        // 搜索中：2.4 秒后模拟搜到 1 枚戒指，自动切到已发现态
+        toastTimer = setTimeout(() => navigateTo('P6.2.found'), 2400);
+      } else if (key === 'P2') {
+        // 验证码页：绑定 6 位输入 + 自动校验
+        bindCodeInput();
+      }
+    }
+
+    // 验证码输入：6 位输完后自动校验通过 → 跳 P3
+    function bindCodeInput() {
+      const input = stage.querySelector('#loginCodeInput');
+      if (!input) return;
+      const cells = [...stage.querySelectorAll('.login-code-cell')];
+      const errorEl = stage.querySelector('#loginCodeError');
+      const countEl = stage.querySelector('#loginCodeCount');
+      const resendEl = stage.querySelector('#loginCodeResend');
+
+      // 自动聚焦
+      setTimeout(() => input.focus({ preventScroll: true }), 80);
+
+      // 实时同步到 6 个格子
+      input.addEventListener('input', (e) => {
+        const value = e.target.value.replace(/\D/g, '').slice(0, 6);
+        e.target.value = value;
+        cells.forEach((cell, i) => {
+          cell.textContent = value[i] || '';
+          cell.classList.toggle('has-value', !!value[i]);
+          cell.classList.toggle('is-active', i === value.length && value.length < 6);
+          cell.classList.remove('is-error');
+        });
+        if (errorEl) errorEl.classList.remove('show');
+
+        // 输完 6 位 → 模拟校验通过 → 跳 P3（注册流程）
+        if (value.length === 6) {
+          // 加一个小延时，让最后一格的高亮态可见
+          setTimeout(() => navigateTo('P3'), 350);
+        }
+      });
+
+      // 点击格子区域聚焦输入框（兜底）
+      const row = stage.querySelector('#loginCodeRow');
+      if (row) row.addEventListener('click', () => input.focus());
+
+      // 倒计时：60s 倒数到 0 后变成可点的"重新获取"
+      let count = 60;
+      const interval = setInterval(() => {
+        // 离开 P2 后停止
+        if (!stage.querySelector('#loginCodeInput')) { clearInterval(interval); return; }
+        count--;
+        if (count <= 0) {
+          clearInterval(interval);
+          const resendEl2 = stage.querySelector('#loginCodeResend');
+          if (resendEl2) {
+            resendEl2.innerHTML = '<button type="button" style="background:transparent;border:none;color:var(--color-brand-primary);font-weight:600;font-size:13px;font-family:inherit;cursor:pointer;padding:0;">重新获取</button>';
+            resendEl2.querySelector('button').addEventListener('click', () => navigateTo('P2'));
+          }
+        } else {
+          const c = stage.querySelector('#loginCodeCount');
+          if (c) c.textContent = count;
+        }
+      }, 1000);
+    }
+
+    function bindPickerScroll(wheel) {
+      const opts = [...wheel.querySelectorAll('.picker-option')];
+      let timer;
+      wheel.addEventListener('scroll', () => {
+        clearTimeout(timer);
+        timer = setTimeout(() => {
+          const center = wheel.scrollTop + wheel.clientHeight / 2;
+          let nearest = null, nearestDist = Infinity;
+          opts.forEach(o => {
+            const oc = o.offsetTop + o.offsetHeight / 2;
+            const d = Math.abs(oc - center);
+            if (d < nearestDist) { nearestDist = d; nearest = o; }
+          });
+          opts.forEach(o => o.classList.remove('is-active', 'is-near'));
+          if (nearest) nearest.classList.add('is-active');
+        }, 80);
+      });
+    }
+
+    /* ============================================================
+       左侧导航联动
+       ============================================================ */
+    document.querySelectorAll('.nav-item').forEach(item => {
+      item.addEventListener('click', () => {
+        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('is-active'));
+        item.classList.add('is-active');
+        renderPage(item.dataset.page);
+      });
+    });
+
+    document.querySelectorAll('.state-btn[data-state]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (btn.dataset.state === 'dark-mode') {
+          document.body.classList.toggle('is-dark-mode');
+          btn.classList.toggle('is-active', document.body.classList.contains('is-dark-mode'));
+        }
+      });
+    });
+
+    // 默认渲染 T1.init（流转起点）
+    renderPage('T1.init');
+
+    /* ============================================================
+       基础交互联调（demo 级别）
+       ============================================================ */
+
+    // 协议勾选切换
+    document.addEventListener('click', (e) => {
+      const agree = e.target.closest('.login-agree');
+      if (agree) agree.classList.toggle('checked');
+    });
+
+    // 输入框清空按钮
+    document.addEventListener('click', (e) => {
+      const clear = e.target.closest('.login-clear');
+      if (!clear) return;
+      const row = clear.closest('.login-input-row');
+      const input = row && row.querySelector('input');
+      if (input) {
+        input.value = '';
+        row.classList.remove('has-value');
+      }
+    });
+
+    // 输入实时切换 has-value
+    document.addEventListener('input', (e) => {
+      if (!e.target.matches('.login-input, .sheet-edit-input')) return;
+      const row = e.target.closest('.login-input-row, .sheet-edit-row');
+      if (!row) return;
+      row.classList.toggle('has-value', !!e.target.value);
+    });
+
+    // 统一路由：data-goto 触发页面切换（含主按钮 spinner 过渡）
+    stage.addEventListener('click', (e) => {
+      const trigger = e.target.closest('[data-goto]');
+      if (!trigger) return;
+      e.preventDefault();
+      e.stopPropagation();
+      const target = trigger.dataset.goto;
+      if (!target) return;
+      if (trigger.classList.contains('login-primary-btn')) {
+        trigger.classList.add('is-loading');
+        setTimeout(() => navigateTo(target), 700);
+      } else if (trigger.classList.contains('connect-found-action')) {
+        trigger.classList.add('is-connecting');
+        setTimeout(() => navigateTo(target), 700);
+      } else {
+        navigateTo(target);
+      }
+    });
+
+    // 健康标签 chip 切换
+    document.addEventListener('click', (e) => {
+      const chip = e.target.closest('.login-tag-chip, .profile-tag-chip');
+      if (!chip || chip.classList.contains('is-add') || chip.classList.contains('social')) return;
+      chip.classList.toggle('selected');
+      chip.classList.toggle('is-off');
+    });
+
+    // 习惯开关
+    document.addEventListener('click', (e) => {
+      const t = e.target.closest('.profile-toggle');
+      if (!t) return;
+      t.classList.toggle('on');
+      const row = t.closest('.profile-row-share');
+      if (row) row.classList.toggle('is-on', t.classList.contains('on'));
+    });
+
+    // 密码可见切换
+    document.addEventListener('click', (e) => {
+      const eye = e.target.closest('.login-eye');
+      if (!eye) return;
+      const row = eye.closest('.login-input-row');
+      const input = row && row.querySelector('input');
+      if (!input) return;
+      input.type = input.type === 'password' ? 'text' : 'password';
+    });
+
+    // 头像选择（事件委托到 stage，因为内容会被替换）
+    stage.addEventListener('click', (e) => {
+      const item = e.target.closest('.avatar-grid-item');
+      if (!item) return;
+      const grid = item.closest('.avatar-grid');
+      grid.querySelectorAll('.avatar-grid-item').forEach(i => i.classList.remove('selected'));
+      item.classList.add('selected');
+    });
+
+    // 操作菜单选中态（事件委托）
+    stage.addEventListener('click', (e) => {
+      const it = e.target.closest('.action-sheet-item:not(.is-cancel)');
+      if (!it) return;
+      const group = it.closest('.action-sheet-group');
+      if (!group) return;
+      group.querySelectorAll('.action-sheet-item:not(.is-cancel)').forEach(p => p.classList.remove('is-selected'));
+      it.classList.add('is-selected');
+    });
+
+    // 顶栏返回 / 关闭按钮的事件已由 data-goto 路由统一处理
+
+  </script>
+</body>
+</html>

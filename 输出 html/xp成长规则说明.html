@@ -1,0 +1,1732 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AIRING XP 成长规则说明</title>
+  <style>
+    :root {
+      --bg: #f5f7ff;
+      --bg-soft: #eef3ff;
+      --card: rgba(255, 255, 255, 0.88);
+      --card-strong: #ffffff;
+      --text: #172033;
+      --text-soft: #5d6880;
+      --text-faint: #8992a8;
+      --line: rgba(48, 72, 132, 0.12);
+      --blue: #3a6fe0;
+      --blue-2: #6c7dff;
+      --cyan: #11c7ef;
+      --pink: #ef5dc7;
+      --gold: #ffb52b;
+      --green: #34c47a;
+      --orange: #ff8b4f;
+      --shadow: 0 24px 60px rgba(58, 88, 168, 0.12);
+      --radius-xl: 28px;
+      --radius-lg: 20px;
+      --radius-md: 16px;
+      --radius-sm: 12px;
+      --max: 1180px;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      font-family: "Inter", "PingFang SC", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(108, 125, 255, 0.16), transparent 28%),
+        radial-gradient(circle at top right, rgba(17, 199, 239, 0.14), transparent 24%),
+        linear-gradient(180deg, #edf3ff 0%, #f8faff 52%, #f5f7ff 100%);
+      line-height: 1.6;
+    }
+
+    .page {
+      width: min(var(--max), calc(100vw - 32px));
+      margin: 0 auto;
+      padding: 32px 0 72px;
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 36px;
+      border-radius: 32px;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.96) 0%, rgba(242,247,255,0.92) 100%);
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(255,255,255,0.7);
+    }
+
+    .hero::before,
+    .hero::after {
+      content: "";
+      position: absolute;
+      border-radius: 999px;
+      filter: blur(10px);
+      pointer-events: none;
+    }
+
+    .hero::before {
+      width: 260px;
+      height: 260px;
+      right: -80px;
+      top: -60px;
+      background: radial-gradient(circle, rgba(108,125,255,0.26), transparent 68%);
+    }
+
+    .hero::after {
+      width: 220px;
+      height: 220px;
+      left: -40px;
+      bottom: -70px;
+      background: radial-gradient(circle, rgba(239,93,199,0.18), transparent 68%);
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(58, 111, 224, 0.08);
+      color: var(--blue);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+
+    h1, h2, h3, p { margin: 0; }
+
+    h1 {
+      margin-top: 18px;
+      font-size: clamp(32px, 4vw, 48px);
+      line-height: 1.08;
+      letter-spacing: -0.03em;
+      max-width: 760px;
+    }
+
+    .hero-copy {
+      margin-top: 18px;
+      max-width: 760px;
+      color: var(--text-soft);
+      font-size: 17px;
+    }
+
+    .hero-grid {
+      margin-top: 28px;
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid rgba(255, 255, 255, 0.72);
+      border-radius: var(--radius-xl);
+      box-shadow: 0 18px 40px rgba(70, 92, 158, 0.09);
+      backdrop-filter: blur(10px);
+    }
+
+    .hero-panel {
+      padding: 24px;
+    }
+
+    .mini-title {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--text-faint);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .core-loop {
+      display: grid;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .loop-row {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      padding: 14px 16px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.92), rgba(241,246,255,0.86));
+      border: 1px solid var(--line);
+    }
+
+    .loop-icon {
+      width: 46px;
+      height: 46px;
+      border-radius: 16px;
+      display: grid;
+      place-items: center;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+
+    .loop-row:nth-child(1) .loop-icon { background: linear-gradient(135deg, rgba(52,196,122,0.18), rgba(17,199,239,0.2)); }
+    .loop-row:nth-child(2) .loop-icon { background: linear-gradient(135deg, rgba(255,181,43,0.2), rgba(255,139,79,0.2)); }
+    .loop-row:nth-child(3) .loop-icon { background: linear-gradient(135deg, rgba(108,125,255,0.2), rgba(239,93,199,0.2)); }
+    .loop-row:nth-child(4) .loop-icon { background: linear-gradient(135deg, rgba(58,111,224,0.18), rgba(17,199,239,0.18)); }
+
+    .loop-main {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .loop-main strong {
+      display: block;
+      font-size: 16px;
+      margin-bottom: 2px;
+    }
+
+    .loop-main span {
+      color: var(--text-soft);
+      font-size: 14px;
+    }
+
+    .avatar-stage {
+      position: relative;
+      padding: 26px 22px 22px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-height: 100%;
+      background:
+        radial-gradient(circle at top center, rgba(108,125,255,0.2), transparent 45%),
+        linear-gradient(180deg, #f7faff 0%, #eef3ff 100%);
+    }
+
+    .avatar-stage-wrap {
+      position: relative;
+      margin: 12px auto 16px;
+      width: 238px;
+      height: 238px;
+      border-radius: 999px;
+      background: radial-gradient(circle, rgba(255,255,255,0.98) 0%, rgba(232,239,255,0.92) 68%, rgba(210,222,255,0.72) 100%);
+      border: 1px solid rgba(108,125,255,0.16);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.7);
+    }
+
+    .ring-halo,
+    .ring-core,
+    .ring-crown,
+    .ring-cape,
+    .ring-orbit {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .ring-halo {
+      top: 24px;
+      width: 154px;
+      height: 154px;
+      border-radius: 999px;
+      border: 12px solid rgba(108,125,255,0.18);
+      box-shadow:
+        0 0 0 10px rgba(17,199,239,0.08),
+        0 0 50px rgba(108,125,255,0.12);
+    }
+
+    .ring-orbit {
+      top: 10px;
+      width: 180px;
+      height: 180px;
+      border-radius: 999px;
+      border: 1px dashed rgba(58,111,224,0.26);
+    }
+
+    .ring-crown {
+      top: 34px;
+      font-size: 34px;
+    }
+
+    .ring-core {
+      top: 72px;
+      width: 96px;
+      height: 96px;
+      border-radius: 30px;
+      background: linear-gradient(180deg, #ffd778 0%, #ffb12c 100%);
+      box-shadow: 0 18px 30px rgba(255,181,43,0.26);
+      display: grid;
+      place-items: center;
+      color: #6b4300;
+      font-size: 42px;
+    }
+
+    .ring-cape {
+      top: 144px;
+      width: 126px;
+      height: 68px;
+      border-radius: 28px 28px 40px 40px;
+      background: linear-gradient(180deg, #7d5cff 0%, #e55ad2 100%);
+      box-shadow: 0 16px 24px rgba(125,92,255,0.18);
+    }
+
+    .equip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      margin-top: 6px;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.82);
+      border: 1px solid rgba(58,111,224,0.1);
+      color: var(--text-soft);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .hero-note {
+      margin-top: 12px;
+      color: var(--text-soft);
+      font-size: 14px;
+      text-align: center;
+    }
+
+    section {
+      margin-top: 24px;
+    }
+
+    .section-card {
+      padding: 28px;
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: end;
+      margin-bottom: 20px;
+    }
+
+    .section-head h2 {
+      font-size: 28px;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+    }
+
+    .section-head p {
+      max-width: 720px;
+      color: var(--text-soft);
+      font-size: 15px;
+    }
+
+    .dual-grid,
+    .rule-grid,
+    .privilege-grid,
+    .principle-grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .dual-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .principle-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .rule-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .privilege-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .info-card,
+    .principle-card,
+    .rule-card,
+    .priv-card {
+      padding: 20px;
+      border-radius: var(--radius-lg);
+      background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(246,249,255,0.92));
+      border: 1px solid var(--line);
+    }
+
+    .info-card h3,
+    .principle-card h3,
+    .rule-card h3,
+    .priv-card h3 {
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+
+    .muted {
+      color: var(--text-soft);
+      font-size: 14px;
+    }
+
+    .big-number {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      margin: 14px 0 12px;
+    }
+
+    .big-number strong {
+      font-size: 34px;
+      line-height: 1;
+    }
+
+    .big-number span {
+      color: var(--text-faint);
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .check-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .check-row {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      color: var(--text-soft);
+      font-size: 14px;
+    }
+
+    .check-row b {
+      color: var(--text);
+    }
+
+    .check-row::before {
+      content: "•";
+      color: var(--blue);
+      font-weight: 900;
+      margin-top: -1px;
+    }
+
+    .xp-table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.92);
+    }
+
+    .xp-table th,
+    .xp-table td {
+      padding: 15px 16px;
+      text-align: left;
+      vertical-align: top;
+      border-bottom: 1px solid var(--line);
+      font-size: 14px;
+    }
+
+    .xp-table th {
+      font-size: 13px;
+      color: var(--text-faint);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      background: rgba(238,243,255,0.8);
+    }
+
+    .xp-table tr:last-child td { border-bottom: 0; }
+    .xp-table td strong { color: var(--text); font-size: 15px; }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .tag-blue { background: rgba(58,111,224,0.1); color: var(--blue); }
+    .tag-pink { background: rgba(239,93,199,0.12); color: #c23fa0; }
+    .tag-gold { background: rgba(255,181,43,0.14); color: #a56b00; }
+    .tag-green { background: rgba(52,196,122,0.12); color: #128752; }
+
+    .ladder {
+      display: grid;
+      gap: 14px;
+    }
+
+    .ladder-summary {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin: 0 0 16px;
+    }
+
+    .ladder-summary-card {
+      padding: 16px 18px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(244,248,255,0.94));
+    }
+
+    .ladder-summary-card strong {
+      display: block;
+      font-size: 16px;
+      margin-bottom: 6px;
+    }
+
+    .ladder-summary-card span {
+      color: var(--text-soft);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .ladder-row {
+      display: grid;
+      grid-template-columns: 110px 180px 1fr 240px;
+      gap: 16px;
+      align-items: center;
+      padding: 16px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.96), rgba(244,248,255,0.92));
+      border: 1px solid var(--line);
+    }
+
+    .lv-pill {
+      display: inline-flex;
+      justify-content: center;
+      width: 92px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 800;
+      background: linear-gradient(135deg, rgba(58,111,224,0.12), rgba(108,125,255,0.18));
+      color: var(--blue);
+    }
+
+    .xp-range {
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .bar {
+      position: relative;
+      height: 14px;
+      border-radius: 999px;
+      background: rgba(108,125,255,0.12);
+      overflow: hidden;
+    }
+
+    .bar > span {
+      position: absolute;
+      inset: 0 auto 0 0;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #78cbff 0%, #6c7dff 52%, #ef5dc7 100%);
+    }
+
+    .bar-copy {
+      margin-top: 8px;
+      color: var(--text-soft);
+      font-size: 13px;
+    }
+
+    .perk-box {
+      padding: 14px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, rgba(58,111,224,0.08), rgba(108,125,255,0.08));
+      border: 1px solid rgba(58,111,224,0.12);
+    }
+
+    .perk-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      margin-bottom: 6px;
+      padding: 5px 9px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.82);
+      color: var(--blue);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .perk-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--text);
+      line-height: 1.45;
+    }
+
+    .perk-sub {
+      margin-top: 6px;
+      color: var(--text-soft);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .equip-cards {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .showcase-stack {
+      display: grid;
+      gap: 18px;
+    }
+
+    .showcase-block {
+      padding: 20px;
+      border-radius: 22px;
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(243,247,255,0.93));
+    }
+
+    .showcase-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+
+    .showcase-head h3 {
+      font-size: 20px;
+      margin: 0;
+    }
+
+    .reference-figure {
+      margin: 0;
+      overflow: hidden;
+      border-radius: 22px;
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(243,247,255,0.93));
+    }
+
+    .reference-figure img {
+      display: block;
+      width: 100%;
+      height: auto;
+      background: #eaf1ff;
+    }
+
+    .reference-caption {
+      padding: 14px 16px 16px;
+      color: var(--text-soft);
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .reference-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 14px 16px 0;
+    }
+
+    .reference-pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: rgba(58,111,224,0.08);
+      border: 1px solid rgba(58,111,224,0.1);
+      color: var(--text);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .reference-meta {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      padding: 0 16px 16px;
+    }
+
+    .reference-meta-card {
+      padding: 14px;
+      border-radius: 16px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(246,249,255,0.92));
+      border: 1px solid var(--line);
+    }
+
+    .reference-meta-card strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 14px;
+    }
+
+    .reference-meta-card span {
+      color: var(--text-soft);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .avatar-compare-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .avatar-card,
+    .ip-card {
+      padding: 18px;
+      border-radius: 20px;
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(246,249,255,0.92));
+    }
+
+    .avatar-stage-demo {
+      position: relative;
+      height: 112px;
+      border-radius: 18px;
+      background:
+        radial-gradient(circle at top center, rgba(108,125,255,0.14), transparent 42%),
+        linear-gradient(180deg, #f8fbff 0%, #edf2ff 100%);
+      overflow: hidden;
+      margin-bottom: 14px;
+    }
+
+    .avatar-demo {
+      position: absolute;
+      left: 50%;
+      top: 24px;
+      transform: translateX(-50%);
+      width: 58px;
+      height: 58px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #6c7dff 0%, #ef5dc7 100%);
+      display: grid;
+      place-items: center;
+      color: #fff;
+      font-size: 28px;
+      box-shadow: 0 14px 22px rgba(108,125,255,0.18);
+    }
+
+    .avatar-helmet,
+    .avatar-skin-badge,
+    .avatar-ring {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .avatar-ring {
+      top: 16px;
+      width: 76px;
+      height: 76px;
+      border-radius: 999px;
+      border: 4px solid rgba(108,125,255,0.14);
+    }
+
+    .avatar-helmet {
+      top: 14px;
+      font-size: 22px;
+      filter: drop-shadow(0 4px 10px rgba(0,0,0,0.12));
+    }
+
+    .avatar-skin-badge {
+      bottom: 14px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 800;
+      color: #fff;
+      white-space: nowrap;
+    }
+
+    .skin-dark { background: linear-gradient(135deg, #2a2e45 0%, #0f111a 100%); }
+    .skin-gold { background: linear-gradient(135deg, #f7c45d 0%, #b97a06 100%); }
+    .skin-rainbow { background: linear-gradient(135deg, #6c7dff 0%, #11c7ef 35%, #4bd07a 68%, #ef5dc7 100%); }
+
+    .avatar-card h4,
+    .ip-card h4 {
+      margin: 0 0 6px;
+      font-size: 18px;
+    }
+
+    .level-note {
+      color: var(--text-faint);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .ip-compare-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .ip-stage {
+      position: relative;
+      height: 220px;
+      border-radius: 22px;
+      background:
+        radial-gradient(circle at top center, rgba(108,125,255,0.18), transparent 42%),
+        linear-gradient(180deg, #f8fbff 0%, #edf2ff 100%);
+      overflow: hidden;
+      margin-bottom: 14px;
+    }
+
+    .ip-halo,
+    .ip-body,
+    .ip-cape,
+    .ip-helm,
+    .ip-weapon,
+    .ip-floor {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .ip-halo {
+      top: 22px;
+      width: 118px;
+      height: 118px;
+      border-radius: 999px;
+      border: 8px solid rgba(108,125,255,0.12);
+    }
+
+    .ip-body {
+      top: 64px;
+      width: 74px;
+      height: 74px;
+      border-radius: 24px;
+      background: linear-gradient(180deg, #ffd778 0%, #ffb12c 100%);
+      display: grid;
+      place-items: center;
+      color: #6b4300;
+      font-size: 34px;
+      z-index: 2;
+      box-shadow: 0 14px 24px rgba(255,181,43,0.24);
+    }
+
+    .ip-cape {
+      top: 116px;
+      width: 104px;
+      height: 52px;
+      border-radius: 22px 22px 34px 34px;
+      background: linear-gradient(180deg, #a8b8ff 0%, #6c7dff 100%);
+      z-index: 1;
+    }
+
+    .ip-cape.mid { width: 118px; height: 64px; background: linear-gradient(180deg, #87a1ff 0%, #6c7dff 60%, #9d63ff 100%); }
+    .ip-cape.high { width: 132px; height: 72px; background: linear-gradient(180deg, #72b9ff 0%, #6c7dff 36%, #11c7ef 68%, #ef5dc7 100%); }
+
+    .ip-helm {
+      top: 36px;
+      font-size: 30px;
+      z-index: 3;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.12));
+    }
+
+    .ip-weapon {
+      top: 80px;
+      left: calc(50% + 54px);
+      transform: none;
+      font-size: 34px;
+      z-index: 3;
+      filter: drop-shadow(0 6px 10px rgba(0,0,0,0.14));
+    }
+
+    .ip-floor {
+      bottom: 16px;
+      width: 120px;
+      height: 16px;
+      border-radius: 999px;
+      background: rgba(108,125,255,0.1);
+      box-shadow: 0 0 0 8px rgba(108,125,255,0.05);
+    }
+
+    .ip-floor.high {
+      background: linear-gradient(90deg, rgba(108,125,255,0.24), rgba(17,199,239,0.24), rgba(239,93,199,0.24));
+      box-shadow: 0 0 0 8px rgba(239,93,199,0.06);
+    }
+
+    .equip-card {
+      padding: 20px;
+      border-radius: 22px;
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(243,247,255,0.93));
+    }
+
+    .equip-visual {
+      position: relative;
+      height: 186px;
+      margin-bottom: 14px;
+      border-radius: 20px;
+      background:
+        radial-gradient(circle at top center, rgba(108,125,255,0.18), transparent 40%),
+        linear-gradient(180deg, #f8fbff 0%, #edf2ff 100%);
+      overflow: hidden;
+    }
+
+    .mini-avatar,
+    .mini-halo,
+    .mini-item,
+    .mini-cloak {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .mini-halo {
+      top: 24px;
+      width: 106px;
+      height: 106px;
+      border-radius: 999px;
+      border: 8px solid rgba(108,125,255,0.18);
+    }
+
+    .mini-avatar {
+      top: 58px;
+      width: 68px;
+      height: 68px;
+      border-radius: 22px;
+      background: linear-gradient(180deg, #ffd778 0%, #ffb12c 100%);
+      display: grid;
+      place-items: center;
+      font-size: 30px;
+      color: #6b4300;
+      box-shadow: 0 14px 24px rgba(255,181,43,0.24);
+    }
+
+    .mini-item {
+      top: 18px;
+      font-size: 28px;
+    }
+
+    .mini-cloak {
+      top: 116px;
+      width: 96px;
+      height: 42px;
+      border-radius: 20px 20px 32px 32px;
+      background: linear-gradient(180deg, #7d5cff 0%, #e55ad2 100%);
+    }
+
+    .slot-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .slot {
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: rgba(58,111,224,0.07);
+      color: var(--text-soft);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .example-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 16px;
+    }
+
+    .day-flow {
+      display: grid;
+      gap: 12px;
+    }
+
+    .day-step {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      padding: 14px 16px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(246,249,255,0.92));
+    }
+
+    .day-badge {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      font-size: 20px;
+      background: rgba(58,111,224,0.08);
+      flex-shrink: 0;
+    }
+
+    .day-step strong {
+      display: block;
+      font-size: 15px;
+    }
+
+    .day-step span {
+      color: var(--text-soft);
+      font-size: 13px;
+    }
+
+    .score-box {
+      padding: 22px;
+      border-radius: 24px;
+      background:
+        linear-gradient(145deg, rgba(255,255,255,0.98), rgba(241,246,255,0.94));
+      border: 1px solid var(--line);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 100%;
+    }
+
+    .score-total {
+      margin-top: 16px;
+      padding: 18px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, rgba(108,125,255,0.1), rgba(239,93,199,0.1));
+    }
+
+    .score-total strong {
+      display: block;
+      font-size: 40px;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+
+    .footnote {
+      margin-top: 18px;
+      color: var(--text-faint);
+      font-size: 13px;
+    }
+
+    @media (max-width: 1080px) {
+      .hero-grid,
+      .dual-grid,
+      .rule-grid,
+      .privilege-grid,
+      .principle-grid,
+      .equip-cards,
+      .example-grid,
+      .avatar-compare-grid,
+      .ip-compare-grid,
+      .reference-meta,
+      .ladder-summary {
+        grid-template-columns: 1fr;
+      }
+
+      .ladder-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .page {
+        width: min(var(--max), calc(100vw - 20px));
+        padding-top: 18px;
+      }
+
+      .hero,
+      .section-card {
+        padding: 20px;
+      }
+
+      h1 {
+        font-size: 30px;
+      }
+
+      .avatar-stage-wrap {
+        width: 204px;
+        height: 204px;
+      }
+
+      .ring-halo {
+        width: 132px;
+        height: 132px;
+        top: 24px;
+      }
+
+      .ring-orbit {
+        width: 156px;
+        height: 156px;
+      }
+
+      .ring-core {
+        top: 72px;
+        width: 82px;
+        height: 82px;
+        font-size: 36px;
+      }
+
+      .ring-cape {
+        top: 136px;
+        width: 110px;
+        height: 56px;
+      }
+
+      .xp-table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="hero">
+      <div class="eyebrow">AIRING Growth System · XP / 等级 / 装备 / 特权</div>
+      <h1>把 XP 做成一个长期成长系统，而不是只会跳数字的积分。</h1>
+      <p class="hero-copy">
+        基于现有原型里的「今日挑战」「关心互动」「邀请好友」「累计 XP 换礼」这几条线，这套方案把 XP 明确分成今日反馈和长期成长两层。
+        用户每天通过健康行为与关心行为积累 XP，累计 XP 决定等级；等级再反向驱动收获页中的 IP 形象升级、装备变化和特权解锁。
+      </p>
+
+      <div class="hero-grid">
+        <div class="card hero-panel">
+          <div class="mini-title">核心闭环</div>
+          <div class="core-loop">
+            <div class="loop-row">
+              <div class="loop-icon">🎯</div>
+              <div class="loop-main">
+                <strong>完成今日挑战</strong>
+                <span>走路、睡眠、消耗、喝水、站立、跑步、吃药，构成最稳定的 XP 来源。</span>
+              </div>
+            </div>
+            <div class="loop-row">
+              <div class="loop-icon">❤️</div>
+              <div class="loop-main">
+                <strong>发生关心互动</strong>
+                <span>点赞、评论、邀请亲友加入，给中环和成长系统持续补能。</span>
+              </div>
+            </div>
+            <div class="loop-row">
+              <div class="loop-icon">✨</div>
+              <div class="loop-main">
+                <strong>累计 XP 升级</strong>
+                <span>升级后收获页中的 IP 外观更华丽，装备更多，视觉成就感越来越强。</span>
+              </div>
+            </div>
+            <div class="loop-row">
+              <div class="loop-icon">🎁</div>
+              <div class="loop-main">
+                <strong>解锁特权与权益</strong>
+                <span>等级越高，可展示的名片、邀请权益、收获页内容与限定皮肤越完整。</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card avatar-stage">
+          <div class="mini-title" style="text-align:center;">收获页视觉方向</div>
+          <div class="avatar-stage-wrap">
+            <div class="ring-orbit"></div>
+            <div class="ring-halo"></div>
+            <div class="ring-crown">👑</div>
+            <div class="ring-core">🦊</div>
+            <div class="ring-cape"></div>
+          </div>
+          <div class="equip-row">
+            <span class="chip">披风 = XP 加成</span>
+            <span class="chip">头盔 = 头像标识</span>
+            <span class="chip">武器 = 关心圈皮肤</span>
+          </div>
+          <div class="hero-note">建议把特权具象化成 IP 装备位，用户一眼就能看懂自己“为什么更高级”。</div>
+        </div>
+      </div>
+    </header>
+
+    <section class="card section-card">
+      <div class="section-head">
+        <div>
+          <h2>1. 设计原则</h2>
+          <p>这套 XP 规则不追求复杂，而是强调三个感受：每天都能涨、成长有目标、视觉奖励能被别人看见。</p>
+        </div>
+      </div>
+      <div class="principle-grid">
+        <div class="principle-card">
+          <h3>稳定</h3>
+          <p class="muted">XP 主来源必须来自健康行为本身，不能让纯社交刷分压过真正的佩戴和打卡。这样才能保证戒指硬件价值始终是系统中心。</p>
+        </div>
+        <div class="principle-card">
+          <h3>可炫耀</h3>
+          <p class="muted">用户不是为了“数字”，而是为了“我看起来升级了”。所以每个等级都要对应清晰的外观变化和装备位增加。</p>
+        </div>
+        <div class="principle-card">
+          <h3>可控</h3>
+          <p class="muted">所有互动型 XP 都需要日上限、关系约束或有效行为判定，避免用户互刷、脚本刷、低质量评论刷分。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="card section-card">
+      <div class="section-head">
+        <div>
+          <h2>2. XP 分成两层</h2>
+          <p>把“今日 XP”和“累计 XP”拆开，会让规则清晰很多。前者负责日反馈，后者负责长期成长。</p>
+        </div>
+      </div>
+      <div class="dual-grid">
+        <div class="info-card">
+          <span class="tag tag-blue">Today XP</span>
+          <div class="big-number">
+            <strong>今日 XP</strong>
+            <span>Daily Feedback</span>
+          </div>
+          <p class="muted">今天通过挑战、点赞、评论、邀请等行为获得的 XP，用来驱动「成长圆环」和当天的反馈感。</p>
+          <div class="check-list">
+            <div class="check-row"><b>用途：</b>点亮成长圆环、触发今日 toast、展示“今日已获 +45 XP”。</div>
+            <div class="check-row"><b>节奏：</b>每天清零，保证每天都有可追的短目标。</div>
+            <div class="check-row"><b>建议日目标：</b>100 XP 作为成长圆环满格线，超过部分继续累计到长期 XP。</div>
+          </div>
+        </div>
+
+        <div class="info-card">
+          <span class="tag tag-gold">Total XP</span>
+          <div class="big-number">
+            <strong>累计 XP</strong>
+            <span>Long-term Growth</span>
+          </div>
+          <p class="muted">累计 XP 永不清零，直接决定等级、IP 形象、装备位和高级特权，是用户在收获页最想持续追的那条主线。</p>
+          <div class="check-list">
+            <div class="check-row"><b>用途：</b>升级、解锁新外观、提升邀请权益、进入更完整的收获页展示。</div>
+            <div class="check-row"><b>节奏：</b>前期升级快，中后期拉长，避免太快毕业。</div>
+            <div class="check-row"><b>建议关系：</b>所有今日 XP 同时计入累计 XP，不需要双记账心智。</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card section-card">
+      <div class="section-head">
+        <div>
+          <h2>3. XP 获取规则</h2>
+          <p>以下数值尽量沿用你现有原型中的习惯：挑战奖励 20-40 XP，点赞 +3 XP，评论 +5 XP，邀请成功 +20 XP，再补上一些成长闭环奖励。</p>
+        </div>
+      </div>
+      <table class="xp-table">
+        <thead>
+          <tr>
+            <th>模块</th>
+            <th>行为</th>
+            <th>建议 XP</th>
+            <th>规则说明</th>
+            <th>限制</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="tag tag-green">健康挑战</span></td>
+            <td><strong>完成单个今日挑战</strong></td>
+            <td>+20 ~ +40</td>
+            <td>沿用原型：喝水 / 吃药 20，站立 25，走路 / 跑步 30，消耗 35，睡眠 40。</td>
+            <td>同一挑战每天只结算 1 次。</td>
+          </tr>
+          <tr>
+            <td><span class="tag tag-green">健康挑战</span></td>
+            <td><strong>今日等级徽章</strong></td>
+            <td>铜 +10 / 银 +20 / 金 +30</td>
+            <td>和三环规则对齐。1 环 90% 解锁铜牌，2 环银牌，3 环金牌。</td>
+            <td>每天最高结算一次。</td>
+          </tr>
+          <tr>
+            <td><span class="tag tag-green">健康挑战</span></td>
+            <td><strong>连续达标奖励</strong></td>
+            <td>3 天 +10 / 7 天 +25 / 14 天 +50</td>
+            <td>奖励“坚持”，让用户愿意每天回来，而不是只刷一次高分。</td>
+            <td>按连续天数节点发放，不叠加重复领。</td>
+          </tr>
+          <tr>
+            <td><span class="tag tag-pink">关心互动</span></td>
+            <td><strong>点赞好友挑战</strong></td>
+            <td>+3</td>
+            <td>与你现有关心页一致。点赞动作轻，适合做轻量补 XP。</td>
+            <td>每天最多计入 10 次，共 30 XP。</td>
+          </tr>
+          <tr>
+            <td><span class="tag tag-pink">关心互动</span></td>
+            <td><strong>发送一句关心</strong></td>
+            <td>+5</td>
+            <td>保留现有评论奖励，但建议要求不少于 6 个字，且同一对象当天前 3 条有效。</td>
+            <td>每天最多计入 6 次，共 30 XP。</td>
+          </tr>
+          <tr>
+            <td><span class="tag tag-pink">关心互动</span></td>
+            <td><strong>回复点赞 / 完成互动闭环</strong></td>
+            <td>+2</td>
+            <td>给“被关心后再回应”一点微奖励，强化关系黏性。</td>
+            <td>每天最多计入 5 次，共 10 XP。</td>
+          </tr>
+          <tr>
+            <td><span class="tag tag-gold">关系成长</span></td>
+            <td><strong>成功邀请好友加入</strong></td>
+            <td>+20</td>
+            <td>与你现有文案一致。建议在“对方完成注册并产生首个互动”后结算，避免空注册。</td>
+            <td>每个新用户仅结算一次。</td>
+          </tr>
+          <tr>
+            <td><span class="tag tag-gold">关系成长</span></td>
+            <td><strong>亲友首次连接戒指</strong></td>
+            <td>+50</td>
+            <td>这是硬件增长关键动作，奖励应该明显高于普通邀请。</td>
+            <td>每位亲友仅结算一次。</td>
+          </tr>
+          <tr>
+            <td><span class="tag tag-blue">新手引导</span></td>
+            <td><strong>首次连接戒指 / 完善档案</strong></td>
+            <td>+20 / +10</td>
+            <td>用于把新用户快速送上 Lv2，尽早看到“升级”的乐趣。</td>
+            <td>一次性奖励。</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="footnote">建议将互动类 XP 的每日上限控制在 60-70 XP 之间，让健康挑战仍然占据当天主要 XP 贡献。</div>
+    </section>
+
+    <section class="card section-card">
+      <div class="section-head">
+        <div>
+          <h2>4. 等级阶梯</h2>
+          <p>等级改成 10 级更合适。Lv1 是初始状态；从 Lv2 开始，每升一级只发生一件事：解锁或升级一件装备。这里最重要的不是等级名字，而是每一级到底给了用户什么具体特权。</p>
+        </div>
+      </div>
+      <div class="ladder-summary">
+        <div class="ladder-summary-card">
+          <strong>披风 = 头像框 + XP 加倍</strong>
+          <span>`Lv2 / Lv5 / Lv8` 解锁或升级披风。外显特权是头像框越来越华丽；奖励特权是 `XP × 1.05 / 1.15 / 1.25`。</span>
+        </div>
+        <div class="ladder-summary-card">
+          <strong>头盔 = 头像皇冠 + App 皮肤</strong>
+          <span>`Lv3 / Lv6 / Lv9` 解锁或升级头盔。外显特权是银 / 金 / 钻头像皇冠；奖励特权是解锁对应档位的 App 皮肤。</span>
+        </div>
+        <div class="ladder-summary-card">
+          <strong>武器 = 头像等级标 + 实物奖励</strong>
+          <span>`Lv4 / Lv7 / Lv10` 解锁或升级武器。外显特权是更强的头像等级标；奖励特权是进入不同档位的实物奖励池。</span>
+        </div>
+      </div>
+      <div class="ladder">
+        <div class="ladder-row">
+          <div><span class="lv-pill">Lv1 初醒</span></div>
+          <div class="xp-range">0 - 99</div>
+          <div>
+            <div class="bar"><span style="width: 10%;"></span></div>
+            <div class="bar-copy">初始等级，不给装备特权，先让用户建立“佩戴戒指 + 每天打卡”的基础习惯。</div>
+          </div>
+          <div class="perk-box">
+            <div class="perk-eyebrow">当前特权</div>
+            <div class="perk-title">无额外特权</div>
+            <div class="perk-sub">仅保留基础头像与基础 IP 形象，作为成长起点。</div>
+          </div>
+        </div>
+
+        <div class="ladder-row">
+          <div><span class="lv-pill">Lv2 旅者</span></div>
+          <div class="xp-range">100 - 199</div>
+          <div>
+            <div class="bar"><span style="width: 18%;"></span></div>
+            <div class="bar-copy">首次获得披风「微风披肩」。用户第一次明确感受到“升级会给我一件新装备”。</div>
+          </div>
+          <div class="perk-box">
+            <div class="perk-eyebrow">双特权</div>
+            <div class="perk-title">披风 I「微风披肩」: 基础头像框 + 所有有效 XP × 1.05</div>
+            <div class="perk-sub">头像开始出现初阶披风框；从这一层开始，所有有效健康行为和互动行为都能吃到披风倍率。</div>
+          </div>
+        </div>
+
+        <div class="ladder-row">
+          <div><span class="lv-pill">Lv3 守望</span></div>
+          <div class="xp-range">200 - 349</div>
+          <div>
+            <div class="bar"><span style="width: 26%;"></span></div>
+            <div class="bar-copy">获得第一顶头盔「银曜护额」。它的主要作用不是数值，而是让别人一眼认出你已经成长到更高等级。</div>
+          </div>
+          <div class="perk-box">
+            <div class="perk-eyebrow">双特权</div>
+            <div class="perk-title">头盔 I「银曜护额」: 银色头像皇冠 + 银阶 App 皮肤</div>
+            <div class="perk-sub">在关心圈和练级页中，头像会出现银色皇冠装饰；同时解锁银阶 App 视觉皮肤。</div>
+          </div>
+        </div>
+
+        <div class="ladder-row">
+          <div><span class="lv-pill">Lv4 炽刃</span></div>
+          <div class="xp-range">350 - 549</div>
+          <div>
+            <div class="bar"><span style="width: 34%;"></span></div>
+            <div class="bar-copy">获得第一把武器「夜蚀短刃」。武器不加 XP，直接给角色带来风格变化，让关心圈里的你更醒目。</div>
+          </div>
+          <div class="perk-box">
+            <div class="perk-eyebrow">双特权</div>
+            <div class="perk-title">武器 I「夜蚀短刃」: 青铜头像等级标 + 青铜实物奖励池</div>
+            <div class="perk-sub">头像上出现首档等级标识；同时进入第一档实物奖励池，例如基础周边、贴纸、小配件。</div>
+          </div>
+        </div>
+
+        <div class="ladder-row">
+          <div><span class="lv-pill">Lv5 流光</span></div>
+          <div class="xp-range">550 - 849</div>
+          <div>
+            <div class="bar"><span style="width: 44%;"></span></div>
+            <div class="bar-copy">披风升级为「星辉长披」。视觉上从轻薄披肩进化成更长、更亮、更有层次的主披风。</div>
+          </div>
+          <div class="perk-box">
+            <div class="perk-eyebrow">双特权</div>
+            <div class="perk-title">披风 II「星辉长披」: 进阶头像框 + 所有有效 XP × 1.15</div>
+            <div class="perk-sub">头像框视觉更完整、更亮；比 Lv2 的披风倍率更高，长期价值进一步拉开差距。</div>
+          </div>
+        </div>
+
+        <div class="ladder-row">
+          <div><span class="lv-pill">Lv6 星冕</span></div>
+          <div class="xp-range">850 - 1,249</div>
+          <div>
+            <div class="bar"><span style="width: 56%;"></span></div>
+            <div class="bar-copy">头盔升级为「鎏金战冠」。这一级开始，你在关心圈和练级中的头像会有明显身份感。</div>
+          </div>
+          <div class="perk-box">
+            <div class="perk-eyebrow">双特权</div>
+            <div class="perk-title">头盔 II「鎏金战冠」: 金色头像皇冠 + 金阶 App 皮肤</div>
+            <div class="perk-sub">头像皇冠从银色升级到金色；同时解锁更高级的 App 皮肤主题。</div>
+          </div>
+        </div>
+
+        <div class="ladder-row">
+          <div><span class="lv-pill">Lv7 破晓</span></div>
+          <div class="xp-range">1,250 - 1,749</div>
+          <div>
+            <div class="bar"><span style="width: 68%;"></span></div>
+            <div class="bar-copy">武器升级为「曜金权刃」。从暗黑风格进阶到尊贵金风格，关心圈里会更像“核心用户”。</div>
+          </div>
+          <div class="perk-box">
+            <div class="perk-eyebrow">双特权</div>
+            <div class="perk-title">武器 II「曜金权刃」: 白银头像等级标 + 白银实物奖励池</div>
+            <div class="perk-sub">头像等级标升级一档；同时进入更好的实物奖励池，例如限定挂件、礼盒、小型配饰。</div>
+          </div>
+        </div>
+
+        <div class="ladder-row">
+          <div><span class="lv-pill">Lv8 圣幕</span></div>
+          <div class="xp-range">1,750 - 2,399</div>
+          <div>
+            <div class="bar"><span style="width: 80%;"></span></div>
+            <div class="bar-copy">披风进阶为终级形态「天穹圣披」。它应该成为用户在个人主页和收获页里最有代表性的主装备。</div>
+          </div>
+          <div class="perk-box">
+            <div class="perk-eyebrow">双特权</div>
+            <div class="perk-title">披风 III「天穹圣披」: 终级头像框 + 所有有效 XP × 1.25</div>
+            <div class="perk-sub">头像框进化到最高档；这是披风体系的终级倍率，最直接放大长期活跃用户的成长收益。</div>
+          </div>
+        </div>
+
+        <div class="ladder-row">
+          <div><span class="lv-pill">Lv9 天冠</span></div>
+          <div class="xp-range">2,400 - 3,199</div>
+          <div>
+            <div class="bar"><span style="width: 90%;"></span></div>
+            <div class="bar-copy">头盔进阶为终级形态「钻星冕盔」。这一层级的头像装饰应该在关心圈里一眼就能和其他人区分开。</div>
+          </div>
+          <div class="perk-box">
+            <div class="perk-eyebrow">双特权</div>
+            <div class="perk-title">头盔 III「钻星冕盔」: 钻石头像皇冠 + 钻阶 App 皮肤</div>
+            <div class="perk-sub">头像皇冠进入最高档；同时解锁顶级 App 皮肤，形成最强的视觉身份感。</div>
+          </div>
+        </div>
+
+        <div class="ladder-row">
+          <div><span class="lv-pill">Lv10 神铸</span></div>
+          <div class="xp-range">3,200+</div>
+          <div>
+            <div class="bar"><span style="width: 100%;"></span></div>
+            <div class="bar-copy">武器终级形态「流光圣裁」。顶层用户不必功能碾压，但一定要又稀缺又醒目，适合做传说级形象。</div>
+          </div>
+          <div class="perk-box">
+            <div class="perk-eyebrow">双特权</div>
+            <div class="perk-title">武器 III「流光圣裁」: 钻石头像等级标 + 钻石实物奖励池</div>
+            <div class="perk-sub">头像等级标升级到最高档；同时进入顶级实物奖励池，例如高价值周边、限量礼盒或年度奖励资格。</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card section-card">
+      <div class="section-head">
+        <div>
+          <h2>5. 装备系统与特权绑定</h2>
+          <p>装备不是纯装饰，而是等级规则的载体。用户升到某一级时，看到的不只是“数值变了”，而是“我这件装备变强了，所以我拿到这个特权”。</p>
+        </div>
+      </div>
+
+      <div class="equip-cards">
+        <div class="equip-card">
+          <div class="equip-visual">
+            <div class="mini-halo" style="border-color: rgba(108,125,255,0.1);"></div>
+            <div class="mini-avatar">🦊</div>
+            <div class="mini-cloak" style="background: linear-gradient(180deg, #9eb1ff 0%, #6c7dff 100%);"></div>
+          </div>
+          <h3>披风：头像框 + XP 加倍</h3>
+          <p class="muted">披风有两个直接特权。第一个是外显特权：头像框会随着披风升级变得更完整、更华丽；第二个是奖励特权：所有有效 XP 按披风档位获得倍率加成。</p>
+          <div class="slot-row">
+            <span class="slot">披风 I：基础头像框 + XP × 1.05</span>
+            <span class="slot">披风 II：进阶头像框 + XP × 1.15</span>
+            <span class="slot">披风 III：终级头像框 + XP × 1.25</span>
+          </div>
+        </div>
+
+        <div class="equip-card">
+          <div class="equip-visual">
+            <div class="mini-halo"></div>
+            <div class="mini-item">⛑️</div>
+            <div class="mini-avatar">🦊</div>
+          </div>
+          <h3>头盔：头像皇冠 + App 皮肤</h3>
+          <p class="muted">头盔也有两个直接特权。第一个是外显特权：头像上会出现越来越高阶的皇冠装饰；第二个是奖励特权：解锁对应档位的 App 皮肤主题。</p>
+          <div class="slot-row">
+            <span class="slot">头盔 I：银色头像皇冠 + 银阶皮肤</span>
+            <span class="slot">头盔 II：金色头像皇冠 + 金阶皮肤</span>
+            <span class="slot">头盔 III：钻石头像皇冠 + 钻阶皮肤</span>
+          </div>
+        </div>
+
+        <div class="equip-card">
+          <div class="equip-visual">
+            <div class="mini-halo" style="border-color: rgba(255,181,43,0.22); width: 118px; height: 118px;"></div>
+            <div class="mini-halo" style="top: 16px; width: 138px; height: 138px; border-color: rgba(108,125,255,0.18); border-style: dashed;"></div>
+            <div class="mini-item">⚔️</div>
+            <div class="mini-avatar">🦊</div>
+            <div class="mini-cloak"></div>
+          </div>
+          <h3>武器：头像等级标 + 实物奖励</h3>
+          <p class="muted">武器同样有两个直接特权。第一个是外显特权：头像上的等级标识越来越强；第二个是奖励特权：进入更高一档的实物奖励池。</p>
+          <div class="slot-row">
+            <span class="slot">武器 I：青铜等级标 + 青铜奖励池</span>
+            <span class="slot">武器 II：白银等级标 + 白银奖励池</span>
+            <span class="slot">武器 III：钻石等级标 + 钻石奖励池</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card section-card">
+      <div class="section-head">
+        <div>
+          <h2>6. 特权映射建议</h2>
+          <p>这里建议把三件装备统一成同一种理解方式。用户不需要背复杂系统，只需要记住：每件装备都有两个特权，一个负责“别人看见”，一个负责“我能拿到什么奖励”。</p>
+        </div>
+      </div>
+      <div class="privilege-grid">
+        <div class="priv-card">
+          <h3>等级 → 装备 → 双特权</h3>
+          <div class="check-list">
+            <div class="check-row"><b>披风：</b>外显特权是头像框，奖励特权是 XP 加倍。</div>
+            <div class="check-row"><b>头盔：</b>外显特权是头像皇冠，奖励特权是 App 皮肤。</div>
+            <div class="check-row"><b>武器：</b>外显特权是头像等级标，奖励特权是实物奖励。</div>
+            <div class="check-row"><b>设计原则：</b>每升一级都必须能同时回答两个问题，“别人会看到我哪里变了”和“我实际多拿到了什么”。</div>
+          </div>
+        </div>
+
+        <div class="priv-card">
+          <h3>两个展示场景</h3>
+          <div class="check-list">
+            <div class="check-row"><b>关心圈 / 练级：</b>重点展示三件装备的外显特权，也就是头像框、头像皇冠、头像等级标。</div>
+            <div class="check-row"><b>收获 / 个人主页：</b>重点展示三件装备完整穿戴后的 IP 成长结果。</div>
+            <div class="check-row"><b>奖励兑现：</b>披风通过 XP 倍率兑现，头盔通过 App 皮肤兑现，武器通过实物奖励兑现。</div>
+            <div class="check-row"><b>核心关系：</b>等级不是抽象数字，而是推动装备升级；装备升级后，再同时带来外显特权和奖励特权。</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card section-card">
+      <div class="section-head">
+        <div>
+          <h2>7. 不同等级的视觉差异</h2>
+          <p>这一段专门回答“用户到底能看出哪些不一样”。建议至少挑 4 个关键档位做固定展示，让团队和用户都能一眼读懂等级成长。</p>
+        </div>
+      </div>
+
+      <div class="showcase-stack">
+        <div class="showcase-block">
+          <div class="showcase-head">
+            <h3>头像差异：关心圈 / 练级中的展示</h3>
+            <span class="tag tag-blue">别人先看到这个</span>
+          </div>
+          <figure class="reference-figure">
+            <div class="reference-pills">
+              <span class="reference-pill">L1 普通头像</span>
+              <span class="reference-pill">L4 银色装饰</span>
+              <span class="reference-pill">L10 炫彩钻石</span>
+            </div>
+            <img src="file:///Users/yinsong/Downloads/Gemini_Generated_Image_9qbxdz9qbxdz9qbx.png" alt="不同等级头像装饰差异示意图">
+            <figcaption class="reference-caption">
+              这张图适合用来表达头像体系的等级差异：`L1` 是普通头像，`L4` 开始出现银色装饰感，`L10` 进阶为炫彩钻石框。
+              在产品里可以把它落到两个场景：`关心圈` 中展示给别人看，`练级页` 中展示自己当前档位和下一档目标。
+            </figcaption>
+            <div class="reference-meta">
+              <div class="reference-meta-card">
+                <strong>关心圈里怎么用</strong>
+                <span>直接挂在头像外圈或右上角，用户在列表流里扫一眼就能区分普通、进阶和顶级用户。</span>
+              </div>
+              <div class="reference-meta-card">
+                <strong>练级页里怎么用</strong>
+                <span>把当前头像框放在进度主卡上，同时把下一档头像框灰显展示，强化“再升一级我会变成什么样”。</span>
+              </div>
+              <div class="reference-meta-card">
+                <strong>设计重点</strong>
+                <span>头像层只突出头盔标识和边框材质，不要堆太多元素，避免小尺寸下识别混乱。</span>
+              </div>
+            </div>
+          </figure>
+        </div>
+
+        <div class="showcase-block">
+          <div class="showcase-head">
+            <h3>IP 人物差异：收获 / 个人主页中的展示</h3>
+            <span class="tag tag-gold">用户自己最在意这个</span>
+          </div>
+          <figure class="reference-figure">
+            <div class="reference-pills">
+              <span class="reference-pill">L1 朴素人物</span>
+              <span class="reference-pill">L4 基础装备</span>
+              <span class="reference-pill">L10 华丽英雄</span>
+            </div>
+            <img src="file:///Users/yinsong/Downloads/Gemini_Generated_Image_fcj625fcj625fcj6.png" alt="不同等级IP人物成长差异示意图">
+            <figcaption class="reference-caption">
+              这张图适合用来表达完整 IP 的成长过程：`L1` 是朴素人物，`L4` 开始拥有基础装备，`L10` 成长为华丽英雄。
+              在产品里建议用于 `收获页` 和 `个人主页`，突出披风、头盔、武器逐步叠加后的“整身毕业感”。
+            </figcaption>
+            <div class="reference-meta">
+              <div class="reference-meta-card">
+                <strong>收获页里怎么用</strong>
+                <span>把完整 IP 放在页面中心，配合装备名称、等级称号和成长回顾，重点强调“我变强了”。</span>
+              </div>
+              <div class="reference-meta-card">
+                <strong>个人主页里怎么用</strong>
+                <span>把角色做成可展示卡片，支持好友进入个人主页时看到你的披风、头盔和武器当前档位。</span>
+              </div>
+              <div class="reference-meta-card">
+                <strong>设计重点</strong>
+                <span>人物层强调整身成长和装备层次感，适合放大展示，不需要像头像层那样极度克制。</span>
+              </div>
+            </div>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="card section-card">
+      <div class="section-head">
+        <div>
+          <h2>8. 防刷与风控规则</h2>
+          <p>如果 XP 要和等级、外观、特权绑定，这部分一定要提前设好，不然后面会很难收。</p>
+        </div>
+      </div>
+      <div class="rule-grid">
+        <div class="rule-card">
+          <h3>互动上限</h3>
+          <p class="muted">点赞与评论都设每日上限，互动只能做“补能”，不能变成主刷分渠道。</p>
+        </div>
+        <div class="rule-card">
+          <h3>关系约束</h3>
+          <p class="muted">只有已建立有效关系的对象，互动 XP 才能计入；陌生流量建议只给很少或不给 XP。</p>
+        </div>
+        <div class="rule-card">
+          <h3>质量判定</h3>
+          <p class="muted">评论建议要求最少字数、重复文案去重、短时间连续评论不重复结算。</p>
+        </div>
+        <div class="rule-card">
+          <h3>邀请结算</h3>
+          <p class="muted">邀请成功不是“填邀请码”即得分，而是对方完成注册并产生首个有效互动后才结算。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="card section-card">
+      <div class="section-head">
+        <div>
+          <h2>9. 一天的示例结算</h2>
+          <p>下面这个例子可以帮助团队快速理解这套规则在产品里会怎么跑起来。</p>
+        </div>
+      </div>
+      <div class="example-grid">
+        <div class="day-flow">
+          <div class="day-step">
+            <div class="day-badge">👟</div>
+            <div>
+              <strong>完成走路挑战</strong>
+              <span>+30 XP，进入今日 XP，同时累计到长期 XP。</span>
+            </div>
+          </div>
+          <div class="day-step">
+            <div class="day-badge">🌙</div>
+            <div>
+              <strong>完成睡眠挑战</strong>
+              <span>+40 XP，健康行为成为当天主要贡献。</span>
+            </div>
+          </div>
+          <div class="day-step">
+            <div class="day-badge">❤️</div>
+            <div>
+              <strong>点赞 3 位亲友</strong>
+              <span>3 × 3 XP = +9 XP，作为轻互动补能。</span>
+            </div>
+          </div>
+          <div class="day-step">
+            <div class="day-badge">💬</div>
+            <div>
+              <strong>发出 2 条有效关心消息</strong>
+              <span>2 × 5 XP = +10 XP，强化关系反馈。</span>
+            </div>
+          </div>
+          <div class="day-step">
+            <div class="day-badge">🥈</div>
+            <div>
+              <strong>今日银牌徽章</strong>
+              <span>2 个圆环达到 90%，额外 +20 XP。</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="score-box">
+          <div>
+            <span class="tag tag-gold">结算结果</span>
+            <div class="score-total">
+              <strong>109 XP</strong>
+              <p class="muted">今日 XP 满格，成长圆环点亮，同时累计 XP +109。</p>
+            </div>
+          </div>
+          <div class="check-list">
+            <div class="check-row"><b>当天反馈：</b>成长圆环满格，toast 连续弹出，收获感很即时。</div>
+            <div class="check-row"><b>长期成长：</b>如果用户原本是 168 累计 XP，今天结束后会到 277，直接从 Lv2 升到 Lv3。</div>
+            <div class="check-row"><b>视觉变化：</b>收获页 IP 会从“披风 I 微风披肩”升级到“新增头盔 I 银曜护额”，关心圈头像也会首次出现银色等级装饰。</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card section-card">
+      <div class="section-head">
+        <div>
+          <h2>10. 最终建议</h2>
+          <p>如果只保留一句话，这套系统最核心的判断标准就是：</p>
+        </div>
+      </div>
+      <div class="info-card" style="padding: 24px 24px 22px;">
+        <p style="font-size: 24px; line-height: 1.4; font-weight: 800; letter-spacing: -0.02em;">
+          XP 不只是奖励行为，而是把“健康坚持”翻译成“角色成长”的语言。
+        </p>
+        <div class="check-list">
+          <div class="check-row"><b>对用户：</b>我不是在打卡，我是在给自己的披风、头盔、武器升级。</div>
+          <div class="check-row"><b>对产品：</b>10 级成长、装备强化、社交展示、个人收获，终于被同一套规则统一起来。</div>
+          <div class="check-row"><b>对后续设计：</b>下一步最值得细化的是“Lv1-Lv10 的装备视觉稿”以及“关心圈头像装饰规范 + 个人主页全身 IP 展示规范”。</div>
+        </div>
+      </div>
+    </section>
+  </div>
+</body>
+</html>

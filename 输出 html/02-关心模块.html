@@ -1,0 +1,2918 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>唯戒 · 关心模块 v2.2</title>
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💜</text></svg>">
+<style>
+  :root{
+    --color-brand-primary:#3A6FE0; --color-brand-secondary:#4C5CD8; --color-brand-accent:#1E8FFF;
+    --color-semantic-success:#39C16C; --color-semantic-warning:#FFA31A; --color-semantic-danger:#FF7851;
+    --color-text-primary:#141619; --color-text-secondary:#8A8DA4; --color-text-tertiary:#9AA2B8;
+    --color-bg-page:#EAF3FF; --color-bg-surface:#FFFFFF; --color-bg-surface-muted:#F5F7FB;
+    --color-border-subtle:#E6EDF4;
+    --pink:#F25EFF; --xp-color:#FFB60B;
+    --gradient-purple:linear-gradient(135deg,#C0B0FF 0%,#714FF7 100%);
+    --gradient-orange:linear-gradient(135deg,#FFB66A 0%,#FF6A0A 100%);
+    --gradient-cyan:linear-gradient(135deg,#7BFCFF 0%,#0AD4FF 100%);
+    --gradient-green:linear-gradient(135deg,#ABFFCC 0%,#0BFFCF 100%);
+    --gradient-pink:linear-gradient(135deg,#FFC1F1 0%,#F25EFF 100%);
+    --gradient-blue:linear-gradient(135deg,#A8C7FF 0%,#3A6FE0 100%);
+    --gradient-day:linear-gradient(135deg,#4C5CD8 0%,#3A6FE0 100%);
+    --gradient-xp:linear-gradient(90deg,#FFDD6F 0%,#FFB60B 100%);
+    --radius-sm:6px; --radius-md:10px; --radius-lg:16px; --radius-xl:22px; --radius-pill:999px;
+    --shadow-card:0 4px 12px rgba(0,0,0,.05);
+    --shadow-elevated:0 8px 24px rgba(0,0,0,.08);
+    --shadow-tabbar:0 -4px 18px rgba(58,111,224,.10);
+    --font-cjk:"PingFang SC","Noto Sans SC","Microsoft YaHei",system-ui,sans-serif;
+  }
+  [data-theme="dark"]{
+    --color-bg-page:#0F1426; --color-bg-surface:#1B2238; --color-bg-surface-muted:#222A42;
+    --color-text-primary:#F5F7FB; --color-text-secondary:#9AA2B8; --color-text-tertiary:#6B7280;
+    --color-border-subtle:#2A3350;
+  }
+  *{box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent;}
+  html,body{font-family:var(--font-cjk); color:var(--color-text-primary); background:#F5F7FB;}
+  body{min-height:100vh;}
+
+  /* ===== Two-column layout (与今日模块一致) ===== */
+  .layout{display:flex; min-height:100vh;}
+  .side-nav{
+    width:280px; flex-shrink:0; background:#fff;
+    border-right:1px solid var(--color-border-subtle);
+    padding:24px 16px; position:sticky; top:0;
+    height:100vh; overflow-y:auto;
+  }
+  .side-nav::-webkit-scrollbar{width:4px;}
+  .side-nav::-webkit-scrollbar-thumb{background:var(--color-bg-surface-muted); border-radius:2px;}
+
+  .nav-brand{
+    display:flex; align-items:center; gap:8px;
+    padding:0 8px 16px; border-bottom:1px solid var(--color-border-subtle); margin-bottom:12px;
+  }
+  .nav-brand .nav-logo{
+    width:32px; height:32px; border-radius:8px; background:var(--gradient-day);
+    display:flex; align-items:center; justify-content:center; color:#fff; font-weight:700; font-size:14px;
+  }
+  .nav-brand .nav-title{font-size:14px; font-weight:700;}
+  .nav-brand .nav-version{font-size:10px; color:var(--color-text-tertiary);}
+
+  .nav-section-label{
+    font-size:10px; font-weight:700; color:var(--color-text-tertiary);
+    letter-spacing:.08em; text-transform:uppercase; padding:12px 8px 6px;
+  }
+
+  /* 状态切换器 */
+  .state-grid{display:grid; grid-template-columns:1fr 1fr; gap:6px; padding:0 4px 8px;}
+  .state-btn{
+    padding:8px 6px; font-size:11px; border-radius:8px; border:none; cursor:pointer;
+    background:var(--color-bg-surface-muted); color:var(--color-text-secondary); font-weight:500;
+    display:flex; flex-direction:column; align-items:center; gap:2px; text-align:center; line-height:1.2;
+    font-family:var(--font-cjk);
+  }
+  .state-btn .ic{font-size:14px;}
+  .state-btn.is-active{background:var(--gradient-day); color:#fff;}
+
+  /* 导航项 */
+  .nav-list{display:flex; flex-direction:column; gap:1px;}
+  .nav-item{
+    display:flex; align-items:center; gap:8px; padding:8px 10px; border-radius:8px;
+    cursor:pointer; font-size:13px; color:var(--color-text-primary); transition:background .15s;
+  }
+  .nav-item:hover{background:var(--color-bg-surface-muted);}
+  .nav-item.is-active{background:rgba(58,111,224,.10); color:var(--color-brand-primary); font-weight:600;}
+  .nav-item .nav-id{
+    width:46px; flex-shrink:0; font-family:Inter,system-ui,sans-serif;
+    font-size:11px; font-weight:700; color:var(--color-text-tertiary);
+  }
+  .nav-item.is-active .nav-id{color:var(--color-brand-primary);}
+  .nav-item .nav-name{flex:1;}
+  .nav-item .nav-tag{
+    font-size:9px; padding:1px 6px; border-radius:99px;
+    background:var(--color-bg-surface-muted); color:var(--color-text-tertiary); font-weight:500;
+  }
+  .nav-item .nav-tag.tag-page{background:rgba(58,111,224,.10); color:var(--color-brand-primary);}
+  .nav-item .nav-tag.tag-sub{background:rgba(76,92,216,.10); color:var(--color-brand-secondary);}
+  .nav-item .nav-tag.tag-modal{background:rgba(242,94,255,.14); color:#D2398C;}
+  .nav-item .nav-tag.tag-state{background:rgba(57,193,108,.12); color:var(--color-semantic-success);}
+
+  .nav-foot{
+    margin-top:12px; padding:12px 10px; border-top:1px solid var(--color-border-subtle);
+    font-size:10px; color:var(--color-text-tertiary); line-height:1.6;
+  }
+  .nav-foot strong{color:var(--color-text-secondary);}
+
+  /* 右侧主区 */
+  .preview-area{
+    flex:1; min-width:0; display:flex; align-items:flex-start; justify-content:center;
+    padding:32px 16px 60px; background:#F5F7FB;
+  }
+
+  /* ===== Phone frame ===== */
+  .phone{
+    width:390px; height:844px; background:var(--color-bg-page); border-radius:48px;
+    border:10px solid #1d1f2a; position:relative; overflow:hidden;
+    box-shadow:0 30px 60px rgba(0,0,0,.45); flex-shrink:0;
+  }
+  .phone .notch{
+    position:absolute; top:8px; left:50%; transform:translateX(-50%);
+    width:120px; height:32px; background:#1d1f2a; border-radius:18px; z-index:1000;
+  }
+  /* =========================================================
+     § 6.1 iOS 系统状态栏 .ios-status-bar（独立组件 · 全 App 通用）
+     高度 44px / 时间 17/600 + 4 信号竖条 + 5G 15/600 + 黑底白字电池胶囊
+     ========================================================= */
+  .ios-status-bar{
+    height:44px; padding:0 22px;
+    display:flex; align-items:center; justify-content:space-between;
+    font-family:Inter,system-ui,-apple-system,sans-serif;
+    color:var(--color-text-primary); user-select:none;
+    position:relative; z-index:5;
+  }
+  .ios-status-bar .iss-time{
+    font-size:17px; font-weight:600; letter-spacing:-.4px; font-feature-settings:"tnum" 1;
+  }
+  .ios-status-bar .iss-right{display:inline-flex; align-items:center; gap:5px;}
+  .ios-status-bar .iss-signal{display:inline-flex; align-items:flex-end; gap:2px; height:11px;}
+  .ios-status-bar .iss-bar{width:3px; background:currentColor; border-radius:1px;}
+  .ios-status-bar .iss-bar:nth-child(1){height:3px;}
+  .ios-status-bar .iss-bar:nth-child(2){height:5px;}
+  .ios-status-bar .iss-bar:nth-child(3){height:7px;}
+  .ios-status-bar .iss-bar:nth-child(4){height:9px;}
+  .ios-status-bar .iss-network{font-size:15px; font-weight:600; letter-spacing:-.4px;}
+  .ios-status-bar .iss-battery{
+    position:relative; width:26px; height:13px;
+    background:var(--color-text-primary); color:#fff;
+    border-radius:3.5px;
+    display:inline-flex; align-items:center; justify-content:center;
+  }
+  .ios-status-bar .iss-battery::after{
+    content:""; position:absolute; right:-2.5px; top:4px;
+    width:1.5px; height:5px;
+    background:var(--color-text-primary); border-radius:0 1px 1px 0;
+  }
+  .ios-status-bar .iss-battery-pct{
+    font-size:10px; font-weight:700; letter-spacing:-.5px;
+    font-feature-settings:"tnum" 1; line-height:1;
+  }
+  /* .is-on-glass 修饰符：白色 70% 毛玻璃底 — 与一级顶栏共用磨砂层 */
+  .ios-status-bar.is-on-glass{
+    background:rgba(255,255,255,.7);
+    backdrop-filter:blur(20px) saturate(180%);
+    -webkit-backdrop-filter:blur(20px) saturate(180%);
+  }
+  [data-theme="dark"] .ios-status-bar.is-on-glass{
+    background:rgba(20,22,25,.7);
+  }
+  /* 二级页面：状态栏与白底二级顶栏视觉连续（默认无修饰符即给白底） */
+  .ios-status-bar:not(.is-on-glass):not(.is-on-dark){
+    background:var(--color-bg-surface);
+  }
+  /* .is-on-dark 修饰符：深底反白文字 */
+  .ios-status-bar.is-on-dark{color:#fff;}
+  .ios-status-bar.is-on-dark .iss-battery{background:#fff; color:var(--color-text-primary);}
+  .ios-status-bar.is-on-dark .iss-battery::after{background:#fff;}
+
+  /* ===== Page system ===== */
+  .page{position:absolute; inset:0; display:none; flex-direction:column; overflow:hidden;}
+  .page.active{display:flex;}
+  .scroll{flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch;}
+  .scroll::-webkit-scrollbar{display:none;}
+
+  /* =========================================================
+     § 6.1 一级页面顶栏 .app-topbar--primary
+     高度 52px · 白色 70% 毛玻璃 · 与状态栏共用磨砂帽（0–96px）
+     ========================================================= */
+  .app-topbar--primary{
+    position:absolute; top:44px; left:0; right:0; height:52px; z-index:50;
+    display:flex; align-items:center; justify-content:space-between; padding:0 16px;
+    background:rgba(255,255,255,.7);
+    backdrop-filter:blur(20px) saturate(180%);
+    -webkit-backdrop-filter:blur(20px) saturate(180%);
+  }
+  [data-theme="dark"] .app-topbar--primary{background:rgba(20,22,25,.7);}
+  .topbar-left{display:flex; align-items:center; gap:8px; max-width:70%;}
+  /* § 3.4 一级页面标题：28/800 */
+  .topbar-title{
+    font-size:28px; font-weight:800; line-height:1; letter-spacing:-.6px;
+    color:var(--color-text-primary);
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  /* § 6.1 戒指连接状态 Pill */
+  .ring-tag{
+    display:inline-flex; align-items:center; gap:6px; height:24px; padding:0 10px;
+    border-radius:var(--radius-pill); font-size:12px; font-weight:600; cursor:pointer;
+  }
+  .ring-tag.is-connected{
+    background:var(--color-tag-success-bg); color:var(--color-semantic-success);
+  }
+  .ring-tag.is-disconnected{
+    background:var(--color-tag-warning-bg); color:var(--color-semantic-warning);
+  }
+  .ring-tag.is-offline{
+    background:var(--color-bg-surface-muted); color:var(--color-text-tertiary);
+  }
+  .ring-tag .ring-emoji{font-size:11px;}
+  /* CSS 绘制的横向电池图形（v1.7） */
+  .ring-battery{
+    position:relative; width:18px; height:9px;
+    border:1.2px solid currentColor; border-radius:2px;
+    padding:1px; display:inline-flex; align-items:center;
+  }
+  .ring-battery::after{
+    content:""; position:absolute; right:-3px; top:2px;
+    width:1.5px; height:3px; background:currentColor; border-radius:0 1px 1px 0;
+  }
+  .ring-battery-fill{height:100%; background:currentColor; border-radius:.5px;}
+
+  .topbar-right{display:flex; align-items:center; gap:8px;}
+  /* § 6.1 b 右侧固定 36×36 圆形按钮 */
+  .icon-btn{
+    width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+    cursor:pointer; transition:background .18s ease; font-size:18px; border:none; background:transparent;
+  }
+  .icon-btn:active{background:rgba(58,111,224,.10);}
+  /* § 6.1 b.2 未登录态 👤：白底 + card 阴影 */
+  .icon-btn.is-guest{
+    background:#FFFFFF; box-shadow:var(--shadow-card); color:var(--color-text-secondary);
+  }
+  /* § 6.1 b.2 已登录态：用户头像渐变占位（首字母 + 品牌渐变底） */
+  .icon-btn.is-loggedin{
+    background:var(--gradient-day); color:#fff; font-size:13px; font-weight:700;
+  }
+
+  /* =========================================================
+     § 6.1 二级页面顶栏 .app-topbar--secondary
+     高度 48px · 白底 · 左 ‹ 返回 + 中标题(16/600)
+     ========================================================= */
+  .app-topbar--secondary{
+    position:absolute; top:44px; left:0; right:0; height:48px; z-index:50;
+    display:flex; align-items:center; padding:0 8px;
+    background:var(--color-bg-surface);
+  }
+  [data-theme="dark"] .app-topbar--secondary{background:var(--color-bg-surface);}
+  .app-topbar--secondary .back{
+    width:40px; height:40px; display:flex; align-items:center; justify-content:center;
+    cursor:pointer; font-size:24px; color:var(--color-text-primary); font-weight:400;
+  }
+  .app-topbar--secondary .title{
+    flex:1; text-align:center; font-size:16px; font-weight:600; padding-right:40px;
+  }
+
+  /* ===== Page content offset =====
+     scroll 容器本身已位于状态栏下方，因此这里只补顶栏高度
+     一级：顶栏 52
+     二级：顶栏 48 */
+  .page-content{padding-top:52px; padding-bottom:90px;}
+  .page-content-2{padding-top:48px; padding-bottom:24px;}
+
+  /* ===== Section utils ===== */
+  .section{padding:0 16px; margin-bottom:18px;}
+  .section-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; padding:0 4px;}
+  .section-title{font-size:16px; font-weight:700;}
+  .section-sub{font-size:12px; color:var(--color-text-secondary); margin-top:2px;}
+  .badge-pill{
+    display:inline-flex; align-items:center; height:22px; padding:0 10px;
+    background:rgba(113,79,247,.10); color:#714FF7; border-radius:var(--radius-pill);
+    font-size:12px; font-weight:600;
+    white-space:nowrap; flex-shrink:0;
+  }
+  .link{color:var(--color-brand-primary); font-size:13px; font-weight:500; cursor:pointer;}
+
+  /* ===== TOP 3 podium ===== */
+  .podium-card{
+    margin:16px 16px 14px; padding:14px 14px 16px; border-radius:var(--radius-xl);
+    background:linear-gradient(180deg,#FFFFFF 0%,#F4F1FF 100%);
+    box-shadow:var(--shadow-card); position:relative; overflow:hidden;
+  }
+  .podium-card::before{
+    content:""; position:absolute; right:-30px; top:-30px; width:120px; height:120px;
+    background:radial-gradient(circle,rgba(255,182,11,.15) 0%,transparent 70%); border-radius:50%;
+  }
+  .podium-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; position:relative;}
+  .podium-head .ttl{font-size:13px; font-weight:600; color:var(--color-text-secondary);}
+  .podium-row{display:grid; grid-template-columns:1fr 1.2fr 1fr; gap:6px; align-items:end; padding:8px 4px 4px;}
+  .podium-slot{display:flex; flex-direction:column; align-items:center; gap:4px;}
+  .podium-slot.first{transform:translateY(-12px);}
+  .podium-avatar{
+    width:56px; height:56px; border-radius:50%; background:var(--gradient-purple);
+    display:flex; align-items:center; justify-content:center; color:#fff; font-size:22px; font-weight:700;
+    border:3px solid #fff; box-shadow:var(--shadow-card); position:relative;
+  }
+  .podium-slot.first .podium-avatar{width:68px; height:68px; font-size:26px; background:var(--gradient-orange);}
+  .podium-slot.third .podium-avatar{background:var(--gradient-cyan);}
+  .podium-medal{position:absolute; bottom:-6px; right:-6px; width:24px; height:24px; background:#fff;
+    border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:14px;
+    box-shadow:0 2px 6px rgba(0,0,0,.12);}
+  .podium-name{font-size:13px; font-weight:600; max-width:90px; text-align:center;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .podium-xp{font-size:18px; font-weight:800; color:var(--xp-color); line-height:1;}
+  .podium-slot.first .podium-xp{font-size:22px;}
+  .podium-xp-lbl{font-size:10px; color:var(--color-text-tertiary); font-weight:600; letter-spacing:.5px;}
+  .podium-laurel{position:absolute; top:-6px; left:50%; transform:translateX(-50%); font-size:18px;}
+  .podium-invite{
+    width:56px; height:56px; border-radius:50%; background:var(--color-bg-surface-muted);
+    border:2px dashed #C9D2E2; display:flex; align-items:center; justify-content:center;
+    color:var(--color-brand-primary); font-size:22px; cursor:pointer;
+  }
+
+  /* ===== My rank row (under podium) ===== */
+  .my-rank{
+    margin:14px 6px 0; padding:12px 14px; background:rgba(58,111,224,.08);
+    border-radius:var(--radius-lg); display:flex; align-items:center; gap:10px; cursor:pointer;
+  }
+  /* 我的排名：去底色，仅蓝色加粗数字 */
+  .my-rank-num{
+    min-width:28px; padding:0 4px; color:var(--color-brand-primary);
+    display:flex; align-items:center; justify-content:center;
+    font-size:20px; font-weight:800; line-height:1;
+    font-family:Inter,system-ui,sans-serif; font-feature-settings:"tnum" 1;
+  }
+  .my-rank-avatar{width:36px; height:36px; border-radius:50%; background:var(--gradient-blue);
+    display:flex; align-items:center; justify-content:center; color:#fff; font-size:14px; font-weight:700;}
+  .my-rank-info{flex:1; min-width:0;}
+  .my-rank-name{font-size:14px; font-weight:600;}
+  .my-rank-sub{font-size:11px; color:var(--color-text-secondary); margin-top:2px;}
+  .my-rank-xp{font-size:18px; font-weight:800; color:var(--color-brand-primary);}
+  .my-rank-xp small{font-size:11px; color:var(--color-text-tertiary); font-weight:600; margin-left:2px;}
+
+  /* ===== Sub-tabs（白色容器 + 紫色渐变胶囊 · 同 podium 宽度） ===== */
+  .subtabs{
+    margin:0 16px 14px;
+    padding:5px;
+    background:var(--color-bg-surface);
+    border-radius:var(--radius-pill);
+    box-shadow:var(--shadow-card);
+    display:flex; gap:4px; align-items:center;
+  }
+  .subtabs .item{
+    flex:1; text-align:center; padding:8px 0; font-size:14px;
+    color:var(--color-text-secondary); font-weight:500;
+    cursor:pointer; position:relative;
+    border-radius:var(--radius-pill);
+    display:inline-flex; align-items:center; justify-content:center; gap:5px;
+    transition:color .2s ease;
+  }
+  .subtabs .item.active{
+    flex:0 0 auto; padding:8px 22px;
+    background:var(--gradient-purple);
+    color:#fff; font-weight:700;
+    box-shadow:0 4px 12px rgba(113,79,247,.30);
+  }
+  /* 红点（小圆点 · 无数字）— 紧跟文字右侧 */
+  .subtabs .item .red-dot{
+    display:inline-block; position:static; transform:none;
+    width:6px; height:6px; min-width:6px; padding:0;
+    background:#FF3D1B; border-radius:50%;
+    font-size:0; line-height:0; color:transparent;
+    flex-shrink:0;
+  }
+
+  /* ===== Sub-tab panel ===== */
+  .subpanel{display:none;}
+  .subpanel.active{display:block;}
+
+  /* ===== 真人头像图片支持 =====
+     用 <img class="real-photo"> 嵌入到任何头像容器内，自动充满圆形并保持 ring-mark 在上层 */
+  .avatar, .podium-avatar, .my-rank-avatar, .profile-avatar, .wx-msg-avatar { position:relative; }
+  .icon-btn.is-loggedin{ position:relative; overflow:hidden; }
+  .real-photo{
+    position:absolute; inset:0; width:100%; height:100%;
+    object-fit:cover; border-radius:50%; z-index:0;
+    background:var(--color-bg-surface-muted);
+  }
+  .ring-mark{z-index:2;}
+  /* 头像容器内字体内容（首字母 fallback）放在图片之上时隐藏 */
+  .avatar.has-photo > :not(.real-photo):not(.ring-mark){display:none;}
+
+  /* ===== Friend dynamic card ===== */
+  .dyn-card{
+    background:var(--color-bg-surface); border-radius:var(--radius-xl); padding:14px;
+    box-shadow:var(--shadow-card); margin:0 16px 14px;
+  }
+  .dyn-head{display:flex; align-items:center; gap:10px; margin-bottom:12px;}
+  .avatar{
+    width:42px; height:42px; border-radius:50%; background:var(--gradient-purple);
+    display:flex; align-items:center; justify-content:center; color:#fff; font-size:16px; font-weight:700;
+    position:relative; flex-shrink:0;
+  }
+  .avatar .ring-mark{
+    position:absolute; bottom:-2px; right:-2px; width:16px; height:16px; border-radius:50%;
+    background:#fff; border:1.5px solid var(--color-brand-primary); display:flex; align-items:center;
+    justify-content:center; font-size:9px; font-weight:800; color:var(--color-brand-primary);
+  }
+  .dyn-meta{flex:1; min-width:0;}
+  .dyn-name{display:flex; align-items:center; gap:6px;}
+  .dyn-name .n{font-size:15px; font-weight:700;}
+  .tag-mini{
+    display:inline-flex; align-items:center; height:18px; padding:0 7px; font-size:10px;
+    border-radius:var(--radius-pill); font-weight:600;
+  }
+  .tag-mini.kin{background:#FFE9F4; color:#D2398C;}
+  .tag-mini.follow{background:#EAF1FF; color:#3A6FE0;}
+  .dyn-sub{font-size:11px; color:var(--color-text-tertiary); margin-top:2px;}
+  .dyn-time{font-size:11px; color:var(--color-text-tertiary); flex-shrink:0;}
+
+  /* challenge block */
+  .ch-block{
+    --ch-bg:linear-gradient(135deg,#F7F3FF 0%,#EEE8FF 100%);
+    --ch-accent:#714FF7;
+    --ch-progress:linear-gradient(90deg,#8E72FF 0%,#714FF7 100%);
+    --ch-track:rgba(113,79,247,.18);
+    --ch-icon-bg:#714FF7;
+    --ch-status-bg:rgba(113,79,247,.14);
+    --ch-status-color:#714FF7;
+    padding:14px;
+    border-radius:var(--radius-lg);
+    color:var(--color-text-primary);
+    margin-bottom:12px;
+    position:relative;
+    overflow:hidden;
+    background:var(--ch-bg);
+    border:1px solid rgba(255,255,255,.55);
+  }
+  .ch-block.purple{
+    --ch-bg:linear-gradient(135deg,#F0EAFF 0%,#E4DBFF 100%);
+    --ch-accent:#8A5CF6;
+    --ch-progress:linear-gradient(90deg,#A884FF 0%,#7C4DFF 100%);
+    --ch-track:rgba(138,92,246,.18);
+    --ch-icon-bg:linear-gradient(135deg,#9A76FF 0%,#7C4DFF 100%);
+    --ch-status-bg:rgba(138,92,246,.16);
+    --ch-status-color:#7C4DFF;
+  }
+  .ch-block.orange{
+    --ch-bg:linear-gradient(135deg,#FFF1E6 0%,#FFE2CA 100%);
+    --ch-accent:#FF7A1A;
+    --ch-progress:linear-gradient(90deg,#FF9B4A 0%,#FF6A0A 100%);
+    --ch-track:rgba(255,122,26,.18);
+    --ch-icon-bg:linear-gradient(135deg,#FFB66A 0%,#FF7A1A 100%);
+    --ch-status-bg:rgba(255,122,26,.16);
+    --ch-status-color:#E86A09;
+  }
+  .ch-block.cyan{
+    --ch-bg:linear-gradient(135deg,#EAFBFF 0%,#DDF7FF 100%);
+    --ch-accent:#0FA7D8;
+    --ch-progress:linear-gradient(90deg,#32D8FF 0%,#0AB2E8 100%);
+    --ch-track:rgba(15,167,216,.18);
+    --ch-icon-bg:linear-gradient(135deg,#7BFCFF 0%,#0AD4FF 100%);
+    --ch-status-bg:rgba(15,167,216,.14);
+    --ch-status-color:#0A9BC8;
+    color:#114455;
+  }
+  .ch-block.green{
+    --ch-bg:linear-gradient(135deg,#EEFFF5 0%,#DDF8EA 100%);
+    --ch-accent:#17A86B;
+    --ch-progress:linear-gradient(90deg,#4DD79B 0%,#12B76A 100%);
+    --ch-track:rgba(23,168,107,.18);
+    --ch-icon-bg:linear-gradient(135deg,#ABFFCC 0%,#24D889 100%);
+    --ch-status-bg:rgba(23,168,107,.14);
+    --ch-status-color:#0F8B58;
+    color:#0e4a35;
+  }
+  .ch-block.pink{
+    --ch-bg:linear-gradient(135deg,#FFF0F9 0%,#FFE0F2 100%);
+    --ch-accent:#E94AA0;
+    --ch-progress:linear-gradient(90deg,#FF88C8 0%,#F25EFF 100%);
+    --ch-track:rgba(233,74,160,.18);
+    --ch-icon-bg:linear-gradient(135deg,#FFC1F1 0%,#F25EFF 100%);
+    --ch-status-bg:rgba(233,74,160,.14);
+    --ch-status-color:#D2398C;
+  }
+  .ch-block.blue{
+    --ch-bg:linear-gradient(135deg,#EEF4FF 0%,#E0ECFF 100%);
+    --ch-accent:#3A6FE0;
+    --ch-progress:linear-gradient(90deg,#6FA4FF 0%,#3A6FE0 100%);
+    --ch-track:rgba(58,111,224,.18);
+    --ch-icon-bg:linear-gradient(135deg,#A8C7FF 0%,#3A6FE0 100%);
+    --ch-status-bg:rgba(58,111,224,.14);
+    --ch-status-color:#3A6FE0;
+  }
+  .ch-top{display:flex; align-items:center; gap:10px; margin-bottom:8px;}
+  .ch-icon{
+    width:34px; height:34px; border-radius:12px; background:var(--ch-icon-bg);
+    display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0;
+  }
+  .ch-name{flex:1; font-size:15px; font-weight:700;}
+  .ch-status{
+    height:22px; padding:0 9px; background:var(--ch-status-bg); border-radius:var(--radius-pill);
+    display:inline-flex; align-items:center; font-size:11px; font-weight:600;
+    color:var(--ch-status-color);
+  }
+  .ch-progress{display:flex; align-items:center; gap:8px; margin-bottom:8px;}
+  .ch-bar{flex:1; height:6px; background:var(--ch-track); border-radius:3px; overflow:hidden;}
+  .ch-bar-fill{height:100%; background:var(--ch-progress); border-radius:3px;}
+  .ch-pct{font-size:14px; font-weight:800; color:var(--ch-accent);}
+  .ch-text{font-size:12px; color:var(--color-text-secondary); line-height:1.4;}
+
+  /* Action bar */
+  .act-bar{display:flex; align-items:center; gap:12px; padding-top:4px; border-top:1px solid var(--color-border-subtle);
+    margin-top:6px; padding-top:10px;}
+  .act-btn{
+    display:inline-flex; align-items:center; gap:5px; height:32px; padding:0 12px;
+    border-radius:var(--radius-pill); font-size:13px; font-weight:600; cursor:pointer;
+    background:var(--color-bg-surface-muted); color:var(--color-text-secondary);
+    transition:all .18s ease;
+  }
+  .act-btn .xp{font-size:10px; color:var(--xp-color); font-weight:700; margin-left:2px;}
+  .act-btn.liked{background:#FFE0EE; color:#D2398C;}
+  .act-btn:active{transform:scale(.96);}
+  .act-stat{margin-left:auto; font-size:11px; color:var(--color-text-tertiary);}
+
+  /* Comment area */
+  .cmt-wrap{margin-top:10px; padding-top:10px; border-top:1px dashed var(--color-border-subtle); display:none;}
+  .cmt-wrap.open{display:block;}
+  .cmt-item{display:flex; gap:8px; margin-bottom:8px; font-size:13px; line-height:1.5;}
+  .cmt-item .u{font-weight:700; flex-shrink:0;}
+  .cmt-item .u.me{color:var(--color-brand-primary);}
+  .cmt-item .t{color:var(--color-text-tertiary); font-size:11px; margin-left:6px;}
+  .cmt-input{
+    display:flex; align-items:center; gap:8px; margin-top:8px; padding:8px 12px;
+    background:var(--color-bg-surface-muted); border-radius:var(--radius-pill);
+  }
+  .cmt-input input{
+    flex:1; border:none; background:transparent; font-size:13px; outline:none;
+    font-family:var(--font-cjk); color:var(--color-text-primary);
+  }
+  .cmt-input button{
+    height:28px; padding:0 14px; border:none; border-radius:var(--radius-pill);
+    background:var(--gradient-day); color:#fff; font-size:12px; font-weight:600; cursor:pointer;
+  }
+
+  /* 未登录态：跳转登录引导（覆盖 C1 全部内容） */
+  .login-required{
+    display:none;
+    margin:32px 16px 14px;
+    padding:48px 24px 32px;
+    text-align:center;
+    background:var(--color-bg-surface);
+    border-radius:var(--radius-xl);
+    box-shadow:var(--shadow-card);
+  }
+  .login-required.show{display:block; animation:lrFadeIn .35s ease-out;}
+  @keyframes lrFadeIn{
+    0%{opacity:0; transform:translateY(8px);}
+    100%{opacity:1; transform:translateY(0);}
+  }
+  .login-required .lr-icon{font-size:64px; margin-bottom:18px; opacity:.9;}
+  .login-required .lr-title{
+    font-size:22px; font-weight:800; color:var(--color-text-primary);
+    margin-bottom:10px; letter-spacing:-.3px;
+  }
+  .login-required .lr-sub{
+    font-size:13px; color:var(--color-text-secondary);
+    line-height:1.65; margin-bottom:24px; padding:0 8px;
+  }
+  .login-required .lr-cta{
+    display:flex; align-items:center; justify-content:center;
+    width:100%; height:48px; border:none;
+    border-radius:var(--radius-pill);
+    background:var(--gradient-day); color:#fff;
+    font-size:15px; font-weight:600; cursor:pointer;
+    font-family:var(--font-cjk); gap:6px;
+  }
+  .login-required .lr-cta:active{transform:scale(.98);}
+
+  /* Empty state */
+  .empty-card{
+    margin:0 16px; padding:30px 20px; background:var(--color-bg-surface); border-radius:var(--radius-xl);
+    text-align:center; box-shadow:var(--shadow-card);
+  }
+  .empty-emoji{font-size:54px; margin-bottom:12px;}
+  .empty-title{font-size:18px; font-weight:700; margin-bottom:8px;}
+  .empty-sub{font-size:13px; color:var(--color-text-secondary); line-height:1.6; margin-bottom:6px; text-align:left;}
+  .empty-cta{
+    margin-top:16px; height:46px; line-height:46px; border-radius:var(--radius-pill);
+    background:var(--gradient-day); color:#fff; font-size:15px; font-weight:600; cursor:pointer;
+  }
+
+  /* =========================================================
+     § 7.9 通告栏 NoticeBar — info（蓝）变体（C1.B 隐私横幅）
+     横向条状提示，不会自动消失。
+     ========================================================= */
+  .notice-bar{
+    margin:0 16px 12px; padding:10px 12px 10px 14px;
+    border-radius:var(--radius-md);
+    display:flex; align-items:center; gap:10px;
+    font-size:13px; line-height:1.4;
+  }
+  .notice-bar--info{
+    background:rgba(127,187,255,.14);
+    color:var(--color-brand-primary);
+    border:1px solid rgba(127,187,255,.30);
+  }
+  .notice-bar--info .nb-icon{
+    width:18px; height:18px; flex-shrink:0; border-radius:50%;
+    background:var(--color-brand-primary); color:#fff;
+    display:flex; align-items:center; justify-content:center;
+    font-size:11px; font-weight:700; font-family:Inter,system-ui,sans-serif;
+  }
+  .notice-bar .nb-content{flex:1; min-width:0;}
+  .notice-bar .nb-action{
+    height:28px; padding:0 12px; border-radius:var(--radius-pill);
+    background:#fff; color:var(--color-brand-primary);
+    font-size:12px; font-weight:600; cursor:pointer; flex-shrink:0;
+    border:1px solid rgba(58,111,224,.20);
+    font-family:var(--font-cjk);
+  }
+  .notice-bar .nb-action:active{background:rgba(58,111,224,.06);}
+
+  .rec-card{
+    margin:0 16px 14px; background:var(--color-bg-surface); border-radius:var(--radius-xl); padding:14px;
+    box-shadow:var(--shadow-card);
+  }
+  .rec-head{display:flex; align-items:center; gap:10px; margin-bottom:10px;}
+  .rec-meta{flex:1;}
+  .rec-name{display:flex; align-items:center; gap:6px;}
+  .rec-name .n{font-size:15px; font-weight:700;}
+  .rec-gender{font-size:12px;}
+  .rec-sub{font-size:11px; color:var(--color-text-tertiary); margin-top:2px;}
+  .rec-distance{font-size:12px; color:var(--color-brand-primary); font-weight:600;}
+
+  .tag-row{display:flex; gap:6px; margin-bottom:10px; overflow-x:auto; padding-bottom:2px;}
+  .tag-row::-webkit-scrollbar{display:none;}
+  .tag-row .t{
+    flex-shrink:0; height:24px; padding:0 10px; background:var(--color-bg-surface-muted);
+    border-radius:var(--radius-pill); font-size:11px; font-weight:600; color:var(--color-text-secondary);
+    display:inline-flex; align-items:center; gap:3px;
+  }
+  .tag-row .t.hl{background:rgba(113,79,247,.10); color:#714FF7;}
+
+  .rec-actions{display:flex; gap:8px; margin-top:10px;}
+  .btn{
+    flex:1; height:40px; border-radius:var(--radius-pill); display:flex; align-items:center; justify-content:center;
+    font-size:14px; font-weight:600; cursor:pointer; border:none; gap:5px;
+    font-family:var(--font-cjk);
+  }
+  .btn.primary{background:var(--gradient-day); color:#fff;}
+  .btn.primary .xp{font-size:11px; color:#FFE16A; font-weight:700;}
+  .btn.ghost{background:var(--color-bg-surface-muted); color:var(--color-text-secondary);}
+  .btn.danger{background:#FFE5DD; color:#D85A2E;}
+  .btn.success{background:#39C16C; color:#fff;}
+
+  .more-btn{
+    margin:0 16px 20px; height:42px; border-radius:var(--radius-pill);
+    background:var(--color-bg-surface); border:1px dashed #C9D2E2;
+    display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:600;
+    color:var(--color-brand-primary); cursor:pointer;
+  }
+
+  /* C1.C My friends */
+  .row-card{
+    margin:0 16px 10px; padding:14px; background:var(--color-bg-surface); border-radius:var(--radius-lg);
+    display:flex; align-items:center; gap:12px; cursor:pointer; box-shadow:var(--shadow-card);
+  }
+  .row-icon{
+    width:40px; height:40px; border-radius:var(--radius-md); display:flex; align-items:center; justify-content:center;
+    font-size:18px; flex-shrink:0;
+  }
+  .row-icon.gray{background:rgba(138,141,164,.14); color:var(--color-text-secondary);}
+  .row-icon.purple{background:rgba(113,79,247,.14); color:#714FF7;}
+  .row-icon.red{background:rgba(255,87,75,.14); color:#FF574B; position:relative;}
+  .row-icon.blue{background:rgba(58,111,224,.14); color:var(--color-brand-primary);}
+  .row-info{flex:1; min-width:0;}
+  .row-title{font-size:15px; font-weight:600;}
+  .row-sub{font-size:11px; color:var(--color-text-tertiary); margin-top:2px;}
+  .row-arrow{color:var(--color-text-tertiary); font-size:18px;}
+  .row-icon .red-bubble{
+    position:absolute; top:-4px; right:-4px; min-width:18px; height:18px; padding:0 5px;
+    background:#FF3D1B; color:#fff; border-radius:9px; font-size:11px; font-weight:700;
+    display:flex; align-items:center; justify-content:center; border:2px solid #fff;
+  }
+
+  .friend-row{
+    margin:0 16px 8px; padding:12px; background:var(--color-bg-surface); border-radius:var(--radius-lg);
+    display:flex; align-items:center; gap:10px; cursor:pointer;
+  }
+  .friend-row .avatar{width:40px; height:40px; font-size:14px;}
+  .row-cards{display:flex; gap:10px; padding:0 16px; margin-bottom:14px;}
+  .row-cards .row-card{flex:1; margin:0;}
+
+  /* incentive */
+  .incentive{
+    margin:6px 16px 16px; padding:18px 16px; background:linear-gradient(135deg,#FFF5DA,#FFE5C4);
+    border-radius:var(--radius-xl); text-align:center;
+  }
+  .incentive .e{font-size:38px; margin-bottom:6px;}
+  .incentive .t{font-size:15px; font-weight:700; margin-bottom:4px;}
+  .incentive .s{font-size:12px; color:#8a6a2c;}
+  .incentive .s b{color:#A8430E;}
+
+  /* ===== Bottom tab bar ===== */
+  .tabbar{
+    position:absolute; bottom:0; left:0; right:0; height:84px; padding:8px 16px 24px;
+    background:rgba(255,255,255,.92); backdrop-filter:blur(18px);
+    -webkit-backdrop-filter:blur(18px); border-top:1px solid var(--color-border-subtle);
+    display:flex; justify-content:space-around; box-shadow:var(--shadow-tabbar); z-index:30;
+  }
+  [data-theme="dark"] .tabbar{background:rgba(27,34,56,.92);}
+  .tab{
+    flex:1; display:flex; flex-direction:column; align-items:center; gap:2px;
+    color:var(--color-text-secondary); font-size:11px; cursor:pointer; padding:6px 0;
+  }
+  .tab .ic{font-size:22px;}
+  .tab.active{color:var(--color-brand-primary);}
+  .tab.active .ic{transform:scale(1.06);}
+
+  /* ===== C2 Leaderboard list ===== */
+  .lb-self-card{
+    margin:16px 16px 18px;
+    padding:14px 16px;
+    border-radius:20px;
+    background:linear-gradient(135deg,#F6F1FF 0%,#F9F3EA 100%);
+    border:1px solid rgba(150,120,255,.18);
+    box-shadow:0 6px 20px rgba(113,79,247,.08);
+  }
+  .lb-list{
+    margin:0 16px;
+    background:var(--color-bg-surface);
+    border-radius:22px;
+    overflow:hidden;
+    box-shadow:var(--shadow-card);
+  }
+  .lb-row{
+    display:flex; align-items:center; gap:12px; padding:14px 16px; background:var(--color-bg-surface);
+    border-bottom:1px solid rgba(20,22,25,.06);
+  }
+  .lb-row:last-child{border-bottom:none;}
+  .lb-row.self{background:linear-gradient(180deg,#F7F6FF 0%,#F4F7FF 100%);}
+  .lb-rank{
+    width:24px; flex-shrink:0;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1px;
+    font-size:14px; font-weight:800; color:#5B6576; line-height:1;
+    font-family:Inter,system-ui,sans-serif;
+  }
+  .lb-rank.top-1{color:#C86A11;}
+  .lb-rank.top-2{color:#5A6CFF;}
+  .lb-rank.top-3{color:#F0549B;}
+  .lb-rank-medal{font-size:11px; line-height:1;}
+  .lb-avatar{
+    width:42px; height:42px; border-radius:50%; position:relative; overflow:hidden; flex-shrink:0;
+    background:var(--color-bg-surface-muted);
+  }
+  .lb-avatar img{width:100%; height:100%; object-fit:cover; display:block;}
+  .lb-info{flex:1; min-width:0;}
+  .lb-name{font-size:15px; font-weight:700; display:flex; align-items:center; gap:6px;}
+  .lb-meta{font-size:12px; color:#667085; margin-top:3px; line-height:1.35;}
+  .lb-meta strong{color:var(--color-semantic-success); font-weight:700;}
+  .lb-row.self .lb-meta strong{color:#FF4E7A;}
+  .lb-total{
+    font-size:18px; font-weight:800; color:#20242D; letter-spacing:-.02em;
+    font-family:Inter,system-ui,sans-serif; font-feature-settings:"tnum" 1;
+  }
+  .lb-row.top-1 .lb-total{color:#C86A11;}
+  .lb-total small{font-size:10px; color:#9AA2B8; font-weight:700; margin-left:2px;}
+
+  /* ===== C3 Add friend ===== */
+  .hero{
+    margin:8px 16px 18px; padding:24px 16px; text-align:center; background:var(--color-bg-surface);
+    border-radius:var(--radius-xl); box-shadow:var(--shadow-card);
+  }
+  .hero-emoji{font-size:54px; margin-bottom:10px;}
+  .hero-title{font-size:18px; font-weight:700; margin-bottom:6px;}
+  .hero-sub{font-size:13px; color:var(--color-text-secondary); line-height:1.6;}
+  .hero-sub b{color:var(--pink); font-weight:700;}
+
+  .tip-line{
+    padding:8px 20px; font-size:11px; color:var(--color-text-tertiary); line-height:1.6;
+  }
+
+  /* Channels */
+  .ch-grid{display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; padding:0 16px; margin-bottom:14px;}
+  .ch-cell{
+    padding:18px 6px 14px; border-radius:var(--radius-lg); display:flex; flex-direction:column;
+    align-items:center; gap:8px; color:#fff; cursor:pointer;
+  }
+  .ch-cell .ic{font-size:26px;}
+  .ch-cell .lbl{font-size:13px; font-weight:600;}
+  .ch-cell.purple{background:var(--gradient-purple);}
+  .ch-cell.green{background:linear-gradient(135deg,#7BE393 0%,#10B981 100%);}
+  .ch-cell.deep{background:linear-gradient(135deg,#5DA98A 0%,#256D52 100%);}
+  /* 新版 C3：3 个渠道入口都是白色卡片（按需求文档） */
+  .ch-cell.white{
+    background:#FFFFFF; box-shadow:var(--shadow-card);
+    color:var(--color-text-primary);
+    border:1px solid var(--color-border-subtle);
+  }
+  .ch-cell.white .ic{font-size:28px;}
+  .ch-cell.white .lbl{color:var(--color-text-primary); font-weight:600;}
+  .ch-cell.white.tint-copy .ic{color:var(--color-brand-primary);}
+  .ch-cell.white.tint-wx .ic{color:#07C160;}
+  .ch-cell.white.tint-pyq .ic{color:#5DA98A;}
+  .ch-cell.white:active{transform:scale(.98);}
+
+  /* Preview card (C3.1) */
+  .invite-prev{
+    margin:8px 16px 18px; padding:18px 14px; background:var(--color-bg-surface); border-radius:var(--radius-xl);
+    box-shadow:var(--shadow-card); text-align:center;
+  }
+  .invite-prev .av{width:56px; height:56px; margin:0 auto 8px;}
+  .invite-prev .badge{
+    display:inline-flex; height:20px; padding:0 9px; background:rgba(58,111,224,.10);
+    color:var(--color-brand-primary); font-size:10px; font-weight:700; border-radius:var(--radius-pill);
+    margin-bottom:6px; letter-spacing:1px;
+  }
+  .invite-prev .name{font-size:16px; font-weight:700; margin-bottom:8px;}
+  .invite-prev .quote{
+    font-size:13px; color:var(--color-text-secondary); line-height:1.5; padding:10px;
+    background:var(--color-bg-surface-muted); border-radius:var(--radius-md); text-align:left;
+  }
+  .invite-prev .domain{font-size:11px; color:var(--color-text-tertiary); margin-top:8px;}
+
+  /* Sticky search dock */
+  .dock{
+    position:absolute; left:12px; right:12px; bottom:96px; height:48px; padding:0 6px 0 14px;
+    background:var(--color-bg-surface); border-radius:var(--radius-pill); box-shadow:var(--shadow-elevated);
+    display:flex; align-items:center; gap:8px; z-index:20;
+  }
+  .dock .si{font-size:16px; color:var(--color-text-tertiary);}
+  .dock input{
+    flex:1; border:none; background:transparent; outline:none; font-size:13px;
+    font-family:var(--font-cjk); color:var(--color-text-primary);
+  }
+  .dock input::placeholder{color:var(--color-text-tertiary);}
+  .dock .clr{
+    width:24px; height:24px; border-radius:50%; background:var(--color-bg-surface-muted);
+    display:flex; align-items:center; justify-content:center; color:var(--color-text-tertiary);
+    font-size:13px; cursor:pointer;
+  }
+  .dock .add{
+    height:34px; padding:0 16px; border-radius:var(--radius-pill); background:var(--gradient-day);
+    color:#fff; font-size:13px; font-weight:600; border:none; cursor:pointer;
+  }
+
+  /* C4 notifications */
+  .notif-section{margin-bottom:18px;}
+  .notif-head{
+    padding:0 18px; display:flex; align-items:center; gap:8px; margin-bottom:8px;
+  }
+  .notif-head .ttl{font-size:15px; font-weight:700;}
+  .notif-pill{height:22px; padding:0 9px; border-radius:var(--radius-pill); font-size:11px; font-weight:700;
+    display:inline-flex; align-items:center;}
+  .notif-pill.pink{background:#FFE0EE; color:#D2398C;}
+  .notif-pill.purple{background:rgba(113,79,247,.12); color:#714FF7;}
+  .notif-pill.green{background:rgba(57,193,108,.16); color:#1F8C4A;}
+  .notif-sub{padding:0 18px; font-size:11px; color:var(--color-text-tertiary); margin-bottom:8px;}
+  .notif-card{
+    margin:0 16px 8px; padding:12px; background:var(--color-bg-surface); border-radius:var(--radius-lg);
+    display:flex; align-items:center; gap:10px;
+  }
+  .notif-card .info{flex:1; min-width:0;}
+  .notif-card .nm{font-size:14px; font-weight:600;}
+  .notif-card .ms{font-size:11px; color:var(--color-text-tertiary); margin-top:2px;}
+  .notif-card .acts{display:flex; gap:6px;}
+  .mini-btn{
+    height:30px; padding:0 12px; border-radius:var(--radius-pill); border:none; font-size:12px; font-weight:600;
+    cursor:pointer; font-family:var(--font-cjk);
+  }
+  .mini-btn.primary{background:var(--gradient-day); color:#fff;}
+  .mini-btn.ghost{background:var(--color-bg-surface-muted); color:var(--color-text-secondary);}
+  .mini-btn.warn{background:#FFE5DD; color:#D85A2E;}
+
+  /* C5 Personal page */
+  .profile-hero{
+    margin:16px 16px 14px; padding:20px 16px; background:var(--color-bg-surface); border-radius:var(--radius-xl);
+    box-shadow:var(--shadow-card);
+  }
+  .profile-row{display:flex; align-items:center; gap:14px; margin-bottom:12px;}
+  .profile-avatar{width:72px; height:72px; border-radius:50%; background:var(--gradient-purple);
+    display:flex; align-items:center; justify-content:center; color:#fff; font-size:28px; font-weight:700; position:relative;}
+  /* 大头像专属：戒指徽标右下角 */
+  .profile-avatar .ring-mark{
+    position:absolute; bottom:2px; right:2px;
+    width:22px; height:22px; border-radius:50%;
+    background:#fff; border:2px solid var(--color-brand-primary);
+    display:flex; align-items:center; justify-content:center;
+    font-size:11px; font-weight:800; color:var(--color-brand-primary);
+    z-index:2;
+  }
+  .profile-info{flex:1;}
+  .profile-name{font-size:20px; font-weight:700; display:flex; align-items:center; gap:6px;}
+  .profile-meta{font-size:12px; color:var(--color-text-secondary); margin-top:4px;}
+  .note-btn{
+    height:32px; padding:0 12px; border-radius:var(--radius-pill); border:1px solid var(--color-border-subtle);
+    background:var(--color-bg-surface); font-size:12px; color:var(--color-text-secondary); cursor:pointer;
+  }
+  /* 健康标签区（C5 Profile Hero · 基于挑战自动生成） */
+  .profile-tags-head{
+    font-size:12px; font-weight:600; color:var(--color-text-secondary);
+    margin-bottom:8px; display:flex; align-items:center; gap:5px;
+  }
+  .profile-tags-head .src{color:var(--color-text-tertiary); font-weight:500;}
+  .tag-row.profile-tag-row{margin-bottom:14px;}
+
+  .triple{display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px; padding-top:12px;
+    border-top:1px solid var(--color-border-subtle);}
+  .triple .it{text-align:center;}
+  .triple .vv{font-size:18px; font-weight:800; color:var(--color-brand-primary);}
+  .triple .lb{font-size:11px; color:var(--color-text-tertiary); margin-top:2px;}
+
+  /* C6 Settings */
+  .set-group{margin:0 16px 14px; background:var(--color-bg-surface); border-radius:var(--radius-xl);
+    overflow:hidden; box-shadow:var(--shadow-card);}
+  .set-group-head{padding:14px 16px 6px; font-size:13px; font-weight:700; color:var(--color-text-primary);}
+  .set-group-sub{padding:0 16px 10px; font-size:11px; color:var(--color-text-tertiary); line-height:1.5;}
+  .set-row{
+    padding:12px 16px; display:flex; align-items:center; gap:12px;
+    border-top:1px solid var(--color-border-subtle);
+  }
+  .set-row:first-child{border-top:none;}
+  .set-icon{
+    width:34px; height:34px; border-radius:var(--radius-md); display:flex; align-items:center; justify-content:center;
+    font-size:16px; flex-shrink:0;
+  }
+  .set-icon.kin{background:#FFE0EE; color:#D2398C;}
+  .set-icon.near{background:rgba(58,111,224,.14); color:var(--color-brand-primary);}
+  .set-icon.dist{background:rgba(255,163,26,.14); color:#D8770D;}
+  .set-icon.gen{background:rgba(57,193,108,.14); color:#1F8C4A;}
+  .set-icon.find{background:var(--gradient-purple); color:#fff;}
+  .set-icon.like{background:rgba(255,182,11,.16); color:#A8730A;}
+  .set-icon.bell{background:rgba(255,87,75,.14); color:#D85A2E;}
+  .set-info{flex:1; min-width:0;}
+  .set-title{font-size:14px; font-weight:600;}
+  .set-sub{font-size:11px; color:var(--color-text-tertiary); margin-top:2px; line-height:1.4;}
+  .toggle{
+    width:46px; height:26px; border-radius:13px; background:#DDE3EE; position:relative;
+    cursor:pointer; flex-shrink:0; transition:background .2s ease;
+  }
+  .toggle::after{
+    content:""; position:absolute; top:3px; left:3px; width:20px; height:20px; background:#fff;
+    border-radius:50%; transition:left .2s ease; box-shadow:0 2px 6px rgba(0,0,0,.15);
+  }
+  .toggle.on{background:var(--color-brand-primary);}
+  .toggle.on::after{left:23px;}
+
+  /* tag chips */
+  .chips{display:flex; flex-wrap:wrap; gap:6px; padding:0 16px 12px;}
+  .chip{
+    height:28px; padding:0 12px; background:var(--color-bg-surface-muted); border-radius:var(--radius-pill);
+    font-size:12px; color:var(--color-text-secondary); display:inline-flex; align-items:center; gap:5px;
+    border:1px solid var(--color-border-subtle);
+  }
+  .chip.dot-p::before{content:""; width:6px; height:6px; border-radius:50%; background:#714FF7;}
+  .chip.dot-o::before{content:""; width:6px; height:6px; border-radius:50%; background:#FFA31A;}
+  .chip.dot-g::before{content:""; width:6px; height:6px; border-radius:50%; background:#39C16C;}
+  .chip.add{border-style:dashed; color:var(--color-brand-primary);}
+
+  /* visibility chips */
+  .vis-row{display:flex; gap:8px; padding:0 16px 12px; flex-wrap:wrap; align-items:center;}
+  .vis-row .lb{font-size:12px; color:var(--color-text-secondary); margin-right:4px;}
+  .vis-chip{
+    height:26px; padding:0 12px; border-radius:var(--radius-pill); font-size:12px; font-weight:600;
+    cursor:pointer; display:inline-flex; align-items:center; gap:4px; border:1px solid var(--color-border-subtle);
+    background:var(--color-bg-surface);
+  }
+  .vis-chip.on{background:rgba(58,111,224,.10); color:var(--color-brand-primary);
+    border-color:rgba(58,111,224,.25);}
+
+  /* privacy disclaimer */
+  .disclaimer{
+    margin:6px 16px 24px; padding:12px 14px; background:rgba(138,141,164,.08); border-radius:var(--radius-md);
+    font-size:11px; color:var(--color-text-tertiary); line-height:1.6;
+  }
+
+  /* =========================================================
+     仿真微信浮层（C3.1.b 已发送 / C3.2 朋友圈发布）
+     ========================================================= */
+  /* 整体放在 .page 之上，但仍是 page 一种 — 使用 .wechat-page 修饰提升优先级 */
+  .wechat-chat-bg{background:#EDEDED;}
+  .wx-topbar{
+    height:44px; padding:0 12px;
+    background:#EDEDED;
+    border-bottom:1px solid rgba(0,0,0,.06);
+    display:flex; align-items:center; justify-content:space-between;
+    font-family:-apple-system,"PingFang SC",sans-serif;
+  }
+  .wx-topbar .wx-back{
+    display:flex; align-items:center; gap:2px; color:#576B95; font-size:17px; cursor:pointer;
+  }
+  .wx-topbar .wx-back .arrow{font-size:22px; line-height:1;}
+  .wx-topbar .wx-title{font-size:17px; font-weight:500; color:#000;}
+  .wx-topbar .wx-more{font-size:22px; letter-spacing:1px; color:#000; cursor:pointer; line-height:1;}
+
+  .wx-chat-body{
+    flex:1; overflow-y:auto; background:#EDEDED;
+    padding:14px 12px 8px; display:flex; flex-direction:column; gap:8px;
+  }
+  .wx-chat-body::-webkit-scrollbar{display:none;}
+  .wx-time-divider{
+    align-self:center; padding:2px 8px; font-size:12px; color:#9A9A9A;
+    margin:6px 0;
+  }
+  .wx-msg-row{display:flex; gap:8px; align-items:flex-start;}
+  .wx-msg-row.me{justify-content:flex-end;}
+  /* 气泡 + 已送达 包装：内容自然宽度 + 外层 74% 上限，让气泡贴近头像 */
+  .wx-msg-row > div:not(.wx-msg-avatar){
+    display:flex; flex-direction:column; min-width:0; max-width:74%;
+  }
+  .wx-msg-row.me > div:not(.wx-msg-avatar){align-items:flex-end;}
+  .wx-msg-row.them > div:not(.wx-msg-avatar){align-items:flex-start;}
+  .wx-msg-avatar{
+    width:38px; height:38px; border-radius:5px; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+    color:#fff; font-size:14px; font-weight:600;
+  }
+  .wx-msg-bubble{
+    max-width:100%; padding:9px 12px; border-radius:5px;
+    font-size:15px; line-height:1.45; color:#1A1A1A;
+    position:relative; word-break:break-word;
+    font-family:-apple-system,"PingFang SC",sans-serif;
+  }
+  .wx-msg-row.me .wx-msg-bubble{
+    background:#95EC69;
+  }
+  .wx-msg-row.me .wx-msg-bubble::after{
+    content:""; position:absolute; right:-5px; top:11px;
+    border:5px solid transparent; border-left-color:#95EC69; border-right:0;
+  }
+  .wx-msg-row.them .wx-msg-bubble{
+    background:#FFFFFF;
+  }
+  .wx-msg-row.them .wx-msg-bubble::after{
+    content:""; position:absolute; left:-5px; top:11px;
+    border:5px solid transparent; border-right-color:#FFFFFF; border-left:0;
+  }
+  .wx-msg-bubble b{font-weight:700; color:#07C160;}
+  .wx-delivered{
+    margin-top:4px; text-align:right; font-size:11px; color:#9A9A9A;
+    padding-right:4px;
+  }
+
+  .wx-input-bar{
+    height:54px; flex-shrink:0; background:#F7F7F7;
+    border-top:1px solid rgba(0,0,0,.08);
+    display:flex; align-items:center; gap:8px; padding:7px 8px;
+  }
+  .wx-input-bar .wx-ic{
+    width:32px; height:32px; flex-shrink:0; border-radius:50%;
+    display:flex; align-items:center; justify-content:center; font-size:18px; color:#000;
+  }
+  .wx-input-bar .wx-text{
+    flex:1; height:36px; background:#fff; border-radius:5px;
+    border:1px solid rgba(0,0,0,.06);
+  }
+
+  /* === C3.1 微信 · 选择聊天 (列表 / 搜索) === */
+  .wx-search{
+    height:36px; margin:8px; padding:0 10px;
+    background:rgba(0,0,0,.06); border-radius:6px;
+    display:flex; align-items:center; gap:6px;
+    font-size:15px; color:#9A9A9A;
+    font-family:-apple-system,"PingFang SC",sans-serif;
+  }
+  .wx-list-body{flex:1; overflow-y:auto; background:#EDEDED;}
+  .wx-list-body::-webkit-scrollbar{display:none;}
+  .wx-list-section{margin-bottom:8px; background:#fff;}
+  .wx-list-head{
+    padding:6px 12px; font-size:12px; color:#9A9A9A;
+    background:#EDEDED;
+    font-family:-apple-system,"PingFang SC",sans-serif;
+  }
+  .wx-contact{
+    display:flex; align-items:center; gap:10px;
+    padding:10px 12px; background:#fff;
+    border-bottom:1px solid rgba(0,0,0,.04); cursor:pointer;
+  }
+  .wx-contact:active{background:#F0F0F0;}
+  .wx-contact:last-child{border-bottom:none;}
+  .wx-contact-avatar{
+    width:42px; height:42px; border-radius:5px; flex-shrink:0;
+    object-fit:cover; background:var(--color-bg-surface-muted);
+  }
+  .wx-contact-info{flex:1; min-width:0;}
+  .wx-contact-name{
+    font-size:16px; color:#1A1A1A; font-weight:500; margin-bottom:3px;
+    font-family:-apple-system,"PingFang SC",sans-serif;
+  }
+  .wx-contact-preview{
+    font-size:13px; color:#9A9A9A;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+    font-family:-apple-system,"PingFang SC",sans-serif;
+  }
+
+  /* === C3.1.a 微信 · 发送确认（底部弹层样式） === */
+  .wx-conf-page{flex:1; background:rgba(0,0,0,.55); display:flex; flex-direction:column;}
+  .wx-conf-mask{flex:1; cursor:pointer;}
+  .wx-conf-sheet{
+    background:#F7F7F7; padding:0 0 14px;
+    font-family:-apple-system,"PingFang SC",sans-serif;
+  }
+  .wx-conf-label{
+    text-align:center; padding:14px 0 10px;
+    font-size:13px; color:#8A8A8A;
+  }
+  .wx-recipient{
+    display:flex; align-items:center; gap:10px;
+    padding:10px 12px; background:#fff;
+    margin:0 12px 10px; border-radius:6px;
+  }
+  .wx-recipient-avatar{
+    width:36px; height:36px; border-radius:4px;
+    object-fit:cover; background:var(--color-bg-surface-muted);
+  }
+  .wx-recipient-info{flex:1;}
+  .wx-recipient-name{font-size:15px; color:#1A1A1A; font-weight:500;}
+  .wx-recipient-count{font-size:13px; color:#9A9A9A; margin-left:4px;}
+  .wx-recipient-arrow{color:#C7C7CC; font-size:18px;}
+  .wx-preview-row{
+    margin:0 12px 10px; padding:10px;
+    background:#fff; border-radius:6px;
+    display:flex; justify-content:flex-end;
+  }
+  .wx-preview-bubble{
+    max-width:90%; padding:9px 12px; border-radius:5px;
+    background:#95EC69; color:#1A1A1A;
+    font-size:14px; line-height:1.45;
+    font-family:-apple-system,"PingFang SC",sans-serif;
+  }
+  .wx-preview-bubble b{color:#07C160; font-weight:700;}
+  .wx-leave{
+    display:flex; align-items:center; gap:10px;
+    padding:10px 12px; background:#fff;
+    margin:0 12px 12px; border-radius:6px;
+  }
+  /* 输入框：浅灰底 + 圆角，与微信原生样式一致 */
+  .wx-leave .wx-msg-input{
+    flex:1; height:36px; padding:0 12px;
+    background:#F2F2F2; border:none; outline:none;
+    border-radius:5px; font-size:14px; color:#1A1A1A;
+    font-family:-apple-system,"PingFang SC",sans-serif;
+  }
+  .wx-leave .wx-msg-input::placeholder{color:#B2B2B2;}
+  .wx-leave .ic{font-size:20px; color:#666; flex-shrink:0; cursor:pointer;}
+  .wx-conf-btns{display:flex; gap:8px; padding:0 12px;}
+  .wx-conf-btns .wx-btn{
+    flex:1; height:44px; border:none; border-radius:6px;
+    font-size:16px; font-weight:500; cursor:pointer;
+    font-family:-apple-system,"PingFang SC",sans-serif;
+  }
+  .wx-conf-btns .wx-btn.cancel{background:#fff; color:#1A1A1A;}
+  .wx-conf-btns .wx-btn.send{background:#07C160; color:#fff;}
+  .wx-conf-btns .wx-btn.send:active{background:#05A350;}
+
+  /* === C3.4 自动识别邀请码（按需求文档：唤起遮罩 + 5s 超时降级） === */
+  .auto-detect-page{
+    flex:1; background:linear-gradient(180deg,#F4F1FF 0%,#EAF3FF 60%,#FFFFFF 100%);
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    padding:0 28px; text-align:center;
+  }
+  .auto-detect-icon{
+    width:108px; height:108px; border-radius:50%;
+    background:var(--gradient-day);
+    display:flex; align-items:center; justify-content:center;
+    font-size:54px; margin-bottom:24px;
+    box-shadow:0 12px 36px rgba(58,111,224,.30);
+    animation:adPulse 1.6s ease-in-out infinite;
+  }
+  @keyframes adPulse{
+    0%,100%{transform:scale(1); box-shadow:0 12px 36px rgba(58,111,224,.30);}
+    50%{transform:scale(1.06); box-shadow:0 16px 44px rgba(58,111,224,.40);}
+  }
+  .auto-detect-title{
+    font-size:22px; font-weight:800; color:var(--color-text-primary);
+    margin-bottom:10px; letter-spacing:-.4px;
+  }
+  .auto-detect-sub{
+    font-size:13px; color:var(--color-text-secondary);
+    line-height:1.6; margin-bottom:28px; max-width:280px;
+  }
+  .auto-detect-loading{display:flex; gap:6px; margin-bottom:36px;}
+  .auto-detect-loading .dot{
+    width:8px; height:8px; border-radius:50%;
+    background:var(--color-brand-primary);
+    animation:adDot 1.2s ease-in-out infinite;
+  }
+  .auto-detect-loading .dot:nth-child(2){animation-delay:.15s;}
+  .auto-detect-loading .dot:nth-child(3){animation-delay:.30s;}
+  @keyframes adDot{
+    0%,80%,100%{transform:translateY(0); opacity:.4;}
+    40%{transform:translateY(-8px); opacity:1;}
+  }
+  /* 5s 超时后才出现的"立即下载"按钮 */
+  .auto-detect-download-btn{
+    height:46px; padding:0 28px; min-width:220px;
+    background:#fff; color:var(--color-brand-primary);
+    border:1px solid rgba(58,111,224,.30);
+    border-radius:var(--radius-pill); font-size:15px; font-weight:600;
+    cursor:pointer; box-shadow:var(--shadow-card);
+    display:inline-flex; align-items:center; justify-content:center; gap:6px;
+    font-family:var(--font-cjk);
+    animation:adFadeIn .35s ease-out;
+  }
+  .auto-detect-download-btn:active{transform:scale(.98);}
+  @keyframes adFadeIn{
+    0%{opacity:0; transform:translateY(8px);}
+    100%{opacity:1; transform:translateY(0);}
+  }
+
+  /* 朋友圈发布页 */
+  .pyq-topbar{
+    height:44px; background:#FFFFFF; border-bottom:1px solid rgba(0,0,0,.06);
+    display:flex; align-items:center; justify-content:space-between; padding:0 12px;
+    font-family:-apple-system,"PingFang SC",sans-serif;
+  }
+  .pyq-cancel{font-size:17px; color:#000; cursor:pointer; padding:6px 10px;}
+  .pyq-title{font-size:17px; font-weight:600; color:#000;}
+  .pyq-publish{
+    font-size:15px; font-weight:600; color:#FFFFFF; cursor:pointer;
+    background:#07C160; padding:6px 14px; border-radius:4px; border:none;
+    font-family:-apple-system,"PingFang SC",sans-serif;
+  }
+  .pyq-publish:disabled{background:#A0DCB0; cursor:not-allowed;}
+  .pyq-body{flex:1; overflow-y:auto; background:#FFFFFF;}
+  .pyq-textarea{
+    width:100%; min-height:120px; max-height:240px; resize:none;
+    border:none; outline:none; padding:14px 16px;
+    font-size:16px; line-height:1.5;
+    font-family:-apple-system,"PingFang SC",sans-serif;
+    color:#1A1A1A; background:transparent;
+  }
+  .pyq-textarea::placeholder{color:#B2B2B2;}
+  .pyq-divider{height:8px; background:#F7F7F7;}
+  .pyq-option{
+    height:50px; padding:0 16px; display:flex; align-items:center; gap:10px;
+    border-bottom:1px solid rgba(0,0,0,.05); cursor:pointer; background:#fff;
+  }
+  .pyq-option .ic{font-size:18px; color:#576B95; width:22px; text-align:center;}
+  .pyq-option .lbl{flex:1; font-size:16px; color:#1A1A1A;
+    font-family:-apple-system,"PingFang SC",sans-serif;}
+  .pyq-option .val{font-size:14px; color:#9A9A9A;}
+  .pyq-option .arr{color:#C7C7CC; font-size:18px;}
+
+  /* Toast */
+  .toast{
+    position:absolute; bottom:120px; left:50%; transform:translateX(-50%) translateY(40px);
+    background:rgba(15,23,42,.92); color:#fff; padding:12px 20px; border-radius:var(--radius-md);
+    font-size:13px; opacity:0; pointer-events:none; transition:all .3s ease; z-index:5000; white-space:nowrap;
+  }
+  .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+
+  /* Modal (C3.2.a confirm) */
+  .modal-mask{
+    position:absolute; inset:0; background:rgba(15,23,42,.42); display:none;
+    align-items:center; justify-content:center; z-index:3000; padding:20px;
+  }
+  .modal-mask.open{display:flex;}
+  .modal{
+    background:var(--color-bg-surface); width:100%; border-radius:var(--radius-xl); padding:24px 20px 16px;
+    text-align:center; box-shadow:0 20px 60px rgba(0,0,0,.22);
+  }
+  .modal .av{width:64px; height:64px; margin:0 auto 12px; font-size:24px;}
+  .modal .ttl{font-size:17px; font-weight:700; margin-bottom:8px;}
+  .modal .ct{font-size:14px; color:var(--color-text-secondary); margin-bottom:6px;}
+  .modal .ct b{color:var(--color-text-primary);}
+  .modal .src{font-size:11px; color:var(--color-text-tertiary); margin-bottom:18px;}
+  .modal .btns{display:flex; gap:10px;}
+
+  /* Theme switch button visual */
+  .theme-icon{transition:transform .3s ease;}
+
+  /* === scrolling smoothing === */
+  .scroll{scroll-behavior:smooth;}
+
+</style>
+</head>
+<body>
+
+<div class="layout">
+  <!-- =========================================================
+       左侧导航（与「今日模块」同款）
+       ========================================================= -->
+  <aside class="side-nav">
+    <div class="nav-brand">
+      <div class="nav-logo">唯</div>
+      <div>
+        <div class="nav-title">唯戒 · 关心模块</div>
+        <div class="nav-version">v2.2 · 2026-04-28</div>
+      </div>
+    </div>
+
+    <div class="nav-section-label">状态切换</div>
+    <div class="state-grid">
+      <button class="state-btn is-active" data-state="default">
+        <span class="ic">❤️</span><span>已登录·有好友</span>
+      </button>
+      <button class="state-btn" data-state="empty">
+        <span class="ic">👋</span><span>已登录·无好友</span>
+      </button>
+      <button class="state-btn" data-state="logged-out">
+        <span class="ic">👤</span><span>未登录</span>
+      </button>
+      <button class="state-btn" data-state="unread">
+        <span class="ic">🔴</span><span>有未读通知</span>
+      </button>
+      <button class="state-btn" data-state="dark" style="grid-column:span 2;">
+        <span class="ic">🌙</span><span>切换深色模式</span>
+      </button>
+    </div>
+
+    <div class="nav-section-label">页面 · 一级</div>
+    <div class="nav-list">
+      <div class="nav-item is-active" data-target="page" data-page="c1">
+        <span class="nav-id">C1</span><span class="nav-name">关心首页</span><span class="nav-tag tag-page">一级</span>
+      </div>
+      <div class="nav-item" data-target="sub" data-page="c1" data-sub="a">
+        <span class="nav-id">C1.A</span><span class="nav-name">Tab · 好友动态</span><span class="nav-tag tag-sub">子 Tab</span>
+      </div>
+      <div class="nav-item" data-target="sub" data-page="c1" data-sub="b">
+        <span class="nav-id">C1.B</span><span class="nav-name">Tab · 发现</span><span class="nav-tag tag-sub">子 Tab</span>
+      </div>
+      <div class="nav-item" data-target="sub" data-page="c1" data-sub="c">
+        <span class="nav-id">C1.C</span><span class="nav-name">Tab · 我的好友</span><span class="nav-tag tag-sub">子 Tab</span>
+      </div>
+    </div>
+
+    <div class="nav-section-label">页面 · 二级</div>
+    <div class="nav-list">
+      <div class="nav-item" data-target="page" data-page="c2">
+        <span class="nav-id">C2</span><span class="nav-name">好友 XP 排行榜</span><span class="nav-tag tag-page">二级</span>
+      </div>
+      <div class="nav-item" data-target="page" data-page="c3">
+        <span class="nav-id">C3</span><span class="nav-name">添加好友</span><span class="nav-tag tag-page">二级</span>
+      </div>
+      <div class="nav-item" data-target="page" data-page="c4">
+        <span class="nav-id">C4</span><span class="nav-name">好友通知</span><span class="nav-tag tag-page">二级</span>
+      </div>
+      <div class="nav-item" data-target="page" data-page="c5">
+        <span class="nav-id">C5</span><span class="nav-name">个人主页（关心圈视角）</span><span class="nav-tag tag-page">二级</span>
+      </div>
+    </div>
+
+    <div class="nav-section-label">微信仿真浮层（邀请链路）</div>
+    <div class="nav-list">
+      <div class="nav-item" data-target="page" data-page="c3_1">
+        <span class="nav-id">C3.1</span><span class="nav-name">微信 · 选择聊天</span><span class="nav-tag tag-modal">浮层</span>
+      </div>
+      <div class="nav-item" data-target="page" data-page="c3_1_a">
+        <span class="nav-id">C3.1.a</span><span class="nav-name">微信 · 发送确认</span><span class="nav-tag tag-modal">浮层</span>
+      </div>
+      <div class="nav-item" data-target="page" data-page="c3_1_b">
+        <span class="nav-id">C3.1.b</span><span class="nav-name">微信 · 已发送</span><span class="nav-tag tag-modal">浮层</span>
+      </div>
+      <div class="nav-item" data-target="page" data-page="c3_2_pyq">
+        <span class="nav-id">C3.2</span><span class="nav-name">微信 · 朋友圈发布</span><span class="nav-tag tag-modal">浮层</span>
+      </div>
+      <div class="nav-item" data-target="page" data-page="c3_3">
+        <span class="nav-id">C3.3</span><span class="nav-name">微信 · 聊天页（接收方）</span><span class="nav-tag tag-modal">浮层</span>
+      </div>
+    </div>
+
+    <div class="nav-section-label">弹层 / 确认框</div>
+    <div class="nav-list">
+      <div class="nav-item" data-target="modal" data-modal="confirm" data-name="阿戒" data-src="通过邀请码">
+        <span class="nav-id">C3.2.a</span><span class="nav-name">添加好友二次确认</span><span class="nav-tag tag-modal">确认框</span>
+      </div>
+    </div>
+
+    <div class="nav-foot">
+      <strong>使用提示：</strong><br>
+      • 点击导航项 → 在右侧手机里直接打开对应页面 / 子 Tab / 弹层<br>
+      • 状态切换会改变 C1 的表现（登录 / 好友 / 未读）<br>
+      • 弹层可点击遮罩或"取消"关闭
+    </div>
+  </aside>
+
+  <!-- =========================================================
+       右侧手机原型
+       ========================================================= -->
+  <main class="preview-area">
+
+<div class="phone" id="phone">
+  <div class="notch"></div>
+
+  <!-- ============ PAGE: C1 关心首页 ============ -->
+  <div class="page active" data-page="c1">
+    <!-- § 6.1 iOS 系统状态栏（独立组件，与一级顶栏共用磨砂帽） -->
+    <div class="ios-status-bar is-on-glass">
+      <div class="iss-time">9:41</div>
+      <div class="iss-right">
+        <div class="iss-signal">
+          <span class="iss-bar"></span><span class="iss-bar"></span>
+          <span class="iss-bar"></span><span class="iss-bar"></span>
+        </div>
+        <div class="iss-network">5G</div>
+        <div class="iss-battery"><span class="iss-battery-pct">85</span></div>
+      </div>
+    </div>
+    <!-- § 6.1 一级页面顶栏：标题 + 戒指连接状态 ｜ 🌙 + 👤 -->
+    <div class="app-topbar--primary">
+      <div class="topbar-left">
+        <div class="topbar-title">关心</div>
+        <div class="ring-tag is-connected" onclick="toast('跳 P6 设备管理')" title="戒指连接状态">
+          <span class="ring-emoji">🟢</span>
+          <span>已连接</span>
+          <span style="opacity:.6;">·</span>
+          <span class="ring-battery"><span class="ring-battery-fill" style="width:85%;"></span></span>
+          <span>85%</span>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <div class="icon-btn" onclick="toggleTheme()" title="主题切换"><span class="theme-icon" id="themeIcon">🌙</span></div>
+        <!-- § 6.1 b.2 已登录：用户头像（36px 圆形真人头像）/ 未登录：白底 + shadow-card + 👤 -->
+        <div class="icon-btn is-loggedin" id="personBtn" onclick="toast('跳转 P5 个人设置')" title="个人设置">
+          <img class="real-photo" src="https://i.pravatar.cc/150?img=33" alt="我">
+        </div>
+      </div>
+    </div>
+    <div class="scroll page-content">
+      <!-- TOP3 -->
+      <div class="podium-card">
+        <div class="podium-head">
+          <div class="ttl">🏅 今日 TOP 3</div>
+          <div class="link" onclick="goto('c2')">查看全部好友排行榜 ›</div>
+        </div>
+        <div class="podium-row">
+          <!-- 第二名 -->
+          <div class="podium-slot second" onclick="goto('c5')">
+            <div class="podium-avatar">
+              <img class="real-photo" src="https://i.pravatar.cc/150?img=47" alt="林雨晴">
+              <span class="podium-medal">🥈</span>
+            </div>
+            <div class="podium-name">林雨晴</div>
+            <div class="podium-xp">218</div>
+            <div class="podium-xp-lbl">XP</div>
+          </div>
+          <!-- 第一名 -->
+          <div class="podium-slot first" onclick="goto('c5')">
+            <div class="podium-laurel">🌿🏆🌿</div>
+            <div class="podium-avatar">
+              <img class="real-photo" src="https://i.pravatar.cc/150?img=60" alt="阿戒">
+              <span class="podium-medal">🥇</span>
+            </div>
+            <div class="podium-name">阿戒</div>
+            <div class="podium-xp">312</div>
+            <div class="podium-xp-lbl">冠军 XP</div>
+          </div>
+          <!-- 第三名 -->
+          <div class="podium-slot third" onclick="goto('c5')">
+            <div class="podium-avatar">
+              <img class="real-photo" src="https://i.pravatar.cc/150?img=32" alt="周妈妈">
+              <span class="podium-medal">🥉</span>
+            </div>
+            <div class="podium-name">周妈妈</div>
+            <div class="podium-xp">196</div>
+            <div class="podium-xp-lbl">XP</div>
+          </div>
+        </div>
+        <div class="my-rank" onclick="goto('c2')">
+          <div class="my-rank-num">7</div>
+          <div class="my-rank-avatar"><img class="real-photo" src="https://i.pravatar.cc/150?img=33" alt="我"></div>
+          <div class="my-rank-info">
+            <div class="my-rank-name">你 <span style="font-size:11px;color:var(--color-text-tertiary);font-weight:500;">· 我</span></div>
+            <div class="my-rank-sub">☀️ 今日已获 +48 XP · 点赞 6 次 · 评论 3 次</div>
+          </div>
+          <div class="my-rank-xp">142<small>XP</small></div>
+        </div>
+      </div>
+
+      <!-- Sub-tabs -->
+      <div class="subtabs">
+        <div class="item active" data-sub="a">好友动态</div>
+        <div class="item" data-sub="b">发现<span class="red-dot"></span></div>
+        <div class="item" data-sub="c">我的好友<span class="red-dot"></span></div>
+      </div>
+
+      <!-- ===== Sub-panel A · 好友动态 ===== -->
+      <div class="subpanel active" data-panel="a">
+
+        <!-- 动态卡 1 -->
+        <div class="dyn-card">
+          <div class="dyn-head">
+            <div class="avatar has-photo" onclick="goto('c5')">
+              <img class="real-photo" src="https://i.pravatar.cc/150?img=32" alt="周妈妈">
+              <span class="ring-mark">R</span>
+            </div>
+            <div class="dyn-meta">
+              <div class="dyn-name">
+                <span class="n">周妈妈</span>
+                <span class="tag-mini kin">亲友</span>
+              </div>
+              <div class="dyn-sub">异地 · 连续 14 天达标 · 今日第 3 项</div>
+            </div>
+            <div class="dyn-time">10 分钟前</div>
+          </div>
+          <div class="ch-block orange">
+            <div class="ch-top">
+              <div class="ch-icon">🚶</div>
+              <div class="ch-name">每日 8000 步</div>
+              <div class="ch-status">✓ 已完成</div>
+            </div>
+            <div class="ch-progress">
+              <div class="ch-bar"><div class="ch-bar-fill" style="width:100%;"></div></div>
+              <div class="ch-pct">100%</div>
+            </div>
+            <div class="ch-text">今天坚持走完 8,000 步目标 · 比昨天多坚持了 15 分钟</div>
+          </div>
+          <div class="act-bar">
+            <div class="act-btn" onclick="like(this)">
+              ❤️ <span>点赞</span><span class="xp">+3 XP</span>
+            </div>
+            <div class="act-btn" onclick="toggleComments(this)">💬 评论</div>
+            <div class="act-stat">· 8 人点赞</div>
+          </div>
+          <div class="cmt-wrap open">
+            <div class="cmt-item"><span class="u">林雨晴</span><span>妈妈最棒了！</span><span class="t">5 分钟前</span></div>
+            <div class="cmt-item"><span class="u me">我</span><span>明天我陪你一起走 🚶</span><span class="t">2 分钟前</span></div>
+            <div class="cmt-input">
+              <input type="text" placeholder="仅对方可见 · 写一句关心的话">
+              <button onclick="toast('已发送')">发送</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 动态卡 2 -->
+        <div class="dyn-card">
+          <div class="dyn-head">
+            <div class="avatar has-photo" onclick="goto('c5')">
+              <img class="real-photo" src="https://i.pravatar.cc/150?img=60" alt="阿戒">
+              <span class="ring-mark">R</span>
+            </div>
+            <div class="dyn-meta">
+              <div class="dyn-name">
+                <span class="n">阿戒</span>
+                <span class="tag-mini kin">亲友</span>
+              </div>
+              <div class="dyn-sub">同城 · 连续 21 天 · 今日第 2 项</div>
+            </div>
+            <div class="dyn-time">刚刚</div>
+          </div>
+          <div class="ch-block purple">
+            <div class="ch-top">
+              <div class="ch-icon">😴</div>
+              <div class="ch-name">深睡 ≥ 90 分钟</div>
+              <div class="ch-status">✓ 已完成</div>
+            </div>
+            <div class="ch-progress">
+              <div class="ch-bar"><div class="ch-bar-fill" style="width:100%;"></div></div>
+              <div class="ch-pct">100%</div>
+            </div>
+            <div class="ch-text">昨晚获得了一个高质量的深睡周期 · 比上周平均提升 12 分钟</div>
+          </div>
+          <div class="act-bar">
+            <div class="act-btn liked">
+              ❤️ <span>已点赞</span><span class="xp">+3 XP</span>
+            </div>
+            <div class="act-btn" onclick="toggleComments(this)">💬 评论</div>
+            <div class="act-stat">· 12 人点赞</div>
+          </div>
+          <div class="cmt-wrap open">
+            <div class="cmt-item"><span class="u">陈乐</span><span>羡慕你的深睡 😴</span><span class="t">8 分钟前</span></div>
+            <div class="cmt-input">
+              <input type="text" placeholder="仅对方可见 · 写一句关心的话">
+              <button onclick="toast('已发送')">发送</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 动态卡 3 -->
+        <div class="dyn-card">
+          <div class="dyn-head">
+            <div class="avatar has-photo" onclick="goto('c5')">
+              <img class="real-photo" src="https://i.pravatar.cc/150?img=47" alt="林雨晴">
+              <span class="ring-mark">R</span>
+            </div>
+            <div class="dyn-meta">
+              <div class="dyn-name">
+                <span class="n">林雨晴</span>
+                <span class="tag-mini follow">关注</span>
+              </div>
+              <div class="dyn-sub">同城 · 第 5 天 · 进行中</div>
+            </div>
+            <div class="dyn-time">昨夜</div>
+          </div>
+          <div class="ch-block cyan">
+            <div class="ch-top">
+              <div class="ch-icon">💪</div>
+              <div class="ch-name">激活心肺循环</div>
+              <div class="ch-status">⏳ 进行中</div>
+            </div>
+            <div class="ch-progress">
+              <div class="ch-bar"><div class="ch-bar-fill" style="width:72%;"></div></div>
+              <div class="ch-pct">72%</div>
+            </div>
+            <div class="ch-text">已经完成今日大部分目标 · 距离冲顶还差一组训练</div>
+          </div>
+          <div class="act-bar">
+            <div class="act-btn" onclick="like(this)">
+              ❤️ <span>点赞</span><span class="xp">+3 XP</span>
+            </div>
+            <div class="act-btn" onclick="toggleComments(this)">💬 评论</div>
+            <div class="act-stat">· 4 人点赞</div>
+          </div>
+          <div class="cmt-wrap open">
+            <div class="cmt-input">
+              <input type="text" placeholder="仅对方可见 · 写一句关心的话">
+              <button onclick="toast('已发送')">发送</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ===== Sub-panel B · 发现（仅 1 种状态：已登录默认推荐 3 人） ===== -->
+      <div class="subpanel" data-panel="b">
+        <!-- § 7.9 蓝色通告栏（NoticeBar info 变体） -->
+        <div class="notice-bar notice-bar--info">
+          <div class="nb-icon">i</div>
+          <div class="nb-content">可能同城推荐 · 不显示精确位置</div>
+          <button class="nb-action" onclick="toast('跳转 P5 个人设置 · 隐私')">隐私设置</button>
+        </div>
+
+        <div class="section-head" style="padding:0 20px;">
+          <div style="min-width:0; flex:1;">
+            <div class="section-title">身边同频的人</div>
+            <div class="section-sub">基于共同挑战推荐 · 双方自愿加好友</div>
+          </div>
+          <div class="badge-pill">今日推荐 3 人</div>
+        </div>
+
+        <!-- 推荐 1 -->
+        <div class="rec-card">
+          <div class="rec-head">
+            <div class="avatar has-photo" onclick="goto('c5')">
+              <img class="real-photo" src="https://i.pravatar.cc/150?img=5" alt="苏小桔">
+              <span class="ring-mark">R</span>
+            </div>
+            <div class="rec-meta">
+              <div class="rec-name">
+                <span class="n">苏小桔</span>
+                <span class="rec-gender">♀️</span>
+              </div>
+              <div class="rec-sub">29 岁 · 可能同城 · 早睡 22:30 · 晨跑党</div>
+            </div>
+            <div class="rec-distance">约 2 公里</div>
+          </div>
+          <div class="tag-row">
+            <div class="t hl">✨ 4 项共同挑战</div>
+            <div class="t">晨跑党</div>
+            <div class="t">早睡 22:30</div>
+            <div class="t">VO2 Max 48</div>
+          </div>
+          <div class="ch-block green" style="margin-bottom:0;">
+            <div class="ch-top">
+              <div class="ch-icon">💗</div>
+              <div class="ch-name">激活心肺循环</div>
+              <div class="ch-status">⏳ 进行中</div>
+            </div>
+            <div class="ch-text">正在完成「激活心肺循环」 · 已完成 72% · 此刻就在你附近</div>
+          </div>
+          <div class="rec-actions">
+            <button class="btn primary" onclick="recCardOut(this,'已申请关注，等待对方同意')">申请关注 <span class="xp">+10 XP</span></button>
+            <button class="btn ghost" onclick="recCardOut(this,'本周不再推荐 TA')">忽略</button>
+          </div>
+        </div>
+
+        <!-- 推荐 2 -->
+        <div class="rec-card">
+          <div class="rec-head">
+            <div class="avatar has-photo" onclick="goto('c5')">
+              <img class="real-photo" src="https://i.pravatar.cc/150?img=14" alt="陈乐">
+              <span class="ring-mark">R</span>
+            </div>
+            <div class="rec-meta">
+              <div class="rec-name">
+                <span class="n">陈乐</span>
+                <span class="rec-gender">♂️</span>
+              </div>
+              <div class="rec-sub">34 岁 · 异地 · 高强度训练</div>
+            </div>
+            <div class="rec-distance">约 1200 公里</div>
+          </div>
+          <div class="tag-row">
+            <div class="t hl">✨ 3 项共同挑战</div>
+            <div class="t">深睡稳定</div>
+            <div class="t">力量训练</div>
+            <div class="t">心率稳定型</div>
+          </div>
+          <div class="ch-block blue" style="margin-bottom:0;">
+            <div class="ch-top">
+              <div class="ch-icon">🏋️</div>
+              <div class="ch-name">每周 5 次力量训练</div>
+              <div class="ch-status">⏳ 4/5</div>
+            </div>
+            <div class="ch-text">本周已完成 4 次训练 · 跟你节奏接近</div>
+          </div>
+          <div class="rec-actions">
+            <button class="btn primary" onclick="recCardOut(this,'已申请关注，等待对方同意')">申请关注 <span class="xp">+10 XP</span></button>
+            <button class="btn ghost" onclick="recCardOut(this,'本周不再推荐 TA')">忽略</button>
+          </div>
+        </div>
+
+        <div class="more-btn" id="moreRecBtn" onclick="loadMoreRec()">↓ 查看更多</div>
+      </div>
+
+      <!-- ===== Sub-panel C · 我的好友 ===== -->
+      <div class="subpanel" data-panel="c">
+
+        <!-- 二级入口区（横排两个卡） -->
+        <div class="row-cards">
+          <div class="row-card" onclick="goto('c3')">
+            <div class="row-icon purple">👥</div>
+            <div class="row-info">
+              <div class="row-title">添加好友</div>
+              <div class="row-sub">分享链接 · 搜索昵称</div>
+            </div>
+            <div class="row-arrow">›</div>
+          </div>
+          <div class="row-card" onclick="goto('c4')">
+            <div class="row-icon red">🔔<span class="red-bubble">2</span></div>
+            <div class="row-info">
+              <div class="row-title">好友通知</div>
+              <div class="row-sub">2 条待处理</div>
+            </div>
+            <div class="row-arrow">›</div>
+          </div>
+        </div>
+
+        <!-- 我的好友列表 -->
+        <div class="section-head" style="padding:0 20px;">
+          <div>
+            <div class="section-title">我的好友</div>
+            <div class="section-sub">点击头像查看 TA 的主页与历史动态</div>
+          </div>
+          <div class="badge-pill">共 12 位</div>
+        </div>
+
+        <div class="friend-row" onclick="goto('c5')">
+          <div class="avatar has-photo"><img class="real-photo" src="https://i.pravatar.cc/150?img=60" alt="阿戒"><span class="ring-mark">R</span></div>
+          <div class="row-info">
+            <div class="row-title">阿戒 <span class="tag-mini kin" style="margin-left:4px;">亲友</span></div>
+            <div class="row-sub">同城 · 连续 21 天达标</div>
+          </div>
+          <div class="row-arrow">›</div>
+        </div>
+
+        <div class="friend-row" onclick="goto('c5')">
+          <div class="avatar has-photo"><img class="real-photo" src="https://i.pravatar.cc/150?img=32" alt="周妈妈"><span class="ring-mark">R</span></div>
+          <div class="row-info">
+            <div class="row-title">周妈妈 <span class="tag-mini kin" style="margin-left:4px;">亲友</span></div>
+            <div class="row-sub">异地 · 连续 14 天达标</div>
+          </div>
+          <div class="row-arrow">›</div>
+        </div>
+
+        <div class="friend-row" onclick="goto('c5')">
+          <div class="avatar has-photo"><img class="real-photo" src="https://i.pravatar.cc/150?img=47" alt="林雨晴"><span class="ring-mark">R</span></div>
+          <div class="row-info">
+            <div class="row-title">林雨晴 <span class="tag-mini follow" style="margin-left:4px;">关注</span></div>
+            <div class="row-sub">同城 · 第 5 天</div>
+          </div>
+          <div class="row-arrow">›</div>
+        </div>
+
+        <div class="friend-row" onclick="goto('c5')">
+          <div class="avatar has-photo"><img class="real-photo" src="https://i.pravatar.cc/150?img=5" alt="苏小桔"><span class="ring-mark">R</span></div>
+          <div class="row-info">
+            <div class="row-title">苏小桔 <span class="tag-mini follow" style="margin-left:4px;">关注</span></div>
+            <div class="row-sub">同城 · 第 12 天</div>
+          </div>
+          <div class="row-arrow">›</div>
+        </div>
+
+        <div class="friend-row" onclick="goto('c5')">
+          <div class="avatar has-photo"><img class="real-photo" src="https://i.pravatar.cc/150?img=13" alt="爸爸"></div>
+          <div class="row-info">
+            <div class="row-title">爸爸 <span class="tag-mini kin" style="margin-left:4px;">亲友</span></div>
+            <div class="row-sub" style="color:#FFA31A;">未佩戴 Ring · 邀请佩戴</div>
+          </div>
+          <div class="row-arrow">›</div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- 底部 Tab Bar -->
+    <div class="tabbar">
+      <div class="tab" onclick="toast('跳转 今日 Tab')"><div class="ic">☀️</div><div>今日</div></div>
+      <div class="tab" onclick="toast('跳转 探索 Tab')"><div class="ic">🧭</div><div>探索</div></div>
+      <div class="tab active"><div class="ic">❤️</div><div>关心</div></div>
+      <div class="tab" onclick="toast('跳转 我的 Tab')"><div class="ic">👤</div><div>我的</div></div>
+    </div>
+  </div>
+
+  <!-- ============ PAGE: C2 好友 XP 排行榜 ============ -->
+  <div class="page" data-page="c2">
+    <div class="ios-status-bar">
+      <div class="iss-time">9:41</div>
+      <div class="iss-right">
+        <div class="iss-signal">
+          <span class="iss-bar"></span><span class="iss-bar"></span>
+          <span class="iss-bar"></span><span class="iss-bar"></span>
+        </div>
+        <div class="iss-network">5G</div>
+        <div class="iss-battery"><span class="iss-battery-pct">85</span></div>
+      </div>
+    </div>
+    <div class="app-topbar--secondary">
+      <div class="back" onclick="goto('c1')">‹</div>
+      <div class="title">好友排行榜</div>
+    </div>
+    <div class="scroll page-content-2">
+      <!-- 我的排名 -->
+      <div class="my-rank lb-self-card">
+        <div class="my-rank-num">7</div>
+        <div class="my-rank-avatar"><img class="real-photo" src="https://i.pravatar.cc/150?img=33" alt="我"></div>
+        <div class="my-rank-info">
+          <div class="my-rank-name">你 <span class="tag-mini follow" style="margin-left:4px;">我</span></div>
+          <div class="my-rank-sub">☀️ 今日已获 +48 XP · 点赞 6 次 · 评论 3 次</div>
+        </div>
+        <div class="my-rank-xp">142<small>XP</small></div>
+      </div>
+
+      <div class="lb-list">
+        <div class="lb-row top-1" onclick="goto('c5')">
+          <div class="lb-rank top-1">1<div class="lb-rank-medal">🏆</div></div>
+          <div class="lb-avatar"><img src="https://i.pravatar.cc/150?img=60" alt="阿戒"></div>
+          <div class="lb-info">
+            <div class="lb-name">阿戒</div>
+            <div class="lb-meta"><strong>今日 +312 XP</strong></div>
+          </div>
+          <div class="lb-total">2,148<small>XP</small></div>
+        </div>
+        <div class="lb-row top-2" onclick="goto('c5')">
+          <div class="lb-rank top-2">2<div class="lb-rank-medal">🥈</div></div>
+          <div class="lb-avatar"><img src="https://i.pravatar.cc/150?img=47" alt="林雨晴"></div>
+          <div class="lb-info">
+            <div class="lb-name">林雨晴</div>
+            <div class="lb-meta"><strong>今日 +218 XP</strong></div>
+          </div>
+          <div class="lb-total">1,876<small>XP</small></div>
+        </div>
+        <div class="lb-row top-3" onclick="goto('c5')">
+          <div class="lb-rank top-3">3<div class="lb-rank-medal">🥉</div></div>
+          <div class="lb-avatar"><img src="https://i.pravatar.cc/150?img=32" alt="周妈妈"></div>
+          <div class="lb-info">
+            <div class="lb-name">周妈妈</div>
+            <div class="lb-meta"><strong>今日 +196 XP</strong></div>
+          </div>
+          <div class="lb-total">1,432<small>XP</small></div>
+        </div>
+        <div class="lb-row" onclick="goto('c5')">
+          <div class="lb-rank">4</div>
+          <div class="lb-avatar"><img src="https://i.pravatar.cc/150?img=5" alt="苏小桔"></div>
+          <div class="lb-info">
+            <div class="lb-name">苏小桔</div>
+            <div class="lb-meta"><strong>今日 +152 XP</strong></div>
+          </div>
+          <div class="lb-total">988<small>XP</small></div>
+        </div>
+        <div class="lb-row" onclick="goto('c5')">
+          <div class="lb-rank">5</div>
+          <div class="lb-avatar"><img src="https://i.pravatar.cc/150?img=14" alt="陈乐"></div>
+          <div class="lb-info">
+            <div class="lb-name">陈乐</div>
+            <div class="lb-meta"><strong>今日 +124 XP</strong></div>
+          </div>
+          <div class="lb-total">762<small>XP</small></div>
+        </div>
+        <div class="lb-row" onclick="goto('c5')">
+          <div class="lb-rank">6</div>
+          <div class="lb-avatar"><img src="https://i.pravatar.cc/150?img=8" alt="王医生"></div>
+          <div class="lb-info">
+            <div class="lb-name">王医生</div>
+            <div class="lb-meta"><strong>今日 +88 XP</strong></div>
+          </div>
+          <div class="lb-total">488<small>XP</small></div>
+        </div>
+        <div class="lb-row self">
+          <div class="lb-rank">7</div>
+          <div class="lb-avatar"><img src="https://i.pravatar.cc/150?img=33" alt="我"></div>
+          <div class="lb-info">
+            <div class="lb-name">你 <span class="tag-mini follow" style="margin-left:4px;">我</span></div>
+            <div class="lb-meta"><strong>今日 +48 XP</strong> · 点赞 6 次</div>
+          </div>
+          <div class="lb-total">142<small>XP</small></div>
+        </div>
+      </div>
+
+      <div class="disclaimer" style="text-align:center; margin-top:14px;">
+        关心积分由点赞、评论、关注、邀请等互动累计 · 每周一凌晨重置
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ PAGE: C3 添加好友（合并原 C3.1 内容 · 邀请预览 + 3 渠道 + dock） ============ -->
+  <div class="page" data-page="c3">
+    <div class="ios-status-bar">
+      <div class="iss-time">9:41</div>
+      <div class="iss-right">
+        <div class="iss-signal">
+          <span class="iss-bar"></span><span class="iss-bar"></span>
+          <span class="iss-bar"></span><span class="iss-bar"></span>
+        </div>
+        <div class="iss-network">5G</div>
+        <div class="iss-battery"><span class="iss-battery-pct">85</span></div>
+      </div>
+    </div>
+    <div class="app-topbar--secondary">
+      <div class="back" onclick="goto('c1')">‹</div>
+      <div class="title">邀请好友</div>
+    </div>
+    <div class="scroll" style="padding-top:92px; padding-bottom:96px;">
+      <!-- 邀请预览卡（白底高亮卡） -->
+      <div class="invite-prev">
+        <div class="avatar av has-photo"><img class="real-photo" src="https://i.pravatar.cc/150?img=33" alt="我"></div>
+        <div class="badge">AIRING · AIR-9F3K2X</div>
+        <div class="name">阿戒</div>
+        <div class="quote">💞 复制我的邀请码 <b style="color:var(--color-brand-primary);">AIR-9F3K2X</b>，打开 AIRing APP 成为我的 AIRING 好友，一起养成健康习惯！</div>
+      </div>
+
+      <!-- 渠道选择标题 -->
+      <div class="section-head" style="padding:0 20px;">
+        <div class="section-title">选择邀请渠道</div>
+      </div>
+
+      <!-- 3 个渠道入口（都是白色卡片） -->
+      <div class="ch-grid">
+        <div class="ch-cell white tint-copy" onclick="toast('✓ 已复制邀请码 AIR-9F3K2X')">
+          <div class="ic">🔗</div><div class="lbl">复制链接</div>
+        </div>
+        <div class="ch-cell white tint-wx" onclick="goto('c3_1')">
+          <div class="ic">💬</div><div class="lbl">发送微信</div>
+        </div>
+        <div class="ch-cell white tint-pyq" onclick="goto('c3_2_pyq')">
+          <div class="ic">🌳</div><div class="lbl">发送朋友圈</div>
+        </div>
+      </div>
+
+      <!-- Tips（底部 2 条） -->
+      <div class="tip-line">ⓘ 通过邀请码加入的亲友默认互相关心，无需再审批</div>
+      <div class="tip-line">ⓘ 每成功邀请一位 <b style="color:var(--pink);">+20 XP</b></div>
+    </div>
+    <!-- 底部悬浮搜索 dock：粘贴邀请码 → 添加好友 -->
+    <div class="dock" style="bottom:24px;">
+      <div class="si">🔍</div>
+      <input type="text" placeholder="粘贴邀请码 · 直接添加好友">
+      <div class="clr">✕</div>
+      <button class="add" onclick="openConfirm('阿戒', '通过邀请码')">添加</button>
+    </div>
+  </div>
+
+  <!-- ============ PAGE: C4 好友通知 ============ -->
+  <div class="page" data-page="c4">
+    <div class="ios-status-bar">
+      <div class="iss-time">9:41</div>
+      <div class="iss-right">
+        <div class="iss-signal">
+          <span class="iss-bar"></span><span class="iss-bar"></span>
+          <span class="iss-bar"></span><span class="iss-bar"></span>
+        </div>
+        <div class="iss-network">5G</div>
+        <div class="iss-battery"><span class="iss-battery-pct">85</span></div>
+      </div>
+    </div>
+    <div class="app-topbar--secondary">
+      <div class="back" onclick="goto('c1')">‹</div>
+      <div class="title">好友通知</div>
+    </div>
+    <div class="scroll page-content-2">
+      <!-- 区段 1 待我同意 -->
+      <div class="notif-section">
+        <div class="notif-head">
+          <div class="ttl">待我同意</div>
+          <div class="notif-pill pink">2</div>
+        </div>
+        <div class="notif-sub">需你确认后才能互看脱敏卡片</div>
+        <div class="notif-card">
+          <div class="avatar has-photo"><img class="real-photo" src="https://i.pravatar.cc/150?img=5" alt="苏小桔"><span class="ring-mark">R</span></div>
+          <div class="info">
+            <div class="nm">苏小桔</div>
+            <div class="ms">发现 · 同城 · 想加你为好友</div>
+          </div>
+          <div class="acts">
+            <button class="mini-btn ghost" onclick="removeCard(this)">忽略</button>
+            <button class="mini-btn primary" onclick="acceptFriend(this)">同意</button>
+          </div>
+        </div>
+        <div class="notif-card">
+          <div class="avatar has-photo"><img class="real-photo" src="https://i.pravatar.cc/150?img=14" alt="陈乐"><span class="ring-mark">R</span></div>
+          <div class="info">
+            <div class="nm">陈乐</div>
+            <div class="ms">发现 · 异地 · 想加你为好友</div>
+          </div>
+          <div class="acts">
+            <button class="mini-btn ghost" onclick="removeCard(this)">忽略</button>
+            <button class="mini-btn primary" onclick="acceptFriend(this)">同意</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 区段 2 我发送的 -->
+      <div class="notif-section">
+        <div class="notif-head">
+          <div class="ttl">我发送的</div>
+          <div class="notif-pill purple">1 · 待对方同意</div>
+        </div>
+        <div class="notif-sub">对方同意前数据不会互相同步</div>
+        <div class="notif-card">
+          <div class="avatar has-photo"><img class="real-photo" src="https://i.pravatar.cc/150?img=15" alt="林叔叔"></div>
+          <div class="info">
+            <div class="nm">林叔叔</div>
+            <div class="ms">已发送好友请求 · 等待对方同意</div>
+          </div>
+          <div class="acts">
+            <button class="mini-btn warn" onclick="removeCard(this)">撤回</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 区段 3 自动加入 -->
+      <div class="notif-section">
+        <div class="notif-head">
+          <div class="ttl">通过邀请码自动加入</div>
+          <div class="notif-pill green">已通过</div>
+        </div>
+        <div class="notif-sub">使用你的邀请码即视为你亲自邀请</div>
+        <div class="notif-card">
+          <div class="avatar has-photo"><img class="real-photo" src="https://i.pravatar.cc/150?img=8" alt="王医生"><span class="ring-mark">R</span></div>
+          <div class="info">
+            <div class="nm">王医生</div>
+            <div class="ms">AIR-9F3K2X · 已成为亲友</div>
+          </div>
+          <div class="acts">
+            <button class="mini-btn primary" onclick="toast('👋 已打招呼')">打招呼</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ PAGE: C5 个人主页 ============ -->
+  <div class="page" data-page="c5">
+    <div class="ios-status-bar">
+      <div class="iss-time">9:41</div>
+      <div class="iss-right">
+        <div class="iss-signal">
+          <span class="iss-bar"></span><span class="iss-bar"></span>
+          <span class="iss-bar"></span><span class="iss-bar"></span>
+        </div>
+        <div class="iss-network">5G</div>
+        <div class="iss-battery"><span class="iss-battery-pct">85</span></div>
+      </div>
+    </div>
+    <div class="app-topbar--secondary">
+      <div class="back" onclick="goto('c1')">‹</div>
+      <div class="title">阿戒 的主页</div>
+    </div>
+    <div class="scroll page-content-2">
+      <div class="profile-hero">
+        <div class="profile-row">
+          <div class="profile-avatar"><img class="real-photo" src="https://i.pravatar.cc/150?img=60" alt="阿戒"><span class="ring-mark">R</span></div>
+          <div class="profile-info">
+            <div class="profile-name">阿戒 <span class="tag-mini kin">亲友</span></div>
+            <div class="profile-meta">同城 · 已关注 86 天 · 本名 戒小明</div>
+          </div>
+          <button class="note-btn" onclick="toast('打开备注编辑')">✏️ 备注</button>
+        </div>
+        <!-- 健康标签：基于 TA 进行中的挑战自动生成 -->
+        <div class="tag-row profile-tag-row">
+          <div class="t hl">🔥 连续 21 天达标</div>
+          <div class="t">深睡稳定派</div>
+          <div class="t">万步达人</div>
+          <div class="t">心率稳定型</div>
+          <div class="t">早起鸟</div>
+        </div>
+        <div class="triple">
+          <div class="it"><div class="vv">28</div><div class="lb">你给 TA 点赞</div></div>
+          <div class="it"><div class="vv">36</div><div class="lb">TA 给你点赞</div></div>
+          <div class="it"><div class="vv">14</div><div class="lb">挑战卡片</div></div>
+        </div>
+      </div>
+
+      <div class="section-head" style="padding:0 20px;">
+        <div>
+          <div class="section-title">TA 的挑战动态</div>
+          <div class="section-sub">仅展示 TA 允许分享给你的项目</div>
+        </div>
+      </div>
+
+      <div class="dyn-card" style="margin:0 16px 14px;">
+        <div class="ch-block purple">
+          <div class="ch-top">
+            <div class="ch-icon">😴</div>
+            <div class="ch-name">深睡 ≥ 90 分钟</div>
+            <div class="ch-status">✓ 已完成</div>
+          </div>
+          <div class="ch-progress">
+            <div class="ch-bar"><div class="ch-bar-fill" style="width:100%;"></div></div>
+            <div class="ch-pct">100%</div>
+          </div>
+          <div class="ch-text">昨晚获得了一个高质量的深睡周期 · 比上周平均提升 12 分钟</div>
+        </div>
+        <div class="act-bar">
+          <div class="act-btn liked">❤️ <span>已点赞</span></div>
+          <div class="act-btn" onclick="toggleComments(this)">💬 评论</div>
+          <div class="act-stat">· 12 人点赞</div>
+        </div>
+      </div>
+
+      <div class="dyn-card" style="margin:0 16px 14px;">
+        <div class="ch-block green">
+          <div class="ch-top">
+            <div class="ch-icon">🚶</div>
+            <div class="ch-name">每日 8000 步</div>
+            <div class="ch-status">✓ 已完成</div>
+          </div>
+          <div class="ch-progress">
+            <div class="ch-bar"><div class="ch-bar-fill" style="width:100%;"></div></div>
+            <div class="ch-pct">100%</div>
+          </div>
+          <div class="ch-text">连续 21 天达成 · 本周累计 6 万步</div>
+        </div>
+        <div class="act-bar">
+          <div class="act-btn" onclick="like(this)">❤️ 点赞 <span class="xp">+3 XP</span></div>
+          <div class="act-btn" onclick="toggleComments(this)">💬 评论</div>
+          <div class="act-stat">· 8 人点赞</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ PAGE: C3.1 微信 · 选择聊天（仿真） ============ -->
+  <div class="page" data-page="c3_1">
+    <div class="ios-status-bar">
+      <div class="iss-time">9:41</div>
+      <div class="iss-right">
+        <div class="iss-signal">
+          <span class="iss-bar"></span><span class="iss-bar"></span>
+          <span class="iss-bar"></span><span class="iss-bar"></span>
+        </div>
+        <div class="iss-network">5G</div>
+        <div class="iss-battery"><span class="iss-battery-pct">85</span></div>
+      </div>
+    </div>
+    <div class="wx-topbar">
+      <div class="wx-back" onclick="goto('c3')"><span style="font-size:15px;">取消</span></div>
+      <div class="wx-title">发送给：</div>
+      <div class="wx-more" style="font-size:15px; color:transparent;">--</div>
+    </div>
+    <!-- 搜索框（仿真，不可输入） -->
+    <div style="background:#EDEDED; padding:0;">
+      <div class="wx-search">
+        <span>🔍</span><span>搜索</span>
+      </div>
+    </div>
+    <!-- 列表 -->
+    <div class="wx-list-body">
+      <div class="wx-list-section">
+        <div class="wx-list-head">最近聊天</div>
+        <div class="wx-contact" onclick="wxSelectContact('小桔', 5)">
+          <img class="wx-contact-avatar" src="https://i.pravatar.cc/150?img=5" alt="">
+          <div class="wx-contact-info">
+            <div class="wx-contact-name">小桔</div>
+            <div class="wx-contact-preview">在吗？周末一起跑步嘛</div>
+          </div>
+        </div>
+        <div class="wx-contact" onclick="wxSelectContact('林雨晴', 47)">
+          <img class="wx-contact-avatar" src="https://i.pravatar.cc/150?img=47" alt="">
+          <div class="wx-contact-info">
+            <div class="wx-contact-name">林雨晴</div>
+            <div class="wx-contact-preview">[图片]</div>
+          </div>
+        </div>
+        <div class="wx-contact" onclick="wxSelectContact('周妈妈', 32)">
+          <img class="wx-contact-avatar" src="https://i.pravatar.cc/150?img=32" alt="">
+          <div class="wx-contact-info">
+            <div class="wx-contact-name">周妈妈</div>
+            <div class="wx-contact-preview">妈妈：吃饭了吗？</div>
+          </div>
+        </div>
+      </div>
+      <div class="wx-list-section">
+        <div class="wx-list-head">通讯录</div>
+        <div class="wx-contact" onclick="wxSelectContact('陈乐', 14)">
+          <img class="wx-contact-avatar" src="https://i.pravatar.cc/150?img=14" alt="">
+          <div class="wx-contact-info">
+            <div class="wx-contact-name">陈乐</div>
+            <div class="wx-contact-preview">点击查看朋友圈</div>
+          </div>
+        </div>
+        <div class="wx-contact" onclick="wxSelectContact('王医生', 8)">
+          <img class="wx-contact-avatar" src="https://i.pravatar.cc/150?img=8" alt="">
+          <div class="wx-contact-info">
+            <div class="wx-contact-name">王医生</div>
+            <div class="wx-contact-preview">点击查看朋友圈</div>
+          </div>
+        </div>
+        <div class="wx-contact" onclick="wxSelectContact('高维维', 16)">
+          <img class="wx-contact-avatar" src="https://i.pravatar.cc/150?img=16" alt="">
+          <div class="wx-contact-info">
+            <div class="wx-contact-name">高维维</div>
+            <div class="wx-contact-preview">点击查看朋友圈</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ PAGE: C3.1.a 微信 · 发送确认（底部弹层） ============ -->
+  <div class="page" data-page="c3_1_a">
+    <div class="ios-status-bar">
+      <div class="iss-time">9:41</div>
+      <div class="iss-right">
+        <div class="iss-signal">
+          <span class="iss-bar"></span><span class="iss-bar"></span>
+          <span class="iss-bar"></span><span class="iss-bar"></span>
+        </div>
+        <div class="iss-network">5G</div>
+        <div class="iss-battery"><span class="iss-battery-pct">85</span></div>
+      </div>
+    </div>
+    <div class="wx-conf-page">
+      <!-- 上部 dimmed 区域，点击关闭 -->
+      <div class="wx-conf-mask" onclick="goto('c3_1')"></div>
+      <!-- 底部弹层 -->
+      <div class="wx-conf-sheet">
+        <div class="wx-conf-label">发送给</div>
+        <!-- 收件人卡 -->
+        <div class="wx-recipient">
+          <img class="wx-recipient-avatar" id="wxRecipientAvatar" src="https://i.pravatar.cc/150?img=5" alt="">
+          <div class="wx-recipient-info">
+            <span class="wx-recipient-name" id="wxRecipientName">小桔</span>
+            <span class="wx-recipient-count">(1人)</span>
+          </div>
+          <span class="wx-recipient-arrow">›</span>
+        </div>
+        <!-- 邀请文字预览（右对齐 · 模拟将发送的消息） -->
+        <div class="wx-preview-row">
+          <div class="wx-preview-bubble">
+            💞 复制我的邀请码 <b>AIR-9F3K2X</b>，打开 AIRing APP 成为我的 AIRING 好友，一起养成健康习惯！
+          </div>
+        </div>
+        <!-- 留言输入 -->
+        <div class="wx-leave">
+          <input class="wx-msg-input" type="text" placeholder="发消息">
+          <span class="ic">🎤</span>
+          <span class="ic">😊</span>
+        </div>
+        <!-- 取消 / 发送 -->
+        <div class="wx-conf-btns">
+          <button class="wx-btn cancel" onclick="goto('c3_1')">取消</button>
+          <button class="wx-btn send" onclick="goto('c3_1_b')">发送</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ PAGE: C3.3 微信 · 聊天页（接收方视角，仿真） ============ -->
+  <div class="page" data-page="c3_3">
+    <div class="ios-status-bar">
+      <div class="iss-time">9:41</div>
+      <div class="iss-right">
+        <div class="iss-signal">
+          <span class="iss-bar"></span><span class="iss-bar"></span>
+          <span class="iss-bar"></span><span class="iss-bar"></span>
+        </div>
+        <div class="iss-network">5G</div>
+        <div class="iss-battery"><span class="iss-battery-pct">85</span></div>
+      </div>
+    </div>
+    <div class="wx-topbar">
+      <div class="wx-back" onclick="goto('c1')">
+        <span class="arrow">‹</span><span>微信</span>
+      </div>
+      <div class="wx-title">阿戒</div>
+      <div class="wx-more">⋯</div>
+    </div>
+    <!-- 聊天体（接收方视角：消息在左侧白色气泡） -->
+    <div class="wx-chat-body">
+      <div class="wx-time-divider">下午 3:12</div>
+      <div class="wx-msg-row them">
+        <div class="wx-msg-avatar" style="border-radius:5px;overflow:hidden;background:transparent;">
+          <img class="real-photo" src="https://i.pravatar.cc/150?img=60" alt="阿戒" style="border-radius:5px;">
+        </div>
+        <div>
+          <div class="wx-msg-bubble" onclick="wxRecvCopyInvite()">
+            💞 复制我的邀请码 <b>AIR-9F3K2X</b>，打开 AIRing APP 成为我的 AIRING 好友，一起养成健康习惯！
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="wx-input-bar">
+      <div class="wx-ic">🎤</div>
+      <div class="wx-text"></div>
+      <div class="wx-ic">😊</div>
+      <div class="wx-ic">＋</div>
+    </div>
+  </div>
+
+  <!-- ============ PAGE: C3.4 切换回关心页面（过渡页） ============ -->
+  <div class="page" data-page="c3_4">
+    <div class="ios-status-bar is-on-glass">
+      <div class="iss-time">9:41</div>
+      <div class="iss-right">
+        <div class="iss-signal">
+          <span class="iss-bar"></span><span class="iss-bar"></span>
+          <span class="iss-bar"></span><span class="iss-bar"></span>
+        </div>
+        <div class="iss-network">5G</div>
+        <div class="iss-battery"><span class="iss-battery-pct">85</span></div>
+      </div>
+    </div>
+    <div class="auto-detect-page">
+      <!-- 💍 大图标 -->
+      <div class="auto-detect-icon">💍</div>
+      <!-- 标题 -->
+      <div class="auto-detect-title">正在切换到关心页面…</div>
+      <!-- 副文 -->
+      <div class="auto-detect-sub">已复制邀请码，正在返回 AIRING 识别</div>
+      <!-- 加载点动画 -->
+      <div class="auto-detect-loading">
+        <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ PAGE: C3.1.b 微信 · 已发送（仿真微信聊天页） ============ -->
+  <div class="page" data-page="c3_1_b">
+    <div class="ios-status-bar">
+      <div class="iss-time">9:41</div>
+      <div class="iss-right">
+        <div class="iss-signal">
+          <span class="iss-bar"></span><span class="iss-bar"></span>
+          <span class="iss-bar"></span><span class="iss-bar"></span>
+        </div>
+        <div class="iss-network">5G</div>
+        <div class="iss-battery"><span class="iss-battery-pct">85</span></div>
+      </div>
+    </div>
+    <!-- 仿真微信顶栏 -->
+    <div class="wx-topbar">
+      <div class="wx-back" onclick="goto('c3')">
+        <span class="arrow">‹</span><span>微信</span>
+      </div>
+      <div class="wx-title" id="wxSenderTitle">小桔</div>
+      <div class="wx-more">⋯</div>
+    </div>
+    <!-- 聊天体 -->
+    <div class="wx-chat-body">
+      <div class="wx-time-divider">下午 3:12</div>
+      <!-- 自己发出的消息（右侧绿色气泡） -->
+      <div class="wx-msg-row me">
+        <div>
+          <div class="wx-msg-bubble">
+            💞 复制我的邀请码 <b>AIR-9F3K2X</b>，打开 AIRing APP 成为我的 AIRING 好友，一起养成健康习惯！
+          </div>
+          <div class="wx-delivered">✓ 已送达</div>
+        </div>
+        <div class="wx-msg-avatar" style="background:var(--gradient-day);border-radius:5px;overflow:hidden;">
+          <img class="real-photo" src="https://i.pravatar.cc/150?img=33" alt="我" style="border-radius:5px;">
+        </div>
+      </div>
+    </div>
+    <!-- 输入栏 -->
+    <div class="wx-input-bar">
+      <div class="wx-ic">🎤</div>
+      <div class="wx-text"></div>
+      <div class="wx-ic">😊</div>
+      <div class="wx-ic">＋</div>
+    </div>
+  </div>
+
+  <!-- ============ PAGE: C3.2 微信 · 朋友圈发布（仿真朋友圈编辑页） ============ -->
+  <div class="page" data-page="c3_2_pyq">
+    <div class="ios-status-bar">
+      <div class="iss-time">9:41</div>
+      <div class="iss-right">
+        <div class="iss-signal">
+          <span class="iss-bar"></span><span class="iss-bar"></span>
+          <span class="iss-bar"></span><span class="iss-bar"></span>
+        </div>
+        <div class="iss-network">5G</div>
+        <div class="iss-battery"><span class="iss-battery-pct">85</span></div>
+      </div>
+    </div>
+    <!-- 仿真朋友圈顶栏 -->
+    <div class="pyq-topbar">
+      <div class="pyq-cancel" onclick="goto('c3')">取消</div>
+      <div class="pyq-title">分享到朋友圈</div>
+      <button class="pyq-publish" onclick="pyqPublish()">发表</button>
+    </div>
+    <!-- 想法输入区 + 选项 -->
+    <div class="pyq-body">
+      <textarea class="pyq-textarea" id="pyqTextarea"
+                placeholder="这一刻的想法...">💞 复制我的邀请码 AIR-9F3K2X，打开 AIRing APP 成为我的 AIRING 好友，一起养成健康习惯！</textarea>
+      <div class="pyq-divider"></div>
+      <div class="pyq-option" onclick="toast('选择所在位置')">
+        <div class="ic">📍</div>
+        <div class="lbl">所在位置</div>
+        <div class="arr">›</div>
+      </div>
+      <div class="pyq-option" onclick="toast('@ 提醒谁看')">
+        <div class="ic">@</div>
+        <div class="lbl">提醒谁看</div>
+        <div class="arr">›</div>
+      </div>
+      <div class="pyq-option" onclick="toast('选择可见范围')">
+        <div class="ic">👤</div>
+        <div class="lbl">谁可以看</div>
+        <div class="val">公开</div>
+        <div class="arr">›</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ Modal: C3.2.a 二次确认 ============ -->
+  <div class="modal-mask" id="confirmModal">
+    <div class="modal">
+      <div class="avatar av has-photo" style="margin:0 auto 12px;" id="confirmAvatar">
+        <img class="real-photo" id="confirmAvatarImg" src="https://i.pravatar.cc/150?img=33" alt="">
+        <span class="ring-mark">R</span>
+      </div>
+      <div class="ttl">添加好友</div>
+      <div class="ct">是否添加 <b id="confirmName">阿戒</b> 为好友？</div>
+      <div class="src" id="confirmSrc">通过昵称搜索</div>
+      <div class="btns">
+        <button class="btn ghost" onclick="closeConfirm()">取消</button>
+        <button class="btn primary" onclick="doAddFriend()">确认添加</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+</div>
+
+  </main>
+</div>
+
+<script>
+  /* ===== Page navigation ===== */
+  function goto(pid){
+    const phone = document.getElementById('phone');
+    phone.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+    const tgt = phone.querySelector('[data-page="'+pid+'"]');
+    if(tgt){ tgt.classList.add('active'); tgt.querySelector('.scroll')?.scrollTo(0,0);}
+    syncNav(pid);
+  }
+  function gotoSub(pid, sub){
+    goto(pid);
+    document.querySelectorAll('.subtabs .item').forEach(x=>x.classList.remove('active'));
+    document.querySelector('.subtabs .item[data-sub="'+sub+'"]')?.classList.add('active');
+    document.querySelectorAll('.subpanel').forEach(p=>p.classList.remove('active'));
+    document.querySelector('[data-panel="'+sub+'"]')?.classList.add('active');
+  }
+  function syncNav(pid){
+    document.querySelectorAll('.side-nav .nav-item').forEach(n=>n.classList.remove('is-active'));
+    const a = document.querySelector('.side-nav .nav-item[data-target="page"][data-page="'+pid+'"]');
+    if(a) a.classList.add('is-active');
+  }
+
+  /* ===== Side-nav click handler ===== */
+  document.querySelectorAll('.side-nav .nav-item').forEach(n=>{
+    n.addEventListener('click', ()=>{
+      const t = n.dataset.target;
+      if(t === 'page'){
+        goto(n.dataset.page);
+        document.querySelectorAll('.side-nav .nav-item').forEach(x=>x.classList.remove('is-active'));
+        n.classList.add('is-active');
+      } else if(t === 'sub'){
+        gotoSub(n.dataset.page, n.dataset.sub);
+        document.querySelectorAll('.side-nav .nav-item').forEach(x=>x.classList.remove('is-active'));
+        n.classList.add('is-active');
+      } else if(t === 'modal' && n.dataset.modal === 'confirm'){
+        openConfirm(n.dataset.name || '阿戒', n.dataset.src || '通过昵称搜索');
+      }
+    });
+  });
+
+  /* ===== State switcher ===== */
+  document.querySelectorAll('.side-nav .state-btn').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      const s = b.dataset.state;
+      // 多选互斥（除 dark 外）
+      if(s !== 'dark'){
+        document.querySelectorAll('.side-nav .state-btn').forEach(x=>{
+          if(x.dataset.state !== 'dark') x.classList.remove('is-active');
+        });
+        b.classList.add('is-active');
+      }
+      applyState(s, b);
+    });
+  });
+
+  // 启动时快照原始 podium HTML，以便状态切换后能完整恢复
+  const _origPodium = document.querySelector('.podium-row')?.innerHTML;
+
+  function applyState(s, btn){
+    // 始终从 c1 看效果
+    if(s !== 'dark') goto('c1');
+    const phone = document.getElementById('phone');
+
+    // 默认态：恢复全部
+    document.querySelectorAll('.subpanel .dyn-card, .subpanel .rec-card, .subpanel .friend-row, .subpanel .row-cards, .subpanel .more-btn, .subpanel .notice-bar, .subpanel .incentive, .subpanel .section-head')
+      .forEach(el=>el.style.display='');
+    document.querySelectorAll('.empty-injected').forEach(el=>el.remove());
+    if(_origPodium) document.querySelector('.podium-row').innerHTML = _origPodium;
+    const homeMyRank = document.querySelector('[data-page="c1"] .podium-card .my-rank');
+    if(homeMyRank) homeMyRank.style.display = '';
+    const homeSlots = document.querySelectorAll('.podium-card .podium-slot');
+    homeSlots.forEach(sl=>{
+      sl.onclick = ()=>goto('c5');
+      sl.style.cursor = 'pointer';
+    });
+    // 重置：恢复 C1 主体内容显示，隐藏登录引导卡
+    const c1Podium  = document.querySelector('[data-page="c1"] .podium-card');
+    const c1Subtabs = document.querySelector('[data-page="c1"] .subtabs');
+    if(c1Podium) c1Podium.style.display = '';
+    if(c1Subtabs) c1Subtabs.style.display = '';
+    document.querySelectorAll('[data-page="c1"] .subpanel').forEach(p=>p.style.display='');
+    hideLoginRequired();
+
+    // § 6.1 b.2：未登录 → 白底 + card 阴影 + 👤；已登录 → 用户头像渐变占位
+    const personBtn = document.getElementById('personBtn');
+    if(personBtn){
+      if(s === 'logged-out'){
+        personBtn.classList.remove('is-loggedin');
+        personBtn.classList.add('is-guest');
+        personBtn.textContent = '👤';
+      } else {
+        personBtn.classList.remove('is-guest');
+        personBtn.classList.add('is-loggedin');
+        personBtn.textContent = '我';
+      }
+    }
+    // § 6.1 戒指连接 Pill 同步显示（已离线 / 未连接也支持原型化展示）
+    // 此原型默认始终显示"已连接 · 85%"，状态切换不影响戒指 Pill
+    const cDot = document.querySelector('.subtabs .item[data-sub="c"] .red-dot');
+    if(cDot){ cDot.textContent='2'; cDot.style.display='flex'; }
+    const rb = document.querySelector('.row-icon.red .red-bubble');
+    if(rb){ rb.textContent='2'; rb.style.display='flex'; }
+    const rs = document.querySelector('.row-icon.red')?.parentElement?.parentElement?.querySelector('.row-sub');
+    if(rs) rs.textContent = '2 条待处理';
+
+    if(s === 'empty'){
+      // 已登录无好友：好友动态和我的好友为空态，发现页仍展示推荐卡片
+      injectEmpty('a', '👋', '还没有好友', [
+        '1. 邀请家人和戒指好友，互相关心、互相点赞，让健康挑战更有动力',
+        '2. 每成功添加一名好友，可获得 +20 XP'
+      ]);
+      injectEmpty('c', '👋', '还没有好友', [
+        '1. 邀请家人和戒指好友，互相关心、互相点赞，让健康挑战更有动力',
+        '2. 每成功添加一名好友，可获得 +20 XP'
+      ]);
+      // 排行榜：第 1 名 = 自己（🏆 + 今日 XP），第 2/3 名 = 邀请好友占位
+      const slots = document.querySelectorAll('.podium-card .podium-slot');
+      if(homeMyRank) homeMyRank.style.display = 'none';
+      slots.forEach((sl,i)=>{
+        if(i===0 || i===2){
+          sl.innerHTML = '<div class="podium-invite">+</div><div class="podium-name" style="color:var(--color-text-tertiary);">邀请好友</div>';
+          sl.onclick = ()=>goto('c3');
+          sl.style.cursor = 'pointer';
+        } else if(i===1){
+          sl.innerHTML = '<div class="podium-laurel">🌿🏆🌿</div>'+
+            '<div class="podium-avatar"><img class="real-photo" src="https://i.pravatar.cc/150?img=33" alt="我"></div>'+
+            '<div class="podium-name">你</div>'+
+            '<div class="podium-xp">48</div>'+
+            '<div class="podium-xp-lbl">今日 XP</div>';
+          sl.onclick = null;
+          sl.style.cursor = 'default';
+        }
+      });
+      toast('已切到「无好友」态');
+    } else if(s === 'logged-out'){
+      // § C1 状态规范：未登录 = 不显示内容，直接跳转 P1 登录主页
+      // 隐藏整个 C1 主体（TOP3 / 子 Tab 切换条 / 内容区）
+      if(c1Podium) c1Podium.style.display = 'none';
+      if(c1Subtabs) c1Subtabs.style.display = 'none';
+      document.querySelectorAll('[data-page="c1"] .subpanel').forEach(p=>p.style.display='none');
+      // 显示居中登录引导
+      showLoginRequired();
+      toast('未登录 · 跳转 P1 登录主页');
+    } else if(s === 'unread'){
+      // 强调未读红点
+      const dot = document.querySelector('.subtabs .item[data-sub="c"] .red-dot');
+      if(dot){ dot.textContent = '5'; dot.style.display='flex'; }
+      const bub = document.querySelector('.row-icon.red .red-bubble');
+      if(bub){ bub.textContent = '5'; bub.style.display='flex'; }
+      const sub = document.querySelector('.row-icon.red')?.parentElement?.parentElement?.querySelector('.row-sub');
+      if(sub) sub.textContent = '5 条待处理';
+      gotoSub('c1','c');
+      toast('已切到「有未读通知」态');
+    } else if(s === 'dark'){
+      btn.classList.toggle('is-active');
+      const html = document.documentElement;
+      const cur = html.getAttribute('data-theme');
+      const nxt = cur === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-theme', nxt);
+      document.getElementById('themeIcon').textContent = nxt === 'dark' ? '☀️' : '🌙';
+    } else {
+      toast('已恢复默认态');
+    }
+  }
+
+  /* ===== 未登录登录引导卡（§ C1 状态规范：不显示内容，跳转 P1 登录主页） ===== */
+  function showLoginRequired(){
+    let block = document.querySelector('[data-page="c1"] .login-required');
+    if(!block){
+      block = document.createElement('div');
+      block.className = 'login-required';
+      block.innerHTML = `
+        <div class="lr-icon">🔒</div>
+        <div class="lr-title">请先登录</div>
+        <div class="lr-sub">关心圈仅对已登录用户开放<br>登录后即可与亲友互相关心、查看脱敏挑战卡片</div>
+        <button class="lr-cta" onclick="toast('跳转 03-个人中心 · P1 登录主页')">前往登录</button>
+      `;
+      const c1Scroll = document.querySelector('[data-page="c1"] .scroll');
+      if(c1Scroll) c1Scroll.appendChild(block);
+    }
+    block.classList.add('show');
+  }
+  function hideLoginRequired(){
+    const block = document.querySelector('[data-page="c1"] .login-required');
+    if(block) block.classList.remove('show');
+  }
+
+  function injectEmpty(panel, emoji, title, lines){
+    const p = document.querySelector('[data-panel="'+panel+'"]');
+    if(!p) return;
+    // 隐藏现有非空态卡
+    [...p.children].forEach(c=>{
+      if((panel === 'c' && !c.classList.contains('row-cards')) ||
+         (!c.classList.contains('row-card') && !c.classList.contains('row-cards') &&
+         !c.classList.contains('section-head') && !c.classList.contains('notice-bar'))){
+        c.style.display='none';
+      }
+    });
+    const empty = document.createElement('div');
+    empty.className = 'empty-card empty-injected';
+    if(panel === 'c') empty.style.marginTop = '16px';
+    empty.innerHTML = `
+      <div class="empty-emoji">${emoji}</div>
+      <div class="empty-title">${title}</div>
+      ${lines.map(l=>`<div class="empty-sub">${l}</div>`).join('')}
+      <div class="empty-cta" onclick="goto('c3')">➕ 添加好友</div>
+    `;
+    if(panel === 'c'){
+      const rowCards = p.querySelector('.row-cards');
+      if(rowCards){
+        rowCards.insertAdjacentElement('afterend', empty);
+      } else {
+        p.prepend(empty);
+      }
+    } else {
+      p.prepend(empty);
+    }
+  }
+
+  /* ===== Sub-tab switching ===== */
+  document.querySelectorAll('.subtabs .item').forEach(t=>{
+    t.addEventListener('click', ()=>{
+      const k = t.dataset.sub;
+      document.querySelectorAll('.subtabs .item').forEach(x=>x.classList.remove('active'));
+      t.classList.add('active');
+      document.querySelectorAll('.subpanel').forEach(p=>p.classList.remove('active'));
+      document.querySelector('[data-panel="'+k+'"]').classList.add('active');
+    });
+  });
+
+  /* ===== Like ===== */
+  function like(el){
+    if(el.classList.contains('liked')){
+      el.classList.remove('liked');
+      el.innerHTML = '❤️ <span>点赞</span><span class="xp">+3 XP</span>';
+      toast('已取消点赞 · -3 XP');
+    } else {
+      el.classList.add('liked');
+      el.innerHTML = '❤️ <span>已点赞</span><span class="xp">+3 XP</span>';
+      toast('已点赞 · +3 XP');
+    }
+  }
+
+  /* ===== Comment toggle ===== */
+  function toggleComments(el){
+    const card = el.closest('.dyn-card');
+    const w = card.querySelector('.cmt-wrap');
+    if(w) w.classList.toggle('open');
+  }
+
+  /* ===== Toggle switch ===== */
+  function toggleSwitch(el){
+    el.classList.toggle('on');
+  }
+  function toggleVis(el){
+    el.classList.toggle('on');
+    if(el.classList.contains('on')){
+      el.innerHTML = '✓ ' + el.textContent.replace(/^[✓✗]\s*/, '');
+    } else {
+      el.innerHTML = '✗ ' + el.textContent.replace(/^[✓✗]\s*/, '');
+    }
+  }
+
+  /* ===== Theme toggle ===== */
+  function toggleTheme(){
+    const html = document.documentElement;
+    const cur = html.getAttribute('data-theme');
+    const nxt = cur === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', nxt);
+    document.getElementById('themeIcon').textContent = nxt === 'dark' ? '☀️' : '🌙';
+    document.querySelector('.phone').style.background = nxt === 'dark'
+      ? 'var(--color-bg-page)' : 'var(--color-bg-page)';
+  }
+
+  /* ===== Toast ===== */
+  let toastTimer;
+  function toast(msg){
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(()=>t.classList.remove('show'), 1800);
+  }
+
+  /* ===== 名字 → pravatar 映射（亚洲面孔倾向编号） ===== */
+  const NAME_PHOTO = {
+    '我':33,'阿戒':60,'林雨晴':47,'周妈妈':32,'苏小桔':5,'陈乐':14,
+    '王医生':8,'爸爸':13,'林叔叔':15,'小桔':9,'郑奕':65,'吴小冉':26,'高维维':16,
+    '对方':33
+  };
+  function pravatarOf(name){
+    return 'https://i.pravatar.cc/150?img=' + (NAME_PHOTO[name] || 33);
+  }
+
+  /* ===== Confirm modal ===== */
+  function openConfirm(name, src){
+    document.getElementById('confirmName').textContent = name;
+    document.getElementById('confirmSrc').textContent = src;
+    document.getElementById('confirmAvatarImg').src = pravatarOf(name);
+    document.getElementById('confirmModal').classList.add('open');
+  }
+  function closeConfirm(){
+    document.getElementById('confirmModal').classList.remove('open');
+  }
+  function doAddFriend(){
+    const src = document.getElementById('confirmSrc').textContent;
+    closeConfirm();
+    // 通过邀请链接 / 邀请码 / 自动识别加入的亲友 → 双方默认互相关心，无需对方同意
+    if(src.includes('邀请链接') || src.includes('邀请码') || src.includes('自动识别')){
+      toast('✓ 已成为好友 · 可以互相关心啦');
+    } else {
+      toast('已发送好友请求 · 等待对方同意');
+    }
+  }
+
+  /* ===== Friend notification card actions ===== */
+  function removeCard(btn){
+    const card = btn.closest('.notif-card');
+    card.style.transition = 'all .25s ease';
+    card.style.transform = 'translateX(20px)';
+    card.style.opacity = '0';
+    setTimeout(()=>card.remove(), 250);
+    toast('已移除');
+  }
+  function acceptFriend(btn){
+    removeCard(btn);
+    toast('✓ 已成为好友 · 双方各 +20 XP');
+  }
+
+  /* ===== C3.1 微信选择联系人 → 进入 C3.1.a 发送确认 ===== */
+  function wxSelectContact(name, photoId){
+    const url = 'https://i.pravatar.cc/150?img=' + photoId;
+    document.getElementById('wxRecipientName').textContent = name;
+    document.getElementById('wxRecipientAvatar').src = url;
+    // 同步 C3.1.b 已发送页的对方名字
+    const t = document.getElementById('wxSenderTitle');
+    if(t) t.textContent = name;
+    goto('c3_1_a');
+  }
+
+  /* ===== C3.3 接收方点击邀请消息 → 复制 + 切回关心页过渡 ===== */
+  function wxRecvCopyInvite(){
+    toast('✓ 复制成功 · AIR-9F3K2X');
+    // 复制邀请码后，用户手动切回 AIRING，再进入关心页识别
+    setTimeout(()=>{
+      if(document.querySelector('.page.active')?.dataset.page === 'c3_3'){
+        goto('c3_4');
+      }
+    }, 1200);
+  }
+
+  /* ===== C3.4 自动识别邀请码 → 弹 C3.2.a 二次确认 ===== */
+  function autoDetectProceed(){
+    openConfirm('阿戒', '邀请码：AIR-9F3K2X');
+  }
+  // C3.4 作为切回 AIRING 的过渡页，随后返回关心首页并弹确认框
+  const _origGoto = goto;
+  goto = function(pid){
+    _origGoto(pid);
+    if(pid === 'c3_4'){
+      setTimeout(()=>{
+        if(document.querySelector('.page.active')?.dataset.page === 'c3_4'){
+          _origGoto('c1');
+          setTimeout(()=>{
+            if(document.querySelector('.page.active')?.dataset.page === 'c1' &&
+               !document.getElementById('confirmModal').classList.contains('open')){
+              autoDetectProceed();
+            }
+          }, 180);
+        }
+      }, 1500);
+    }
+  };
+
+  /* ===== C3.2 朋友圈发布：发表 ===== */
+  function pyqPublish(){
+    const ta = document.getElementById('pyqTextarea');
+    if(ta && ta.value.trim() === ''){
+      toast('请输入想法或邀请文案');
+      return;
+    }
+    goto('c3');
+    setTimeout(()=>toast('已发布 · 朋友圈邀请已发送'), 200);
+  }
+
+  /* ===== C1.B · 查看更多：再加载 3 张推荐卡（按需求文档说明） ===== */
+  const _recPool = [
+    {photo:'https://i.pravatar.cc/150?img=65', name:'郑奕', gender:'♂️', age:31, distance:'约 5 公里', city:'可能同城',
+     tags:['夜跑党','心率稳定型','VO2 Max 50'], common:5,
+     activity:{icon:'🏃', name:'5 km 慢跑挑战', text:'今晚已完成 5 km · 配速 5\'30"'}},
+    {photo:'https://i.pravatar.cc/150?img=26', name:'吴小冉', gender:'♀️', age:27, distance:'约 8 公里', city:'可能同城',
+     tags:['冥想 10min','早睡 23:00','HRV 50+'], common:3,
+     activity:{icon:'🧘', name:'冥想 · 静心 10 分钟', text:'刚刚完成今日冥想 · 心率回落明显'}},
+    {photo:'https://i.pravatar.cc/150?img=16', name:'高维维', gender:'♀️', age:33, distance:'约 1500 公里', city:'异地',
+     tags:['长跑爱好者','深睡稳定','早起鸟'], common:4,
+     activity:{icon:'🌅', name:'连续 30 天早起', text:'已连续 30 天 6:30 前起床 · 节律稳定'}}
+  ];
+  let _recLoaded = false;
+  function loadMoreRec(){
+    if(_recLoaded){ toast('今日推荐已全部加载完毕'); return; }
+    const panel = document.querySelector('[data-panel="b"]');
+    const moreBtn = document.getElementById('moreRecBtn');
+    if(!panel || !moreBtn) return;
+    _recPool.forEach(r=>{
+      const card = document.createElement('div');
+      card.className = 'rec-card';
+      card.style.opacity = '0';
+      card.style.transform = 'translateY(8px)';
+      card.style.transition = 'all .35s ease';
+      card.innerHTML = `
+        <div class="rec-head">
+          <div class="avatar has-photo" onclick="goto('c5')">
+            <img class="real-photo" src="${r.photo}" alt="${r.name}">
+            <span class="ring-mark">R</span>
+          </div>
+          <div class="rec-meta">
+            <div class="rec-name">
+              <span class="n">${r.name}</span>
+              <span class="rec-gender">${r.gender}</span>
+            </div>
+            <div class="rec-sub">${r.age} 岁 · ${r.city} · ${r.tags[0]}</div>
+          </div>
+          <div class="rec-distance">${r.distance}</div>
+        </div>
+        <div class="tag-row">
+          <div class="t hl">✨ ${r.common} 项共同挑战</div>
+          ${r.tags.map(t=>`<div class="t">${t}</div>`).join('')}
+        </div>
+        <div class="ch-block green" style="margin-bottom:0;">
+          <div class="ch-top">
+            <div class="ch-icon">${r.activity.icon}</div>
+            <div class="ch-name">${r.activity.name}</div>
+            <div class="ch-status">⏳ 进行中</div>
+          </div>
+          <div class="ch-text">${r.activity.text}</div>
+        </div>
+        <div class="rec-actions">
+          <button class="btn primary" onclick="recCardOut(this,'已申请关注，等待对方同意')">申请关注 <span class="xp">+10 XP</span></button>
+          <button class="btn ghost" onclick="recCardOut(this,'本周不再推荐 TA')">忽略</button>
+        </div>
+      `;
+      panel.insertBefore(card, moreBtn);
+      requestAnimationFrame(()=>{ card.style.opacity='1'; card.style.transform='translateY(0)'; });
+    });
+    _recLoaded = true;
+    moreBtn.style.opacity = '.5';
+    moreBtn.textContent = '— 已是底部 —';
+    toast('已加载 3 位新推荐');
+  }
+  function recCardOut(btn, msg){
+    const card = btn.closest('.rec-card');
+    if(!card) return;
+    card.style.transition='all .3s ease';
+    card.style.transform='translateX(28px)';
+    card.style.opacity='0';
+    setTimeout(()=>card.remove(), 300);
+    toast(msg);
+  }
+
+  /* ===== Code join ===== */
+  function codeJoin(){
+    const v = document.getElementById('codeInput').value.trim().toUpperCase();
+    if(!/^AIR-[A-Z0-9]{6}$/.test(v)){
+      const inp = document.getElementById('codeInput');
+      inp.style.borderColor = '#FF3D1B';
+      inp.animate([
+        { transform:'translateX(-4px)' },{ transform:'translateX(4px)' },
+        { transform:'translateX(-3px)' },{ transform:'translateX(3px)' },
+        { transform:'translateX(0)' }
+      ], { duration:280 });
+      toast('邀请码无效或已过期');
+      setTimeout(()=>inp.style.borderColor='var(--color-border-subtle)', 1200);
+      return;
+    }
+    openConfirm('AIR-Friend', '通过邀请码');
+  }
+</script>
+</body>
+</html>
