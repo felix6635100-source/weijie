@@ -2829,7 +2829,7 @@ body.is-dark-mode .ios-status-bar .iss-battery::after { background: #fff; }
             <span class="benefit-sub">睡眠 / 压力 / 体温…</span>
           </div>
         </div>
-        <button class="btn-connect" onclick="toast('跳 P6 连接戒指页')">🔗 立即连接戒指</button>
+        <button class="btn-connect" onclick="goToConnectSearchPage()">🔗 立即连接戒指</button>
       </div>
 
       <!-- 三环 + 图例 -->
@@ -4225,12 +4225,16 @@ function refreshProfileBtn() {
 function onRingTagClick() {
   const phone = document.getElementById('phone');
   if (phone.classList.contains('is-not-connected')) {
-    toast('跳 P6.2 搜索 / 配对页');
+    goToConnectSearchPage();
   } else if (phone.classList.contains('is-offline')) {
     toast('跳 P6.1 设备详情（含重连引导）');
   } else {
     toast('跳 P6.1 设备详情');
   }
+}
+
+function goToConnectSearchPage() {
+  window.location.href = '03-个人中心.html?page=P6.2';
 }
 
 function onProfileClick() {
