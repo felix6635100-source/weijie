@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="唯戒原型页面导航">
+  <title>唯戒页面导航</title>
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --panel: rgba(255, 255, 255, 0.88);
+      --panel-border: rgba(20, 22, 25, 0.08);
+      --text: #1d2433;
+      --muted: #667085;
+      --accent: #3a6fe0;
+      --accent-2: #6aa7ff;
+      --shadow: 0 18px 50px rgba(58, 111, 224, 0.12);
+      --radius: 24px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Inter", "PingFang SC", "Microsoft YaHei", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(106, 167, 255, 0.28), transparent 28%),
+        radial-gradient(circle at top right, rgba(58, 111, 224, 0.18), transparent 24%),
+        linear-gradient(180deg, #f8fbff 0%, var(--bg) 100%);
+    }
+
+    .shell {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 56px 0 72px;
+    }
+
+    .hero {
+      text-align: center;
+      margin-bottom: 36px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(58, 111, 224, 0.08);
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+
+    h1 {
+      margin: 16px 0 12px;
+      font-size: clamp(28px, 5vw, 42px);
+      line-height: 1.08;
+    }
+
+    .subtitle {
+      margin: 0 auto;
+      max-width: 720px;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.7;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 22px;
+      margin-top: 34px;
+    }
+
+    .card {
+      display: block;
+      position: relative;
+      overflow: hidden;
+      min-height: 280px;
+      padding: 22px;
+      border: 1px solid var(--panel-border);
+      border-radius: var(--radius);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      text-decoration: none;
+      color: inherit;
+      transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+      backdrop-filter: blur(14px);
+    }
+
+    .card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 24px 60px rgba(58, 111, 224, 0.18);
+      border-color: rgba(58, 111, 224, 0.22);
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.64), rgba(255, 255, 255, 0.9));
+      pointer-events: none;
+    }
+
+    .card > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      box-shadow: 0 10px 24px rgba(58, 111, 224, 0.26);
+    }
+
+    .preview {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 150px;
+      margin: 18px 0 18px;
+      border-radius: 18px;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(242, 246, 255, 0.95));
+      border: 1px solid rgba(58, 111, 224, 0.08);
+    }
+
+    .phone {
+      position: relative;
+      width: 78px;
+      height: 132px;
+      border-radius: 18px;
+      border: 2px solid #141619;
+      background: linear-gradient(180deg, #ffffff, #f4f7ff);
+      box-shadow: 0 12px 24px rgba(20, 22, 25, 0.12);
+      overflow: hidden;
+    }
+
+    .phone::before {
+      content: "";
+      position: absolute;
+      top: 8px;
+      left: 50%;
+      width: 28px;
+      height: 6px;
+      transform: translateX(-50%);
+      border-radius: 999px;
+      background: #141619;
+      opacity: 0.85;
+    }
+
+    .phone::after {
+      content: "";
+      position: absolute;
+      inset: 18px 8px 10px;
+      border-radius: 12px;
+      background:
+        linear-gradient(180deg, rgba(58, 111, 224, 0.18), transparent 32%),
+        linear-gradient(180deg, #ffffff 0%, #edf3ff 100%);
+    }
+
+    .today::after {
+      background:
+        linear-gradient(180deg, rgba(58, 111, 224, 0.28), transparent 28%),
+        linear-gradient(180deg, #ffffff 0%, #edf3ff 100%);
+    }
+
+    .care::after {
+      background:
+        linear-gradient(180deg, rgba(255, 163, 26, 0.24), transparent 28%),
+        linear-gradient(180deg, #ffffff 0%, #fff5e6 100%);
+    }
+
+    .profile::after {
+      background:
+        linear-gradient(180deg, rgba(153, 128, 255, 0.22), transparent 26%),
+        linear-gradient(180deg, #ffffff 0%, #f3eeff 100%);
+    }
+
+    .levelup::after {
+      background:
+        linear-gradient(180deg, rgba(38, 212, 154, 0.24), transparent 28%),
+        linear-gradient(180deg, #ffffff 0%, #eafff6 100%);
+    }
+
+    .title {
+      margin: 0;
+      font-size: 24px;
+      font-weight: 700;
+    }
+
+    .desc {
+      margin: 10px 0 16px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .cta {
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .tip {
+      margin-top: 26px;
+      padding: 16px 18px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.72);
+      border: 1px solid rgba(20, 22, 25, 0.06);
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    code {
+      padding: 2px 6px;
+      border-radius: 8px;
+      background: rgba(58, 111, 224, 0.08);
+      color: var(--accent);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.95em;
+    }
+
+    @media (max-width: 720px) {
+      .shell {
+        width: min(100% - 20px, 1120px);
+        padding-top: 28px;
+        padding-bottom: 32px;
+      }
+
+      .card {
+        min-height: 240px;
+      }
+
+      .preview {
+        height: 128px;
+      }
+
+      .phone {
+        transform: scale(0.92);
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="hero">
+      <div class="eyebrow">唯戒 · 页面导航</div>
+      <h1>四个原型页面入口</h1>
+      <p class="subtitle">
+        上传整个 <code>输出 html</code> 目录后，直接打开这个首页，就可以进入“今日模块”“关心模块”“个人中心”“练级模块”四个页面。
+      </p>
+    </section>
+
+    <section class="grid">
+      <a class="card" href="./01-%E4%BB%8A%E6%97%A5%E6%A8%A1%E5%9D%97.html">
+        <div class="badge">01</div>
+        <div class="preview">
+          <div class="phone today"></div>
+        </div>
+        <h2 class="title">今日模块</h2>
+        <p class="desc">查看首页数据、状态卡片与今日核心内容展示。</p>
+        <div class="meta">
+          <span>文件：01-今日模块.html</span>
+          <span class="cta">进入页面</span>
+        </div>
+      </a>
+
+      <a class="card" href="./02-%E5%85%B3%E5%BF%83%E6%A8%A1%E5%9D%97.html">
+        <div class="badge">02</div>
+        <div class="preview">
+          <div class="phone care"></div>
+        </div>
+        <h2 class="title">关心模块</h2>
+        <p class="desc">进入关心页，查看用户关系、提醒与互动内容布局。</p>
+        <div class="meta">
+          <span>文件：02-关心模块.html</span>
+          <span class="cta">进入页面</span>
+        </div>
+      </a>
+
+      <a class="card" href="./03-%E4%B8%AA%E4%BA%BA%E4%B8%AD%E5%BF%83.html">
+        <div class="badge">03</div>
+        <div class="preview">
+          <div class="phone profile"></div>
+        </div>
+        <h2 class="title">个人中心</h2>
+        <p class="desc">查看个人资料、设备信息、设置项和账户相关页面结构。</p>
+        <div class="meta">
+          <span>文件：03-个人中心.html</span>
+          <span class="cta">进入页面</span>
+        </div>
+      </a>
+
+      <a class="card" href="./04-%E7%BB%83%E7%BA%A7%E6%A8%A1%E5%9D%97.html">
+        <div class="badge">04</div>
+        <div class="preview">
+          <div class="phone levelup"></div>
+        </div>
+        <h2 class="title">练级模块</h2>
+        <p class="desc">进入练级页，查看成长体系、任务卡片与挑战玩法内容。</p>
+        <div class="meta">
+          <span>文件：04-练级模块.html</span>
+          <span class="cta">进入页面</span>
+        </div>
+      </a>
+    </section>
+
+    <section class="tip">
+      访问方式：如果你的 GitHub Pages 发布目录就是这个文件夹，那么首页地址就是
+      <code>.../index.html</code> 或目录根地址；四个页面会通过相对路径直接打开，不需要再单独改链接。
+    </section>
+  </main>
+</body>
+</html>
