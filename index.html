@@ -3,9 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="refresh" content="0; url=./%E8%BE%93%E5%87%BA%20html/index.html">
-  <title>唯戒页面跳转</title>
+  <meta name="description" content="唯戒原型页面入口">
+  <title>唯戒原型入口</title>
   <style>
+    :root {
+      --bg: #f5f7fb;
+      --panel: rgba(255, 255, 255, 0.92);
+      --border: rgba(20, 22, 25, 0.08);
+      --text: #1d2433;
+      --muted: #667085;
+      --accent: #3a6fe0;
+      --shadow: 0 18px 50px rgba(58, 111, 224, 0.12);
+    }
+
+    * { box-sizing: border-box; }
+
     body {
       margin: 0;
       min-height: 100vh;
@@ -13,17 +25,20 @@
       place-items: center;
       padding: 24px;
       font-family: "Inter", "PingFang SC", "Microsoft YaHei", sans-serif;
-      background: linear-gradient(180deg, #f8fbff 0%, #eef4ff 100%);
-      color: #1d2433;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(106, 167, 255, 0.28), transparent 28%),
+        radial-gradient(circle at top right, rgba(58, 111, 224, 0.18), transparent 24%),
+        linear-gradient(180deg, #f8fbff 0%, var(--bg) 100%);
     }
 
     .panel {
-      max-width: 560px;
+      width: min(560px, 100%);
       padding: 28px 24px;
-      border: 1px solid rgba(58, 111, 224, 0.12);
+      border: 1px solid var(--border);
       border-radius: 20px;
-      background: rgba(255, 255, 255, 0.92);
-      box-shadow: 0 18px 50px rgba(58, 111, 224, 0.12);
+      background: var(--panel);
+      box-shadow: var(--shadow);
       text-align: center;
     }
 
@@ -35,23 +50,42 @@
     p {
       margin: 0;
       line-height: 1.7;
-      color: #667085;
+      color: var(--muted);
     }
 
-    a {
-      color: #3a6fe0;
-      font-weight: 600;
+    .links {
+      display: grid;
+      gap: 10px;
+      margin-top: 22px;
+      text-align: left;
+    }
+
+    .links a {
+      display: block;
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: rgba(58, 111, 224, 0.06);
+      color: var(--accent);
       text-decoration: none;
+      font-weight: 600;
     }
   </style>
 </head>
 <body>
   <main class="panel">
-    <h1>正在进入唯戒页面导航</h1>
-    <p>
-      如果没有自动跳转，请点击
-      <a href="./%E8%BE%93%E5%87%BA%20html/index.html">这里</a>。
-    </p>
+    <h1>正在进入唯戒原型</h1>
+    <p>默认会进入今日模块。如果没有自动跳转，可以手动打开下面任一页面。</p>
+
+    <div class="links">
+      <a href="./%E8%BE%93%E5%87%BA%20html/01-%E4%BB%8A%E6%97%A5%E6%A8%A1%E5%9D%97.html">01-今日模块</a>
+      <a href="./%E8%BE%93%E5%87%BA%20html/04-%E7%BB%83%E7%BA%A7%E6%A8%A1%E5%9D%97.html">04-练级模块</a>
+      <a href="./%E8%BE%93%E5%87%BA%20html/02-%E5%85%B3%E5%BF%83%E6%A8%A1%E5%9D%97.html">02-关心模块</a>
+      <a href="./%E8%BE%93%E5%87%BA%20html/03-%E4%B8%AA%E4%BA%BA%E4%B8%AD%E5%BF%83.html?page=P5">03-个人中心</a>
+    </div>
   </main>
+
+  <script>
+    window.location.replace('./%E8%BE%93%E5%87%BA%20html/01-%E4%BB%8A%E6%97%A5%E6%A8%A1%E5%9D%97.html');
+  </script>
 </body>
 </html>
