@@ -2638,21 +2638,24 @@
     /* Tab Bar */
     .tab-bar {
       position: absolute; left: 12px; right: 12px; bottom: 12px;
-      height: 60px; padding: 6px 12px; border-radius: 24px;
+      height: 64px; padding: 8px 12px; border-radius: 28px;
       background: rgba(255,255,255,0.92);
       backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
       display: flex; align-items: center; justify-content: space-around;
       box-shadow: var(--shadow-tabbar);
       z-index: 4;
     }
     .tab-item {
       display: flex; flex-direction: column; align-items: center;
-      gap: 2px; flex: 1; cursor: pointer;
-      color: var(--text-secondary);
+      justify-content: center; gap: 4px; flex: 1; cursor: pointer;
+      color: #99A2BC;
+      transition: color 0.16s ease, transform 0.16s ease;
     }
-    .tab-item .tab-icon { font-size: 20px; }
-    .tab-item .tab-label { font-size: 10px; font-weight: var(--weight-medium); }
+    .tab-item .tab-icon { font-size: 24px; line-height: 1; }
+    .tab-item .tab-label { font-size: 11px; font-weight: var(--weight-semi); }
     .tab-item.is-active { color: var(--color-brand-primary); font-weight: var(--weight-bold); }
+    .tab-item.is-active .tab-icon { transform: translateY(-1px) scale(1.04); }
 
     /* T1 状态切换：未连接态隐藏三环 / 挑战 / 登录卡 */
     .t1-page.is-not-connected .rings-section,
@@ -2711,16 +2714,16 @@
       </button>
     </div>
 
-    <div class="nav-section-label">完整流转（建议从这里开始）</div>
+    <div class="nav-section-label">跳转到今日</div>
     <div class="nav-list">
-      <div class="nav-item is-active" data-page="T1.init">
-        <span class="nav-id">T1 ①</span><span class="nav-name">今日 · 未连接+未登录</span><span class="nav-tag tag-page">起点</span>
+      <div class="nav-item" data-page="T1.init">
+        <span class="nav-id">T1 ①</span><span class="nav-name">今日 · 未连接戒指</span><span class="nav-tag tag-page">外部页</span>
       </div>
       <div class="nav-item" data-page="T1.connected">
-        <span class="nav-id">T1 ②</span><span class="nav-name">今日 · 已连接+未登录</span><span class="nav-tag tag-page">中间态</span>
+        <span class="nav-id">T1 ②</span><span class="nav-name">今日 · 已连接未登录</span><span class="nav-tag tag-page">外部页</span>
       </div>
       <div class="nav-item" data-page="T1.full">
-        <span class="nav-id">T1 ③</span><span class="nav-name">今日 · 已连接+已登录</span><span class="nav-tag tag-page">完整态</span>
+        <span class="nav-id">T1 ③</span><span class="nav-name">今日 · 默认态</span><span class="nav-tag tag-page">外部页</span>
       </div>
     </div>
 
@@ -2825,6 +2828,22 @@
     /* ============================================================
        页面定义：每个 phone 是一个完整 iPhone 容器
        ============================================================ */
+
+    function toast(message) {
+      let toastEl = document.getElementById('prototypeToast');
+      if (!toastEl) {
+        toastEl = document.createElement('div');
+        toastEl.id = 'prototypeToast';
+        toastEl.style.cssText = 'position:fixed;left:50%;bottom:28px;transform:translateX(-50%);padding:10px 16px;border-radius:999px;background:rgba(20,22,25,.82);color:#fff;font-size:13px;line-height:1.4;z-index:9999;box-shadow:0 12px 30px rgba(0,0,0,.18);';
+        document.body.appendChild(toastEl);
+      }
+      toastEl.textContent = message;
+      toastEl.hidden = false;
+      clearTimeout(toastEl._timer);
+      toastEl._timer = setTimeout(() => {
+        toastEl.hidden = true;
+      }, 1600);
+    }
 
     // === 通用 iOS 状态栏 ===
     function statusBar() {
@@ -3669,10 +3688,10 @@
 
       const tabBar = `
         <div class="tab-bar">
-          <div class="tab-item is-active"><div class="tab-icon">☀️</div><div class="tab-label">今日</div></div>
-          <div class="tab-item"><div class="tab-icon">📚</div><div class="tab-label">练级</div></div>
-          <div class="tab-item"><div class="tab-icon">❤️</div><div class="tab-label">关心</div></div>
-          <div class="tab-item"><div class="tab-icon">🎁</div><div class="tab-label">收获</div></div>
+          <div class="tab-item" onclick="window.location.href='01-今日模块.html'"><div class="tab-icon">☀️</div><div class="tab-label">今日</div></div>
+          <div class="tab-item" onclick="window.location.href='04-练级模块.html'"><div class="tab-icon">📚</div><div class="tab-label">练级</div></div>
+          <div class="tab-item" onclick="window.location.href='02-关心模块.html'"><div class="tab-icon">❤️</div><div class="tab-label">关心</div></div>
+          <div class="tab-item" onclick="toast('收获 Tab 制作中')"><div class="tab-icon">🎁</div><div class="tab-label">收获</div></div>
         </div>`;
 
       return `
@@ -3704,9 +3723,6 @@
        页面注册表 + 渲染调度
        ============================================================ */
     const PAGE_RENDERERS = {
-      'T1.init':      pageT1Init,
-      'T1.connected': pageT1Connected,
-      'T1.full':      pageT1Full,
       'P1.1': pageP11,
       'P1.2': pageP12,
       'P2':   pageP2,
@@ -3735,6 +3751,11 @@
     };
 
     const stage = document.getElementById('phoneStage');
+    const TODAY_PAGE_URLS = {
+      'T1.init': '01-今日模块.html?state=not-connected',
+      'T1.connected': '01-今日模块.html?state=logged-out',
+      'T1.full': '01-今日模块.html?state=default'
+    };
     let toastTimer = null;
     const authFlowState = {
       phone: '13800000000',
@@ -3765,8 +3786,17 @@
       return /^1[3-9]\d{9}$/.test(sanitizePhone(value));
     }
 
+    function navigateToToday(key) {
+      const url = TODAY_PAGE_URLS[key];
+      if (url) window.location.href = url;
+    }
+
     // 切到指定 page，并同步左侧导航高亮
     function navigateTo(key) {
+      if (TODAY_PAGE_URLS[key]) {
+        navigateToToday(key);
+        return;
+      }
       if (!PAGE_RENDERERS[key]) return;
       document.querySelectorAll('.nav-item').forEach(i => {
         i.classList.toggle('is-active', i.dataset.page === key);
@@ -3892,7 +3922,7 @@
       item.addEventListener('click', () => {
         document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('is-active'));
         item.classList.add('is-active');
-        renderPage(item.dataset.page);
+        navigateTo(item.dataset.page);
       });
     });
 
@@ -3905,8 +3935,9 @@
       });
     });
 
-    // 默认渲染 T1.init（流转起点）
-    renderPage('T1.init');
+    // 支持通过 ?page=P5 / ?page=P1.1 指定打开个人设置或登录页
+    const initialPage = new URLSearchParams(window.location.search).get('page') || 'P5';
+    navigateTo(initialPage);
 
     /* ============================================================
        基础交互联调（demo 级别）

@@ -289,28 +289,30 @@ button { font: inherit; color: inherit; background: transparent; border: 0; padd
   position: absolute; top: 0; left: 0; right: 0; bottom: 80px;
   overflow-y: auto; -webkit-overflow-scrolling: touch;
   padding-top: 96px;
-  padding-bottom: 24px;
+  padding-bottom: 8px;
 }
 .scroll-area::-webkit-scrollbar { display: none; }
 
 /* ---------- 底部 Tab Bar ---------- */
 .tab-bar {
-  position: absolute; bottom: 0; left: 0; right: 0; height: 80px;
+  position: absolute; left: 12px; right: 12px; bottom: 12px;
+  height: 64px; padding: 8px 12px; border-radius: 28px;
   background: rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-  display: flex; justify-content: space-around; align-items: flex-start;
-  padding-top: 10px; z-index: 5;
-  border-top: 1px solid var(--border);
+  display: flex; justify-content: space-around; align-items: center;
+  box-shadow: var(--shadow-tabbar); z-index: 5;
 }
 .tab-bar .tb-item {
-  display: flex; flex-direction: column; align-items: center; gap: 4px;
-  cursor: pointer; opacity: 0.5;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+  cursor: pointer;
   flex: 1;
+  color: #99A2BC;
+  transition: color .16s ease, transform .16s ease;
 }
-.tab-bar .tb-item.is-active { opacity: 1; }
-.tab-bar .tb-item .ico { font-size: 22px; }
-.tab-bar .tb-item .lbl { font-size: 10px; font-weight: 600; color: var(--text-secondary); }
-.tab-bar .tb-item.is-active .lbl { color: #6c5ce7; }
+.tab-bar .tb-item.is-active { color: var(--color-brand-primary); }
+.tab-bar .tb-item .ico { font-size: 24px; line-height: 1; }
+.tab-bar .tb-item .lbl { font-size: 11px; font-weight: 600; color: currentColor; }
+.tab-bar .tb-item.is-active .ico { transform: translateY(-1px) scale(1.04); }
 
 /* ==========================================================
    练级页 · 内容样式（来自原 第四版 练级页.html，限定在手机内）
@@ -2168,7 +2170,7 @@ button { font: inherit; color: inherit; background: transparent; border: 0; padd
     </div>
     <div class="topbar-right">
       <div class="topbar-icon-btn" title="主题切换">🌙</div>
-      <div class="topbar-icon-btn profile" title="个人设置">L</div>
+      <div class="topbar-icon-btn profile" title="个人设置" onclick="goToProfilePage()">L</div>
     </div>
   </div>
 
@@ -2180,16 +2182,16 @@ button { font: inherit; color: inherit; background: transparent; border: 0; padd
 
   <!-- 底部 Tab Bar -->
   <div class="tab-bar">
-    <div class="tb-item" onclick="toast('切到 今日 Tab（需在 01-今日模块.html 查看）')">
+    <div class="tb-item" onclick="goToModulePage('01-今日模块.html')">
       <span class="ico">☀️</span><span class="lbl">今日</span>
     </div>
     <div class="tb-item is-active">
       <span class="ico">📚</span><span class="lbl">练级</span>
     </div>
-    <div class="tb-item" onclick="toast('切到 关心 Tab（需在 02-关心模块.html 查看）')">
+    <div class="tb-item" onclick="goToModulePage('02-关心模块.html')">
       <span class="ico">❤️</span><span class="lbl">关心</span>
     </div>
-    <div class="tb-item" onclick="toast('收获 Tab 暂未实现')">
+    <div class="tb-item" onclick="toast('收获 Tab 制作中')">
       <span class="ico">🎁</span><span class="lbl">收获</span>
     </div>
   </div>
@@ -2875,7 +2877,7 @@ function renderLevelupPage(){
       <div class="ico">🎮</div>
       <div class="ttl">登录后开启你的练级之路</div>
       <div class="body">加入官方与 KOL 发起的挑战，和同行者一起完成<br>每日完成挑战可获得 XP，等级越高奖励越多</div>
-      <div class="cta" onclick="toast('跳 P1 登录主页')">立即登录</div>
+      <div class="cta" onclick="window.location.href='03-个人中心.html?page=P1.1'">立即登录</div>
     </div>
 
     <!-- L1.B 本月主推（横向轮播） -->
@@ -3404,6 +3406,14 @@ function toast(msg){
   t.classList.add('show');
   clearTimeout(window._toastTimer);
   window._toastTimer = setTimeout(()=>t.classList.remove('show'), 1600);
+}
+
+function goToModulePage(fileName){
+  window.location.href = fileName;
+}
+
+function goToProfilePage(){
+  window.location.href = '03-个人中心.html?page=P5';
 }
 function switchLbTab(el){
   el.parentElement.querySelectorAll('.lt').forEach(x=>x.classList.remove('active'));

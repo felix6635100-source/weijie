@@ -700,19 +700,23 @@
 
   /* ===== Bottom tab bar ===== */
   .tabbar{
-    position:absolute; bottom:0; left:0; right:0; height:84px; padding:8px 16px 24px;
-    background:rgba(255,255,255,.92); backdrop-filter:blur(18px);
-    -webkit-backdrop-filter:blur(18px); border-top:1px solid var(--color-border-subtle);
-    display:flex; justify-content:space-around; box-shadow:var(--shadow-tabbar); z-index:30;
+    position:absolute; left:12px; right:12px; bottom:12px;
+    height:64px; padding:8px 12px; border-radius:28px;
+    background:rgba(255,255,255,.92); backdrop-filter:blur(20px);
+    -webkit-backdrop-filter:blur(20px);
+    display:flex; align-items:center; justify-content:space-around;
+    box-shadow:var(--shadow-tabbar); z-index:30;
   }
   [data-theme="dark"] .tabbar{background:rgba(27,34,56,.92);}
   .tab{
-    flex:1; display:flex; flex-direction:column; align-items:center; gap:2px;
-    color:var(--color-text-secondary); font-size:11px; cursor:pointer; padding:6px 0;
+    flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;
+    color:#99A2BC; font-size:11px; cursor:pointer; padding:0;
+    transition:color .16s ease, transform .16s ease;
   }
-  .tab .ic{font-size:22px;}
+  .tab .ic{font-size:24px; line-height:1;}
+  .tab div:last-child{font-weight:600;}
   .tab.active{color:var(--color-brand-primary);}
-  .tab.active .ic{transform:scale(1.06);}
+  .tab.active .ic{transform:translateY(-1px) scale(1.04);}
 
   /* ===== C2 Leaderboard list ===== */
   .lb-self-card{
@@ -1412,7 +1416,7 @@
       <div class="topbar-right">
         <div class="icon-btn" onclick="toggleTheme()" title="主题切换"><span class="theme-icon" id="themeIcon">🌙</span></div>
         <!-- § 6.1 b.2 已登录：用户头像（36px 圆形真人头像）/ 未登录：白底 + shadow-card + 👤 -->
-        <div class="icon-btn is-loggedin" id="personBtn" onclick="toast('跳转 P5 个人设置')" title="个人设置">
+        <div class="icon-btn is-loggedin" id="personBtn" onclick="goToCareProfilePage()" title="个人设置">
           <img class="real-photo" src="https://i.pravatar.cc/150?img=33" alt="我">
         </div>
       </div>
@@ -1787,10 +1791,10 @@
 
     <!-- 底部 Tab Bar -->
     <div class="tabbar">
-      <div class="tab" onclick="toast('跳转 今日 Tab')"><div class="ic">☀️</div><div>今日</div></div>
-      <div class="tab" onclick="toast('跳转 探索 Tab')"><div class="ic">🧭</div><div>探索</div></div>
+      <div class="tab" onclick="goToModulePage('01-今日模块.html')"><div class="ic">☀️</div><div>今日</div></div>
+      <div class="tab" onclick="goToModulePage('04-练级模块.html')"><div class="ic">📚</div><div>练级</div></div>
       <div class="tab active"><div class="ic">❤️</div><div>关心</div></div>
-      <div class="tab" onclick="toast('跳转 我的 Tab')"><div class="ic">👤</div><div>我的</div></div>
+      <div class="tab" onclick="toast('收获 Tab 制作中')"><div class="ic">🎁</div><div>收获</div></div>
     </div>
   </div>
 
@@ -2442,6 +2446,8 @@
 
 <script>
   /* ===== Page navigation ===== */
+  let activeCareState = 'default';
+
   function goto(pid){
     const phone = document.getElementById('phone');
     phone.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
@@ -2460,6 +2466,17 @@
     document.querySelectorAll('.side-nav .nav-item').forEach(n=>n.classList.remove('is-active'));
     const a = document.querySelector('.side-nav .nav-item[data-target="page"][data-page="'+pid+'"]');
     if(a) a.classList.add('is-active');
+  }
+
+  function goToModulePage(fileName){
+    window.location.href = fileName;
+  }
+
+  function goToCareProfilePage(){
+    const target = activeCareState === 'logged-out'
+      ? '03-个人中心.html?page=P1.1'
+      : '03-个人中心.html?page=P5';
+    window.location.href = target;
   }
 
   /* ===== Side-nav click handler ===== */
@@ -2499,6 +2516,7 @@
   const _origPodium = document.querySelector('.podium-row')?.innerHTML;
 
   function applyState(s, btn){
+    activeCareState = s;
     // 始终从 c1 看效果
     if(s !== 'dark') goto('c1');
     const phone = document.getElementById('phone');
@@ -2615,7 +2633,7 @@
         <div class="lr-icon">🔒</div>
         <div class="lr-title">请先登录</div>
         <div class="lr-sub">关心圈仅对已登录用户开放<br>登录后即可与亲友互相关心、查看脱敏挑战卡片</div>
-        <button class="lr-cta" onclick="toast('跳转 03-个人中心 · P1 登录主页')">前往登录</button>
+        <button class="lr-cta" onclick="window.location.href='03-个人中心.html?page=P1.1'">前往登录</button>
       `;
       const c1Scroll = document.querySelector('[data-page="c1"] .scroll');
       if(c1Scroll) c1Scroll.appendChild(block);

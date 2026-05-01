@@ -1315,18 +1315,21 @@ body.is-dark-mode .ios-status-bar .iss-battery::after { background: #fff; }
   position: absolute; left: 12px; right: 12px; bottom: 12px;
   height: 64px; padding: 8px 12px; border-radius: 28px;
   background: rgba(255,255,255,0.92); backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   display: flex; align-items: center; justify-content: space-around;
   box-shadow: var(--shadow-tabbar);
   z-index: 4;
 }
 .tab-item {
   display: flex; flex-direction: column; align-items: center;
-  gap: 2px; flex: 1; cursor: pointer;
-  color: var(--text-secondary);
+  justify-content: center; gap: 4px; flex: 1; cursor: pointer;
+  color: #99A2BC;
+  transition: color 0.16s ease, transform 0.16s ease;
 }
-.tab-item .tab-icon { font-size: 22px; }
-.tab-item .tab-label { font-size: 10px; font-weight: var(--weight-medium); }
+.tab-item .tab-icon { font-size: 24px; line-height: 1; }
+.tab-item .tab-label { font-size: 11px; font-weight: var(--weight-semi); }
 .tab-item.is-active { color: var(--color-brand-primary); font-weight: var(--weight-bold); }
+.tab-item.is-active .tab-icon { transform: translateY(-1px) scale(1.04); }
 .tab-item.is-active .tab-label { font-weight: var(--weight-semi); }
 
 /* ==========================================================
@@ -3039,7 +3042,7 @@ body.is-dark-mode .ios-status-bar .iss-battery::after { background: #fff; }
     </div>
 
     <!-- 未登录引导卡 -->
-    <div class="login-card" onclick="setState('default');toast('已切换登录态')">
+    <div class="login-card" onclick="window.location.href='03-个人中心.html?page=P1.1'">
       <div class="login-avatar">👤</div>
       <div class="login-text">
         <div class="login-main">点击登录</div>
@@ -3371,15 +3374,15 @@ body.is-dark-mode .ios-status-bar .iss-battery::after { background: #fff; }
       <div class="tab-icon">☀️</div>
       <div class="tab-label">今日</div>
     </div>
-    <div class="tab-item" onclick="toast('跳：练级 Tab')">
+    <div class="tab-item" onclick="goToModulePage('04-练级模块.html')">
       <div class="tab-icon">📚</div>
       <div class="tab-label">练级</div>
     </div>
-    <div class="tab-item" onclick="toast('跳：关心 Tab')">
+    <div class="tab-item" onclick="goToModulePage('02-关心模块.html')">
       <div class="tab-icon">❤️</div>
       <div class="tab-label">关心</div>
     </div>
-    <div class="tab-item" onclick="toast('跳：收获 Tab')">
+    <div class="tab-item" onclick="toast('收获 Tab 制作中')">
       <div class="tab-icon">🎁</div>
       <div class="tab-label">收获</div>
     </div>
@@ -4129,6 +4132,17 @@ body.is-dark-mode .ios-status-bar .iss-battery::after { background: #fff; }
    状态管理
    ========================================================== */
 const RING_STATE_CLASSES = ['is-not-connected', 'is-logged-out', 'is-history', 'is-offline', 'is-low-battery'];
+const URL_STATE_ALIASES = {
+  default: 'default',
+  logged_out: 'logged-out',
+  'logged-out': 'logged-out',
+  not_connected: 'not-connected',
+  'not-connected': 'not-connected',
+  offline: 'offline',
+  low_battery: 'low-battery',
+  'low-battery': 'low-battery',
+  history: 'history'
+};
 
 function setState(state) {
   // 切换"深色模式"是独立 toggle，不和别的状态互斥
@@ -4220,12 +4234,19 @@ function onRingTagClick() {
 }
 
 function onProfileClick() {
+  goToProfilePage();
+}
+
+function goToModulePage(fileName) {
+  window.location.href = fileName;
+}
+
+function goToProfilePage() {
   const phone = document.getElementById('phone');
-  if (phone.classList.contains('is-logged-out')) {
-    toast('跳 P1 登录主页');
-  } else {
-    toast('跳 P5 个人设置');
-  }
+  const target = phone.classList.contains('is-logged-out')
+    ? '03-个人中心.html?page=P1.1'
+    : '03-个人中心.html?page=P5';
+  window.location.href = target;
 }
 
 /* ==========================================================
@@ -5744,6 +5765,9 @@ document.addEventListener('click', (e) => {
     document.querySelectorAll('.habit-social-menu.show').forEach(m => m.classList.remove('show'));
   }
 });
+
+const initialState = URL_STATE_ALIASES[new URLSearchParams(window.location.search).get('state')] || 'default';
+setState(initialState);
 
 </script>
 </body>
