@@ -470,6 +470,13 @@ button { font: inherit; color: inherit; background: transparent; border: 0; padd
   margin-left: -6px;
 }
 .lv-hero .h-avs .av:first-child { margin-left: 0; }
+.lv-hero .h-avs .av.av-photo {
+  background-color: #fff;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  overflow: hidden;
+}
 .lv-hero .h-num { font-size: 12px; font-weight: 700; }
 .lv-hero .h-foot {
   position: absolute; left: 0; right: 0; bottom: 0;
@@ -732,6 +739,17 @@ button { font: inherit; color: inherit; background: transparent; border: 0; padd
   font-size: 11px; color: var(--accent);
   font-weight: 700; margin-top: 2px;
 }
+.lv-jrow .j-xp {
+  margin-top: 6px;
+  display: inline-block;
+  background: linear-gradient(135deg, #fff4d1, #fde68a);
+  color: #b45309;
+  border: 1px solid rgba(245,158,11,0.28);
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 800;
+}
 .lv-jrow .j-prog {
   display: flex; align-items: center; gap: 8px;
   margin-top: 6px;
@@ -903,6 +921,14 @@ button { font: inherit; color: inherit; background: transparent; border: 0; padd
   display: flex; align-items: center; justify-content: center;
   font-size: 10px; color: #fff; font-weight: 800;
   flex-shrink: 0;
+}
+.mc-founder .fav.is-photo {
+  background-size: cover !important;
+  background-position: center;
+  background-repeat: no-repeat;
+  color: transparent;
+  font-size: 0;
+  overflow: hidden;
 }
 .mc-founder .fname { color: var(--text); font-weight: 800; }
 .mc-founder .fkol {
@@ -1090,6 +1116,26 @@ button { font: inherit; color: inherit; background: transparent; border: 0; padd
   box-shadow: 0 8px 24px rgba(0,0,0,0.18);
   border: 6px solid #fff;
 }
+.cd-hero .cd-joined {
+  position: absolute;
+  right: 20px;
+  bottom: 22px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.92);
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 800;
+  z-index: 4;
+  box-shadow: 0 6px 18px rgba(108,92,231,0.12);
+}
+.cd-hero .cd-joined::before {
+  content: '✓';
+  font-size: 10px;
+}
 .cd-meta { padding: 62px 24px 8px; text-align: center; }
 .cd-meta .cd-dates { font-size: 13px; color: var(--text3); font-weight: 700; }
 .cd-meta .cd-title {
@@ -1135,6 +1181,14 @@ button { font: inherit; color: inherit; background: transparent; border: 0; padd
   border: 2px solid #fff;
   box-shadow: 0 2px 6px rgba(0,0,0,0.12);
 }
+.cd-founder .fa.is-photo {
+  background-size: cover !important;
+  background-position: center;
+  background-repeat: no-repeat;
+  color: transparent;
+  font-size: 0;
+  overflow: hidden;
+}
 .cd-founder .fb { flex: 1; min-width: 0; }
 .cd-founder .fn {
   font-size: 15px; font-weight: 800;
@@ -1161,6 +1215,12 @@ button { font: inherit; color: inherit; background: transparent; border: 0; padd
 .cd-callouts {
   display: grid; grid-template-columns: 1fr 1fr;
   gap: 10px; margin-top: 10px;
+}
+.phone-frame.is-no-joined .cd-section.cd-section--callouts {
+  padding-top: 8px;
+}
+.phone-frame.is-no-joined .cd-callouts {
+  margin-top: 0;
 }
 .cd-callout {
   background: #fff; border: 1px solid var(--border);
@@ -1196,52 +1256,159 @@ button { font: inherit; color: inherit; background: transparent; border: 0; padd
 .cd-row .rt { flex: 1; font-size: 14px; font-weight: 700; color: var(--text); }
 .cd-row .rv { font-size: 12px; color: var(--text3); font-weight: 700; }
 
-.cd-spon {
-  margin-top: 10px;
-  display: flex; align-items: center; gap: 12px;
-  padding: 12px 14px;
-  background: #fff; border: 1px solid var(--border);
-  border-radius: 14px;
-}
-.cd-spon .si {
-  width: 38px; height: 38px; border-radius: 10px;
-  background: linear-gradient(135deg, #86efac, #10b981);
-  display: flex; align-items: center; justify-content: center;
-  color: #fff; font-size: 18px; font-weight: 800;
-  flex-shrink: 0;
-}
-.cd-spon .sb { flex: 1; min-width: 0; }
-.cd-spon .sn { font-size: 14px; font-weight: 800; color: var(--text); }
-.cd-spon .ss { font-size: 11px; color: var(--text3); margin-top: 2px; }
-
 .cd-reward {
   margin-top: 10px;
-  background: #fff; border: 1px solid var(--border);
-  border-radius: 18px; padding: 18px 16px;
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.cd-reward-card {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 14px;
   box-shadow: 0 1px 2px rgba(15,23,42,0.04);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  position: relative;
 }
-.cd-reward .rh { font-size: 13px; color: var(--text3); font-weight: 700; }
-.cd-reward .rname { font-size: 18px; font-weight: 800; color: var(--text); margin-top: 6px; }
-.cd-reward .rgrid {
-  display: grid; grid-template-columns: repeat(3, 1fr);
-  gap: 12px; margin: 14px 0;
+.cd-reward-card .rimg {
+  width: 72px;
+  height: 72px;
+  border-radius: 18px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
 }
-.cd-reward .rgrid .ri {
-  aspect-ratio: 1;
-  background: linear-gradient(135deg, #f4f5f7, #eef0f3);
+.cd-reward-card .rimg.xp {
+  background: linear-gradient(135deg, #ede9fe, #ddd6fe 55%, #f5d0fe);
+}
+.cd-reward-card .rimg.xp::before {
+  content: '';
+  position: absolute;
+  inset: 10px;
   border-radius: 14px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 36px;
+  background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.95), rgba(255,255,255,0.5));
 }
-.cd-reward .rmeta {
-  display: flex; justify-content: space-around;
-  margin-top: 6px; padding-top: 12px;
-  border-top: 1px solid var(--border-soft);
+.cd-reward-card .rimg.xp .xp-badge {
+  position: relative;
+  z-index: 1;
+  min-width: 42px;
+  height: 42px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #6c5ce7, #a855f7);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 18px rgba(108,92,231,0.22);
 }
-.cd-reward .rmeta .c { text-align: center; }
-.cd-reward .rmeta .l { font-size: 11px; color: var(--text3); font-weight: 700; }
-.cd-reward .rmeta .v { font-size: 15px; font-weight: 800; color: var(--text); margin-top: 3px; }
+.cd-reward-card .rimg.lottery {
+  background: linear-gradient(135deg, #fff7ed, #ffedd5 55%, #fef3c7);
+}
+.cd-reward-card .rimg.lottery .prize-emoji {
+  font-size: 34px;
+  line-height: 1;
+  filter: drop-shadow(0 6px 10px rgba(245,158,11,0.18));
+}
+.cd-reward-card .rb {
+  flex: 1;
+  min-width: 0;
+}
+.cd-reward-card .rk {
+  font-size: 12px;
+  color: var(--text3);
+  font-weight: 700;
+}
+.cd-reward-card .rv {
+  margin-top: 6px;
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1.2;
+  letter-spacing: -0.3px;
+}
+.cd-reward-card .rs {
+  margin-top: 6px;
+  font-size: 11px;
+  color: var(--text2);
+  font-weight: 600;
+  line-height: 1.5;
+}
+.cd-reward-rule-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(108,92,231,0.10);
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1;
+}
+.rule-sheet-body {
+  padding: 4px 16px 20px;
+}
+.rule-list {
+  overflow: hidden;
+  border-radius: 18px;
+  background: #f4f5f7;
+  border: 1px solid var(--border);
+}
+.rule-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  border-top: 1px solid rgba(255,255,255,0.9);
+}
+.rule-row:first-child {
+  border-top: none;
+}
+.rule-row .num {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #7fb1ff, #5b8ef1);
+  color: #fff;
+  font-size: 20px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.rule-row .txt {
+  flex: 1;
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--text);
+  font-weight: 700;
+}
+.rule-row .txt .hl {
+  color: #5b8ef1;
+}
+.rule-sheet-cta {
+  margin-top: 16px;
+  width: 100%;
+  height: 52px;
+  border-radius: 26px;
+  background: linear-gradient(135deg, #5b8ef1, #4f83e6);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
 .cd-lb {
   margin-top: 10px;
@@ -1339,6 +1506,633 @@ button { font: inherit; color: inherit; background: transparent; border: 0; padd
   background: #fff; color: var(--text2);
   border: 1px solid var(--border);
   margin-top: 8px; font-weight: 700;
+}
+
+/* —— 我的练级 · 二级页面 —— */
+.my-lv-overlay {
+  background:
+    radial-gradient(circle at top center, rgba(255,195,95,0.20), transparent 24%),
+    radial-gradient(circle at 18% 12%, rgba(120,190,255,0.18), transparent 18%),
+    linear-gradient(180deg, #f9fbff 0%, #f4f6fb 100%);
+}
+.mlv-head {
+  position: sticky;
+  top: 0;
+  z-index: 6;
+  padding: 18px 20px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(180deg, rgba(244,245,247,0.96), rgba(244,245,247,0.82));
+  backdrop-filter: blur(10px);
+}
+.mlv-head .ov-back,
+.mlv-head .more {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--card);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text);
+  font-size: 18px;
+  flex-shrink: 0;
+}
+.mlv-head .title {
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.2px;
+}
+.mlv-page {
+  padding: 10px 16px 40px;
+}
+.mlv-summary {
+  position: relative;
+  overflow: hidden;
+  padding: 18px 18px 18px;
+  border-radius: 28px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(247,249,255,0.96));
+  border: 1px solid rgba(255,255,255,0.92);
+  box-shadow: 0 16px 36px rgba(15,23,42,0.08);
+}
+.mlv-summary::before {
+  content: '';
+  position: absolute;
+  right: -36px;
+  top: -48px;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(108,92,231,0.16), transparent 70%);
+}
+.mlv-summary .rank-ribbon {
+  position: absolute;
+  top: 0;
+  right: 16px;
+  width: 78px;
+  padding: 14px 10px 18px;
+  background: linear-gradient(180deg, #fff2c8, #fede87);
+  clip-path: polygon(0 0,100% 0,100% 84%,50% 100%,0 84%);
+  text-align: center;
+  box-shadow: 0 8px 16px rgba(245,158,11,0.16);
+}
+.mlv-summary .rank-ribbon .k {
+  font-size: 11px;
+  color: #8a6200;
+  font-weight: 800;
+  line-height: 1.3;
+}
+.mlv-summary .rank-ribbon .v {
+  margin-top: 4px;
+  font-size: 28px;
+  line-height: 1;
+  color: #3d2d00;
+  font-weight: 900;
+}
+.mlv-summary .eyebrow {
+  padding: 0;
+  background: transparent;
+  color: var(--text3);
+  font-size: 12px;
+}
+.mlv-summary-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.mlv-summary-buff {
+  padding: 7px 12px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.86);
+  border: 1px solid rgba(255,255,255,0.94);
+  color: #9a5f13;
+  font-size: 12px;
+  font-weight: 800;
+  box-shadow: 0 8px 18px rgba(245,158,11,0.10);
+  white-space: nowrap;
+}
+.mlv-summary-main {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 8px;
+}
+.mlv-summary-figure {
+  width: 112px;
+  height: 132px;
+  flex-shrink: 0;
+  border-radius: 22px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(244,247,255,0.96));
+  border: 1px solid rgba(255,255,255,0.94);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.88), 0 10px 24px rgba(15,23,42,0.06);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.mlv-summary-figure img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+.mlv-summary-copy {
+  flex: 1;
+  min-width: 0;
+  padding-top: 0;
+}
+.mlv-summary-copy .main {
+  margin-top: 6px;
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--text);
+}
+.mlv-summary-copy .main strong {
+  display: block;
+  font-size: 34px;
+  line-height: 1;
+  letter-spacing: -0.8px;
+}
+.mlv-summary-copy .sub {
+  margin-top: 10px;
+  font-size: 13px;
+  color: var(--text2);
+  font-weight: 700;
+  line-height: 1.6;
+}
+.mlv-chip-row {
+  margin-top: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.mlv-chip {
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(108,92,231,0.10);
+  color: #4c46b6;
+  font-size: 11px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+.mlv-current-grid {
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+.mlv-current-card {
+  padding: 14px 12px;
+  border-radius: 18px;
+  background: rgba(255,255,255,0.84);
+  border: 1px solid rgba(255,255,255,0.96);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.75);
+}
+.mlv-current-card .k {
+  font-size: 11px;
+  color: var(--text3);
+  font-weight: 800;
+}
+.mlv-current-card .v {
+  margin-top: 6px;
+  font-size: 16px;
+  color: var(--text);
+  font-weight: 900;
+  line-height: 1.35;
+}
+.mlv-current-card .s {
+  margin-top: 5px;
+  font-size: 11px;
+  color: var(--text2);
+  font-weight: 700;
+  line-height: 1.5;
+}
+.mlv-summary .progress-row {
+  margin-top: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.mlv-summary .progress-row .copy {
+  font-size: 13px;
+  color: var(--text2);
+  font-weight: 700;
+}
+.mlv-summary .progress-row .copy b {
+  color: var(--text);
+  font-size: 16px;
+}
+.mlv-summary .progress-link {
+  color: #9a5f13;
+  font-size: 13px;
+  font-weight: 800;
+}
+.mlv-summary .progress-bar {
+  margin-top: 10px;
+  height: 12px;
+  border-radius: 999px;
+  background: rgba(108,92,231,0.10);
+  overflow: hidden;
+}
+.mlv-summary .progress-bar .fill {
+  width: 91%;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #78cbff 0%, #6c7dff 52%, #ef5dc7 100%);
+}
+.mlv-summary .progress-meta {
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 11px;
+  color: var(--text3);
+  font-weight: 700;
+}
+.mlv-next-card {
+  margin-top: 16px;
+  position: relative;
+  overflow: hidden;
+  padding: 18px;
+  border-radius: 26px;
+  background: linear-gradient(135deg, #fff5d9, #fff 44%, #f3f6ff 100%);
+  border: 1px solid rgba(255,255,255,0.95);
+  box-shadow: 0 16px 34px rgba(255,178,64,0.12);
+}
+.mlv-next-card::before {
+  content: '';
+  position: absolute;
+  right: -28px;
+  top: -28px;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,186,83,0.22), transparent 68%);
+}
+.mlv-next-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.mlv-next-top .eyebrow {
+  padding: 0;
+  background: transparent;
+  color: #9a5f13;
+  font-size: 12px;
+}
+.mlv-next-top .cta {
+  padding: 7px 12px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.82);
+  color: #9a5f13;
+  font-size: 11px;
+  font-weight: 800;
+  border: 1px solid rgba(245,158,11,0.16);
+}
+.mlv-next-title {
+  margin-top: 8px;
+  font-size: 24px;
+  line-height: 1.2;
+  font-weight: 900;
+  color: var(--text);
+  letter-spacing: -0.5px;
+}
+.mlv-next-sub {
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--text2);
+  font-weight: 700;
+  line-height: 1.65;
+}
+.mlv-next-perks {
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+.mlv-next-perk {
+  padding: 14px 12px;
+  border-radius: 18px;
+  background: rgba(255,255,255,0.88);
+  border: 1px solid rgba(255,255,255,0.96);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.75);
+}
+.mlv-next-perk .k {
+  font-size: 11px;
+  color: #9a5f13;
+  font-weight: 800;
+}
+.mlv-next-perk .v {
+  margin-top: 6px;
+  font-size: 14px;
+  color: var(--text);
+  font-weight: 800;
+  line-height: 1.45;
+}
+.mlv-rule-entry {
+  margin-top: 16px;
+  padding: 16px 18px;
+  border-radius: 20px;
+  background: rgba(255,255,255,0.88);
+  border: 1px solid rgba(255,255,255,0.96);
+  box-shadow: 0 10px 24px rgba(15,23,42,0.05);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.mlv-rule-entry .copy .k {
+  font-size: 12px;
+  color: var(--text3);
+  font-weight: 800;
+}
+.mlv-rule-entry .copy .v {
+  margin-top: 4px;
+  font-size: 16px;
+  color: var(--text);
+  font-weight: 800;
+}
+.mlv-rule-entry .go {
+  color: #9a5f13;
+  font-size: 14px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+.medal-wall-overlay {
+  background:
+    radial-gradient(circle at top center, rgba(108,92,231,0.14), transparent 28%),
+    linear-gradient(180deg, #f8f9ff 0%, #f4f6fb 100%);
+}
+.medal-wall-page {
+  padding: 8px 16px 34px;
+}
+.medal-profile {
+  padding: 8px 0 18px;
+  text-align: center;
+}
+.medal-profile .av {
+  width: 92px;
+  height: 92px;
+  margin: 0 auto;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #dbeafe, #c4b5fd);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #4338ca;
+  font-size: 36px;
+  font-weight: 900;
+  box-shadow: 0 12px 24px rgba(99,102,241,0.16);
+}
+.medal-profile .name {
+  margin-top: 14px;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--text);
+}
+.medal-profile .sub {
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--text3);
+  font-weight: 600;
+}
+.medal-tabs {
+  display: flex;
+  gap: 8px;
+  margin: 10px 0 14px;
+}
+.medal-tab {
+  flex: 1;
+  height: 42px;
+  border-radius: 16px;
+  background: rgba(255,255,255,0.84);
+  border: 1px solid var(--border);
+  color: var(--text3);
+  font-size: 14px;
+  font-weight: 800;
+}
+.medal-tab.active {
+  background: linear-gradient(135deg, #6c5ce7, #a855f7);
+  border-color: transparent;
+  color: #fff;
+  box-shadow: 0 10px 20px rgba(108,92,231,0.18);
+}
+.medal-wall {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px 10px;
+}
+.medal-card {
+  text-align: center;
+  cursor: pointer;
+}
+.medal-card .icon-wrap {
+  width: 100%;
+  aspect-ratio: 1 / 1.05;
+  border-radius: 24px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(243,246,255,0.94));
+  border: 1px solid rgba(255,255,255,0.7);
+  box-shadow: 0 10px 22px rgba(15,23,42,0.06);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+.medal-card .hex {
+  width: 76px;
+  height: 88px;
+  clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+  border: 3px solid rgba(255,255,255,0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 34px;
+  box-shadow: 0 10px 20px rgba(15,23,42,0.12);
+}
+.medal-card .level {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 11px;
+  font-weight: 800;
+  color: #8a6200;
+  letter-spacing: 0.08em;
+}
+.medal-card .name {
+  margin-top: 10px;
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--text);
+  font-weight: 800;
+}
+.medal-card .meta {
+  margin-top: 4px;
+  font-size: 11px;
+  color: var(--text3);
+  font-weight: 700;
+}
+.medal-card.is-locked .icon-wrap {
+  background: linear-gradient(180deg, rgba(248,249,252,0.96), rgba(241,242,246,0.94));
+}
+.medal-card.is-locked .hex {
+  filter: grayscale(1);
+  opacity: 0.38;
+  box-shadow: none;
+}
+.medal-card.is-locked .name,
+.medal-card.is-locked .meta,
+.medal-card.is-locked .level {
+  color: #a1a7b5;
+}
+.medal-detail-overlay {
+  background:
+    radial-gradient(circle at top center, rgba(255,198,79,0.14), transparent 24%),
+    linear-gradient(180deg, #f7f7fb 0%, #eef1f7 100%);
+}
+.medal-detail-page {
+  min-height: 100%;
+  padding: 18px 18px 28px;
+}
+.medal-detail-stage {
+  margin-top: 8px;
+  text-align: center;
+}
+.medal-detail-stage .eyebrow {
+  padding: 0;
+  background: transparent;
+  color: var(--text3);
+  font-size: 12px;
+}
+.medal-detail-stage .title {
+  margin-top: 10px;
+  font-size: 30px;
+  font-weight: 900;
+  color: var(--text);
+  letter-spacing: -0.4px;
+}
+.medal-detail-stage .date {
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--text3);
+  font-weight: 700;
+}
+.medal-hero {
+  margin: 26px auto 0;
+  width: 100%;
+  max-width: 320px;
+  padding-top: 12px;
+}
+.medal-podium {
+  border-radius: 28px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(242,244,250,0.96));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.72), 0 18px 40px rgba(15,23,42,0.08);
+  padding: 28px 20px 24px;
+}
+.medal-podium .hex {
+  width: 156px;
+  height: 180px;
+  margin: 0 auto 18px;
+  clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+  border: 4px solid rgba(255,255,255,0.92);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 64px;
+  box-shadow: 0 20px 36px rgba(15,23,42,0.16);
+}
+.medal-podium .lv {
+  font-size: 18px;
+  font-weight: 900;
+  color: #9a6c18;
+  letter-spacing: 0.08em;
+}
+.medal-podium .desc {
+  margin-top: 12px;
+  font-size: 15px;
+  color: var(--text);
+  line-height: 1.7;
+  font-weight: 700;
+}
+.medal-podium .next {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border-soft);
+  font-size: 13px;
+  color: var(--text2);
+  line-height: 1.7;
+}
+.medal-detail-actions {
+  margin-top: 18px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.medal-detail-actions .btn {
+  height: 50px;
+  border-radius: 16px;
+  font-size: 16px;
+  font-weight: 800;
+}
+.medal-detail-actions .btn.ghost {
+  background: transparent;
+  border: 1.5px solid var(--text);
+  color: var(--text);
+}
+.medal-detail-actions .btn.primary {
+  background: #fff;
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+.mlv-focus-grid {
+  margin-top: 12px;
+  display: grid;
+  gap: 10px;
+}
+.mlv-focus-card {
+  padding: 16px;
+  border-radius: 18px;
+  border: 1px solid var(--border);
+  background: #fff;
+}
+.mlv-focus-card.current {
+  background: linear-gradient(135deg, rgba(245,240,255,0.96), rgba(255,255,255,0.98));
+  border-color: rgba(108,92,231,0.24);
+  box-shadow: 0 10px 22px rgba(108,92,231,0.08);
+}
+.mlv-focus-card.next {
+  background: linear-gradient(135deg, rgba(239,247,255,0.96), rgba(255,255,255,0.98));
+  border-color: rgba(58,111,224,0.22);
+  box-shadow: 0 10px 22px rgba(58,111,224,0.08);
+}
+.mlv-focus-card .eyebrow {
+  padding: 0;
+  background: transparent;
+  font-size: 11px;
+}
+.mlv-focus-card.current .eyebrow { color: var(--accent); }
+.mlv-focus-card.next .eyebrow { color: var(--color-brand-primary); }
+.mlv-focus-card .title {
+  margin-top: 6px;
+  font-size: 18px;
+  font-weight: 900;
+  color: var(--text);
+  letter-spacing: -0.2px;
+}
+.mlv-focus-card .sub {
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--text2);
+  line-height: 1.6;
+  font-weight: 600;
 }
 
 /* —— 全部挑战 列表头 —— */
@@ -1928,6 +2722,14 @@ button { font: inherit; color: inherit; background: transparent; border: 0; padd
   border: 3px solid #fff;
   box-shadow: 0 6px 18px rgba(236,72,153,0.22);
 }
+.founder-hero .av.is-photo {
+  background-size: cover !important;
+  background-position: center;
+  background-repeat: no-repeat;
+  color: transparent;
+  font-size: 0;
+  overflow: hidden;
+}
 .founder-hero .nm {
   font-size: 20px; font-weight: 800; color: var(--text);
   display: flex; align-items: center; gap: 8px;
@@ -2088,6 +2890,12 @@ button { font: inherit; color: inherit; background: transparent; border: 0; padd
 
   <div class="nav-section-label">二级页面</div>
   <div class="nav-list">
+    <div class="nav-item" data-target="overlay" data-overlay="myLvOverlay">
+      <span class="nav-id">L1.A.1</span><span class="nav-name">我的练级</span><span class="nav-tag tag-page">二级页面</span>
+    </div>
+    <div class="nav-item" data-target="overlay" data-overlay="myMedalsOverlay">
+      <span class="nav-id">L1.A.2</span><span class="nav-name">我的勋章</span><span class="nav-tag tag-page">二级页面</span>
+    </div>
     <div class="nav-item" data-target="overlay" data-overlay="cdOverlay" data-cid="sakura">
       <span class="nav-id">L2</span><span class="nav-name">挑战详情（樱花漫步·已加入）</span><span class="nav-tag tag-page">二级页面</span>
     </div>
@@ -2180,6 +2988,50 @@ button { font: inherit; color: inherit; background: transparent; border: 0; padd
     <div id="lvContent"></div>
   </div>
 
+  <div class="fs-overlay medal-wall-overlay" id="myMedalsOverlay">
+    <div class="mlv-head">
+      <div class="ov-back" onclick="closeOverlay('myMedalsOverlay')">‹</div>
+      <div class="title">我的勋章</div>
+      <div class="more">⋯</div>
+    </div>
+    <div class="medal-wall-page">
+      <div class="medal-profile">
+        <div class="av">戒</div>
+        <div class="name">阿戒的勋章墙</div>
+        <div class="sub">已获得 6 / 10 枚 · 点击勋章查看获取条件</div>
+      </div>
+      <div class="medal-tabs" id="medalTabs"></div>
+      <div class="medal-wall" id="medalWall"></div>
+    </div>
+  </div>
+
+  <div class="fs-overlay medal-detail-overlay" id="medalDetailOverlay">
+    <div class="mlv-head">
+      <div class="ov-back" onclick="closeOverlay('medalDetailOverlay')">‹</div>
+      <div class="title">勋章详情</div>
+      <div class="more" onclick="closeOverlay('medalDetailOverlay')">×</div>
+    </div>
+    <div class="medal-detail-page">
+      <div class="medal-detail-stage">
+        <div class="eyebrow">勋章详情</div>
+        <div class="title" id="medalDetailName">泊车大神</div>
+        <div class="date" id="medalDetailDate">获得时间：2026/02/27</div>
+      </div>
+      <div class="medal-hero">
+        <div class="medal-podium">
+          <div class="hex" id="medalDetailHex">🅿️</div>
+          <div class="lv" id="medalDetailLevel">LV.4</div>
+          <div class="desc" id="medalDetailDesc">恭喜你累计完成 500 次高质量睡眠打卡，成功获得该勋章。</div>
+          <div class="next" id="medalDetailNext">下一等级：累计完成 700 次高质量睡眠打卡</div>
+        </div>
+        <div class="medal-detail-actions">
+          <button class="btn ghost" id="medalWearBtn">去佩戴</button>
+          <button class="btn primary" onclick="toast('勋章海报已生成')">分享一下</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- 底部 Tab Bar -->
   <div class="tab-bar">
     <div class="tb-item" onclick="goToModulePage('01-今日模块.html')">
@@ -2197,6 +3049,100 @@ button { font: inherit; color: inherit; background: transparent; border: 0; padd
   </div>
 
   <!-- ===== 全屏滑入：挑战详情 / 全部挑战 / 教程列表 / 故事列表 / 教程文章 / 故事文章 ===== -->
+  <div class="fs-overlay my-lv-overlay" id="myLvOverlay">
+    <div class="mlv-head">
+      <div class="ov-back" onclick="closeOverlay('myLvOverlay')">‹</div>
+      <div class="title">我的练级</div>
+      <div class="more">⋯</div>
+    </div>
+    <div class="mlv-page">
+      <div class="mlv-summary">
+        <div class="rank-ribbon">
+          <div class="k">好友排名</div>
+          <div class="v">103</div>
+        </div>
+        <div class="mlv-summary-top">
+          <div class="eyebrow">当前等级</div>
+          <div class="mlv-summary-buff">XP ×1.25</div>
+        </div>
+        <div class="mlv-summary-main">
+          <div class="mlv-summary-figure">
+            <img src="/Users/yinsong/Desktop/人物.png" alt="人物形象">
+          </div>
+          <div class="mlv-summary-copy">
+            <div class="main"><strong>Lv.8</strong> 圣幕</div>
+            <div class="sub">你已经进入披风终级阶段。再拿 <b>220 XP</b>，就能解锁下一等级「天冠」。</div>
+            <div class="mlv-chip-row">
+              <span class="mlv-chip">🧥 XP ×1.25</span>
+              <span class="mlv-chip">👑 金阶皮肤</span>
+              <span class="mlv-chip">⚔️ 青铜奖励池</span>
+            </div>
+          </div>
+        </div>
+        <div class="progress-row">
+          <div class="copy">当前 <b>2,180 / 2,400 XP</b></div>
+          <div class="progress-link" onclick="window.location.href='xp成长规则说明.html'">成长规则 ›</div>
+        </div>
+        <div class="progress-bar"><div class="fill"></div></div>
+        <div class="progress-meta">
+          <span>还差 220 XP 升级</span>
+          <span>预计再完成 1 个挑战即可升级</span>
+        </div>
+        <div class="mlv-current-grid">
+          <div class="mlv-current-card">
+            <div class="k">当前形态</div>
+            <div class="v">圣幕骑士</div>
+            <div class="s">Lv.8 阶段主形象</div>
+          </div>
+          <div class="mlv-current-card">
+            <div class="k">披风</div>
+            <div class="v">天穹圣披</div>
+            <div class="s">所有有效 XP × 1.25</div>
+          </div>
+          <div class="mlv-current-card">
+            <div class="k">头盔</div>
+            <div class="v">鎏金战冠</div>
+            <div class="s">已解锁金阶 App 皮肤</div>
+          </div>
+          <div class="mlv-current-card">
+            <div class="k">武器</div>
+            <div class="v">曜金权刃</div>
+            <div class="s">已进入青铜奖励池</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mlv-next-card">
+        <div class="mlv-next-top">
+          <div>
+            <div class="eyebrow">下一等级</div>
+            <div class="mlv-next-title">Lv.9 天冠</div>
+          </div>
+          <div class="cta">再拿 220 XP</div>
+        </div>
+        <div class="mlv-next-sub">升到下一等级后，用户会立刻感知到身份显示和皮肤层级的提升，更有动力继续升级。</div>
+        <div class="mlv-next-perks">
+          <div class="mlv-next-perk">
+            <div class="k">升级后立即获得</div>
+            <div class="v">钻石头像皇冠</div>
+          </div>
+          <div class="mlv-next-perk">
+            <div class="k">同步解锁</div>
+            <div class="v">钻阶 App 皮肤</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mlv-rule-entry" onclick="window.location.href='xp成长规则说明.html'">
+        <div class="copy">
+          <div class="k">成长规则</div>
+          <div class="v">查看完整升级规则与全部等级特权</div>
+        </div>
+        <div class="go">去查看 ›</div>
+      </div>
+    </div>
+  </div>
+
   <div class="fs-overlay cd-overlay" id="cdOverlay">
     <div class="cd-hero">
       <div class="cd-bg" id="cdHeroBg"></div>
@@ -2204,6 +3150,7 @@ button { font: inherit; color: inherit; background: transparent; border: 0; padd
       <div class="cd-share" onclick="toast('🔗 分享链接已复制')">↗</div>
       <div class="cd-emoji" id="cdEmoji">🌸</div>
       <div class="cd-medal" id="cdMedal">🌸</div>
+      <div class="cd-joined" id="cdJoinedTag" style="display:none">已加入</div>
     </div>
     <div class="cd-meta">
       <div class="cd-dates" id="cdDates">4 月 01 日 - 4 月 30 日 · 剩余 1 天</div>
@@ -2223,7 +3170,7 @@ button { font: inherit; color: inherit; background: transparent; border: 0; padd
       </div>
     </div>
 
-    <div class="cd-section">
+    <div class="cd-section cd-section--callouts">
       <!-- 「你的进度」区块（未加入态由 openChallenge() 整块隐藏） -->
       <div id="cdProgressBlock">
         <div class="cd-sect-h">你的进度</div>
@@ -2278,8 +3225,8 @@ button { font: inherit; color: inherit; background: transparent; border: 0; padd
         </div>
         <div class="cd-row">
           <div class="ric">🚩</div>
-          <div class="rt">完成目标</div>
-          <div class="rv" id="cdTargetSummary"><span>🚶</span></div>
+          <div class="rt" id="cdTargetSummary">累计步行 10 万步</div>
+          <div class="rv"></div>
         </div>
         <div class="cd-row">
           <div class="ric">👥</div>
@@ -2287,29 +3234,27 @@ button { font: inherit; color: inherit; background: transparent; border: 0; padd
           <div class="rv">›</div>
         </div>
       </div>
-
-      <div class="cd-spon">
-        <div class="si">G</div>
-        <div class="sb">
-          <div class="sn" id="cdSponsorName">Apple Watch Series 11</div>
-          <div class="ss" id="cdSponsorSub">限量 3 份 · 戒指厂商联合赞助</div>
-        </div>
-        <div style="font-size:11px;color:var(--text3);font-weight:700">小红书</div>
-      </div>
     </div>
 
     <div class="cd-section">
-      <div class="cd-sect-h"><span>奖品</span><span class="more" onclick="toast('📜 抽奖规则：完赛后系统自动抽取，3 日内通知')">如何获奖？</span></div>
+      <div class="cd-sect-h"><span>奖品</span></div>
       <div class="cd-reward">
-        <div class="rh">⌚ AI RING POWERED</div>
-        <div class="rname" id="cdRewardName">AI Ring Pro × 3</div>
-        <div class="rgrid" id="cdRewardGrid">
-          <div class="ri">⌚</div><div class="ri">⌚</div><div class="ri">⌚</div>
+        <div class="cd-reward-card">
+          <div class="rimg xp"><div class="xp-badge">XP</div></div>
+          <div class="rb">
+            <div class="rk">完成目标奖励</div>
+            <div class="rv" id="cdRewardXp">100 XP</div>
+            <div class="rs">达成当前挑战目标后立即发放，计入本次练级进度。</div>
+          </div>
         </div>
-        <div class="rmeta">
-          <div class="c"><div class="l">数量</div><div class="v">x 3</div></div>
-          <div class="c"><div class="l">类型</div><div class="v">实体</div></div>
-          <div class="c"><div class="l">抽签</div><div class="v">完赛后</div></div>
+        <div class="cd-reward-card">
+          <button class="cd-reward-rule-btn" onclick="openOverlay('lotteryRuleModal')">抽奖规则</button>
+          <div class="rimg lottery"><div class="prize-emoji" id="cdRewardLotteryArt">🛏️</div></div>
+          <div class="rb">
+            <div class="rk">完成目标抽奖</div>
+            <div class="rv" id="cdRewardLotteryName">安睡床垫 × 3</div>
+            <div class="rs" id="cdRewardLotteryMeta">完成目标后自动获得抽奖资格，奖品价值 ¥1000，共 3 个。</div>
+          </div>
         </div>
       </div>
     </div>
@@ -2493,6 +3438,39 @@ button { font: inherit; color: inherit; background: transparent; border: 0; padd
     <div style="position:absolute;inset:0;z-index:-1" onclick="closeOverlay('inviteChModal')"></div>
   </div>
 
+  <!-- 抽奖规则 -->
+  <div class="modal-overlay" id="lotteryRuleModal" onclick="closeOverlay('lotteryRuleModal')">
+    <div class="modal-card" onclick="event.stopPropagation()">
+      <div class="modal-handle"></div>
+      <div class="modal-header">
+        <div class="modal-title">如何获奖？</div>
+        <div class="modal-close" onclick="closeOverlay('lotteryRuleModal')">×</div>
+      </div>
+      <div class="rule-sheet-body">
+        <div class="rule-list">
+          <div class="rule-row">
+            <div class="num">1</div>
+            <div class="txt">参与挑战。</div>
+          </div>
+          <div class="rule-row">
+            <div class="num">2</div>
+            <div class="txt">达成挑战目标，即解锁抽奖资格。</div>
+          </div>
+          <div class="rule-row">
+            <div class="num">3</div>
+            <div class="txt">所有完成挑战的用户均有机会，系统将<span class="hl">随机抽取</span>幸运获奖者。</div>
+          </div>
+          <div class="rule-row">
+            <div class="num">4</div>
+            <div class="txt">抽奖会在挑战时间结束后 <span class="hl">24 小时内</span> 完成，并公布结果。</div>
+          </div>
+        </div>
+        <button class="rule-sheet-cta" onclick="closeOverlay('lotteryRuleModal')">好的</button>
+      </div>
+    </div>
+    <div style="position:absolute;inset:0;z-index:-1" onclick="closeOverlay('lotteryRuleModal')"></div>
+  </div>
+
   <!-- ===== 模态：粘贴邀请码 ===== -->
   <!-- L7 粘贴邀请码加入挑战（参考 02-关心模块 C3.2.a 添加好友确认框）：
        居中确认弹窗 + 圆角矩形挑战封面（替代圆形头像）+ 挑战名（替代用户昵称）+ 邀请码源 + 查看详情 / 确认加入 双按钮
@@ -2511,6 +3489,24 @@ button { font: inherit; color: inherit; background: transparent; border: 0; padd
       <div class="confirm-btns">
         <button class="confirm-btn ghost" onclick="viewPendingChallengeDetail()">查看详情</button>
         <button class="confirm-btn primary" onclick="submitInviteChCode()">确认加入</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 退出挑战确认 -->
+  <div class="modal-overlay is-center" id="quitChModal" onclick="closeOverlay('quitChModal')">
+    <div class="confirm-card" onclick="event.stopPropagation()">
+      <div class="confirm-close" onclick="closeOverlay('quitChModal')" aria-label="关闭">×</div>
+      <div class="confirm-cover bg-night" id="quitChCover">
+        <div class="confirm-cover-emoji" id="quitChEmoji">🐑</div>
+      </div>
+      <div class="confirm-ttl">退出挑战</div>
+      <div class="confirm-ct">确认退出 <b id="quitChName">绵羊咩咩，数着入眠</b>？</div>
+      <div class="confirm-src">退出后当前挑战进度会暂时消失。</div>
+      <div class="confirm-src">只要挑战还没结束，你仍可随时重新加入，并继承之前的数据。</div>
+      <div class="confirm-btns">
+        <button class="confirm-btn ghost" onclick="closeOverlay('quitChModal')">取消</button>
+        <button class="confirm-btn primary" onclick="confirmQuitChallenge()">确认退出</button>
       </div>
     </div>
   </div>
@@ -2556,12 +3552,16 @@ const CHALLENGES = {
     dates:'4 月 01 日 - 4 月 30 日', remain:'剩余 1 天',
     purpose:'缓解久坐 · 激活核心', purposeColor:'sed',
     targetTitle:'累计步行 100,000 步', targetIcon:'🚶',
+    rewardXp:'100 XP',
+    targetSummary:'累计走路 10 万步',
     metric:{cur:'133,721 步', total:'100,000 步', pct:92},
     people:'14,632 漫步者', joined:true,
     hardware:'步数 · 加速度计', goal:'激活久坐人群核心肌群',
     why:{title:'为什么这样能缓解腰痛',
          body:'WHO 与哈佛医学院 2023 年研究：每日累计步行 8,000 步以上，4 周后久坐人群腰痛评分平均下降 47%。',
          source:'WHO 2023 · 哈佛医学院'},
+    rewardLotteryName:'AI Ring Pro × 3',
+    rewardLotteryMeta:'完成目标后自动获得抽奖资格，奖品价值 ¥2999，共 3 个。',
     sponsor:{name:'Apple Watch Series 11', sub:'限量 3 份 · 戒指厂商联合赞助'},
     rewardEmojis:['⌚','⌚','⌚'], rewardName:'AI Ring Pro × 3',
     leaders:[
@@ -2577,12 +3577,16 @@ const CHALLENGES = {
     dates:'4 月 01 日 - 4 月 30 日', remain:'剩余 1 天',
     purpose:'深睡修复', purposeColor:'slp',
     targetTitle:'22:30 前入睡 30 天', targetIcon:'🌙',
+    rewardXp:'100 XP',
+    targetSummary:'睡足 9 小时 20 次',
     metric:{cur:'23 天', total:'30 天', pct:76},
     people:'16,176 梦想家', joined:true,
     hardware:'睡眠分期 + 心率监测', goal:'重建昼夜节律 · 提升深睡比',
     why:{title:'为什么早睡能让大脑「换油」',
          body:'美国睡眠基金会 2024 研究：22:30 前入睡可让深睡占比从 14% 提升至 22%，深睡阶段脑脊液冲刷可清除 60% 以上 β-淀粉样蛋白。',
          source:'美国睡眠基金会 2024'},
+    rewardLotteryName:'安睡床垫 × 3',
+    rewardLotteryMeta:'完成目标后自动获得抽奖资格，奖品价值 ¥1000，共 3 个。',
     sponsor:{name:'Eight Sleep 智能床垫', sub:'冠军独享 · 价值 ¥18,000'},
     rewardEmojis:['🛏️','🛏️','🛏️'], rewardName:'Eight Sleep × 3',
     leaders:[
@@ -2596,12 +3600,16 @@ const CHALLENGES = {
     dates:'4 月 01 日 - 4 月 30 日', remain:'剩余 1 天',
     purpose:'提升心肺', purposeColor:'car',
     targetTitle:'累计跑步 60 公里', targetIcon:'🏃',
+    rewardXp:'100 XP',
+    targetSummary:'累计跑步 60 公里',
     metric:{cur:'22 公里', total:'60 公里', pct:37},
     people:'5,716 跑者', joined:false,
     hardware:'心率 · 距离 · 配速', goal:'扩张毛细血管 · 强化心肌',
     why:{title:'为什么有氧能让心肺更年轻',
          body:'柳叶刀 2022 研究：每周 150 分钟中等强度有氧训练 12 周后，VO2 Max 提升 7-10%，相当于生理年龄回拨 5 岁。',
          source:'柳叶刀 2022'},
+    rewardLotteryName:'Garmin Forerunner × 5',
+    rewardLotteryMeta:'完成目标后自动获得抽奖资格，奖品价值 ¥2680，共 5 个。',
     sponsor:{name:'Garmin Forerunner', sub:'限量 5 份 · 跑者首选 GPS 表'},
     rewardEmojis:['⌚','⌚','⌚'], rewardName:'Garmin Forerunner × 5',
     leaders:[
@@ -2615,12 +3623,16 @@ const CHALLENGES = {
     dates:'4 月 01 日 - 4 月 30 日', remain:'剩余 1 天',
     purpose:'焦虑减压', purposeColor:'anx',
     targetTitle:'累计冥想 600 分钟', targetIcon:'🧘',
+    rewardXp:'100 XP',
+    targetSummary:'冥想 20 分钟 20 次',
     metric:{cur:'180 分钟', total:'600 分钟', pct:30},
     people:'5,277 冥想者', joined:false,
     hardware:'HRV · 呼吸节律', goal:'激活副交感神经 · 缓解焦虑',
     why:{title:'为什么呼吸能驯服焦虑',
          body:'Nature 2023 研究：每天 10 分钟慢呼吸（4-7-8）连续 8 周，焦虑评分平均下降 31%，HRV 提升 12-18ms。',
          source:'Nature 2023'},
+    rewardLotteryName:'Calm 年度会员 × 100',
+    rewardLotteryMeta:'完成目标后自动获得抽奖资格，奖品价值 ¥498，共 100 个。',
     sponsor:{name:'Calm 年度会员', sub:'前 100 名免费'},
     rewardEmojis:['🧘','🧘','🧘'], rewardName:'Calm × 100',
     leaders:[
@@ -2633,12 +3645,16 @@ const CHALLENGES = {
     dates:'4 月 01 日 - 4 月 30 日', remain:'剩余 1 天',
     purpose:'代谢平衡', purposeColor:'met',
     targetTitle:'每天饮水 2000 ml × 30 天', targetIcon:'💧',
+    rewardXp:'100 XP',
+    targetSummary:'喝水 1500 ml 15 天以上',
     metric:{cur:'18 天达标', total:'30 天', pct:60},
     people:'7,890 饮水族', joined:true,
     hardware:'手动记录 + 提醒', goal:'稳定肾功能 · 改善皮肤',
     why:{title:'为什么饮水能稳代谢',
          body:'JAMA 2023：日饮水 ≥2L 人群较 <1.5L 人群，10 年内肾结石风险下降 38%，皮肤角质层含水量提升 22%。',
          source:'JAMA 2023'},
+    rewardLotteryName:'Stanley 水杯 × 50',
+    rewardLotteryMeta:'完成目标后自动获得抽奖资格，奖品价值 ¥399，共 50 个。',
     sponsor:{name:'Stanley 真空水杯', sub:'前 50 名包邮赠送'},
     rewardEmojis:['🥤','🥤','🥤'], rewardName:'Stanley × 50',
     leaders:[
@@ -2651,12 +3667,16 @@ const CHALLENGES = {
     dates:'4 月 01 日 - 4 月 30 日', remain:'剩余 1 天',
     purpose:'血压平稳', purposeColor:'bp',
     targetTitle:'每天呼吸训练 10 分钟', targetIcon:'🪷',
+    rewardXp:'100 XP',
+    targetSummary:'呼吸训练 10 分钟 20 次',
     metric:{cur:'8 天', total:'30 天', pct:27},
     people:'2,184 呼吸者', joined:false,
     hardware:'HRV · 呼吸频率', goal:'调节自主神经 · 稳血压',
     why:{title:'为什么腹式呼吸能稳血压',
          body:'Hypertension 2024：每日 10 分钟慢节律呼吸（6 次/分钟）8 周后，收缩压平均下降 6-8 mmHg。',
          source:'Hypertension 2024'},
+    rewardLotteryName:'Lululemon 瑜伽垫 × 30',
+    rewardLotteryMeta:'完成目标后自动获得抽奖资格，奖品价值 ¥680，共 30 个。',
     sponsor:{name:'Lululemon 瑜伽垫', sub:'前 30 名'},
     rewardEmojis:['🧘','🧘','🧘'], rewardName:'Lululemon × 30',
     leaders:[
@@ -2669,12 +3689,16 @@ const CHALLENGES = {
     dates:'4 月 01 日 - 4 月 30 日', remain:'剩余 1 天',
     purpose:'免疫节律', purposeColor:'imm',
     targetTitle:'每天晨光 15 分钟 × 30 天', targetIcon:'🌅',
+    rewardXp:'100 XP',
+    targetSummary:'晨光晒背 15 分钟 20 天',
     metric:{cur:'12 天', total:'30 天', pct:40},
     people:'3,421 晨练者', joined:false,
     hardware:'光照传感 · 体温', goal:'锚定昼夜节律 · 维生素 D 合成',
     why:{title:'为什么晨光能调节免疫',
          body:'Nature 2024：晨间 15-30 分钟蓝光暴露可使皮质醇日节律振幅提升 18%，3 个月后感冒次数下降 27%。',
          source:'Nature 2024'},
+    rewardLotteryName:'飞利浦光疗灯 × 20',
+    rewardLotteryMeta:'完成目标后自动获得抽奖资格，奖品价值 ¥1299，共 20 个。',
     sponsor:{name:'飞利浦光疗灯', sub:'前 20 名'},
     rewardEmojis:['💡','💡','💡'], rewardName:'飞利浦光疗灯 × 20',
     leaders:[
@@ -2687,12 +3711,16 @@ const CHALLENGES = {
     dates:'4 月 01 日 - 4 月 30 日', remain:'剩余 1 天',
     purpose:'久坐恢复', purposeColor:'sed',
     targetTitle:'每天 12 次起身 × 30 天', targetIcon:'🪑',
+    rewardXp:'100 XP',
+    targetSummary:'每天起身 12 次，累计 20 天',
     metric:{cur:'14 天', total:'30 天', pct:47},
     people:'9,348 站立达人', joined:false,
     hardware:'加速度计 · 久坐提醒', goal:'缓解腰椎压力 · 下肢回流',
     why:{title:'为什么每小时起身能保护腰椎',
          body:'Spine 2023：连续坐姿 60+ 分钟会使椎间盘内压上升 40%。每小时起身 2 分钟可让椎间盘回弹率提升 18%。',
          source:'Spine 2023'},
+    rewardLotteryName:'人体工学椅 × 10',
+    rewardLotteryMeta:'完成目标后自动获得抽奖资格，奖品价值 ¥1599，共 10 个。',
     sponsor:{name:'人体工学椅', sub:'前 10 名'},
     rewardEmojis:['🪑','🪑','🪑'], rewardName:'人体工学椅 × 10',
     leaders:[
@@ -2705,12 +3733,16 @@ const CHALLENGES = {
     dates:'4 月 01 日 - 4 月 30 日', remain:'剩余 1 天',
     purpose:'降餐后血糖', purposeColor:'glu',
     targetTitle:'三餐后步行 15 分钟 × 30 天', targetIcon:'🍽️',
+    rewardXp:'100 XP',
+    targetSummary:'饭后走 15 分钟 20 天',
     metric:{cur:'9 天', total:'30 天', pct:30},
     people:'4,612 控糖者', joined:false,
     hardware:'步数 · 心率', goal:'削峰餐后血糖 · 改善胰岛素敏感度',
     why:{title:'为什么饭后散步能控糖',
          body:'Diabetes Care 2022：餐后 15 分钟散步可使餐后血糖峰值平均下降 17%，HbA1c 90 天下降 0.4。',
          source:'Diabetes Care 2022'},
+    rewardLotteryName:'CGM 动态血糖仪 × 15',
+    rewardLotteryMeta:'完成目标后自动获得抽奖资格，奖品价值 ¥899，共 15 个。',
     sponsor:{name:'CGM 动态血糖仪', sub:'前 15 名'},
     rewardEmojis:['🩸','🩸','🩸'], rewardName:'CGM × 15',
     leaders:[
@@ -2723,12 +3755,16 @@ const CHALLENGES = {
     dates:'1 月 01 日 - 12 月 31 日', remain:'剩余 245 天',
     purpose:'心血管 · 全年长跑', purposeColor:'car',
     targetTitle:'年度累计 2,026,000 步', targetIcon:'🏃',
+    rewardXp:'100 XP',
+    targetSummary:'全年累计走路 202.6 万步',
     metric:{cur:'237,178 步', total:'2,026,000 步', pct:11},
     people:'50,920 步行者', joined:true,
     hardware:'步数 · 长期心率', goal:'保护心血管 · VO2 Max 维持',
     why:{title:'为什么 200 万步是心血管的护城河',
          body:'柳叶刀 2024 大型队列研究：年均步数超 200 万的人群，10 年内心血管事件风险下降 39%，全因死亡率下降 27%。',
          source:'柳叶刀 2024'},
+    rewardLotteryName:'Apple Watch × 3',
+    rewardLotteryMeta:'完成目标后自动获得抽奖资格，奖品价值 ¥2999，共 3 个。',
     sponsor:{name:'Apple Watch Series 11', sub:'Grow · 你的 Watch 贴心好伙伴'},
     rewardEmojis:['⌚','⌚','⌚'], rewardName:'Apple Watch × 3',
     leaders:[
@@ -2740,37 +3776,240 @@ const CHALLENGES = {
 };
 
 const FOUNDERS = {
-  sakura:{name:'林深', kol:'物理治疗师', avText:'林', avBg:'linear-gradient(135deg,#f9a8d4,#ec4899)',
+  sakura:{name:'林深', kol:'物理治疗师', avText:'林', avBg:'linear-gradient(135deg,#f9a8d4,#ec4899)', avPhoto:'https://randomuser.me/api/portraits/women/68.jpg',
     bio:'在三甲医院做了 12 年康复治疗，专攻颈腰椎和久坐综合征。',
     tags:['🏥 三甲医院','📍 上海','🎓 康复医学硕士'], stats:['8','23k','4.9']},
-  sheep:{name:'月白晚安', kol:'睡眠咨询师', avText:'月', avBg:'linear-gradient(135deg,#a78bfa,#6366f1)',
+  sheep:{name:'月白晚安', kol:'睡眠咨询师', avText:'月', avBg:'linear-gradient(135deg,#a78bfa,#6366f1)', avPhoto:'https://randomuser.me/api/portraits/women/44.jpg',
     bio:'国家二级心理咨询师，认证睡眠治疗师，写过两本失眠科普书。',
     tags:['💤 睡眠 12 年','📍 北京'], stats:['12','41k','4.8']},
-  runner:{name:'陈逐风', kol:'马拉松教练', avText:'陈', avBg:'linear-gradient(135deg,#fb923c,#dc2626)',
+  runner:{name:'陈逐风', kol:'马拉松教练', avText:'陈', avBg:'linear-gradient(135deg,#fb923c,#dc2626)', avPhoto:'https://randomuser.me/api/portraits/men/32.jpg',
     bio:'前国家队 800m 选手，现专注帮普通人完成第一个全马。',
     tags:['🏃 PB 2:38','📍 厦门'], stats:['6','15k','4.9']},
-  stream:{name:'禅一', kol:'正念导师', avText:'禅', avBg:'linear-gradient(135deg,#34d399,#06b6d4)',
+  stream:{name:'禅一', kol:'正念导师', avText:'禅', avBg:'linear-gradient(135deg,#34d399,#06b6d4)', avPhoto:'https://randomuser.me/api/portraits/men/71.jpg',
     bio:'10 年禅修经验，融合内观与现代神经科学。',
     tags:['🧘 10 年禅修','📍 大理'], stats:['10','12k','4.9']},
-  water:{name:'水若', kol:'营养师', avText:'水', avBg:'linear-gradient(135deg,#22d3ee,#0891b2)',
+  water:{name:'水若', kol:'营养师', avText:'水', avBg:'linear-gradient(135deg,#22d3ee,#0891b2)', avPhoto:'https://randomuser.me/api/portraits/women/65.jpg',
     bio:'注册营养师，帮 200+ 上班族建立饮水节律。',
     tags:['💧 注册营养师','📍 广州'], stats:['4','9k','4.8']},
-  breath:{name:'莲华', kol:'瑜伽老师', avText:'莲', avBg:'linear-gradient(135deg,#c084fc,#9333ea)',
+  breath:{name:'莲华', kol:'瑜伽老师', avText:'莲', avBg:'linear-gradient(135deg,#c084fc,#9333ea)', avPhoto:'https://randomuser.me/api/portraits/women/32.jpg',
     bio:'阿斯汤加 + 调息法专家，专为高压人群设计 5 分钟方案。',
     tags:['🪷 15 年瑜伽','📍 上海'], stats:['7','6k','4.8']},
-  morning:{name:'日初', kol:'中医养生', avText:'日', avBg:'linear-gradient(135deg,#fbbf24,#f97316)',
+  morning:{name:'日初', kol:'中医养生', avText:'日', avBg:'linear-gradient(135deg,#fbbf24,#f97316)', avPhoto:'https://randomuser.me/api/portraits/men/52.jpg',
     bio:'三代中医世家，主张「子午流注」与现代节律学结合。',
     tags:['🌅 中医世家','📍 杭州'], stats:['5','8k','4.7']},
-  stand:{name:'站立小姐', kol:'人体工学顾问', avText:'站', avBg:'linear-gradient(135deg,#facc15,#f59e0b)',
+  stand:{name:'站立小姐', kol:'人体工学顾问', avText:'站', avBg:'linear-gradient(135deg,#facc15,#f59e0b)', avPhoto:'https://randomuser.me/api/portraits/women/50.jpg',
     bio:'帮 50+ 大厂改造工位，「站起来」是她的口头禅。',
     tags:['🪑 工学顾问','📍 深圳'], stats:['3','9k','4.7']},
-  postmeal:{name:'糖糖医师', kol:'内分泌科', avText:'糖', avBg:'linear-gradient(135deg,#34d399,#10b981)',
+  postmeal:{name:'糖糖医师', kol:'内分泌科', avText:'糖', avBg:'linear-gradient(135deg,#34d399,#10b981)', avPhoto:'https://randomuser.me/api/portraits/men/46.jpg',
     bio:'三甲医院内分泌主治，糖前期人群干预专家。',
     tags:['🩺 主治医师','📍 北京'], stats:['9','11k','4.9']},
-  annual:{name:'AIRing 官方', kol:'官方挑战', avText:'A', avBg:'linear-gradient(135deg,#6c5ce7,#a855f7)',
+  annual:{name:'AIRing 官方', kol:'官方挑战', avText:'A', avBg:'linear-gradient(135deg,#6c5ce7,#a855f7)', avPhoto:'https://randomuser.me/api/portraits/men/12.jpg',
     bio:'AIRing 联合 Apple Watch、戒指品牌官方发起的年度大挑战。',
     tags:['🎁 官方'], stats:['1','51k','—']}
 };
+
+const MY_LEVEL_LADDER = [
+  {
+    lv:'Lv1 初醒',
+    range:'0 - 99 XP',
+    copy:'初始等级，不给装备特权，先建立“佩戴戒指 + 每天打卡”的基本习惯。',
+    perkTitle:'无额外特权',
+    perkSub:'保留基础头像与基础 IP 形象，作为成长起点。'
+  },
+  {
+    lv:'Lv2 旅者',
+    range:'100 - 199 XP',
+    copy:'首次获得披风「微风披肩」，让用户第一次明确感受到升级会给自己一件新装备。',
+    perkTitle:'披风 I「微风披肩」: 基础头像框 + 所有有效 XP × 1.05',
+    perkSub:'头像开始出现初阶披风框，同时所有有效健康行为和互动行为都能吃到披风倍率。'
+  },
+  {
+    lv:'Lv3 守望',
+    range:'200 - 349 XP',
+    copy:'获得第一顶头盔「银曜护额」，别人一眼就能认出你已经成长到更高等级。',
+    perkTitle:'头盔 I「银曜护额」: 银色头像皇冠 + 银阶 App 皮肤',
+    perkSub:'关心圈和练级页中的头像会出现银色皇冠装饰。'
+  },
+  {
+    lv:'Lv4 炽刃',
+    range:'350 - 549 XP',
+    copy:'获得第一把武器「夜蚀短刃」，直接给角色带来风格变化。',
+    perkTitle:'武器 I「夜蚀短刃」: 青铜头像等级标 + 青铜实物奖励池',
+    perkSub:'头像上出现首档等级标识，同时进入第一档实物奖励池。'
+  },
+  {
+    lv:'Lv5 流光',
+    range:'550 - 849 XP',
+    copy:'披风升级为「星辉长披」，视觉上从轻披肩进化成主披风。',
+    perkTitle:'披风 II「星辉长披」: 进阶头像框 + 所有有效 XP × 1.15',
+    perkSub:'头像框更完整、更亮，长期成长收益开始明显拉开差距。'
+  },
+  {
+    lv:'Lv6 星冕',
+    range:'850 - 1,249 XP',
+    copy:'头盔升级为「鎏金战冠」，关心圈和练级中的头像身份感更强。',
+    perkTitle:'头盔 II「鎏金战冠」: 金色头像皇冠 + 金阶 App 皮肤',
+    perkSub:'头像皇冠从银色升级为金色，同时解锁更高阶的 App 皮肤主题。'
+  },
+  {
+    lv:'Lv7 破晓',
+    range:'1,250 - 1,749 XP',
+    copy:'武器升级为「曜金权刃」，从暗黑风格进阶到尊贵金风格。',
+    perkTitle:'武器 II「曜金权刃」: 白银头像等级标 + 白银实物奖励池',
+    perkSub:'头像等级标升级一档，同时进入更好的实物奖励池。'
+  },
+  {
+    lv:'Lv8 圣幕',
+    range:'1,750 - 2,399 XP',
+    copy:'披风进阶为终级形态「天穹圣披」，成为用户主页最有代表性的主装备。',
+    perkTitle:'披风 III「天穹圣披」: 终级头像框 + 所有有效 XP × 1.25',
+    perkSub:'头像框进化到最高档，这是披风体系的终级倍率。',
+    current:true
+  },
+  {
+    lv:'Lv9 天冠',
+    range:'2,400 - 3,199 XP',
+    copy:'头盔进阶为终级形态「钻星冕盔」，在关心圈里一眼就能区分开。',
+    perkTitle:'头盔 III「钻星冕盔」: 钻石头像皇冠 + 钻阶 App 皮肤',
+    perkSub:'头像皇冠进入最高档，同时解锁顶级 App 皮肤。'
+  },
+  {
+    lv:'Lv10 神铸',
+    range:'3,200+ XP',
+    copy:'武器终级形态「流光圣裁」，适合做传说级的长期成长目标。',
+    perkTitle:'武器 III「流光圣裁」: 钻石头像等级标 + 钻石实物奖励池',
+    perkSub:'头像等级标升级到最高档，同时进入顶级实物奖励池。'
+  }
+];
+
+const MEDAL_TABS = [
+  { id:'commemorative', label:'纪念勋章' },
+  { id:'identity', label:'身份勋章' },
+  { id:'achievement', label:'成就勋章' }
+];
+
+const MEDALS = [
+  {
+    id:'sleep-guardian',
+    category:'achievement',
+    name:'深睡守夜人',
+    level:'LV.5',
+    icon:'🌙',
+    bg:'linear-gradient(135deg,#6366f1,#a78bfa)',
+    obtained:true,
+    obtainedAt:'2026/03/08',
+    condition:'累计 30 天在 22:30 前入睡，并达成 20 次高质量深睡。',
+    next:'下一等级：累计 50 天在 22:30 前入睡，并达成 35 次高质量深睡。'
+  },
+  {
+    id:'walker-100k',
+    category:'achievement',
+    name:'樱路旅者',
+    level:'LV.3',
+    icon:'🌸',
+    bg:'linear-gradient(135deg,#f472b6,#c084fc)',
+    obtained:true,
+    obtainedAt:'2026/02/18',
+    condition:'累计完成 10 万步月度漫步挑战 1 次。',
+    next:'下一等级：累计完成 3 次 10 万步月度漫步挑战。'
+  },
+  {
+    id:'hydration-pro',
+    category:'achievement',
+    name:'清泉补给官',
+    level:'LV.2',
+    icon:'💧',
+    bg:'linear-gradient(135deg,#22d3ee,#3b82f6)',
+    obtained:true,
+    obtainedAt:'2026/02/27',
+    condition:'在 30 天内达成 15 天以上 1500ml 饮水目标。',
+    next:'下一等级：在 30 天内达成 24 天以上 1800ml 饮水目标。'
+  },
+  {
+    id:'energy-burst',
+    category:'achievement',
+    name:'活力无限',
+    level:'LV.2',
+    icon:'🔥',
+    bg:'linear-gradient(135deg,#fb7185,#f59e0b)',
+    obtained:true,
+    obtainedAt:'2026/03/14',
+    condition:'连续 7 天活力值达到 80 以上。',
+    next:'下一等级：连续 14 天活力值达到 80 以上。'
+  },
+  {
+    id:'care-bond',
+    category:'identity',
+    name:'关心共振者',
+    level:'LV.4',
+    icon:'🤝',
+    bg:'linear-gradient(135deg,#34d399,#10b981)',
+    obtained:true,
+    obtainedAt:'2026/01/30',
+    condition:'与 5 位好友建立稳定关心关系，并累计完成 50 次有效互动。',
+    next:'下一等级：与 8 位好友建立稳定关心关系，并累计完成 120 次有效互动。'
+  },
+  {
+    id:'first-ring',
+    category:'commemorative',
+    name:'初次佩戴日',
+    level:'纪念',
+    icon:'💍',
+    bg:'linear-gradient(135deg,#fbbf24,#f59e0b)',
+    obtained:true,
+    obtainedAt:'2026/01/02',
+    condition:'首次成功连接 AIRing 戒指并完成数据同步。',
+    next:'下一纪念：保持连续佩戴 30 天。'
+  },
+  {
+    id:'calm-breath',
+    category:'achievement',
+    name:'呼吸成莲',
+    level:'LV.4',
+    icon:'🪷',
+    bg:'linear-gradient(135deg,#a78bfa,#6366f1)',
+    obtained:false,
+    obtainedAt:'',
+    condition:'累计完成 500 分钟呼吸训练，并连续 10 天达成 10 分钟呼吸目标。',
+    next:'下一等级：累计完成 800 分钟呼吸训练，并连续 20 天达成 10 分钟呼吸目标。'
+  },
+  {
+    id:'sunrise-rhythm',
+    category:'achievement',
+    name:'晨光节律师',
+    level:'LV.3',
+    icon:'🌅',
+    bg:'linear-gradient(135deg,#fbbf24,#fb923c)',
+    obtained:false,
+    obtainedAt:'',
+    condition:'累计 20 天完成晨光晒背 15 分钟。',
+    next:'下一等级：累计 35 天完成晨光晒背 15 分钟。'
+  },
+  {
+    id:'standing-hero',
+    category:'identity',
+    name:'久坐反击者',
+    level:'LV.2',
+    icon:'🪑',
+    bg:'linear-gradient(135deg,#94a3b8,#64748b)',
+    obtained:false,
+    obtainedAt:'',
+    condition:'累计 20 天完成每天 12 次起身目标。',
+    next:'下一等级：累计 40 天完成每天 12 次起身目标。'
+  },
+  {
+    id:'story-writer',
+    category:'commemorative',
+    name:'故事闪光点',
+    level:'纪念',
+    icon:'✨',
+    bg:'linear-gradient(135deg,#c4b5fd,#8b5cf6)',
+    obtained:false,
+    obtainedAt:'',
+    condition:'首次发布 1 篇健康故事，并获得 10 次以上好友互动。',
+    next:'下一纪念：故事入选官方推荐位。'
+  }
+];
 
 const TUTORIALS = {
   path:{icon:'🛤️', bg:'#e8f4ec', title:'你的练级路径能告诉你什么',
@@ -2899,15 +4138,15 @@ function renderLevelupPage(){
     <!-- L1.A 我的练级（容器，含两个并列入口） -->
     <div class="lv-mesect" id="meSect">
       <!-- 入口 1：练级进度 -->
-      <div class="lv-mecard lv-me-progress" onclick="toast('等级详情建设中')">
+      <div class="lv-mecard lv-me-progress" onclick="openMyLevel()">
         <div class="lv-medal">🏅</div>
-        <div class="lv-lvtitle">LV 12 · 健康探索者</div>
+        <div class="lv-lvtitle">LV 8 · 圣幕</div>
         <div class="lv-lvname">练级之路 <span class="lv-tag">连击 7 天</span></div>
         <div class="lv-bar"><div class="fill"></div></div>
-        <div class="lv-meta"><span>1,840 XP</span><span>距 LV 13 · 660</span></div>
+        <div class="lv-meta"><span>2,180 XP</span><span>距 LV 9 · 220</span></div>
       </div>
       <!-- 入口 2：成就勋章 -->
-      <div class="lv-mecard lv-me-medals" onclick="toast('🏅 徽章墙建设中')">
+    <div class="lv-mecard lv-me-medals" onclick="openMyMedals()">
         <div class="m-ico">🏅</div>
         <div class="m-t">成就勋章</div>
         <div class="m-s">已获 6 枚 · 连击 21 天</div>
@@ -3192,10 +4431,10 @@ function renderHero(id, m, d, joinedTag, peopleLbl, emoji, title, sub){
     ${joined}
     <div class="h-people">
       <div class="h-avs">
-        <div class="av" style="background:linear-gradient(135deg,#fbbf24,#f59e0b)">😊</div>
-        <div class="av" style="background:linear-gradient(135deg,#ec4899,#f43f5e)">😄</div>
-        <div class="av" style="background:linear-gradient(135deg,#a78bfa,#6366f1)">😁</div>
-        <div class="av" style="background:linear-gradient(135deg,#34d399,#10b981)">🥰</div>
+        <div class="av av-photo" style="background-image:url('https://images.unsplash.com/photo-1758600587808-9e251cf34b94?auto=format&fit=crop&fm=jpg&q=60&w=240&h=240')"></div>
+        <div class="av av-photo" style="background-image:url('https://images.unsplash.com/photo-1758600587833-c07c5bda5c70?auto=format&fit=crop&fm=jpg&q=60&w=240&h=240')"></div>
+        <div class="av av-photo" style="background-image:url('https://images.unsplash.com/photo-1758600431229-191932ccee81?auto=format&fit=crop&fm=jpg&q=60&w=240&h=240')"></div>
+        <div class="av av-photo" style="background-image:url('https://images.unsplash.com/photo-1770135157320-68ecfe9cd608?auto=format&fit=crop&fm=jpg&q=60&w=240&h=240'); background-position:center top"></div>
       </div>
       <div class="h-num">${peopleLbl}</div>
     </div>
@@ -3213,6 +4452,7 @@ function renderJrow(id, ico, icoBg, sponLbl, pct, valTxt, fillBg){
     <div class="j-body">
       <div class="j-name">${c.title}</div>
       <div class="j-spon">📅 ${c.remain} · ${sponLbl}</div>
+      <span class="j-xp">${c.rewardXp || ''}</span>
       <div class="j-prog">
         <div class="pb"><div class="fill" style="width:${pct}%;background:${fillBg}"></div></div>
         <div class="v">${valTxt}</div>
@@ -3223,20 +4463,23 @@ function renderJrow(id, ico, icoBg, sponLbl, pct, valTxt, fillBg){
 
 function renderMcard(id, emoji, bgClass, joined, goalLabel, goalCls, founderName, founderKol, founderBg, peopleLbl, xpLbl){
   const c = CHALLENGES[id];
+  const f = FOUNDERS[id];
   const joinedTag = joined ? `<div class="joined-tag">已加入</div>` : '';
-  const initial = founderName.charAt(0);
+  const founderAvatar = f?.avPhoto
+    ? `<span class="fav is-photo" style="background-image:url('${f.avPhoto}')"></span>`
+    : `<span class="fav" style="background:${founderBg}">${founderName.charAt(0)}</span>`;
   return `<div class="lv-mcard" onclick="openChallenge('${id}')">
     <div class="mc-art ${bgClass}">${joinedTag}<div class="mc-emoji">${emoji}</div></div>
     <div class="mc-body">
       <div class="mc-t">${c.title}</div>
       <div class="mc-d">📅 4/01-4/30 · <span class="goal-pill ${goalCls}">${goalLabel}</span></div>
       <div class="mc-founder">
-        <span class="fav" style="background:${founderBg}">${initial}</span>
+        ${founderAvatar}
         <span class="fname">${founderName}</span> 发起 ·
         <span class="fkol">${founderKol}</span>
       </div>
       <div class="mc-people">${peopleLbl}</div>
-      <span class="mc-xp">${xpLbl}</span>
+      <span class="mc-xp">${c.rewardXp || ''}</span>
     </div>
   </div>`;
 }
@@ -3251,21 +4494,20 @@ function renderAllChallenges(){
     sheep:['深睡修复','slp'], morning:['免疫节律','imm'], water:['代谢平衡','met'],
     breath:['血压平稳','bp'], stand:['久坐恢复','sed'], postmeal:['降餐后血糖','glu']
   };
-  const founderInitMap = {
-    sakura:'林', runner:'陈', stream:'禅', sheep:'月', morning:'日',
-    water:'水', breath:'莲', stand:'站', postmeal:'糖'
-  };
   document.getElementById('allChList').innerHTML = ids.map(id=>{
     const c = CHALLENGES[id], f = FOUNDERS[id];
     const [gLabel, gCls] = goalMap[id];
     const joined = c.joined ? `<div class="joined-tag">已加入</div>` : '';
+    const founderAvatar = f?.avPhoto
+      ? `<span class="fav is-photo" style="background-image:url('${f.avPhoto}')"></span>`
+      : `<span class="fav" style="background:${f.avBg}">${f.avText}</span>`;
     return `<div class="lv-mcard" onclick="openChallenge('${id}')">
       <div class="mc-art ${c.bg}">${joined}<div class="mc-emoji">${c.emoji}</div></div>
       <div class="mc-body">
         <div class="mc-t">${c.title}</div>
         <div class="mc-d">📅 4/01-4/30 · <span class="goal-pill ${gCls}">${gLabel}</span></div>
         <div class="mc-founder">
-          <span class="fav" style="background:${f.avBg}">${founderInitMap[id]}</span>
+          ${founderAvatar}
           <span class="fname">${f.name}</span> · <span class="fkol">${f.kol}</span>
         </div>
         <div class="mc-people">${c.people}</div>
@@ -3292,7 +4534,7 @@ function loadMoreMonthlyChallenges(){
          <div class="mc-t">乘风骑行，丈量城市</div>
          <div class="mc-d">📅 4/01-4/30 · <span class="goal-pill car">提升心肺</span></div>
          <div class="mc-founder">
-           <span class="fav" style="background:linear-gradient(135deg,#fb923c,#dc2626)">风</span>
+           <span class="fav is-photo" style="background-image:url('https://randomuser.me/api/portraits/men/58.jpg')"></span>
            <span class="fname">风行者</span> 发起 · <span class="fkol">单车教练</span>
          </div>
          <div class="mc-people">2,860 骑行者</div>
@@ -3306,7 +4548,7 @@ function loadMoreMonthlyChallenges(){
          <div class="mc-t">舒展之间，身心同安</div>
          <div class="mc-d">📅 4/01-4/30 · <span class="goal-pill anx">焦虑减压</span></div>
          <div class="mc-founder">
-           <span class="fav" style="background:linear-gradient(135deg,#a78bfa,#6366f1)">瑜</span>
+           <span class="fav is-photo" style="background-image:url('https://randomuser.me/api/portraits/women/36.jpg')"></span>
            <span class="fname">莹瑜</span> 发起 · <span class="fkol">瑜伽老师</span>
          </div>
          <div class="mc-people">4,108 习瑜者</div>
@@ -3441,10 +4683,11 @@ function refreshChallengeJoinedState(id){
   const c = CHALLENGES[id]; if(!c) return;
   const eff = computeEffectiveJoined(id);
   document.getElementById('cdProgressBlock').style.display = eff ? '' : 'none';
+  document.getElementById('cdJoinedTag').style.display = eff ? 'inline-flex' : 'none';
   const cta = document.getElementById('cdCtaArea');
   if(eff){
-    cta.innerHTML = `<div class="cd-btn invite" onclick="inviteFriend('${id}')">📤 邀请好友 · 已加入</div>
-                     <div class="cd-btn quit" onclick="toast('已退出挑战')">退出挑战</div>`;
+    cta.innerHTML = `<div class="cd-btn invite" onclick="inviteFriend('${id}')">📤 邀请好友</div>
+                     <div class="cd-btn quit" onclick="openQuitChallengeConfirm('${id}')">退出挑战</div>`;
   } else {
     cta.innerHTML = `<div class="cd-btn join" onclick="joinChallenge('${id}')">立即加入</div>
                      <div class="cd-btn quit" onclick="inviteFriend('${id}')">📤 邀请好友加入</div>`;
@@ -3465,16 +4708,17 @@ function openChallenge(id){
   purposeEl.className = 'cd-purpose goal-pill ' + c.purposeColor;
   document.getElementById('cdTargetTitle').textContent = c.targetTitle;
   document.getElementById('cdTargetIcon').textContent = c.targetIcon;
+  document.getElementById('cdTargetSummary').textContent = c.targetSummary || c.targetTitle;
   document.getElementById('cdPeopleNum').textContent = c.people;
   document.getElementById('cdHardware').textContent = c.hardware;
   document.getElementById('cdGoal').textContent = c.goal;
   document.getElementById('cdWhyTitle').textContent = c.why.title;
   document.getElementById('cdWhyBody').textContent = c.why.body;
   document.getElementById('cdWhySource').textContent = '— ' + c.why.source;
-  document.getElementById('cdSponsorName').textContent = c.sponsor.name;
-  document.getElementById('cdSponsorSub').textContent = c.sponsor.sub;
-  document.getElementById('cdRewardName').textContent = c.rewardName;
-  document.getElementById('cdRewardGrid').innerHTML = c.rewardEmojis.map(e=>`<div class="ri">${e}</div>`).join('');
+  document.getElementById('cdRewardLotteryArt').textContent = (c.rewardEmojis && c.rewardEmojis[0]) ? c.rewardEmojis[0] : '🎁';
+  document.getElementById('cdRewardXp').textContent = c.rewardXp || '100 XP';
+  document.getElementById('cdRewardLotteryName').textContent = c.rewardLotteryName || '可参与抽奖';
+  document.getElementById('cdRewardLotteryMeta').textContent = c.rewardLotteryMeta || '完成目标后自动获得抽奖资格，完赛后统一开奖。';
   document.getElementById('cdMetricCur').textContent = c.metric.cur;
   document.getElementById('cdMetricTotal').textContent = c.metric.total;
   document.getElementById('cdMetricPct').textContent = c.metric.pct + '%';
@@ -3487,8 +4731,10 @@ function openChallenge(id){
   /* 发起人 */
   const f = FOUNDERS[id];
   if(f){
-    document.getElementById('cdFounderAv').textContent = f.avText;
-    document.getElementById('cdFounderAv').style.background = f.avBg;
+    const founderAv = document.getElementById('cdFounderAv');
+    founderAv.textContent = f.avPhoto ? '' : f.avText;
+    founderAv.style.background = f.avPhoto ? `url('${f.avPhoto}') center/cover no-repeat` : f.avBg;
+    founderAv.classList.toggle('is-photo', !!f.avPhoto);
     document.getElementById('cdFounderName').textContent = f.name;
     document.getElementById('cdFounderKol').textContent = f.kol;
     document.getElementById('cdFounderBio').textContent = f.bio;
@@ -3515,6 +4761,26 @@ function openChallenge(id){
 
   openOverlay('cdOverlay');
   document.getElementById('cdOverlay').scrollTop = 0;
+}
+
+function openQuitChallengeConfirm(id){
+  const c = CHALLENGES[id];
+  if(!c) return;
+  window._pendingQuitChallengeId = id;
+  document.getElementById('quitChCover').className = 'confirm-cover ' + c.bg;
+  document.getElementById('quitChEmoji').textContent = c.emoji;
+  document.getElementById('quitChName').textContent = c.title;
+  openOverlay('quitChModal');
+}
+
+function confirmQuitChallenge(){
+  const id = window._pendingQuitChallengeId;
+  if(!id) return;
+  SESSION_JOINED.delete(id);
+  if(CHALLENGES[id]) CHALLENGES[id].joined = false;
+  closeOverlay('quitChModal');
+  refreshChallengeJoinedState(id);
+  toast('已退出挑战');
 }
 
 /* ==========================================================
@@ -3548,8 +4814,10 @@ function joinSuccessInvite(){
    ========================================================== */
 function openFounder(){
   const f = FOUNDERS[currentFounderId]; if(!f) return;
-  document.getElementById('fdAv').textContent = f.avText;
-  document.getElementById('fdAv').style.background = f.avBg;
+  const fdAv = document.getElementById('fdAv');
+  fdAv.textContent = f.avPhoto ? '' : f.avText;
+  fdAv.style.background = f.avPhoto ? `url('${f.avPhoto}') center/cover no-repeat` : f.avBg;
+  fdAv.classList.toggle('is-photo', !!f.avPhoto);
   document.getElementById('fdName').textContent = f.name;
   document.getElementById('fdKol').textContent = f.kol;
   document.getElementById('fdBio').textContent = f.bio;
@@ -3661,6 +4929,79 @@ function openStory(id){
   document.getElementById('kolArtOv').scrollTop = 0;
 }
 
+function renderMyLevelPage(){
+  return;
+}
+
+function openMyLevel(){
+  renderMyLevelPage();
+  openOverlay('myLvOverlay');
+  document.getElementById('myLvOverlay').scrollTop = 0;
+}
+
+let currentMedalTab = 'achievement';
+
+function renderMedalTabs(){
+  const wrap = document.getElementById('medalTabs');
+  if(!wrap) return;
+  wrap.innerHTML = MEDAL_TABS.map(tab => `
+    <button class="medal-tab ${currentMedalTab === tab.id ? 'active' : ''}" onclick="setMedalTab('${tab.id}')">${tab.label}</button>
+  `).join('');
+}
+
+function renderMedalWall(){
+  const wall = document.getElementById('medalWall');
+  if(!wall) return;
+  const list = MEDALS.filter(item => item.category === currentMedalTab);
+  wall.innerHTML = list.map(item => `
+    <div class="medal-card ${item.obtained ? '' : 'is-locked'}" onclick="openMedalDetail('${item.id}')">
+      <div class="icon-wrap">
+        <div class="hex" style="background:${item.bg}">${item.icon}</div>
+        <div class="level">${item.level}</div>
+      </div>
+      <div class="name">${item.name}</div>
+      <div class="meta">${item.obtained ? '已获得' : '未获得'}</div>
+    </div>
+  `).join('');
+}
+
+function setMedalTab(tabId){
+  currentMedalTab = tabId;
+  renderMedalTabs();
+  renderMedalWall();
+}
+
+function openMyMedals(){
+  currentMedalTab = 'achievement';
+  renderMedalTabs();
+  renderMedalWall();
+  openOverlay('myMedalsOverlay');
+  document.getElementById('myMedalsOverlay').scrollTop = 0;
+}
+
+function openMedalDetail(id){
+  const medal = MEDALS.find(item => item.id === id);
+  if(!medal) return;
+  document.getElementById('medalDetailName').textContent = medal.name;
+  document.getElementById('medalDetailDate').textContent = medal.obtained
+    ? `获得时间：${medal.obtainedAt}`
+    : '尚未获得';
+  const hex = document.getElementById('medalDetailHex');
+  hex.textContent = medal.icon;
+  hex.style.background = medal.bg;
+  hex.style.filter = medal.obtained ? 'none' : 'grayscale(1)';
+  hex.style.opacity = medal.obtained ? '1' : '0.42';
+  document.getElementById('medalDetailLevel').textContent = medal.level;
+  document.getElementById('medalDetailDesc').textContent = medal.condition;
+  document.getElementById('medalDetailNext').textContent = medal.next;
+  document.getElementById('medalWearBtn').textContent = medal.obtained ? '去佩戴' : '去挑战';
+  document.getElementById('medalWearBtn').onclick = () => {
+    toast(medal.obtained ? `已佩戴「${medal.name}」` : `去完成「${medal.name}」对应条件`);
+  };
+  openOverlay('medalDetailOverlay');
+  document.getElementById('medalDetailOverlay').scrollTop = 0;
+}
+
 /* ==========================================================
    左侧导航
    ========================================================== */
@@ -3690,7 +5031,11 @@ document.querySelectorAll('.nav-item').forEach(item=>{
       scrollToAnchor(item.dataset.anchor);
     } else if(target === 'overlay'){
       const ov = item.dataset.overlay;
-      if(ov === 'cdOverlay'){
+      if(ov === 'myLvOverlay'){
+        openMyLevel();
+      } else if(ov === 'myMedalsOverlay'){
+        openMyMedals();
+      } else if(ov === 'cdOverlay'){
         openChallenge(item.dataset.cid || 'sakura');
       } else if(ov === 'tutArtOv'){
         openTutorial(item.dataset.tid || 'path');
