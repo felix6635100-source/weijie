@@ -717,6 +717,7 @@ button { font: inherit; color: inherit; background: transparent; border: 0; padd
   box-shadow: 0 1px 2px rgba(15,23,42,0.04);
 }
 .lv-jrow {
+  position: relative;                          /* 让 .j-xp 可绝对定位到右上角 */
   display: flex; align-items: center; gap: 12px;
   padding: 10px 0;
   border-top: 1px solid var(--border-soft);
@@ -734,14 +735,18 @@ button { font: inherit; color: inherit; background: transparent; border: 0; padd
 .lv-jrow .j-name {
   font-size: 14px; font-weight: 800;
   color: var(--text); letter-spacing: -0.2px;
+  padding-right: 60px;                          /* 给右上角的 .j-xp 让位 */
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .lv-jrow .j-spon {
   font-size: 11px; color: var(--accent);
   font-weight: 700; margin-top: 2px;
+  padding-right: 60px;                          /* 同上，避免和 .j-xp 重叠 */
 }
 .lv-jrow .j-xp {
-  margin-top: 6px;
-  display: inline-block;
+  position: absolute;                          /* 固定到行的右上角 */
+  top: 12px;
+  right: 0;
   background: linear-gradient(135deg, #fff4d1, #fde68a);
   color: #b45309;
   border: 1px solid rgba(245,158,11,0.28);
@@ -749,6 +754,8 @@ button { font: inherit; color: inherit; background: transparent; border: 0; padd
   border-radius: 10px;
   font-size: 10px;
   font-weight: 800;
+  white-space: nowrap;
+  z-index: 1;
 }
 .lv-jrow .j-prog {
   display: flex; align-items: center; gap: 8px;
@@ -1681,35 +1688,57 @@ button { font: inherit; color: inherit; background: transparent; border: 0; padd
 .mlv-current-grid {
   margin-top: 16px;
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));   /* 改为一行 3 列 */
+  gap: 8px;
 }
 .mlv-current-card {
-  padding: 14px 12px;
-  border-radius: 18px;
+  padding: 12px 10px;
+  border-radius: 16px;
   background: rgba(255,255,255,0.84);
   border: 1px solid rgba(255,255,255,0.96);
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.75);
+  min-width: 0;
 }
-.mlv-current-card .k {
-  font-size: 11px;
-  color: var(--text3);
-  font-weight: 800;
+.mlv-current-card .ic {
+  width: 40px; height: 40px;
+  margin-bottom: 6px;
+  display: flex; align-items: center; justify-content: center;
+}
+.mlv-current-card .ic img {
+  width: 100%; height: 100%;
+  object-fit: contain;
+  display: block;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.12));
 }
 .mlv-current-card .v {
-  margin-top: 6px;
-  font-size: 16px;
+  margin-top: 5px;
+  font-size: 14px;            /* 3 列宽度变窄，主标题略缩到 14px 避免拥挤 */
   color: var(--text);
   font-weight: 900;
-  line-height: 1.35;
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .mlv-current-card .s {
-  margin-top: 5px;
-  font-size: 11px;
-  color: var(--text2);
-  font-weight: 700;
-  line-height: 1.5;
+  display: inline-block;
+  align-self: flex-start;
+  margin-top: 8px;
+  padding: 4px 9px;
+  border-radius: 999px;
+  background: rgba(108,92,231,0.12);
+  color: #4c46b6;
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1.3;
+  white-space: nowrap;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
+/* 卡片内 flex 列布局，让 .s 胶囊可左对齐而非铺满整行 */
+.mlv-current-card { display: flex; flex-direction: column; align-items: flex-start; }
+.mlv-current-card .v { width: 100%; }
 .mlv-summary .progress-row {
   margin-top: 18px;
   display: flex;
@@ -1906,16 +1935,23 @@ button { font: inherit; color: inherit; background: transparent; border: 0; padd
   display: flex;
   gap: 8px;
   margin: 10px 0 14px;
+  overflow-x: auto;                    /* 5 个 tab 时支持横向滚动 */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
+.medal-tabs::-webkit-scrollbar { display: none; }
 .medal-tab {
-  flex: 1;
+  flex: 0 0 auto;                      /* 自适应宽度，不再均分 */
+  padding: 0 16px;
   height: 42px;
   border-radius: 16px;
   background: rgba(255,255,255,0.84);
   border: 1px solid var(--border);
   color: var(--text3);
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 800;
+  white-space: nowrap;
+  cursor: pointer;
 }
 .medal-tab.active {
   background: linear-gradient(135deg, #6c5ce7, #a855f7);
@@ -1947,7 +1983,7 @@ button { font: inherit; color: inherit; background: transparent; border: 0; padd
 .medal-card .hex {
   width: 76px;
   height: 88px;
-  clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+  border-radius: 20px;                         /* 圆角矩形（替代六边形） */
   border: 3px solid rgba(255,255,255,0.9);
   display: flex;
   align-items: center;
@@ -2040,7 +2076,7 @@ button { font: inherit; color: inherit; background: transparent; border: 0; padd
   width: 156px;
   height: 180px;
   margin: 0 auto 18px;
-  clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+  border-radius: 36px;                         /* 圆角矩形（替代六边形） */
   border: 4px solid rgba(255,255,255,0.92);
   display: flex;
   align-items: center;
@@ -2998,7 +3034,7 @@ button { font: inherit; color: inherit; background: transparent; border: 0; padd
       <div class="medal-profile">
         <div class="av">戒</div>
         <div class="name">阿戒的勋章墙</div>
-        <div class="sub">已获得 6 / 10 枚 · 点击勋章查看获取条件</div>
+        <div class="sub" id="medalWallSummary">已获得 8 / 16 枚 · 点击勋章查看获取条件</div>
       </div>
       <div class="medal-tabs" id="medalTabs"></div>
       <div class="medal-wall" id="medalWall"></div>
@@ -3071,7 +3107,6 @@ button { font: inherit; color: inherit; background: transparent; border: 0; padd
           </div>
           <div class="mlv-summary-copy">
             <div class="main"><strong>Lv.8</strong> 圣幕</div>
-            <div class="sub">你已经进入披风终级阶段。再拿 <b>220 XP</b>，就能解锁下一等级「天冠」。</div>
             <div class="mlv-chip-row">
               <span class="mlv-chip">🧥 XP ×1.25</span>
               <span class="mlv-chip">👑 金阶皮肤</span>
@@ -3090,24 +3125,19 @@ button { font: inherit; color: inherit; background: transparent; border: 0; padd
         </div>
         <div class="mlv-current-grid">
           <div class="mlv-current-card">
-            <div class="k">当前形态</div>
-            <div class="v">圣幕骑士</div>
-            <div class="s">Lv.8 阶段主形象</div>
-          </div>
-          <div class="mlv-current-card">
-            <div class="k">披风</div>
+            <div class="ic"><img src="/Users/yinsong/Desktop/披风.png" alt="披风"></div>
             <div class="v">天穹圣披</div>
-            <div class="s">所有有效 XP × 1.25</div>
+            <div class="s">1.25 倍 XP</div>
           </div>
           <div class="mlv-current-card">
-            <div class="k">头盔</div>
+            <div class="ic"><img src="/Users/yinsong/Desktop/头盔.png" alt="头盔"></div>
             <div class="v">鎏金战冠</div>
-            <div class="s">已解锁金阶 App 皮肤</div>
+            <div class="s">晨间收益 +10%</div>
           </div>
           <div class="mlv-current-card">
-            <div class="k">武器</div>
+            <div class="ic"><img src="/Users/yinsong/Desktop/武器.png" alt="武器"></div>
             <div class="v">曜金权刃</div>
-            <div class="s">已进入青铜奖励池</div>
+            <div class="s">10% XP 暴击</div>
           </div>
         </div>
       </div>
@@ -3310,7 +3340,7 @@ button { font: inherit; color: inherit; background: transparent; border: 0; padd
       <div class="ov-title">已加入挑战 · 10 项</div>
     </div>
     <!-- 复用 .lv-joined 卡 + .lv-jrow 行结构（与首页 L1.E 完全一致） -->
-    <div class="lv-joined" id="joinedAllList" style="margin:0 16px 24px"></div>
+    <div class="lv-joined" id="joinedAllList" style="margin:16px 16px 24px"></div>
   </div>
 
   <!-- 教程列表 -->
@@ -3883,39 +3913,18 @@ const MY_LEVEL_LADDER = [
 ];
 
 const MEDAL_TABS = [
-  { id:'commemorative', label:'纪念勋章' },
-  { id:'identity', label:'身份勋章' },
-  { id:'achievement', label:'成就勋章' }
+  { id:'daily',     label:'日常活跃' },
+  { id:'body',      label:'身体指标' },
+  { id:'challenge', label:'挑战目标' },
+  { id:'ring',      label:'圆环徽章' },
+  { id:'event',     label:'活动限定' }
 ];
 
 const MEDALS = [
-  {
-    id:'sleep-guardian',
-    category:'achievement',
-    name:'深睡守夜人',
-    level:'LV.5',
-    icon:'🌙',
-    bg:'linear-gradient(135deg,#6366f1,#a78bfa)',
-    obtained:true,
-    obtainedAt:'2026/03/08',
-    condition:'累计 30 天在 22:30 前入睡，并达成 20 次高质量深睡。',
-    next:'下一等级：累计 50 天在 22:30 前入睡，并达成 35 次高质量深睡。'
-  },
-  {
-    id:'walker-100k',
-    category:'achievement',
-    name:'樱路旅者',
-    level:'LV.3',
-    icon:'🌸',
-    bg:'linear-gradient(135deg,#f472b6,#c084fc)',
-    obtained:true,
-    obtainedAt:'2026/02/18',
-    condition:'累计完成 10 万步月度漫步挑战 1 次。',
-    next:'下一等级：累计完成 3 次 10 万步月度漫步挑战。'
-  },
+  /* 日常活跃：天天都能解锁，主要看坚持 */
   {
     id:'hydration-pro',
-    category:'achievement',
+    category:'daily',
     name:'清泉补给官',
     level:'LV.2',
     icon:'💧',
@@ -3926,44 +3935,8 @@ const MEDALS = [
     next:'下一等级：在 30 天内达成 24 天以上 1800ml 饮水目标。'
   },
   {
-    id:'energy-burst',
-    category:'achievement',
-    name:'活力无限',
-    level:'LV.2',
-    icon:'🔥',
-    bg:'linear-gradient(135deg,#fb7185,#f59e0b)',
-    obtained:true,
-    obtainedAt:'2026/03/14',
-    condition:'连续 7 天活力值达到 80 以上。',
-    next:'下一等级：连续 14 天活力值达到 80 以上。'
-  },
-  {
-    id:'care-bond',
-    category:'identity',
-    name:'关心共振者',
-    level:'LV.4',
-    icon:'🤝',
-    bg:'linear-gradient(135deg,#34d399,#10b981)',
-    obtained:true,
-    obtainedAt:'2026/01/30',
-    condition:'与 5 位好友建立稳定关心关系，并累计完成 50 次有效互动。',
-    next:'下一等级：与 8 位好友建立稳定关心关系，并累计完成 120 次有效互动。'
-  },
-  {
-    id:'first-ring',
-    category:'commemorative',
-    name:'初次佩戴日',
-    level:'纪念',
-    icon:'💍',
-    bg:'linear-gradient(135deg,#fbbf24,#f59e0b)',
-    obtained:true,
-    obtainedAt:'2026/01/02',
-    condition:'首次成功连接 AIRing 戒指并完成数据同步。',
-    next:'下一纪念：保持连续佩戴 30 天。'
-  },
-  {
     id:'calm-breath',
-    category:'achievement',
+    category:'daily',
     name:'呼吸成莲',
     level:'LV.4',
     icon:'🪷',
@@ -3975,7 +3948,7 @@ const MEDALS = [
   },
   {
     id:'sunrise-rhythm',
-    category:'achievement',
+    category:'daily',
     name:'晨光节律师',
     level:'LV.3',
     icon:'🌅',
@@ -3987,7 +3960,7 @@ const MEDALS = [
   },
   {
     id:'standing-hero',
-    category:'identity',
+    category:'daily',
     name:'久坐反击者',
     level:'LV.2',
     icon:'🪑',
@@ -3997,9 +3970,137 @@ const MEDALS = [
     condition:'累计 20 天完成每天 12 次起身目标。',
     next:'下一等级：累计 40 天完成每天 12 次起身目标。'
   },
+
+  /* 身体指标：通过戒指实测的健康数据达成 */
+  {
+    id:'sleep-guardian',
+    category:'body',
+    name:'深睡守夜人',
+    level:'LV.5',
+    icon:'🌙',
+    bg:'linear-gradient(135deg,#6366f1,#a78bfa)',
+    obtained:true,
+    obtainedAt:'2026/03/08',
+    condition:'累计 30 天在 22:30 前入睡，并达成 20 次高质量深睡。',
+    next:'下一等级：累计 50 天在 22:30 前入睡，并达成 35 次高质量深睡。'
+  },
+  {
+    id:'energy-burst',
+    category:'body',
+    name:'活力无限',
+    level:'LV.2',
+    icon:'🔥',
+    bg:'linear-gradient(135deg,#fb7185,#f59e0b)',
+    obtained:true,
+    obtainedAt:'2026/03/14',
+    condition:'连续 7 天活力值达到 80 以上。',
+    next:'下一等级：连续 14 天活力值达到 80 以上。'
+  },
+  {
+    id:'hrv-master',
+    category:'body',
+    name:'HRV 守恒者',
+    level:'LV.1',
+    icon:'💓',
+    bg:'linear-gradient(135deg,#f43f5e,#a855f7)',
+    obtained:false,
+    obtainedAt:'',
+    condition:'连续 14 天 HRV 保持在个人基线 +5 以上。',
+    next:'下一等级：连续 30 天 HRV 保持在个人基线 +10 以上。'
+  },
+
+  /* 挑战目标：完成长期挑战赛 */
+  {
+    id:'walker-100k',
+    category:'challenge',
+    name:'樱路旅者',
+    level:'LV.3',
+    icon:'🌸',
+    bg:'linear-gradient(135deg,#f472b6,#c084fc)',
+    obtained:true,
+    obtainedAt:'2026/02/18',
+    condition:'累计完成 10 万步月度漫步挑战 1 次。',
+    next:'下一等级：累计完成 3 次 10 万步月度漫步挑战。'
+  },
+  {
+    id:'runner-100km',
+    category:'challenge',
+    name:'百公里跑者',
+    level:'LV.2',
+    icon:'🏃',
+    bg:'linear-gradient(135deg,#fb923c,#dc2626)',
+    obtained:true,
+    obtainedAt:'2026/03/22',
+    condition:'累计跑步里程达到 100 km。',
+    next:'下一等级：累计跑步里程达到 250 km。'
+  },
+  {
+    id:'half-marathon',
+    category:'challenge',
+    name:'半马征服者',
+    level:'LV.1',
+    icon:'🥇',
+    bg:'linear-gradient(135deg,#fbbf24,#f97316)',
+    obtained:false,
+    obtainedAt:'',
+    condition:'单次连续跑步距离达到 21 km。',
+    next:'下一等级：单次连续跑步达到 30 km。'
+  },
+
+  /* 圆环徽章：与三环（习惯 / 关心 / 成长）相关 */
+  {
+    id:'care-bond',
+    category:'ring',
+    name:'关心共振者',
+    level:'LV.4',
+    icon:'🤝',
+    bg:'linear-gradient(135deg,#34d399,#10b981)',
+    obtained:true,
+    obtainedAt:'2026/01/30',
+    condition:'与 5 位好友建立稳定关心关系，并累计完成 50 次有效互动。',
+    next:'下一等级：与 8 位好友建立稳定关心关系，并累计完成 120 次有效互动。'
+  },
+  {
+    id:'three-rings',
+    category:'ring',
+    name:'三环全达人',
+    level:'LV.2',
+    icon:'🏆',
+    bg:'linear-gradient(135deg,#22c55e,#14b8a6)',
+    obtained:true,
+    obtainedAt:'2026/03/02',
+    condition:'连续 5 天习惯 / 关心 / 成长 三环同时合环。',
+    next:'下一等级：连续 14 天三环同时合环。'
+  },
+  {
+    id:'habit-keeper',
+    category:'ring',
+    name:'习惯守望者',
+    level:'LV.1',
+    icon:'🎯',
+    bg:'linear-gradient(135deg,#a3e635,#22c55e)',
+    obtained:false,
+    obtainedAt:'',
+    condition:'习惯环连续 30 天达成 90% 以上。',
+    next:'下一等级：习惯环连续 90 天达成 95% 以上。'
+  },
+
+  /* 活动限定：节日 / 周年 / 首次专属 */
+  {
+    id:'first-ring',
+    category:'event',
+    name:'初次佩戴日',
+    level:'纪念',
+    icon:'💍',
+    bg:'linear-gradient(135deg,#fbbf24,#f59e0b)',
+    obtained:true,
+    obtainedAt:'2026/01/02',
+    condition:'首次成功连接 AIRing 戒指并完成数据同步。',
+    next:'下一纪念：保持连续佩戴 30 天。'
+  },
   {
     id:'story-writer',
-    category:'commemorative',
+    category:'event',
     name:'故事闪光点',
     level:'纪念',
     icon:'✨',
@@ -4008,6 +4109,18 @@ const MEDALS = [
     obtainedAt:'',
     condition:'首次发布 1 篇健康故事，并获得 10 次以上好友互动。',
     next:'下一纪念：故事入选官方推荐位。'
+  },
+  {
+    id:'spring-fest',
+    category:'event',
+    name:'春日万步行',
+    level:'限定',
+    icon:'🌷',
+    bg:'linear-gradient(135deg,#f9a8d4,#c084fc)',
+    obtained:false,
+    obtainedAt:'',
+    condition:'2026 春季活动期间累计步行 30 万步。',
+    next:'活动期间限定，结束后不再发放。'
   }
 ];
 
@@ -4447,12 +4560,13 @@ function renderHero(id, m, d, joinedTag, peopleLbl, emoji, title, sub){
 
 function renderJrow(id, ico, icoBg, sponLbl, pct, valTxt, fillBg){
   const c = CHALLENGES[id];
+  const xpTag = c.rewardXp ? `<span class="j-xp">${c.rewardXp}</span>` : '';
   return `<div class="lv-jrow" onclick="openChallenge('${id}')">
+    ${xpTag}
     <div class="j-ico" style="background:${icoBg}">${ico}</div>
     <div class="j-body">
       <div class="j-name">${c.title}</div>
       <div class="j-spon">📅 ${c.remain} · ${sponLbl}</div>
-      <span class="j-xp">${c.rewardXp || ''}</span>
       <div class="j-prog">
         <div class="pb"><div class="fill" style="width:${pct}%;background:${fillBg}"></div></div>
         <div class="v">${valTxt}</div>
@@ -4939,7 +5053,7 @@ function openMyLevel(){
   document.getElementById('myLvOverlay').scrollTop = 0;
 }
 
-let currentMedalTab = 'achievement';
+let currentMedalTab = 'daily';
 
 function renderMedalTabs(){
   const wrap = document.getElementById('medalTabs');
@@ -4947,6 +5061,13 @@ function renderMedalTabs(){
   wrap.innerHTML = MEDAL_TABS.map(tab => `
     <button class="medal-tab ${currentMedalTab === tab.id ? 'active' : ''}" onclick="setMedalTab('${tab.id}')">${tab.label}</button>
   `).join('');
+  /* 动态刷新顶部"已获得 X / Y 枚"小字 */
+  const summary = document.getElementById('medalWallSummary');
+  if(summary){
+    const total = MEDALS.length;
+    const owned = MEDALS.filter(m => m.obtained).length;
+    summary.textContent = `已获得 ${owned} / ${total} 枚 · 点击勋章查看获取条件`;
+  }
 }
 
 function renderMedalWall(){
