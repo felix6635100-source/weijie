@@ -1297,6 +1297,23 @@
       gap: 10px;
     }
     .profile-row-share.is-on .profile-share-preview { display: flex; }
+    /* 练级挑战发送时机的可多选徽章（v2.5） */
+    .milestone-chip {
+      display: inline-flex; align-items: center; gap: 3px;
+      padding: 4px 10px;
+      border-radius: var(--radius-pill);
+      font-size: var(--font-xs); font-weight: var(--weight-semi);
+      cursor: pointer; user-select: none;
+      background: var(--color-fill-neutral);
+      color: var(--color-text-tertiary);
+      border: 1px solid transparent;
+      transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+    }
+    .milestone-chip.is-active {
+      background: var(--color-tag-success-bg);
+      color: var(--color-semantic-success);
+      border-color: rgba(57, 193, 108, 0.30);
+    }
     .profile-share-preview-note {
       display: inline-flex;
       align-items: center;
@@ -1487,6 +1504,591 @@
       font-family: inherit;
     }
     .profile-logout-btn:active { transform: scale(0.99); }
+
+    /* ============================================================
+       P5 · 消息与通知入口（profile-row 衍生）
+       ============================================================ */
+    .profile-row .profile-row-badge {
+      flex-shrink: 0;
+      min-width: 20px;
+      height: 20px;
+      padding: 0 6px;
+      border-radius: var(--radius-pill);
+      background: var(--color-semantic-danger);
+      color: var(--color-text-on-dark);
+      font-size: var(--font-xs);
+      font-weight: var(--weight-bold);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+    .profile-msg-row .profile-row-icon {
+      background: linear-gradient(135deg, rgba(76,92,216,0.14), rgba(30,143,255,0.12));
+      color: var(--color-brand-primary);
+    }
+
+    /* ============================================================
+       P7 · 消息中心（二级页面）
+       与 .profile-section / .profile-row 同源视觉风格
+       ============================================================ */
+    .msg-page {
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      flex: 1;
+    }
+    .msg-cat-tabs {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      padding: var(--space-sm) var(--space-lg);
+      background: var(--color-bg-surface);
+      border-bottom: 1px solid var(--color-border-subtle);
+      overflow-x: auto;
+      scrollbar-width: none;
+      flex-shrink: 0;
+    }
+    .msg-cat-tabs::-webkit-scrollbar { display: none; }
+    .msg-cat-tab {
+      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-xs);
+      height: 30px;
+      padding: 0 var(--space-md);
+      border-radius: var(--radius-pill);
+      font-size: var(--font-sm);
+      font-weight: var(--weight-medium);
+      color: var(--color-text-secondary);
+      background: var(--color-fill-neutral);
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+      white-space: nowrap;
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+    .msg-cat-tab.is-active {
+      background: var(--color-brand-primary);
+      color: var(--color-text-on-dark);
+      font-weight: var(--weight-semi);
+    }
+    .msg-cat-tab .cat-count {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 16px;
+      height: 16px;
+      padding: 0 5px;
+      border-radius: var(--radius-pill);
+      background: var(--color-semantic-danger);
+      color: var(--color-text-on-dark);
+      font-size: 10px;
+      font-weight: var(--weight-bold);
+      line-height: 1;
+    }
+    .msg-cat-tab.is-active .cat-count {
+      background: var(--color-text-on-dark);
+      color: var(--color-brand-primary);
+    }
+    .msg-cat-tab.is-zero .cat-count { display: none; }
+
+    .msg-time-group {
+      margin-bottom: var(--space-lg);
+    }
+    .msg-time-group-label {
+      font-size: var(--font-xs);
+      font-weight: var(--weight-bold);
+      color: var(--color-text-tertiary);
+      letter-spacing: 0.04em;
+      padding: 0 var(--space-sm);
+      margin: var(--space-md) 0 var(--space-sm);
+    }
+    .msg-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+    }
+
+    .msg-item {
+      position: relative;
+      display: flex;
+      gap: var(--space-md);
+      padding: var(--space-md);
+      background: var(--color-bg-surface);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--color-border-subtle);
+      box-shadow: var(--shadow-card);
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .msg-item:active { background: var(--color-primary-tint-04); }
+    .msg-item.is-unread::before {
+      content: "";
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      width: 8px;
+      height: 8px;
+      background: var(--color-semantic-danger);
+      border-radius: 50%;
+    }
+    /* 已处理灰态：行内动作执行后保留可见但视觉降级 */
+    .msg-item.is-processed {
+      opacity: 0.65;
+    }
+    .msg-item.is-processed .msg-icon-wrap {
+      filter: grayscale(0.4);
+    }
+    .msg-item.is-processed .msg-actions {
+      display: none;
+    }
+    .msg-item.is-processed .msg-sub {
+      color: var(--color-text-tertiary);
+    }
+    .msg-processed-mark {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 4px;
+      font-size: var(--font-xs);
+      font-weight: var(--weight-semi);
+      color: var(--color-semantic-success);
+    }
+    .msg-processed-mark.is-neutral { color: var(--color-text-secondary); }
+    .msg-processed-mark.is-danger  { color: var(--color-semantic-danger); }
+
+    .msg-icon-wrap {
+      flex-shrink: 0;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-text-on-dark);
+      font-size: var(--font-xl);
+    }
+    .msg-icon-wrap svg {
+      width: 20px;
+      height: 20px;
+      stroke: currentColor;
+      fill: none;
+    }
+    .msg-icon-wrap.cat-friend  { background: linear-gradient(135deg, #4C5CD8 0%, #1E8FFF 100%); }
+    .msg-icon-wrap.cat-level   { background: linear-gradient(135deg, #FFA31A 0%, #FF6708 100%); }
+    .msg-icon-wrap.cat-health  { background: linear-gradient(135deg, #3ED27E 0%, #10B981 100%); }
+    .msg-icon-wrap.cat-system  {
+      background: var(--color-fill-neutral);
+      color: var(--color-text-secondary);
+    }
+
+    .msg-body {
+      flex: 1;
+      min-width: 0;
+      padding-right: var(--space-md);
+    }
+    .msg-title-row {
+      display: flex;
+      align-items: baseline;
+      gap: var(--space-sm);
+      margin-bottom: 2px;
+    }
+    .msg-title {
+      font-size: var(--font-md);
+      font-weight: var(--weight-semi);
+      color: var(--color-text-primary);
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .msg-time {
+      flex-shrink: 0;
+      font-size: var(--font-xs);
+      color: var(--color-text-tertiary);
+    }
+    .msg-sub {
+      font-size: var(--font-sm);
+      color: var(--color-text-secondary);
+      line-height: 1.5;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .msg-actions {
+      display: flex;
+      gap: var(--space-sm);
+      margin-top: var(--space-sm);
+    }
+    .msg-action-btn {
+      height: 28px;
+      padding: 0 var(--space-md);
+      border-radius: var(--radius-pill);
+      font-size: var(--font-xs);
+      font-weight: var(--weight-semi);
+      cursor: pointer;
+      font-family: inherit;
+      border: none;
+    }
+    .msg-action-btn.is-primary {
+      background: var(--color-brand-primary);
+      color: var(--color-text-on-dark);
+    }
+    .msg-action-btn.is-secondary {
+      background: var(--color-fill-neutral);
+      color: var(--color-text-primary);
+    }
+
+    .msg-empty {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 80px var(--space-xl) 0;
+      color: var(--color-text-tertiary);
+      text-align: center;
+    }
+    .msg-empty-icon {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: var(--color-fill-neutral);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: var(--space-md);
+      font-size: 32px;
+    }
+    .msg-empty-title {
+      font-size: var(--font-md);
+      font-weight: var(--weight-semi);
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-xs);
+    }
+    .msg-empty-sub {
+      font-size: var(--font-xs);
+      color: var(--color-text-tertiary);
+      line-height: 1.6;
+    }
+
+    .msg-end {
+      text-align: center;
+      font-size: var(--font-xs);
+      color: var(--color-text-tertiary);
+      padding: var(--space-lg) 0 var(--space-xxxl);
+    }
+
+    /* 二级页面顶栏：右上角文字按钮（"全部已读"等） */
+    .app-topbar-text-action {
+      flex-shrink: 0;
+      background: transparent;
+      border: none;
+      padding: 0 var(--space-md);
+      height: 40px;
+      font-size: var(--font-sm);
+      font-weight: var(--weight-medium);
+      color: var(--color-brand-primary);
+      font-family: inherit;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+    .app-topbar-text-action:disabled {
+      color: var(--color-text-tertiary);
+      cursor: default;
+    }
+
+    /* ============================================================
+       P7.detail · 消息详情页（单一布局 + detailType 自适应）
+       ============================================================ */
+    .msg-detail-page {
+      display: flex;
+      flex-direction: column;
+      min-height: 100%;
+      background: var(--color-bg-page);
+    }
+    .msg-detail-scroll {
+      flex: 1;
+      overflow-y: auto;
+      padding: var(--space-xl) var(--space-lg) var(--space-xxl);
+    }
+    /* Hero 区 */
+    .msg-detail-hero {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: var(--space-md);
+      padding: var(--space-xl) 0 var(--space-xxl);
+    }
+    .msg-detail-hero-icon {
+      width: 80px;
+      height: 80px;
+      border-radius: var(--radius-xl);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 36px;
+      box-shadow: var(--shadow-card-elevated);
+    }
+    .msg-detail-hero-icon.cat-friend  { background: linear-gradient(135deg, #4C5CD8 0%, #1E8FFF 100%); }
+    .msg-detail-hero-icon.cat-level   { background: linear-gradient(135deg, #FFA31A 0%, #FF6708 100%); }
+    .msg-detail-hero-icon.cat-health  { background: linear-gradient(135deg, #3ED27E 0%, #10B981 100%); }
+    .msg-detail-hero-icon.cat-system  { background: linear-gradient(135deg, #6B7280 0%, #4B5563 100%); }
+    .msg-detail-hero-icon svg { width: 44px; height: 44px; }
+    .msg-detail-hero-title {
+      font-size: var(--font-2xl);
+      font-weight: var(--weight-bold);
+      color: var(--color-text-primary);
+      line-height: 1.3;
+      max-width: 100%;
+      padding: 0 var(--space-lg);
+    }
+    .msg-detail-hero-meta {
+      font-size: var(--font-sm);
+      color: var(--color-text-secondary);
+    }
+
+    /* Body 通用容器 */
+    .msg-detail-section {
+      background: var(--color-bg-surface);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--color-border-subtle);
+      box-shadow: var(--shadow-card);
+      padding: var(--space-lg);
+      margin-bottom: var(--space-md);
+    }
+    .msg-detail-section-title {
+      font-size: var(--font-sm);
+      font-weight: var(--weight-bold);
+      color: var(--color-text-secondary);
+      letter-spacing: 0.04em;
+      margin-bottom: var(--space-sm);
+    }
+
+    /* badge 变体 */
+    .msg-detail-badge-hero {
+      width: 160px;
+      height: 160px;
+      border-radius: var(--radius-xl);
+      background: var(--gradient-success);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 88px;
+      box-shadow: var(--shadow-card-elevated);
+      margin: 0 auto var(--space-md);
+    }
+    .msg-detail-badge-name {
+      text-align: center;
+      font-size: var(--font-xl);
+      font-weight: var(--weight-bold);
+      color: var(--color-text-primary);
+      margin-bottom: var(--space-xs);
+    }
+    .msg-detail-badge-level {
+      text-align: center;
+      font-size: var(--font-sm);
+      color: var(--color-semantic-warning);
+      font-weight: var(--weight-semi);
+      margin-bottom: var(--space-xl);
+    }
+
+    /* prize 变体 · 收货地址表单 + 倒计时 */
+    .msg-detail-prize-img {
+      width: 100%;
+      aspect-ratio: 16 / 10;
+      border-radius: var(--radius-md);
+      background: linear-gradient(135deg, #FFE4B0 0%, #FFB85C 100%);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 64px;
+      margin-bottom: var(--space-md);
+    }
+    .msg-detail-form-row {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-xs);
+      margin-bottom: var(--space-md);
+    }
+    .msg-detail-form-row:last-child { margin-bottom: 0; }
+    .msg-detail-form-label {
+      font-size: var(--font-sm);
+      color: var(--color-text-secondary);
+      font-weight: var(--weight-medium);
+    }
+    .msg-detail-form-input,
+    .msg-detail-form-textarea {
+      width: 100%;
+      padding: var(--space-sm) var(--space-md);
+      border: 1px solid var(--color-border-subtle);
+      border-radius: var(--radius-md);
+      background: var(--color-bg-surface-muted);
+      font-size: var(--font-md);
+      color: var(--color-text-primary);
+      font-family: inherit;
+      outline: none;
+    }
+    .msg-detail-form-input:focus,
+    .msg-detail-form-textarea:focus {
+      border-color: var(--color-brand-primary);
+      background: var(--color-bg-surface);
+    }
+    .msg-detail-form-textarea {
+      min-height: 64px;
+      resize: vertical;
+    }
+    .msg-detail-countdown {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      padding: var(--space-md);
+      background: rgba(255, 120, 81, 0.08);
+      border: 1px solid rgba(255, 120, 81, 0.18);
+      border-radius: var(--radius-md);
+      color: var(--color-semantic-danger);
+      font-size: var(--font-sm);
+      font-weight: var(--weight-semi);
+    }
+    .msg-detail-countdown-icon { font-size: 16px; }
+
+    /* ring-battery 变体 */
+    .msg-detail-battery {
+      position: relative;
+      width: 96px;
+      height: 44px;
+      margin: 0 auto var(--space-md);
+      border: 2.5px solid var(--color-semantic-warning);
+      border-radius: var(--radius-sm);
+      padding: 3px;
+    }
+    .msg-detail-battery::after {
+      content: '';
+      position: absolute;
+      right: -7px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 5px;
+      height: 18px;
+      background: var(--color-semantic-warning);
+      border-radius: 0 2px 2px 0;
+    }
+    .msg-detail-battery-fill {
+      width: 18%;
+      height: 100%;
+      background: var(--color-semantic-warning);
+      border-radius: 2px;
+    }
+    .msg-detail-battery-pct {
+      text-align: center;
+      font-size: var(--font-3xl);
+      font-weight: var(--weight-bold);
+      color: var(--color-semantic-warning);
+      margin-bottom: var(--space-xs);
+    }
+    .msg-detail-battery-meta {
+      text-align: center;
+      font-size: var(--font-sm);
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-xl);
+    }
+    .msg-detail-step-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+    .msg-detail-step {
+      display: flex;
+      gap: var(--space-md);
+      align-items: flex-start;
+    }
+    .msg-detail-step-num {
+      flex-shrink: 0;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--color-brand-primary);
+      color: #fff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: var(--font-sm);
+      font-weight: var(--weight-bold);
+    }
+    .msg-detail-step-text {
+      flex: 1;
+      font-size: var(--font-sm);
+      color: var(--color-text-primary);
+      line-height: 1.5;
+    }
+
+    /* system-notice 变体 · 通用要点列表 */
+    .msg-detail-points {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+    }
+    .msg-detail-points li {
+      display: flex;
+      gap: var(--space-sm);
+      align-items: flex-start;
+      font-size: var(--font-sm);
+      line-height: 1.6;
+      color: var(--color-text-primary);
+    }
+    .msg-detail-points li::before {
+      content: '•';
+      flex-shrink: 0;
+      color: var(--color-brand-primary);
+      font-weight: var(--weight-bold);
+      margin-top: -2px;
+    }
+    .msg-detail-effective {
+      margin-top: var(--space-md);
+      font-size: var(--font-xs);
+      color: var(--color-text-tertiary);
+    }
+
+    /* Action 区 */
+    .msg-detail-actions {
+      position: sticky;
+      bottom: 0;
+      padding: var(--space-md) var(--space-lg) calc(var(--space-md) + env(safe-area-inset-bottom));
+      background: linear-gradient(180deg, rgba(234, 243, 255, 0) 0%, var(--color-bg-page) 30%);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+    }
+    .msg-detail-btn {
+      width: 100%;
+      height: 48px;
+      border-radius: var(--radius-pill);
+      font-size: var(--font-md);
+      font-weight: var(--weight-semi);
+      cursor: pointer;
+      border: none;
+      font-family: inherit;
+    }
+    .msg-detail-btn.is-primary {
+      background: var(--color-brand-primary);
+      color: #fff;
+    }
+    .msg-detail-btn.is-ghost {
+      background: transparent;
+      color: var(--color-brand-primary);
+      border: 1px solid var(--color-border-subtle);
+    }
+    .msg-detail-btn.is-danger {
+      background: var(--color-semantic-danger);
+      color: #fff;
+    }
 
     /* ============================================================
        P5.1 滚轮选择器
@@ -2653,6 +3255,9 @@
       transition: color 0.16s ease, transform 0.16s ease;
     }
     .tab-item .tab-icon { font-size: 24px; line-height: 1; }
+    .tab-item .tab-icon svg { width: 24px; height: 24px; display: block; }
+    .tab-item .tab-icon { color: var(--color-text-secondary); transition: color 0.18s; }
+    .tab-item.is-active .tab-icon { color: var(--color-brand-primary); }
     .tab-item .tab-label { font-size: 11px; font-weight: var(--weight-semi); }
     .tab-item.is-active { color: var(--color-brand-primary); font-weight: var(--weight-bold); }
     .tab-item.is-active .tab-icon { transform: translateY(-1px) scale(1.04); }
@@ -2771,6 +3376,52 @@
       </div>
       <div class="nav-item" data-page="P5.5">
         <span class="nav-id">P5.5</span><span class="nav-name">退出登录二次确认</span><span class="nav-tag tag-alert">确认框</span>
+      </div>
+      <div class="nav-item" data-page="P5.theme">
+        <span class="nav-id">P5·θ</span><span class="nav-name">外观 · 主题切换三选一</span><span class="nav-tag tag-act">操作菜单</span>
+      </div>
+    </div>
+
+    <div class="nav-section-label">消息中心</div>
+    <div class="nav-list">
+      <div class="nav-item" data-page="P7">
+        <span class="nav-id">P7</span><span class="nav-name">消息中心 · 默认（有未读）</span><span class="nav-tag tag-page">二级页面</span>
+      </div>
+      <div class="nav-item" data-page="P7.read">
+        <span class="nav-id">P7 ②</span><span class="nav-name">消息中心 · 全部已读</span><span class="nav-tag tag-page">变体</span>
+      </div>
+      <div class="nav-item" data-page="P7.empty">
+        <span class="nav-id">P7 ③</span><span class="nav-name">消息中心 · 空态</span><span class="nav-tag tag-page">变体</span>
+      </div>
+      <div class="nav-item" data-page="P7.detail.badge">
+        <span class="nav-id">P7·D ①</span><span class="nav-name">详情 · 解锁徽章</span><span class="nav-tag tag-page">详情页</span>
+      </div>
+      <div class="nav-item" data-page="P7.detail.prize">
+        <span class="nav-id">P7·D ②</span><span class="nav-name">详情 · 抽奖奖品</span><span class="nav-tag tag-page">详情页</span>
+      </div>
+      <div class="nav-item" data-page="P7.detail.ring-battery">
+        <span class="nav-id">P7·D ③</span><span class="nav-name">详情 · 戒指低电量</span><span class="nav-tag tag-page">详情页</span>
+      </div>
+      <div class="nav-item" data-page="P7.detail.privacy-policy">
+        <span class="nav-id">P7·D ④</span><span class="nav-name">详情 · 隐私政策更新</span><span class="nav-tag tag-page">详情页</span>
+      </div>
+      <div class="nav-item" data-page="P7.detail.level-up">
+        <span class="nav-id">P7·D ⑤</span><span class="nav-name">详情 · 升级里程碑</span><span class="nav-tag tag-page">详情页</span>
+      </div>
+      <div class="nav-item" data-page="P7.detail.streak">
+        <span class="nav-id">P7·D ⑥</span><span class="nav-name">详情 · 连击保留</span><span class="nav-tag tag-page">详情页</span>
+      </div>
+      <div class="nav-item" data-page="P7.detail.ring-disconnect">
+        <span class="nav-id">P7·D ⑦</span><span class="nav-name">详情 · 戒指断开</span><span class="nav-tag tag-page">详情页</span>
+      </div>
+      <div class="nav-item" data-page="P7.detail.firmware">
+        <span class="nav-id">P7·D ⑧</span><span class="nav-name">详情 · 固件更新</span><span class="nav-tag tag-page">详情页</span>
+      </div>
+      <div class="nav-item" data-page="P7.detail.app-version">
+        <span class="nav-id">P7·D ⑨</span><span class="nav-name">详情 · 应用更新</span><span class="nav-tag tag-page">详情页</span>
+      </div>
+      <div class="nav-item" data-page="P7.detail.login-anomaly">
+        <span class="nav-id">P7·D ⑩</span><span class="nav-name">详情 · 异地登录</span><span class="nav-tag tag-page">详情页</span>
       </div>
     </div>
 
@@ -3114,11 +3765,14 @@
       const selectedHealthTags = new Set(['失眠','减脂','慢性病']);
       const socialTags = ['#步数挑战者','#早起伙伴','#饮水达人'];
       const habits = [
-        { id:'walk', icon:'👟', name:'走路', on:true, show:'今日步数目标已达成', hide:'具体步数 / 路线 / 配速', theme:'walk', cardTitle:'完成步数挑战', cardTag:'🚶 10,000 步目标', cardStatus:'已完成', percent:'100%', progress:100, desc:'今日步数目标已达成 · 中低强度活动稳定保持' },
-        { id:'sleep', icon:'🌙', name:'睡眠', on:true, show:'睡眠目标完成 + 时长区间（如 7~8h）', hide:'具体入睡 / 起床时间、深睡比例', theme:'sleep', cardTitle:'修复深度睡眠', cardTag:'💤 8 小时睡眠目标', cardStatus:'已完成', percent:'100%', progress:100, desc:'昨晚睡眠目标已达成 · 深度修复节奏保持稳定' },
-        { id:'burn', icon:'🔥', name:'消耗', on:false, show:'"燃脂达 500 千卡" 徽章', hide:'心率、运动时长、具体千卡值', theme:'burn', cardTitle:'点亮燃脂成就', cardTag:'🔥 500 千卡徽章', cardStatus:'进行中', percent:'62%', progress:62, desc:'今日燃脂达成 500 千卡目标 · 活跃消耗已补齐' },
-        { id:'med', icon:'💊', name:'吃药打卡', on:false, show:'"按时打卡" 累计天数', hide:'药品名称、剂量、服药时间', theme:'med', cardTitle:'坚持按时打卡', cardTag:'💊 用药打卡习惯', cardStatus:'进行中', percent:'80%', progress:80, desc:'今日按时打卡已完成 · 用药习惯保持稳定' },
-        { id:'water', icon:'💧', name:'喝水', on:false, show:'"饮水目标已达成"', hide:'具体饮水量 / 时间分布', theme:'water', cardTitle:'喝水目标进行中', cardTag:'💧 2L 饮水目标', cardStatus:'进行中', percent:'70%', progress:70, desc:'今日饮水目标持续推进 · 补水节奏保持在线' }
+        // 7 个今日挑战，与《01-今日》T1 首页 7 张挑战卡完全对齐
+        { id:'walk',  icon:'🚶', name:'走路',  on:true,  show:'"今日步数目标已达成"',          hide:'具体步数 / 路线 / 配速',     theme:'walk',  cardTitle:'完成步数挑战', cardTag:'🚶 8,000 步目标',  cardStatus:'已完成', percent:'100%', progress:100, desc:'今日步数目标已达成 · 中低强度活动稳定保持' },
+        { id:'sleep', icon:'😴', name:'睡眠',  on:true,  show:'"22:30 前入睡 ✓" + 时长区间', hide:'具体入睡 / 起床时间、深睡比例', theme:'sleep', cardTitle:'修复深度睡眠', cardTag:'😴 22:30 前入睡',   cardStatus:'已完成', percent:'100%', progress:100, desc:'昨晚睡眠目标已达成 · 深度修复节奏保持稳定' },
+        { id:'burn',  icon:'🔥', name:'消耗',  on:false, show:'"燃脂达 500 千卡 ✓" 徽章',     hide:'心率、运动时长、具体千卡值',  theme:'burn',  cardTitle:'点亮燃脂成就', cardTag:'🔥 500 千卡徽章',   cardStatus:'已完成', percent:'100%', progress:100, desc:'今日燃脂达成 500 千卡目标 · 活跃消耗已补齐' },
+        { id:'water', icon:'💧', name:'喝水',  on:true,  show:'"今日饮水目标已达成"',         hide:'具体饮水量 / 时间分布',       theme:'water', cardTitle:'今日饮水目标', cardTag:'💧 8 杯水目标',     cardStatus:'已完成', percent:'100%', progress:100, desc:'今日饮水目标已达成 · 补水节奏稳定' },
+        { id:'run',   icon:'🏃', name:'跑步',  on:true,  show:'"3 公里慢跑 ✓"',                 hide:'具体配速 / 心率 / 路线',      theme:'burn',  cardTitle:'完成今日跑步', cardTag:'🏃 3 公里慢跑',     cardStatus:'已完成', percent:'100%', progress:100, desc:'今日跑步目标已达成 · 配速稳定' },
+        { id:'stand', icon:'🧍', name:'站立',  on:false, show:'"每小时起身 ✓ 12 小时全部站满"', hide:'每小时具体起身次数 / 时长',  theme:'sleep', cardTitle:'达成站立目标', cardTag:'🧍 12 小时站立',    cardStatus:'已完成', percent:'100%', progress:100, desc:'今日站立目标已达成 · 12 小时全部站满' },
+        { id:'med',   icon:'💊', name:'吃药',  on:false, show:'"按时打卡 ✓" + 累计天数',       hide:'药品名称、剂量、服药时间',    theme:'med',   cardTitle:'坚持按时打卡', cardTag:'💊 吃药打卡习惯',   cardStatus:'已完成', percent:'100%', progress:100, desc:'今日按时打卡已完成 · 累计 18 天 · 用药习惯保持稳定' }
       ];
 
       const habitRows = habits.map(h => `
@@ -3165,6 +3819,34 @@
         <div class="scroll-area">
           <div class="profile-page">
             <div class="profile-body">
+
+              <!-- 消息与通知（P7 入口） -->
+              <div class="profile-section-title">消息与通知</div>
+              <div class="profile-section">
+                <div class="profile-row profile-msg-row" data-goto="P7">
+                  <div class="profile-row-icon"><svg viewBox="0 0 48 48" width="22" height="22" aria-hidden="true" style="display:block"><path fill="currentColor" d="M7,38 L7.00004975,37.9645627 C5.30387842,37.7219693 4,36.2632532 4,34.5 L4,32.6568542 C4,31.5959883 4.42142736,30.5785726 5.17157288,29.8284271 L7,28 L7,21 C7,11.6111593 14.6111593,4 24,4 C33.3888407,4 41,11.6111593 41,21 L41,28 L42.8284271,29.8284271 C43.5785726,30.5785726 44,31.5959883 44,32.6568542 L44,34.5 C44,36.2629068 42.6966339,37.7213961 41.0009499,37.9644196 L41,38 L30.9290789,38.0002251 C30.4437524,41.3924095 27.5263939,44 24,44 C20.4736061,44 17.5562476,41.3924095 17.0709211,38.0002251 L7,38 Z M27.8737446,38.0009238 L20.125,38 L20.1799062,38.189716 C20.6864262,39.8178673 22.2051622,41 24,41 C25.794488,41 27.3129817,39.8183281 27.8197974,38.1906681 L27.8737446,38.0009238 Z M24,7 C16.3724998,7 10.1696731,13.0997524 10.003422,20.687355 L10,21 L10,29.0769553 C10,29.1830419 9.95785726,29.2847834 9.88284271,29.359798 L7.29289322,31.9497475 L7.29289322,31.9497475 C7.1366129,32.1060278 7.03740171,32.3087092 7.00867243,32.5254103 L7,32.6568542 L7,34.5 C7,34.7178229 7.14158244,34.9070074 7.33767609,34.9738837 L7.4247998,34.9947837 L7.466,35 L40.533,35 L40.5753422,34.9947633 C40.7851759,34.9646902 40.9529292,34.7989963 40.9915889,34.5913076 L41,34.5 L41,32.6568542 C41,32.4358405 40.9268355,32.2223702 40.7939194,32.0488247 L40.7071068,31.9497475 L38.1171573,29.359798 C38.0421427,29.2847834 38,29.1830419 38,29.0769553 L38,21 C38,13.2680135 31.7319865,7 24,7 Z"/></svg></div>
+                  <div class="profile-row-main">
+                    <div class="profile-row-label">消息中心</div>
+                    <div class="profile-row-sub">好友 / 挑战 / 健康 / 系统</div>
+                  </div>
+                  <span class="profile-row-badge">12</span>
+                  <span class="profile-row-arrow">›</span>
+                </div>
+              </div>
+
+              <!-- 外观（v2.1 主题切换从顶栏下沉） -->
+              <div class="profile-section-title">外观</div>
+              <div class="profile-section">
+                <div class="profile-row profile-theme-row" data-goto="P5.theme">
+                  <div class="profile-row-icon">🌗</div>
+                  <div class="profile-row-main">
+                    <div class="profile-row-label">主题</div>
+                    <div class="profile-row-sub">跟随系统 / 浅色 / 深色</div>
+                  </div>
+                  <div class="profile-row-value" id="profileThemeValue">${profileState.theme}</div>
+                  <span class="profile-row-arrow">›</span>
+                </div>
+              </div>
 
               <!-- 我的设备 -->
               <div class="profile-section-title">我的设备</div>
@@ -3240,14 +3922,62 @@
                 </div>
               </div>
 
-              <!-- 动态发送到关心圈 -->
-              <div class="profile-section-title">动态发送到关心圈</div>
+              <!-- 完成今日挑战发送至好友动态（v2.4 由"动态发送到关心圈"改名 · 7 项与 01 对齐） -->
+              <div class="profile-section-title">完成今日挑战发送至好友动态</div>
               <div class="notice-bar">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="12"/><circle cx="12" cy="16" r="0.5" fill="currentColor"/></svg>
-                <span>为保护你的身体指标隐私，关心圈<strong>仅展示完成状态与进度</strong>，不展示具体数值与时间细节。</span>
+                <span>每个挑战<strong>完成时</strong>自动发送 1 条动态到关心圈；为保护身体指标隐私，<strong>仅展示完成状态与进度</strong>，不展示具体数值与时间细节。</span>
               </div>
               <div class="profile-share-list">
                 ${habitRows}
+              </div>
+
+              <!-- 练级挑战发送至好友动态（v2.5 全局开关 + 时机可多选 + 25% 进度预览卡） -->
+              <div class="profile-section-title">练级挑战发送至好友动态</div>
+              <div class="profile-share-list">
+                <div class="profile-row-share is-on" data-level-share-toggle>
+                  <div class="profile-row-share-head">
+                    <div class="profile-row-icon">🏅</div>
+                    <div class="profile-row-main">
+                      <div class="profile-row-label">自动发送练级挑战动态</div>
+                      <div class="profile-row-sub" style="font-size:var(--font-xs);color:var(--color-text-secondary);margin-top:2px;line-height:1.5">开启后，加入练级挑战后将根据进度自动发动态。</div>
+                    </div>
+                    <button class="profile-toggle on" type="button" aria-label="自动发送练级挑战动态"></button>
+                  </div>
+                  <div class="profile-share-detail">
+                    <div class="profile-share-line is-show" style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+                      <span style="margin-right:2px"><strong>发送时机：</strong></span>
+                      <span class="milestone-chip is-active" data-milestone="joined">✓ 加入时</span>
+                      <span class="milestone-chip is-active" data-milestone="25">✓ 25%</span>
+                      <span class="milestone-chip is-active" data-milestone="50">✓ 50%</span>
+                      <span class="milestone-chip is-active" data-milestone="75">✓ 75%</span>
+                      <span class="milestone-chip is-active" data-milestone="100">✓ 100%</span>
+                    </div>
+                  </div>
+                  <div class="profile-share-preview">
+                    <div class="profile-share-preview-note">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+                      <span>好友在「关心圈」会看到</span>
+                    </div>
+                    <div class="profile-share-preview-card theme-burn">
+                      <div class="profile-share-preview-top">
+                        <div class="profile-share-preview-icon">🌸</div>
+                        <div class="profile-share-preview-main">
+                          <div class="profile-share-preview-title">樱花漫步 · 30 天 50 公里</div>
+                          <div class="profile-share-preview-tag">⏳ 25% 里程碑</div>
+                        </div>
+                        <div class="profile-share-preview-status">进行中</div>
+                      </div>
+                      <div class="profile-share-preview-bar-row">
+                        <div class="profile-share-preview-bar">
+                          <div class="profile-share-preview-bar-fill" style="width:25%"></div>
+                        </div>
+                        <div class="profile-share-preview-percent">25%</div>
+                      </div>
+                      <div class="profile-share-preview-desc">练级挑战 · 已完成 25% 里程碑 · 仅展示进度，不展示具体公里数与配速</div>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               <!-- 动态显示范围 -->
@@ -3444,6 +4174,34 @@
         </div>`;
     }
 
+    // === P5.theme 主题切换三选一（操作菜单） ===
+    function pageP5Theme() {
+      const options = [
+        { value: '跟随系统', desc: '默认 · 跟随系统的暗黑模式开关' },
+        { value: '浅色',     desc: '强制使用浅色主题' },
+        { value: '深色',     desc: '强制使用深色主题' }
+      ];
+      return pageP5() + `
+        <div class="modal-overlay show is-action">
+          <div class="action-sheet">
+            <div class="action-sheet-group">
+              <div class="action-sheet-extra">
+                <div class="action-sheet-extra-title">主题</div>
+                <div class="action-sheet-extra-desc">切换浅色 / 深色外观（v1.9 起从顶栏迁移至此）</div>
+              </div>
+              ${options.map(opt => `
+              <button class="action-sheet-item ${profileState.theme === opt.value ? 'is-selected' : ''}" type="button" data-theme-pref="${opt.value}" data-goto="P5">
+                <span class="action-sheet-item-text">${opt.value}</span>
+                <span class="action-sheet-item-desc">${opt.desc}</span>
+              </button>`).join('')}
+            </div>
+            <div class="action-sheet-group">
+              <button class="action-sheet-item is-cancel" data-goto="P5">取消</button>
+            </div>
+          </div>
+        </div>`;
+    }
+
     // === P5.5 退出登录确认框 ===
     function pageP55() {
       return pageP5() + `
@@ -3457,6 +4215,558 @@
               <button class="ios-alert-action" data-goto="P5">取消</button>
               <button class="ios-alert-action is-destructive" data-goto="T1.connected">确认退出</button>
             </div>
+          </div>
+        </div>`;
+    }
+
+    // === P7 消息中心（二级页面） ===
+    // 左 ‹ 返回 P5 + 中标题"消息中心" + 右文字按钮"全部已读"
+    // 内嵌选项卡：全部 / 好友 / 挑战 / 健康 / 系统
+    // 时间分组：今天 / 昨天 / 更早
+    // 单条消息：左圆形彩色图标 + 中标题副文 + 右时间 + 行内动作
+    // 隐私铁律：健康类不暴露原始数值，符合《00-设计规范》§ 10
+    function topbarMsgCenter() {
+      return `
+        <div class="app-topbar">
+          <button class="app-topbar-back" type="button" data-goto="P5" aria-label="返回">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+          <div class="app-topbar-center"><div class="app-topbar-title">消息中心</div></div>
+          <button class="app-topbar-text-action" type="button" data-msg-action="mark-all-read">全部已读</button>
+        </div>`;
+    }
+
+    // 消息中心数据（共享，三态复用）
+    // cat: friend / level / health / system
+    // icon: emoji（健康类专属）或 svg key
+    const MSG_CENTER_DATA = [
+      // 今天
+      { group: 'today', cat: 'health', icon: '💊', title: '该吃 高血压药（早间）',
+        sub: '规律服药能稳定血药浓度。在《今日 · 吃药卡》中可调整时间。', time: '8 分钟前',
+        actions: [{ label: '✓ 已服用', type: 'primary', action: 'med-done' }, { label: '跳过', type: 'secondary', action: 'med-skipped' }],
+        route: 'ext:01-今日模块.html?challenge=medicine' },
+      { group: 'today', cat: 'friend', svg: 'heart', title: '周妈妈 给你的「走路」点赞',
+        sub: '你今天完成了 8,000 步目标 · 点击查看你的动态 ›', time: '12 分钟前',
+        route: 'ext:02-关心模块.html?meFeed=walk&liker=周妈妈' },
+      { group: 'today', cat: 'system', icon: '💍', title: '戒指电量低于 20%',
+        sub: '建议睡前充电，避免影响夜间睡眠监测。', time: '30 分钟前',
+        route: 'P7.detail.ring-battery' },
+      { group: 'today', cat: 'friend', svg: 'message', title: '阿戒 在你的「睡眠」动态留言',
+        sub: '"睡眠节奏稳了，要不要一起来个深睡 90 分钟挑战？"', time: '1 小时前',
+        route: 'ext:02-关心模块.html?meFeed=sleep&commenter=阿戒' },
+      { group: 'today', cat: 'level', svg: 'star', title: '解锁新徽章「连击 7 天」🏆',
+        sub: '奖励 +30 XP · 已计入今日。', time: '2 小时前',
+        route: 'P7.detail.badge' },
+      { group: 'today', cat: 'health', icon: '💧', title: '今天还差一点喝水量',
+        sub: '下次提醒 15:00 · 在《今日 · 喝水卡》中查看进度。', time: '3 小时前',
+        route: 'ext:01-今日模块.html?challenge=water' },
+      { group: 'today', cat: 'friend', svg: 'user-add', title: '林雨晴 想加你为好友',
+        sub: '发现 · 同城 · 通过《好友通知》也可处理。', time: '5 小时前',
+        actions: [{ label: '同意', type: 'primary', action: 'friend-accept' }, { label: '忽略', type: 'secondary', action: 'friend-reject' }],
+        route: 'ext:02-关心模块.html?section=pending' },
+      // 昨天
+      // 我的评论被回复（情景 B：跳到 TA 的动态卡 + 滚到我那行评论）
+      { group: 'yesterday', cat: 'friend', svg: 'message', title: '周妈妈 回复了你的评论',
+        sub: '"好啊，明早 7 点出发！" · 在 TA 的「每日 8000 步」动态下', time: '昨天 22:14',
+        route: 'ext:02-关心模块.html?dynUid=周妈妈&myComment=true' },
+      { group: 'yesterday', cat: 'level', svg: 'gift', title: '林夕 邀请你加入挑战',
+        sub: '「30 天早睡早起」· 已有 4 位好友参加。', time: '昨天 21:08',
+        actions: [{ label: '查看挑战', type: 'primary', action: 'view-challenge' }],
+        route: 'ext:04-练级模块.html?cid=sakura&inviter=lin-xi' },
+      { group: 'yesterday', cat: 'friend', svg: 'user-add', title: '表妹小可 通过你的邀请码加入',
+        sub: 'AIR-K8N3M2 · 已自动成为你的关心好友。', time: '昨天 19:42',
+        actions: [{ label: '👋 打招呼', type: 'secondary', action: 'friend-greet' }], unread: false,
+        route: 'ext:02-关心模块.html?profileUid=表妹小可' },
+      { group: 'yesterday', cat: 'health', icon: '❤️', title: '昨晚 HRV 偏低',
+        sub: '建议今天放慢节奏、避免高强度运动，多做深呼吸。', time: '今早 08:00', unread: false,
+        route: 'ext:01-今日模块.html?metric=hrv' },
+      { group: 'yesterday', cat: 'friend', svg: 'user-add', title: '已发送给"陈乐"的好友请求等待同意',
+        sub: '对方同意前数据不会互相同步。', time: '昨天 14:30',
+        actions: [{ label: '撤回', type: 'secondary', action: 'friend-recall' }], unread: false,
+        route: 'ext:02-关心模块.html?section=sent' },
+      // 更早
+      { group: 'earlier', cat: 'level', svg: 'gift', title: '抽奖结果：定制戒指收纳盒',
+        sub: '「八杯水」月度挑战完赛奖励 · 7 天内可领取。', time: '3 天前',
+        actions: [{ label: '立即领取', type: 'primary' }], unread: false,
+        route: 'P7.detail.prize' },
+      { group: 'earlier', cat: 'health', icon: '😴', title: '这一周睡眠总体不错',
+        sub: '连续 5 天达成入睡早于 23:30 的目标，继续保持。', time: '3 天前', unread: false,
+        route: 'ext:01-今日模块.html?metric=sleep' },
+      { group: 'earlier', cat: 'system', svg: 'info', title: '隐私政策已更新',
+        sub: '本次新增第三方戒指供应商授权说明，建议查阅。', time: '5 天前', unread: false,
+        route: 'P7.detail.privacy-policy' }
+    ];
+
+    // 行内 SVG 图标（轻量内联，不引入外部 sprite 文件）
+    function msgSvg(key) {
+      const paths = {
+        heart:    '<path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>',
+        message:  '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
+        'user-add': '<path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/>',
+        star:     '<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>',
+        gift:     '<polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/>',
+        info:     '<circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>',
+        bell:     '<path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>'
+      };
+      return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${paths[key] || ''}</svg>`;
+    }
+
+    function renderMsgItem(m, forceRead) {
+      const unread = forceRead ? false : (m.unread !== false);
+      const iconHtml = m.icon ? m.icon : msgSvg(m.svg);
+      const actions = (m.actions || []).map(a => {
+        const actionAttr = a.action ? ` data-msg-action="${a.action}"` : '';
+        return `<button class="msg-action-btn ${a.type === 'primary' ? 'is-primary' : 'is-secondary'}" type="button"${actionAttr}>${a.label}</button>`;
+      }).join('');
+      // route 字段决定点击主体的目的地：内部 P7.detail.* 走 navigateTo，ext: 前缀走外部 URL
+      const gotoAttr = m.route ? ` data-goto="${m.route}"` : '';
+      const cursorStyle = m.route ? ' style="cursor:pointer"' : '';
+      return `
+        <div class="msg-item ${unread ? 'is-unread' : ''}" data-cat="${m.cat}"${gotoAttr}${cursorStyle}>
+          <div class="msg-icon-wrap cat-${m.cat}">${iconHtml}</div>
+          <div class="msg-body">
+            <div class="msg-title-row">
+              <div class="msg-title">${m.title}</div>
+              <div class="msg-time">${m.time}</div>
+            </div>
+            <div class="msg-sub">${m.sub}</div>
+            ${actions ? `<div class="msg-actions">${actions}</div>` : ''}
+          </div>
+        </div>`;
+    }
+
+    function renderMsgGroup(label, group, forceRead) {
+      const items = MSG_CENTER_DATA.filter(m => m.group === group)
+        .map(m => renderMsgItem(m, forceRead)).join('');
+      if (!items) return '';
+      return `
+        <section class="msg-time-group" data-group="${group}">
+          <div class="msg-time-group-label">${label}</div>
+          <div class="msg-list">${items}</div>
+        </section>`;
+    }
+
+    function renderMsgCenter(forceRead) {
+      // 计算未读数（按分类）
+      const counts = { all: 0, friend: 0, level: 0, health: 0, system: 0 };
+      if (!forceRead) {
+        MSG_CENTER_DATA.forEach(m => {
+          if (m.unread !== false) {
+            counts.all++;
+            counts[m.cat]++;
+          }
+        });
+      }
+      const tab = (key, label) => `
+        <button class="msg-cat-tab ${key === 'all' ? 'is-active' : ''} ${counts[key] === 0 ? 'is-zero' : ''}" data-cat="${key}" type="button">
+          ${label}<span class="cat-count">${counts[key]}</span>
+        </button>`;
+
+      return `
+        ${statusBar()}
+        ${topbarMsgCenter()}
+        <div class="msg-cat-tabs" role="tablist">
+          ${tab('all',    '全部')}
+          ${tab('friend', '好友')}
+          ${tab('level',  '挑战')}
+          ${tab('health', '健康')}
+          ${tab('system', '系统')}
+        </div>
+        <div class="scroll-area">
+          <div class="profile-page">
+            <div class="profile-body" style="gap:0;">
+              ${renderMsgGroup('今天',   'today',     forceRead)}
+              ${renderMsgGroup('昨天',   'yesterday', forceRead)}
+              ${renderMsgGroup('更早',   'earlier',   forceRead)}
+              <div class="msg-end">— 已无更多消息 —</div>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    function pageP7()      { return renderMsgCenter(false); }
+    function pageP7Read()  { return renderMsgCenter(true); }
+    // === P7.detail 消息详情页（单一布局 + detailType 自适应） ===
+    // detailType: badge / prize / level-up / streak / ring-battery / ring-disconnect /
+    //             firmware / app-version / privacy-policy / login-anomaly
+    function topbarMsgDetail(title) {
+      return `
+        <div class="app-topbar">
+          <button class="app-topbar-back" type="button" data-goto="P7" aria-label="返回">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+          <div class="app-topbar-center"><div class="app-topbar-title">${title}</div></div>
+          <div class="app-topbar-spacer"></div>
+        </div>`;
+    }
+
+    const MSG_DETAIL_VARIANTS = {
+      'badge': {
+        cat: 'level',
+        topbarTitle: '徽章详情',
+        heroIcon: '🏆',
+        heroTitle: '解锁新徽章「连击 7 天」',
+        heroMeta: '金牌徽章 · 已获得 +30 XP · 来自挑战「30 天早睡早起」',
+        body: `
+          <div class="msg-detail-section">
+            <div class="msg-detail-section-title">解锁条件</div>
+            <ul class="msg-detail-points">
+              <li>连续 7 天达成至少一个挑战目标</li>
+              <li>不允许中断任何一天（凌晨 0 点重置）</li>
+            </ul>
+          </div>
+          <div class="msg-detail-section">
+            <div class="msg-detail-section-title">徽章收集进度</div>
+            <ul class="msg-detail-points">
+              <li>已解锁 12 / 48 个徽章 · 距离铂金徽章还差 36 个</li>
+              <li>下一个待解锁：连击 14 天 / 累计 1000 分钟运动</li>
+            </ul>
+          </div>
+        `,
+        actions: `
+          <button class="msg-detail-btn is-primary" type="button">查看全部徽章 →</button>
+          <button class="msg-detail-btn is-ghost" type="button" data-goto="P7">返回消息中心</button>
+        `
+      },
+      'prize': {
+        cat: 'level',
+        topbarTitle: '奖品详情',
+        heroIcon: '🎁',
+        heroTitle: '你抽中了「定制戒指收纳盒」',
+        heroMeta: '皮质材质 · 镌刻你的 AIRing ID · 限量发行 · 来自月度挑战「八杯水」',
+        body: `
+          <div class="msg-detail-section">
+            <div class="msg-detail-section-title">收货地址</div>
+            <div class="msg-detail-form-row">
+              <label class="msg-detail-form-label">收件人姓名</label>
+              <input class="msg-detail-form-input" type="text" placeholder="请输入姓名" />
+            </div>
+            <div class="msg-detail-form-row">
+              <label class="msg-detail-form-label">手机号</label>
+              <input class="msg-detail-form-input" type="tel" placeholder="请输入手机号" />
+            </div>
+            <div class="msg-detail-form-row">
+              <label class="msg-detail-form-label">详细地址</label>
+              <textarea class="msg-detail-form-textarea" placeholder="省 / 市 / 区 / 街道门牌号"></textarea>
+            </div>
+          </div>
+          <div class="msg-detail-section" style="background:transparent;border:none;box-shadow:none;padding:0">
+            <div class="msg-detail-countdown">
+              <span class="msg-detail-countdown-icon">⏱</span>
+              <span>请在 4 天 18 小时 22 分钟内填写地址，逾期奖品将退回积分账户</span>
+            </div>
+          </div>
+        `,
+        actions: `
+          <button class="msg-detail-btn is-primary" type="button">立即领取</button>
+          <button class="msg-detail-btn is-ghost" type="button" data-goto="P7">稍后再说</button>
+        `
+      },
+      'ring-battery': {
+        cat: 'system',
+        topbarTitle: '设备提醒',
+        heroIcon: `<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="14" width="32" height="20" rx="3"/><path d="M40 20v8" stroke-width="3"/><rect x="9" y="17" width="6" height="14" fill="currentColor"/></svg>`,
+        heroTitle: '戒指电量低于 20%',
+        heroMeta: '戒指 SN AR-8F2C-1D40 · 30 分钟前',
+        body: `
+          <div class="msg-detail-section" style="text-align:center">
+            <div class="msg-detail-battery">
+              <div class="msg-detail-battery-fill"></div>
+            </div>
+            <div class="msg-detail-battery-pct">18%</div>
+            <div class="msg-detail-battery-meta">上次充电：昨天 22:14 · 平均续航 5 ~ 7 天</div>
+          </div>
+          <div class="msg-detail-section">
+            <div class="msg-detail-section-title">充电指引</div>
+            <div class="msg-detail-step-list">
+              <div class="msg-detail-step">
+                <div class="msg-detail-step-num">1</div>
+                <div class="msg-detail-step-text">将戒指放到无线充电底座上，确保金属触点对齐</div>
+              </div>
+              <div class="msg-detail-step">
+                <div class="msg-detail-step-num">2</div>
+                <div class="msg-detail-step-text">底座 LED 灯由红变绿表示充电正常，约 90 分钟充满</div>
+              </div>
+              <div class="msg-detail-step">
+                <div class="msg-detail-step-num">3</div>
+                <div class="msg-detail-step-text">充电期间戒指无法监测身体数据，建议睡前充电</div>
+              </div>
+            </div>
+          </div>
+        `,
+        actions: `
+          <button class="msg-detail-btn is-primary" type="button" data-goto="P6.1">去设备页查看</button>
+          <button class="msg-detail-btn is-ghost" type="button" data-goto="P7">知道了</button>
+        `
+      },
+      'privacy-policy': {
+        cat: 'system',
+        topbarTitle: '系统通知',
+        heroIcon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`,
+        heroTitle: '隐私政策已更新',
+        heroMeta: '生效日期 2026-05-12 · 5 天前',
+        body: `
+          <div class="msg-detail-section">
+            <div class="msg-detail-section-title">本次更新要点</div>
+            <ul class="msg-detail-points">
+              <li>新增第三方戒指供应商（AIRing 硬件合作方）的数据共享授权说明</li>
+              <li>明确"健康标签"仅参与服务端推荐算法，不会同步到关心圈或推荐"附近的人"</li>
+              <li>位置精度规则收紧为最小 1 公里粒度，原始定位永不外传（与设计规范 § 10 隐私铁律一致）</li>
+              <li>新增"账号注销 30 天冷静期"条款（注销期间可随时撤回）</li>
+              <li>用户可在 P5 → 隐私设置中下载完整的本人数据导出包</li>
+            </ul>
+            <div class="msg-detail-effective">本次更新将于 2026 年 5 月 12 日 0 点生效。</div>
+          </div>
+        `,
+        actions: `
+          <button class="msg-detail-btn is-primary" type="button">查看完整政策</button>
+          <button class="msg-detail-btn is-ghost" type="button" data-goto="P7">我已知晓</button>
+        `
+      },
+      'level-up': {
+        cat: 'level',
+        topbarTitle: '升级里程碑',
+        heroIcon: '⭐',
+        heroTitle: '升级到 Lv.12',
+        heroMeta: '本次获得 +50 XP · 距离 Lv.13 还差 200 XP',
+        body: `
+          <div class="msg-detail-section">
+            <div class="msg-detail-section-title">等级进度</div>
+            <div style="display:flex;justify-content:space-between;font-size:var(--font-xs);color:var(--color-text-secondary);margin-bottom:6px">
+              <span>Lv.12</span><span>Lv.13</span>
+            </div>
+            <div style="height:10px;background:var(--color-bg-surface-muted);border-radius:var(--radius-pill);overflow:hidden;margin-bottom:8px">
+              <div style="width:60%;height:100%;background:linear-gradient(90deg,#FFA31A,#FF6708);border-radius:var(--radius-pill)"></div>
+            </div>
+            <div style="font-size:var(--font-sm);color:var(--color-text-secondary)">已积累 300 / 500 XP · 再获取 200 XP 即可升级</div>
+          </div>
+          <div class="msg-detail-section">
+            <div class="msg-detail-section-title">本次升级解锁</div>
+            <ul class="msg-detail-points">
+              <li>挑战「年度 100 万步」可加入</li>
+              <li>新徽章「坚持者」可解锁条件已激活</li>
+              <li>关心圈每日点赞上限 +10（每日 60 → 70 次）</li>
+            </ul>
+          </div>
+        `,
+        actions: `
+          <button class="msg-detail-btn is-primary" type="button" data-goto="T1.full">去练级看看</button>
+          <button class="msg-detail-btn is-ghost" type="button" data-goto="P7">返回消息中心</button>
+        `
+      },
+      'streak': {
+        cat: 'level',
+        topbarTitle: '连击提醒',
+        heroIcon: '🔥',
+        heroTitle: '连击 7 天达成',
+        heroMeta: '再坚持 1 天即可解锁连击 8 天徽章 · 来自挑战「30 天早睡早起」',
+        body: `
+          <div class="msg-detail-section">
+            <div class="msg-detail-section-title">本周打卡</div>
+            <div style="display:flex;justify-content:space-between;gap:6px;margin-top:8px">
+              ${['一','二','三','四','五','六','日'].map((d,i)=>`
+                <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
+                  <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#FFA31A,#FF6708);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700">${i<7?'✓':''}</div>
+                  <div style="font-size:var(--font-xs);color:var(--color-text-secondary)">周${d}</div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+          <div class="msg-detail-section">
+            <div class="msg-detail-section-title">保持连击</div>
+            <ul class="msg-detail-points">
+              <li>连击在每天凌晨 0 点重置，需在 24 点前完成至少一个挑战目标</li>
+              <li>断签后需重新积累，连击徽章不会因此撤回</li>
+              <li>明天目标：完成"22:30 前入睡"即可保持</li>
+            </ul>
+          </div>
+        `,
+        actions: `
+          <button class="msg-detail-btn is-primary" type="button" data-goto="T1.full">去保持连击</button>
+          <button class="msg-detail-btn is-ghost" type="button" data-goto="P7">返回消息中心</button>
+        `
+      },
+      'ring-disconnect': {
+        cat: 'system',
+        topbarTitle: '设备提醒',
+        heroIcon: `<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="20" r="10"/><circle cx="24" cy="20" r="14" stroke-dasharray="4 4"/><line x1="14" y1="34" x2="34" y2="14" stroke="currentColor" stroke-width="3"/></svg>`,
+        heroTitle: '戒指连接已断开',
+        heroMeta: '上次连接 30 分钟前 · 戒指 SN AR-8F2C-1D40',
+        body: `
+          <div class="msg-detail-section">
+            <div class="msg-detail-section-title">可能原因</div>
+            <ul class="msg-detail-points">
+              <li>戒指与手机距离过远（建议保持 5 米以内）</li>
+              <li>手机蓝牙被关闭或权限被收回</li>
+              <li>戒指电量耗尽（电量 &lt; 5% 会自动关机）</li>
+              <li>系统升级后蓝牙绑定信息丢失</li>
+            </ul>
+          </div>
+          <div class="msg-detail-section">
+            <div class="msg-detail-section-title">排查步骤</div>
+            <div class="msg-detail-step-list">
+              <div class="msg-detail-step">
+                <div class="msg-detail-step-num">1</div>
+                <div class="msg-detail-step-text">检查手机的蓝牙开关，确认 AIRing 在已配对设备列表中</div>
+              </div>
+              <div class="msg-detail-step">
+                <div class="msg-detail-step-num">2</div>
+                <div class="msg-detail-step-text">将戒指靠近手机（5 米内），等待自动重连约 10 秒</div>
+              </div>
+              <div class="msg-detail-step">
+                <div class="msg-detail-step-num">3</div>
+                <div class="msg-detail-step-text">如仍无法连接，点击"重新连接"进入配对流程</div>
+              </div>
+            </div>
+          </div>
+        `,
+        actions: `
+          <button class="msg-detail-btn is-primary" type="button" data-goto="P6.2">重新连接</button>
+          <button class="msg-detail-btn is-ghost" type="button" data-goto="P6.1">查看设备详情</button>
+        `
+      },
+      'firmware': {
+        cat: 'system',
+        topbarTitle: '固件更新',
+        heroIcon: '⬆️',
+        heroTitle: '戒指固件 v3.2.1 可用',
+        heroMeta: '当前 v3.1.8 → 升级至 v3.2.1 · 升级耗时约 5 分钟',
+        body: `
+          <div class="msg-detail-section">
+            <div class="msg-detail-section-title">本次更新内容</div>
+            <ul class="msg-detail-points">
+              <li>新增睡眠呼吸节律识别（夜间深睡阶段更精准）</li>
+              <li>HRV 数据采样频率提升 30%，午休短小睡也能记录</li>
+              <li>修复部分用户在低温环境下心率漂移问题</li>
+              <li>蓝牙重连速度提升约 40%，断连恢复更快</li>
+              <li>电池续航优化，平均续航延长约 0.5 天</li>
+            </ul>
+          </div>
+          <div class="msg-detail-section">
+            <div class="msg-detail-section-title">升级前提示</div>
+            <ul class="msg-detail-points">
+              <li>戒指电量需 ≥ 30%（当前 82%，可正常升级）</li>
+              <li>升级期间戒指需保持在手机 5 米内，无法监测身体数据</li>
+              <li>升级失败可重试，不会损坏戒指</li>
+            </ul>
+          </div>
+        `,
+        actions: `
+          <button class="msg-detail-btn is-primary" type="button">立即升级</button>
+          <button class="msg-detail-btn is-ghost" type="button" data-goto="P7">稍后再说</button>
+        `
+      },
+      'app-version': {
+        cat: 'system',
+        topbarTitle: '应用更新',
+        heroIcon: '🚀',
+        heroTitle: 'AIRing v1.4.2 已发布',
+        heroMeta: '当前 v1.4.0 → 推荐尽快更新到最新版本',
+        body: `
+          <div class="msg-detail-section">
+            <div class="msg-detail-section-title">新增功能</div>
+            <ul class="msg-detail-points">
+              <li>消息中心 · 4 类消息收口（好友 / 挑战 / 健康 / 系统）</li>
+              <li>个人设置 · 主题切换三选一（跟随系统 / 浅色 / 深色）</li>
+              <li>挑战详情新增「邀请好友」入口，支持微信卡片分享</li>
+            </ul>
+          </div>
+          <div class="msg-detail-section">
+            <div class="msg-detail-section-title">优化与修复</div>
+            <ul class="msg-detail-points">
+              <li>修复历史日下偶发的三环数据加载缓慢问题</li>
+              <li>关心圈点赞动效流畅度提升</li>
+              <li>登录密码错误次数过多的提示文案优化</li>
+            </ul>
+          </div>
+        `,
+        actions: `
+          <button class="msg-detail-btn is-primary" type="button">前往 App Store 更新</button>
+          <button class="msg-detail-btn is-ghost" type="button" data-goto="P7">稍后更新</button>
+        `
+      },
+      'login-anomaly': {
+        cat: 'system',
+        topbarTitle: '账号安全',
+        heroIcon: '⚠️',
+        heroTitle: '检测到异地登录',
+        heroMeta: '上海 · 浦东（约 1 km 精度）· 刚刚',
+        body: `
+          <div class="msg-detail-section">
+            <div class="msg-detail-section-title">登录详情</div>
+            <div style="display:flex;flex-direction:column;gap:8px;font-size:var(--font-sm);line-height:1.6">
+              <div style="display:flex;justify-content:space-between"><span style="color:var(--color-text-secondary)">设备型号</span><span>iPhone 15 Pro</span></div>
+              <div style="display:flex;justify-content:space-between"><span style="color:var(--color-text-secondary)">登录时间</span><span>2026-05-05 09:38</span></div>
+              <div style="display:flex;justify-content:space-between"><span style="color:var(--color-text-secondary)">大致位置</span><span>上海 · 浦东（约 1 km）</span></div>
+              <div style="display:flex;justify-content:space-between"><span style="color:var(--color-text-secondary)">网络</span><span>5G · 中国移动</span></div>
+            </div>
+          </div>
+          <div class="msg-detail-section">
+            <div class="msg-detail-section-title">安全建议</div>
+            <ul class="msg-detail-points">
+              <li>如果是你本人在该地点登录，无需处理</li>
+              <li>如果不是你的操作，建议立即冻结账号并修改密码</li>
+              <li>冻结后将自动下线所有设备，下次需重新登录</li>
+            </ul>
+          </div>
+        `,
+        actions: `
+          <button class="msg-detail-btn is-primary" type="button" data-goto="P7">是我，无需处理</button>
+          <button class="msg-detail-btn is-danger" type="button">不是我，立即冻结账号</button>
+        `
+      }
+    };
+
+    function pageP7Detail(detailType) {
+      const v = MSG_DETAIL_VARIANTS[detailType];
+      if (!v) return pageP7();
+      // hero 图标如果是 emoji 字符串就直接放，如果是 SVG 字符串则原样输出
+      const isSvg = typeof v.heroIcon === 'string' && v.heroIcon.trim().startsWith('<svg');
+      return `
+        ${statusBar()}
+        ${topbarMsgDetail(v.topbarTitle)}
+        <div class="msg-detail-page">
+          <div class="msg-detail-scroll">
+            <div class="msg-detail-hero">
+              <div class="msg-detail-hero-icon cat-${v.cat}">${v.heroIcon}</div>
+              <div class="msg-detail-hero-title">${v.heroTitle}</div>
+              <div class="msg-detail-hero-meta">${v.heroMeta}</div>
+            </div>
+            ${v.body}
+          </div>
+          <div class="msg-detail-actions">
+            ${v.actions}
+          </div>
+        </div>`;
+    }
+
+    function pageP7DetailBadge()          { return pageP7Detail('badge'); }
+    function pageP7DetailPrize()          { return pageP7Detail('prize'); }
+    function pageP7DetailRingBattery()    { return pageP7Detail('ring-battery'); }
+    function pageP7DetailPrivacy()        { return pageP7Detail('privacy-policy'); }
+    function pageP7DetailLevelUp()        { return pageP7Detail('level-up'); }
+    function pageP7DetailStreak()         { return pageP7Detail('streak'); }
+    function pageP7DetailRingDisconnect() { return pageP7Detail('ring-disconnect'); }
+    function pageP7DetailFirmware()       { return pageP7Detail('firmware'); }
+    function pageP7DetailAppVersion()     { return pageP7Detail('app-version'); }
+    function pageP7DetailLoginAnomaly()   { return pageP7Detail('login-anomaly'); }
+
+    function pageP7Empty() {
+      return `
+        ${statusBar()}
+        ${topbarMsgCenter()}
+        <div class="msg-cat-tabs" role="tablist">
+          <button class="msg-cat-tab is-active is-zero" data-cat="all" type="button">全部<span class="cat-count">0</span></button>
+          <button class="msg-cat-tab is-zero" data-cat="friend" type="button">好友<span class="cat-count">0</span></button>
+          <button class="msg-cat-tab is-zero" data-cat="level" type="button">挑战<span class="cat-count">0</span></button>
+          <button class="msg-cat-tab is-zero" data-cat="health" type="button">健康<span class="cat-count">0</span></button>
+          <button class="msg-cat-tab is-zero" data-cat="system" type="button">系统<span class="cat-count">0</span></button>
+        </div>
+        <div class="scroll-area">
+          <div class="msg-empty">
+            <div class="msg-empty-icon"><svg viewBox="0 0 48 48" width="32" height="32" aria-hidden="true" style="display:block"><path fill="currentColor" d="M7,38 L7.00004975,37.9645627 C5.30387842,37.7219693 4,36.2632532 4,34.5 L4,32.6568542 C4,31.5959883 4.42142736,30.5785726 5.17157288,29.8284271 L7,28 L7,21 C7,11.6111593 14.6111593,4 24,4 C33.3888407,4 41,11.6111593 41,21 L41,28 L42.8284271,29.8284271 C43.5785726,30.5785726 44,31.5959883 44,32.6568542 L44,34.5 C44,36.2629068 42.6966339,37.7213961 41.0009499,37.9644196 L41,38 L30.9290789,38.0002251 C30.4437524,41.3924095 27.5263939,44 24,44 C20.4736061,44 17.5562476,41.3924095 17.0709211,38.0002251 L7,38 Z M27.8737446,38.0009238 L20.125,38 L20.1799062,38.189716 C20.6864262,39.8178673 22.2051622,41 24,41 C25.794488,41 27.3129817,39.8183281 27.8197974,38.1906681 L27.8737446,38.0009238 Z M24,7 C16.3724998,7 10.1696731,13.0997524 10.003422,20.687355 L10,21 L10,29.0769553 C10,29.1830419 9.95785726,29.2847834 9.88284271,29.359798 L7.29289322,31.9497475 L7.29289322,31.9497475 C7.1366129,32.1060278 7.03740171,32.3087092 7.00867243,32.5254103 L7,32.6568542 L7,34.5 C7,34.7178229 7.14158244,34.9070074 7.33767609,34.9738837 L7.4247998,34.9947837 L7.466,35 L40.533,35 L40.5753422,34.9947633 C40.7851759,34.9646902 40.9529292,34.7989963 40.9915889,34.5913076 L41,34.5 L41,32.6568542 C41,32.4358405 40.9268355,32.2223702 40.7939194,32.0488247 L40.7071068,31.9497475 L38.1171573,29.359798 C38.0421427,29.2847834 38,29.1830419 38,29.0769553 L38,21 C38,13.2680135 31.7319865,7 24,7 Z"/></svg></div>
+            <div class="msg-empty-title">暂无消息</div>
+            <div class="msg-empty-sub">所有重要的事都会在这里汇总。<br>前往《通知设置》调整推送范围。</div>
           </div>
         </div>`;
     }
@@ -3688,10 +4998,10 @@
 
       const tabBar = `
         <div class="tab-bar">
-          <div class="tab-item" onclick="window.location.href='01-今日模块.html'"><div class="tab-icon">☀️</div><div class="tab-label">今日</div></div>
-          <div class="tab-item" onclick="window.location.href='04-练级模块.html'"><div class="tab-icon">📚</div><div class="tab-label">练级</div></div>
-          <div class="tab-item" onclick="window.location.href='02-关心模块.html'"><div class="tab-icon">❤️</div><div class="tab-label">关心</div></div>
-          <div class="tab-item" onclick="toast('收获 Tab 制作中')"><div class="tab-icon">🎁</div><div class="tab-label">收获</div></div>
+          <div class="tab-item" onclick="window.location.href='01-今日模块.html'"><div class="tab-icon"><svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"> <path d="M3.19489 17.9858C3.51823 17.9144 3.80564 18.141 3.87697 18.4643C4.00536 19.0463 3.63917 19.6388 3.0572 19.7672L1.04136 20.2119C0.580311 20.3134 0.124353 20.0217 0.0226419 19.5606C-0.0790364 19.0996 0.212071 18.6441 0.672991 18.5421L3.19489 17.9858Z" fill="currentColor"/> <path d="M29.2763 12.2321C29.7372 12.1309 30.1931 12.4215 30.2948 12.8824C30.3964 13.3433 30.1053 13.7998 29.6446 13.9019L27.1406 14.4543C26.8241 14.5241 26.5145 14.3143 26.4446 13.9978C26.3158 13.4136 26.6568 12.8099 27.241 12.6811L29.2763 12.2321Z" fill="currentColor"/> <path d="M25.3899 5.7081C25.7385 5.38977 26.2792 5.41324 26.5978 5.76165C26.9163 6.1101 26.8915 6.651 26.5433 6.96972L24.7306 8.62604C24.3946 8.9331 23.8704 8.89213 23.557 8.56204C23.2345 8.22241 23.2322 7.67986 23.5779 7.36391L25.3899 5.7081Z" fill="currentColor"/> <path d="M0.496521 11.4637C0.638977 11.0135 1.11934 10.7637 1.56954 10.906L3.82928 11.621C4.2787 11.7632 4.50434 12.2616 4.35003 12.707C4.20199 13.1343 3.74626 13.3876 3.31508 13.2512L1.05404 12.5358C0.604085 12.3933 0.35449 11.9138 0.496521 11.4637Z" fill="currentColor"/> <path d="M18.7798 2.70314C18.9224 2.25318 19.4027 2.00309 19.8528 2.14542C20.3028 2.28783 20.5525 2.76835 20.4105 3.21843L19.842 5.01399C19.7016 5.4572 19.2143 5.68376 18.7724 5.53948C18.336 5.39702 18.0732 4.93534 18.2117 4.49772L18.7798 2.70314Z" fill="currentColor"/> <path d="M5.18965 4.94016C5.53815 4.62151 6.079 4.64628 6.39773 4.99467L7.81767 6.54748C8.13627 6.89589 8.07893 7.44343 7.72129 7.75162C7.37938 8.04626 6.86177 8.03486 6.55716 7.70181L5.1361 6.14803C4.81768 5.79953 4.84134 5.25882 5.18965 4.94016Z" fill="currentColor"/> <path d="M12.3104 1.24319C12.7714 1.14149 13.2278 1.4325 13.3299 1.89333L13.8502 4.25179C13.9427 4.67121 13.6449 5.04496 13.2255 5.13749C12.7403 5.24454 12.251 4.94026 12.1439 4.45499L11.6601 2.2617C11.5588 1.80086 11.8497 1.34508 12.3104 1.24319Z" fill="currentColor"/> <path d="M24.9475 25.8066C26.1274 25.8069 26.9284 26.9184 27.3684 27.3057C27.7771 27.6659 28.2512 28.9139 27.3684 28.9141C26.5819 28.9141 25.9159 27.4151 24.9475 27.415C23.9792 27.415 23.4647 28.914 22.0422 28.9141C20.6196 28.9141 20.0902 27.415 19.137 27.415C18.1839 27.4152 17.3513 28.9141 16.2317 28.9141C15.112 28.914 14.2947 27.4141 13.3264 27.4141C12.3584 27.4145 11.8286 28.9131 10.4211 28.9131C9.01363 28.9129 8.34819 27.4141 7.51587 27.4141C6.68353 27.4141 5.7512 28.1758 5.25122 28.1758C4.94879 28.1757 4.4755 28.0222 5.09497 27.3047C5.62953 26.6857 6.53238 25.8066 7.51587 25.8066C8.49974 25.8068 9.34705 27.3057 10.4211 27.3057C11.4952 27.3057 12.1615 25.8067 13.3264 25.8066C14.4914 25.8066 15.0516 27.3057 16.2317 27.3057C17.4118 27.3057 17.9716 25.8067 19.137 25.8066C20.3024 25.8066 20.9531 27.3057 22.0422 27.3057C23.1312 27.3054 23.7675 25.8066 24.9475 25.8066ZM15.2395 6C21.0385 6 25.7395 10.701 25.7395 16.5C25.7395 18.2572 25.3039 19.9113 24.5403 21.3662C24.6692 21.3275 24.8044 21.3057 24.9475 21.3057C26.1278 21.3057 26.9284 22.4198 27.3684 22.8057C27.7766 23.1658 27.9428 23.8053 27.3684 23.8057C26.5819 23.8057 25.9157 22.636 24.9475 22.6357C23.9793 22.6357 23.4645 24.1354 22.0422 24.1357C20.6197 24.1357 20.0901 22.6359 19.137 22.6357C18.1838 22.6357 17.3513 24.1355 16.2317 24.1357C15.112 24.1357 14.2946 22.6359 13.3264 22.6357C12.3582 22.6357 11.8287 24.1357 10.4211 24.1357C9.01364 24.1357 8.34812 22.636 7.51587 22.6357C6.68353 22.6357 5.39744 23.8056 5.09497 23.8057C4.79258 23.8057 4.47612 23.5243 5.09497 22.8057C5.37031 22.4869 5.74358 22.0985 6.17505 21.7969C5.26393 20.2417 4.7395 18.4326 4.7395 16.5C4.7395 10.701 9.44051 6 15.2395 6ZM18.2395 18C17.4111 18 16.7395 18.8954 16.7395 20C16.7395 20.5596 16.9129 21.0647 17.1907 21.4277C17.4611 21.1631 17.8312 21 18.2395 21C18.6475 21 19.0169 21.1634 19.2874 21.4277C19.5654 21.0647 19.7395 20.5598 19.7395 20C19.7395 18.8954 19.0679 18 18.2395 18ZM12.6321 12.917C11.7438 13.0307 11.1564 13.4097 10.7903 13.7881C10.6107 13.9738 10.4891 14.1544 10.4104 14.293C10.371 14.3623 10.3427 14.4223 10.3225 14.4678C10.3126 14.4901 10.3041 14.5092 10.2981 14.5244C10.2951 14.5321 10.2914 14.5402 10.2893 14.5459C10.2883 14.5484 10.2871 14.5506 10.2864 14.5527V14.5557L10.2844 14.5596C10.1754 14.8722 10.3409 15.2149 10.6536 15.3242C10.9272 15.4197 11.2234 15.3049 11.3665 15.0654L11.4133 14.9658L11.4153 14.9629L11.4163 14.96L11.4182 14.9551C11.424 14.942 11.4361 14.9179 11.4543 14.8857C11.4914 14.8205 11.555 14.7249 11.6536 14.623C11.8439 14.4263 12.1853 14.1831 12.7844 14.1064C13.3838 14.0298 13.7753 14.1797 14.009 14.3223C14.1301 14.3961 14.2156 14.4726 14.2678 14.5264C14.2936 14.5529 14.3117 14.5729 14.3206 14.584L14.3245 14.5898L14.3274 14.5928L14.3987 14.6777C14.5975 14.8734 14.9129 14.9095 15.1536 14.748C15.4286 14.5634 15.5022 14.1902 15.3176 13.915L15.3167 13.9141L15.3157 13.9121L15.3137 13.9102C15.3124 13.9082 15.3115 13.9057 15.3098 13.9033C15.3064 13.8984 15.301 13.8924 15.2961 13.8857C15.2864 13.8724 15.2735 13.8553 15.2581 13.8359C15.2271 13.7971 15.1845 13.7465 15.1292 13.6895C15.0181 13.5751 14.8547 13.4314 14.634 13.2969C14.1844 13.0228 13.5205 12.8033 12.6321 12.917ZM20.6477 11.6592C19.7595 11.7728 19.1721 12.1519 18.8059 12.5303C18.6262 12.716 18.5037 12.8966 18.425 13.0352C18.3857 13.1045 18.3574 13.1645 18.3372 13.21C18.3272 13.2323 18.3188 13.2514 18.3127 13.2666C18.3097 13.2743 18.307 13.2824 18.3049 13.2881C18.304 13.2906 18.3028 13.2928 18.302 13.2949L18.301 13.2979L18.3 13.2998V13.3018C18.1909 13.6145 18.3555 13.9571 18.6682 14.0664C18.9419 14.1621 19.238 14.0472 19.3811 13.8076L19.429 13.708L19.4309 13.7021L19.4329 13.6973C19.4387 13.6843 19.4517 13.6602 19.47 13.6279C19.507 13.5627 19.5698 13.467 19.6682 13.3652C19.8585 13.1685 20.1999 12.9254 20.7991 12.8486C21.3984 12.772 21.7909 12.9219 22.0247 13.0645C22.1454 13.1382 22.2303 13.2148 22.2825 13.2686C22.3082 13.2951 22.3263 13.315 22.3352 13.3262L22.3391 13.332L22.342 13.335L22.4133 13.4199C22.6121 13.6157 22.9275 13.6517 23.1682 13.4902C23.4434 13.3056 23.5178 12.9324 23.3333 12.6572L23.3313 12.6562L23.3293 12.6523C23.328 12.6504 23.3261 12.6479 23.3245 12.6455C23.321 12.6406 23.3156 12.6346 23.3108 12.6279C23.3011 12.6146 23.2891 12.5974 23.2737 12.5781C23.2427 12.5393 23.2002 12.4887 23.1448 12.4316C23.0337 12.3173 22.8693 12.1736 22.6487 12.0391C22.1991 11.7651 21.5358 11.5457 20.6477 11.6592Z" fill="currentColor"/> </svg></div><div class="tab-label">今日</div></div>
+          <div class="tab-item" onclick="window.location.href='04-练级模块.html'"><div class="tab-icon"><svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"> <path d="M26.167 10.0984C26.193 9.75368 26.0947 9.41499 25.8924 9.14523C25.5947 8.74659 24.7276 7.71853 23.1263 6.78338C21.1059 5.59946 18.7011 5 15.9754 5C13.2498 5 10.8507 5.59946 8.84191 6.78338C7.2493 7.72153 6.39085 8.75259 6.09603 9.15123C5.89659 9.42098 5.80121 9.75668 5.82722 10.0954V10.1074L7.11056 23.1035C7.15392 23.5891 7.44296 24.0177 7.86785 24.2245C7.94589 24.2635 8.10486 24.3534 8.28985 24.4553C9.65412 25.2166 12.8451 27 16.0217 27C19.1896 27 22.3488 25.2196 23.6957 24.4613C23.8836 24.3564 24.0454 24.2635 24.1235 24.2245C24.5484 24.0177 24.8374 23.5891 24.8808 23.1035L26.1641 10.1223L26.167 10.0984ZM22.8488 22.4831C22.8026 22.5101 22.7534 22.5371 22.7014 22.567C21.4932 23.2474 18.6606 24.845 16.0217 24.845C13.3712 24.845 10.5039 23.2444 9.27836 22.558C9.22923 22.5311 9.18587 22.5071 9.14252 22.4831L7.93144 10.2362C8.23493 9.88256 8.85637 9.25913 9.86801 8.66267C11.5589 7.66458 13.614 7.16104 15.9725 7.16104C18.334 7.16104 20.3949 7.66758 22.1002 8.66567C23.1205 9.26213 23.7506 9.88856 24.0599 10.2452L22.8488 22.4831ZM3.28945 15.4935C3.0611 15.4935 2.92237 15.7572 3.04665 15.955L4.39358 18.1281C4.45428 18.227 4.45428 18.3529 4.39358 18.4518L3.04665 20.6248C2.92237 20.8256 3.0611 21.0864 3.28945 21.0864H6.33015L5.77808 15.4905H3.28945V15.4935ZM27.6064 18.4518C27.5457 18.3529 27.5457 18.227 27.6064 18.1281L28.9533 15.955C29.0776 15.7542 28.9389 15.4935 28.7106 15.4935H26.2132L25.6612 21.0894H28.7106C28.9389 21.0894 29.0776 20.8256 28.9533 20.6278L27.6064 18.4518Z" fill="currentColor"/> <path d="M13.0128 12.1785H10.9317L10.3536 19.0362H15.1314L15.7095 16.8782H12.6457L13.0128 12.1785ZM18.6433 15.4275L17.7733 12.1785H15.7095L17.1952 19.0362H19.1578L22.2158 12.1785H19.9931L18.6433 15.4275Z" fill="currentColor"/> </svg></div><div class="tab-label">维度</div></div>
+          <div class="tab-item" onclick="window.location.href='02-关心模块.html'"><div class="tab-icon"><svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"> <path d="M25.4549 10.6114C25.179 9.58161 24.5845 8.66513 23.8304 7.91158C23.8302 7.91133 23.8298 7.9112 23.8295 7.9112C23.8291 7.9112 23.8288 7.91106 23.8285 7.91081C22.6502 6.7325 21.0653 6.05021 19.3995 6.00413C17.9779 5.96481 16.5896 6.39136 15.4413 7.20799C15.1027 7.44878 14.6401 7.44873 14.3016 7.20784C13.1538 6.39104 11.766 5.96396 10.3447 6.00238C8.67894 6.04742 7.09366 6.72842 5.91428 7.90558C4.7349 9.08273 4.05091 10.6667 4.00273 12.3323C3.95455 13.998 4.54583 15.6188 5.65519 16.8622L14.2943 25.5136C14.6129 25.8326 15.1298 25.8324 15.4482 25.5133L17.5307 23.4259C17.8492 23.1066 17.8479 22.5893 17.5277 22.2716L17.1427 21.8895C16.8238 21.5731 16.309 21.5743 15.9916 21.8923L15.4482 22.4367C15.1298 22.7558 14.6129 22.7558 14.2945 22.4368L7.24194 15.3733C6.52072 14.5426 6.14122 13.4695 6.17994 12.3701C6.21866 11.2707 6.67273 10.2269 7.45061 9.44904C8.23608 8.66357 9.29242 8.20857 10.4028 8.17745C11.5132 8.14632 12.5934 8.54143 13.4216 9.28167L14.3292 10.0949C14.639 10.3724 15.108 10.3722 15.4175 10.0944L16.3245 9.28058C17.1521 8.54099 18.2313 8.14614 19.3408 8.17706C20.4503 8.20798 21.5059 8.66232 22.2911 9.44687C22.8484 10.0039 23.2317 10.705 23.4356 11.4661C23.5003 11.7074 25.6839 11.4661 25.4549 10.6114Z" fill="currentColor"/> <g clip-path="url(#clip0_166_22)"> <path d="M22.455 12.5685C19.2948 12.5685 16.7329 15.1303 16.7329 18.2906C16.7329 21.4508 19.2948 24.0127 22.455 24.0127C25.6152 24.0127 28.1771 21.4508 28.1771 18.2906C28.1771 15.1303 25.6152 12.5685 22.455 12.5685ZM19.3985 16.6281C19.3985 16.206 19.7406 15.8639 20.1626 15.8639C20.5847 15.8639 20.9268 16.206 20.9268 16.6281C20.9268 17.0501 20.5847 17.3922 20.1626 17.3922C19.7406 17.3922 19.3985 17.0502 19.3985 16.6281ZM22.4374 21.0695C21.3759 21.0695 20.5064 20.247 20.4318 19.2043C21.7853 19.1822 23.3834 19.2131 24.443 19.2043C24.3685 20.2469 23.499 21.0695 22.4374 21.0695ZM24.7475 17.3922C24.3254 17.3922 23.9833 17.0502 23.9833 16.6281C23.9833 16.206 24.3254 15.8639 24.7475 15.8639C25.1696 15.8639 25.5115 16.206 25.5115 16.6281C25.5115 17.0501 25.1696 17.3922 24.7475 17.3922Z" fill="currentColor"/> </g> <defs> <clipPath id="clip0_166_22"> <rect width="13.0418" height="13.0418" fill="white" transform="translate(15.9583 11.7074)"/> </clipPath> </defs> </svg></div><div class="tab-label">关心</div></div>
+          <div class="tab-item" onclick="toast('收获 Tab 制作中')"><div class="tab-icon"><svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"> <path d="M19.9939 5.22891C20.1111 4.99451 20.3455 4.87731 20.5799 4.99451C20.6971 4.99451 20.8143 5.11171 20.8143 5.22891L21.6346 7.8073C21.6346 7.9245 21.7518 8.0417 21.869 8.0417L24.213 9.21369C24.4474 9.33089 24.5646 9.56529 24.4474 9.79969C24.4474 9.91689 24.3302 9.91689 24.213 10.0341L21.869 11.2061C21.7518 11.2061 21.6346 11.3233 21.6346 11.4405L20.8143 14.0189C20.6971 14.2533 20.4627 14.3705 20.2283 14.2533C20.1111 14.2533 19.9939 14.1361 19.9939 14.0189L19.1735 11.4405C19.1735 11.3233 19.0563 11.2061 18.9391 11.2061L16.5951 10.0341C16.3607 9.91689 16.2435 9.68249 16.3607 9.44809C16.3607 9.33089 16.4779 9.33089 16.5951 9.21369L18.9391 8.0417C19.0563 8.0417 19.1735 7.9245 19.1735 7.8073L19.9939 5.22891ZM25.971 2.65052C25.971 2.53333 26.0882 2.53333 26.0882 2.53333C26.0882 2.53333 26.2054 2.53333 26.2054 2.65052L26.7914 4.40852C26.7914 4.40852 26.7914 4.52571 26.9086 4.52571L28.5494 5.22891C28.6666 5.22891 28.6666 5.34611 28.6666 5.46331L28.5494 5.58051L26.9086 6.28371L26.7914 6.40091L26.2054 8.1589C26.2054 8.2761 26.0882 8.2761 26.0882 8.2761C26.0882 8.2761 25.971 8.2761 25.971 8.1589L25.385 6.40091C25.385 6.40091 25.385 6.28371 25.2678 6.28371L23.627 5.58051C23.5098 5.58051 23.5098 5.46331 23.5098 5.34611L23.627 5.22891L25.2678 4.52571L25.385 4.40852L25.971 2.65052Z" fill="currentColor"/> <path d="M15.4612 14.1172C15.4612 14 15.5784 14 15.5784 14C15.5784 14 15.6956 14 15.6956 14.1172L16.2816 15.8752C16.2816 15.8752 16.2816 15.9924 16.3988 15.9924L18.0396 16.6956C18.1568 16.6956 18.1568 16.8128 18.1568 16.93L18.0396 17.0472L16.3988 17.7504L16.2816 17.8676L15.6956 19.6256C15.6956 19.7428 15.5784 19.7428 15.5784 19.7428C15.5784 19.7428 15.4612 19.7428 15.4612 19.6256L14.8752 17.8676C14.8752 17.8676 14.8752 17.7504 14.758 17.7504L13.1172 17.0472C13 17.0472 13 16.93 13 16.8128L13.1172 16.6956L14.758 15.9924L14.8752 15.8752L15.4612 14.1172Z" fill="currentColor"/> <path d="M16.3607 27.614H9.32877C8.74277 27.614 8.27397 28.0828 8.27397 28.6688C8.27397 29.2548 8.74277 29.7236 9.32877 29.7236H16.3607C16.9467 29.7236 17.4155 29.2548 17.4155 28.6688C17.4155 28.0828 16.9467 27.614 16.3607 27.614ZM17.4155 21.5197L17.1811 21.6369C16.0091 22.3401 15.8919 23.512 15.7747 23.9808V24.098H9.91476V23.9808C9.91476 23.512 9.68037 22.2229 8.50837 21.4025C6.28158 19.8789 4.99239 17.4177 4.99239 14.7221V14.3705C5.34399 10.0341 8.85997 6.75253 13.0791 6.75253C13.8995 6.75253 14.7199 6.86973 15.5403 7.10413L17.7671 5.81494C16.3607 5.11174 14.7199 4.64294 13.0791 4.64294C7.57078 4.64294 3 9.09652 3 14.7221C3 18.1209 4.64079 21.1681 7.45358 23.0432L7.57078 23.1604C7.80517 23.3948 7.92237 23.7464 7.92237 24.098V24.5668C7.92237 25.5044 8.62557 26.2076 9.56317 26.2076H16.2435C17.1811 26.2076 17.8843 25.5044 17.8843 24.5668V24.098C17.8843 23.8636 18.0015 23.6292 18.2359 23.512C21.1659 21.7541 23.1583 18.5897 23.2755 15.1909L21.0487 16.4801C20.4627 18.4725 19.1735 20.3477 17.4155 21.5197Z" fill="currentColor"/> </svg></div><div class="tab-label">收获</div></div>
         </div>`;
 
       return `
@@ -3742,6 +5052,20 @@
       'P5.3': pageP53,
       'P5.4': pageP54,
       'P5.5': pageP55,
+      'P5.theme': pageP5Theme,
+      'P7':       pageP7,
+      'P7.read':  pageP7Read,
+      'P7.empty': pageP7Empty,
+      'P7.detail.badge':           pageP7DetailBadge,
+      'P7.detail.prize':           pageP7DetailPrize,
+      'P7.detail.ring-battery':    pageP7DetailRingBattery,
+      'P7.detail.privacy-policy':  pageP7DetailPrivacy,
+      'P7.detail.level-up':        pageP7DetailLevelUp,
+      'P7.detail.streak':          pageP7DetailStreak,
+      'P7.detail.ring-disconnect': pageP7DetailRingDisconnect,
+      'P7.detail.firmware':        pageP7DetailFirmware,
+      'P7.detail.app-version':     pageP7DetailAppVersion,
+      'P7.detail.login-anomaly':   pageP7DetailLoginAnomaly,
       'P6.1': pageP61,
       'P6.2': pageP62Searching,
       'P6.2.found': pageP62Found,
@@ -3768,7 +5092,8 @@
       age: '28',
       height: '172',
       weight: '65.0',
-      shareAudience: '仅亲友'
+      shareAudience: '仅亲友',
+      theme: '跟随系统'
     };
 
     function sanitizePhone(value) {
@@ -3793,6 +5118,11 @@
 
     // 切到指定 page，并同步左侧导航高亮
     function navigateTo(key) {
+      // ext: 前缀 → 外部 URL 跳转（用于 P7 直跳目的页：跨文件 01/02/04）
+      if (typeof key === 'string' && key.startsWith('ext:')) {
+        window.location.href = key.slice(4);
+        return;
+      }
       if (TODAY_PAGE_URLS[key]) {
         navigateToToday(key);
         return;
@@ -3949,6 +5279,101 @@
       if (agree) agree.classList.toggle('checked');
     });
 
+    // P7 消息中心：分类 Tab 筛选
+    document.addEventListener('click', (e) => {
+      const tab = e.target.closest('.msg-cat-tab');
+      if (!tab || !stage.contains(tab)) return;
+      const cat = tab.dataset.cat;
+      stage.querySelectorAll('.msg-cat-tab').forEach(t => t.classList.remove('is-active'));
+      tab.classList.add('is-active');
+      stage.querySelectorAll('.msg-item').forEach(it => {
+        it.style.display = (cat === 'all' || it.dataset.cat === cat) ? '' : 'none';
+      });
+      // 隐藏空时间分组
+      stage.querySelectorAll('.msg-time-group').forEach(g => {
+        const visible = Array.from(g.querySelectorAll('.msg-item')).some(it => it.style.display !== 'none');
+        g.style.display = visible ? '' : 'none';
+      });
+    });
+
+    // P7 消息中心："全部已读" → 清未读红点 + 分类计数
+    document.addEventListener('click', (e) => {
+      const btn = e.target.closest('[data-msg-action="mark-all-read"]');
+      if (!btn) return;
+      stage.querySelectorAll('.msg-item').forEach(it => it.classList.remove('is-unread'));
+      stage.querySelectorAll('.msg-cat-tab').forEach(t => {
+        t.classList.add('is-zero');
+        const c = t.querySelector('.cat-count');
+        if (c) c.textContent = '0';
+      });
+      btn.disabled = true;
+      toast('已全部标为已读');
+    });
+
+    /* P7 消息中心 · 行内动作真实处理（按 03-个人中心.md § P7.d 表格落地）
+       每种 action：
+         - processed: 改条目为"已处理"灰态 + 红点消失 + Tab 计数 -1 + 追加状态文案
+         - redirect:  跳转到对应目的（内部 P7.detail.* 或外部 ext:URL）
+       按钮属性 data-msg-action="..."；事件代理在 stage 内监听。
+    */
+    const MSG_ACTION_HANDLERS = {
+      'med-done':       { processed: true, mark: '✓ 已服用 09:08',          markType: 'success', toast: '已记入今日吃药打卡 · 累计 +1 天 · 已同步到《今日》吃药卡' },
+      'med-skipped':    { processed: true, mark: '— 已跳过',                  markType: 'neutral', toast: '已跳过 · 不计入今日打卡（《今日》吃药卡仍提示未服 N 次）' },
+      'friend-accept':  { processed: true, mark: '✓ 已同意 · 已加入好友',     markType: 'success', toast: '已加入好友 · 双方 +20 XP · 已同步到《关心》C4 好友通知' },
+      'friend-reject':  { processed: true, mark: '已忽略',                    markType: 'neutral', toast: '已忽略 · 对方不会收到通知 · 已同步到《关心》C4' },
+      'friend-recall':  { processed: true, mark: '已撤回',                    markType: 'neutral', toast: '已撤回 · 对方不会再看到这条请求 · 已同步到《关心》C4' },
+      'friend-greet':   { processed: true, mark: '👋 已打招呼',               markType: 'success', toast: '👋 已打招呼 · 已发到 TA 的私信' },
+      'view-challenge': { redirect: 'ext:04-练级模块.html?cid=sakura&inviter=lin-xi' }
+    };
+
+    document.addEventListener('click', (e) => {
+      const btn = e.target.closest('[data-msg-action]');
+      if (!btn || !stage.contains(btn)) return;
+      const action = btn.dataset.msgAction;
+      if (action === 'mark-all-read') return; // 由上面的处理函数接管
+      const handler = MSG_ACTION_HANDLERS[action];
+      if (!handler) return;
+      e.preventDefault();
+      e.stopPropagation();
+
+      if (handler.redirect) {
+        navigateTo(handler.redirect);
+        return;
+      }
+
+      if (handler.processed) {
+        const item = btn.closest('.msg-item');
+        if (!item) return;
+        const wasUnread = item.classList.contains('is-unread');
+        item.classList.remove('is-unread');
+        item.classList.add('is-processed');
+        // 在 .msg-body 末尾追加"已处理"标记（覆盖旧标记，幂等）
+        const body = item.querySelector('.msg-body');
+        if (body) {
+          const oldMark = body.querySelector('.msg-processed-mark');
+          if (oldMark) oldMark.remove();
+          const mark = document.createElement('div');
+          mark.className = `msg-processed-mark is-${handler.markType || 'success'}`;
+          mark.textContent = handler.mark || '已处理';
+          body.appendChild(mark);
+        }
+        // Tab 计数 -1（仅 wasUnread 才扣减）
+        if (wasUnread) {
+          const cat = item.dataset.cat;
+          ['all', cat].forEach(catKey => {
+            const tab = stage.querySelector(`.msg-cat-tab[data-cat="${catKey}"]`);
+            if (!tab) return;
+            const c = tab.querySelector('.cat-count');
+            if (!c) return;
+            const next = Math.max(0, parseInt(c.textContent || '0', 10) - 1);
+            c.textContent = next;
+            if (next === 0) tab.classList.add('is-zero');
+          });
+        }
+        if (handler.toast) toast(handler.toast);
+      }
+    });
+
     // 输入框清空按钮
     document.addEventListener('click', (e) => {
       const clear = e.target.closest('.login-clear');
@@ -3997,6 +5422,8 @@
 
     // 统一路由：data-goto 触发页面切换（含主按钮 spinner 过渡）
     stage.addEventListener('click', (e) => {
+      // P7 行内按钮 [data-msg-action] 内部点击不应触发外层卡片 [data-goto] 跳转
+      if (e.target.closest('[data-msg-action]')) return;
       const trigger = e.target.closest('[data-goto], [data-auth-action]');
       if (!trigger) return;
       e.preventDefault();
@@ -4040,6 +5467,22 @@
         navigateTo(target);
         return;
       }
+      if (trigger.dataset.themePref) {
+        profileState.theme = trigger.dataset.themePref;
+        // 主题切换：浅色 / 深色直接切；跟随系统读 prefers-color-scheme
+        if (trigger.dataset.themePref === '深色') {
+          document.body.classList.add('is-dark-mode');
+        } else if (trigger.dataset.themePref === '浅色') {
+          document.body.classList.remove('is-dark-mode');
+        } else {
+          // 跟随系统
+          const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          document.body.classList.toggle('is-dark-mode', prefersDark);
+        }
+        toast('主题已切换为：' + trigger.dataset.themePref);
+        navigateTo(target);
+        return;
+      }
       if (trigger.dataset.pickerField) {
         const value = getActivePickerValue(trigger);
         if (value) profileState[trigger.dataset.pickerField] = value;
@@ -4072,6 +5515,16 @@
       t.classList.toggle('on');
       const row = t.closest('.profile-row-share');
       if (row) row.classList.toggle('is-on', t.classList.contains('on'));
+    });
+
+    // 练级挑战发送时机 chip 多选切换（v2.5）
+    document.addEventListener('click', (e) => {
+      const chip = e.target.closest('.milestone-chip');
+      if (!chip) return;
+      const willActive = !chip.classList.contains('is-active');
+      chip.classList.toggle('is-active', willActive);
+      // 已勾对勾随状态切换
+      chip.textContent = (willActive ? '✓ ' : '○ ') + chip.textContent.replace(/^[✓○]\s/, '');
     });
 
     // 密码可见切换

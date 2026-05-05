@@ -199,11 +199,13 @@
     color:var(--color-text-primary);
     white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
   }
-  /* § 6.1 戒指连接状态 Pill */
+  /* § 6.1 戒指连接状态 Pill（与「今日」模块一致：dot + 文字 + 横向电池 + 百分比，同款排版） */
   .ring-tag{
-    display:inline-flex; align-items:center; gap:6px; height:24px; padding:0 10px;
-    border-radius:var(--radius-pill); font-size:12px; font-weight:600; cursor:pointer;
+    display:inline-flex; align-items:center; gap:4px; height:24px; padding:0 10px;
+    border-radius:var(--radius-pill); font-size:11px; font-weight:600;
+    white-space:nowrap; cursor:pointer; transition:opacity .15s;
   }
+  .ring-tag:active{opacity:.7;}
   .ring-tag.is-connected{
     background:var(--color-tag-success-bg); color:var(--color-semantic-success);
   }
@@ -213,18 +215,28 @@
   .ring-tag.is-offline{
     background:var(--color-bg-surface-muted); color:var(--color-text-tertiary);
   }
-  .ring-tag .ring-emoji{font-size:11px;}
-  /* CSS 绘制的横向电池图形（v1.7） */
-  .ring-battery{
-    position:relative; width:18px; height:9px;
-    border:1.2px solid currentColor; border-radius:2px;
-    padding:1px; display:inline-flex; align-items:center;
+  .ring-tag .dot{
+    width:6px; height:6px; border-radius:50%; background:currentColor;
   }
-  .ring-battery::after{
-    content:""; position:absolute; right:-3px; top:2px;
-    width:1.5px; height:3px; background:currentColor; border-radius:0 1px 1px 0;
+  .ring-tag .battery{display:inline-flex; align-items:center; gap:4px;}
+  /* CSS 绘制的横向电池图形（与今日模块同款，1.8 设计规范） */
+  .battery-icon{
+    position:relative; display:inline-block;
+    width:18px; height:10px;
+    border:1.2px solid currentColor; border-radius:2.5px;
+    padding:1px; box-sizing:border-box;
   }
-  .ring-battery-fill{height:100%; background:currentColor; border-radius:.5px;}
+  .battery-icon::after{
+    content:""; position:absolute;
+    right:-3px; top:2.5px;
+    width:2px; height:4px; background:currentColor; border-radius:0 1px 1px 0;
+  }
+  .battery-icon .battery-fill{
+    display:block;
+    width:var(--battery-pct,100%); height:100%;
+    background:currentColor; border-radius:1px;
+    transition:width .3s ease;
+  }
 
   .topbar-right{display:flex; align-items:center; gap:8px;}
   /* § 6.1 b 右侧固定 36×36 圆形按钮 */
@@ -413,6 +425,14 @@
   .tag-mini.follow{background:#EAF1FF; color:#3A6FE0;}
   .dyn-sub{font-size:11px; color:var(--color-text-tertiary); margin-top:2px;}
   .dyn-time{font-size:11px; color:var(--color-text-tertiary); flex-shrink:0;}
+  /* C-Me / C5 动态卡上方左对齐时间标签（v2.4：从卡内移到卡外） */
+  .dyn-time-hint{
+    margin: 8px 18px 6px;
+    font-size: 12px;
+    color: var(--color-text-tertiary);
+    line-height: 1.4;
+    text-align: left;
+  }
 
   /* challenge block */
   .ch-block{
@@ -657,6 +677,14 @@
     color:var(--color-brand-primary); cursor:pointer;
   }
 
+  /* 消息中心跳转高亮（P7 § c.1 上下文聚焦动画） */
+  @keyframes msg-focus-glow {
+    0%   { box-shadow: 0 0 0 0 rgba(58, 111, 224, 0); }
+    30%  { box-shadow: 0 0 0 6px rgba(58, 111, 224, 0.45); }
+    100% { box-shadow: 0 0 0 0 rgba(58, 111, 224, 0); }
+  }
+  .is-msg-focus { animation: msg-focus-glow 1.6s ease-out 1 both; }
+
   /* C1.C My friends */
   .row-card{
     margin:0 16px 10px; padding:14px; background:var(--color-bg-surface); border-radius:var(--radius-lg);
@@ -714,6 +742,10 @@
     transition:color .16s ease, transform .16s ease;
   }
   .tab .ic{font-size:24px; line-height:1;}
+  .tab .ic svg{width:24px; height:24px; display:block;}
+  .tab .ic{color:var(--color-text-secondary); transition:color .18s;}
+  .tab.active .ic, .tab.is-active .ic{color:var(--color-brand-primary);}
+  .tab.active div:last-child, .tab.is-active div:last-child{color:var(--color-brand-primary);}
   .tab div:last-child{font-weight:600;}
   .tab.active{color:var(--color-brand-primary);}
   .tab.active .ic{transform:translateY(-1px) scale(1.04);}
@@ -1274,6 +1306,134 @@
   /* === scrolling smoothing === */
   .scroll{scroll-behavior:smooth;}
 
+  /* ========== 特别关心 · C5.1 主页设置 ========== */
+  /* C5 顶栏右上角设置入口（与左侧 .back 对称的 40×40 命中区） */
+  .app-topbar--secondary .topbar-set-btn{
+    width:40px; height:40px; display:flex; align-items:center; justify-content:center;
+    cursor:pointer; font-size:18px; color:var(--color-text-primary);
+  }
+  /* 特别关心 标签变体（与 .mini-btn.warn 同色域，不引入新色板） */
+  .tag-mini.special{background:#FFE5DD; color:#D85A2E;}
+  /* tag-care 默认隐藏；父容器加 .care-on 时显示。
+     适用：.dyn-card.care-on / .friend-row.care-on（"特别关心"组里的克隆行）
+     C5 名牌的 .tag-care 由 renderProfileName 通过 innerHTML 控存在与否，本身可见。 */
+  .dyn-card .tag-care,
+  .friend-row .tag-care{display:none;}
+  .dyn-card.care-on .tag-care,
+  .friend-row.care-on .tag-care{display:inline-flex; align-items:center;}
+  /* 我的好友列表中：被移到"特别关心"组的好友行，原位隐藏 */
+  .friend-row.moved-to-care{display:none;}
+  /* "特别关心"分组：默认隐藏，组内有人时显示 */
+  .care-set-section{display:none;}
+  .care-set-section.has-friends{display:block;}
+  /* 主页设置弹层 toggle 行 */
+  .care-set-row{
+    display:flex; align-items:center; gap:12px;
+    padding:14px 4px 18px; text-align:left;
+  }
+  .care-set-row .info{flex:1; min-width:0;}
+  .care-set-row .t{font-size:14px; font-weight:600; color:var(--color-text-primary);}
+  .care-set-row .s{font-size:11px; color:var(--color-text-tertiary); margin-top:2px; line-height:1.5;}
+
+  /* ========== 好友动态卡：点赞 + 评论（与今日模块一致） ==========
+     从 01-今日模块.html 移植，作用域改成 .dyn-card 后视觉一致 */
+  .habit-social-actions {
+    display: flex; flex-direction: column; gap: 10px;
+    margin-top: 14px; padding-top: 12px;
+    border-top: 1px solid rgba(148, 163, 184, 0.14);
+  }
+  .habit-social-lines { display: flex; flex-direction: column; gap: 8px; }
+  .habit-social-line {
+    display: flex; align-items: center; gap: 8px; min-width: 0; text-align: left;
+  }
+  .habit-social-line.like { justify-content: space-between; gap: 10px; }
+  .habit-social-line-main {
+    min-width: 0; display: flex; align-items: center; gap: 8px; flex: 1;
+  }
+  .habit-social-line-icon { flex-shrink: 0; font-size: 14px; line-height: 1; }
+  .habit-social-line.like .habit-social-line-icon {
+    cursor: pointer; padding: 2px 4px; margin: -2px -4px; border-radius: 8px;
+    transition: background 0.18s ease, transform 0.12s ease;
+  }
+  .habit-social-line.like .habit-social-line-icon:active { transform: scale(0.92); }
+  .habit-social-line.comment-line { cursor: pointer; }
+  .habit-social-line-text {
+    min-width: 0; font-size: 12px; line-height: 1.55; color: #64748B;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .habit-social-line-text .habit-social-name-link { color: #3A6FE0; font-weight: 700; cursor: pointer; }
+  .habit-social-line.like .habit-social-line-text { color: #5B6B93; font-weight: 700; }
+  .habit-social-line.comment-line .habit-social-line-text {
+    color: #51617E; white-space: normal; overflow: visible; text-overflow: clip;
+  }
+  .habit-social-menu-wrap { position: relative; flex-shrink: 0; }
+  .habit-social-button {
+    appearance: none; border: 1px solid rgba(148, 163, 184, 0.16);
+    background: rgba(255,255,255,0.7); color: var(--color-text-secondary);
+    border-radius: 999px; padding: 7px 11px;
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 12px; font-weight: 700; line-height: 1;
+    box-shadow: 0 6px 18px rgba(148, 163, 184, 0.08);
+    cursor: pointer; white-space: nowrap;
+  }
+  .habit-social-button.more { color: #475569; padding: 7px 9px; min-width: 38px; justify-content: center; }
+  .habit-social-button.like.is-active {
+    color: #E11D48; background: rgba(255, 241, 242, 0.92); border-color: rgba(244, 63, 94, 0.22);
+  }
+  .habit-social-button.comment {
+    color: var(--color-brand-primary); background: rgba(239, 246, 255, 0.92);
+    border-color: rgba(58, 111, 224, 0.18);
+  }
+  .habit-social-menu {
+    position: absolute; right: 0; bottom: calc(100% + 8px);
+    display: flex; align-items: center; gap: 8px; padding: 8px;
+    border-radius: 16px; background: rgba(255,255,255,0.96);
+    border: 1px solid rgba(226, 232, 240, 0.92);
+    box-shadow: 0 14px 30px rgba(148, 163, 184, 0.18);
+    backdrop-filter: blur(10px);
+    opacity: 0; pointer-events: none; transform: translate(0, 4px);
+    transition: opacity 0.18s ease, transform 0.18s ease;
+    z-index: 3; white-space: nowrap;
+  }
+  .habit-social-menu.show { opacity: 1; pointer-events: auto; transform: translate(0, 0); }
+  .habit-social-inline-compose {
+    display: none; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; margin-top: 2px;
+  }
+  .habit-social-inline-compose.show { display: grid; }
+  .habit-social-inline-input {
+    width: 100%; border: 1px solid rgba(191, 219, 254, 0.92);
+    background: rgba(255,255,255,0.96); border-radius: 14px;
+    padding: 10px 12px; font-size: 12px; color: #1F2A5C; outline: none;
+  }
+  .habit-social-inline-send {
+    border: 0; border-radius: 14px; padding: 0 14px;
+    background: linear-gradient(135deg, #4F88FF, #6B7CFF);
+    color: #fff; font-size: 12px; font-weight: 800;
+    box-shadow: 0 8px 18px rgba(79, 136, 255, 0.18); cursor: pointer;
+  }
+  /* 心形点赞按钮（内嵌 SVG，is-liked 时填红） · 纯图标，无底色无阴影 */
+  .habit-social-line .icon-btn{
+    appearance: none; -webkit-appearance: none;
+    border: 0; background: none; box-shadow: none;
+    padding: 0; margin: 0; cursor: pointer;
+    display: inline-flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    transition: transform 0.12s ease;
+  }
+  .habit-social-line .icon-btn:active{ transform: scale(0.92); }
+  .habit-social-line .icon-btn svg{
+    width: 18px; height: 18px; fill: none;
+    stroke: #5B6B93; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+    transition: fill .15s ease, stroke .15s ease;
+  }
+  .habit-social-line .like-btn.is-liked svg{ fill: #E11D48; stroke: #E11D48; }
+  /* 评论按钮内的 SVG 气泡 */
+  .habit-social-button.comment svg{
+    width: 14px; height: 14px; fill: none;
+    stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+    flex-shrink: 0;
+  }
+
 </style>
 </head>
 <body>
@@ -1337,6 +1497,9 @@
       <div class="nav-item" data-target="page" data-page="c4">
         <span class="nav-id">C4</span><span class="nav-name">好友通知</span><span class="nav-tag tag-page">二级</span>
       </div>
+      <div class="nav-item" data-target="page" data-page="c-me">
+        <span class="nav-id">C-Me</span><span class="nav-name">我的动态</span><span class="nav-tag tag-page">二级</span>
+      </div>
       <div class="nav-item" data-target="page" data-page="c5">
         <span class="nav-id">C5</span><span class="nav-name">个人主页（关心圈视角）</span><span class="nav-tag tag-page">二级</span>
       </div>
@@ -1368,6 +1531,9 @@
     <div class="nav-list">
       <div class="nav-item" data-target="modal" data-modal="confirm" data-name="阿戒" data-src="通过邀请码">
         <span class="nav-id">C3.2.a</span><span class="nav-name">添加好友二次确认</span><span class="nav-tag tag-modal">确认框</span>
+      </div>
+      <div class="nav-item" data-target="modal" data-modal="careSet">
+        <span class="nav-id">C5.1</span><span class="nav-name">主页设置（特别关心）</span><span class="nav-tag tag-modal">弹层</span>
       </div>
     </div>
 
@@ -1401,20 +1567,24 @@
         <div class="iss-battery"><span class="iss-battery-pct">85</span></div>
       </div>
     </div>
-    <!-- § 6.1 一级页面顶栏：标题 + 戒指连接状态 ｜ 🌙 + 👤 -->
+    <!-- § 6.1 一级页面顶栏：标题 + 戒指连接状态 ｜ 🔔 + 👤（v1.9 起，原 🌙 已下沉至 P5 · 外观） -->
     <div class="app-topbar--primary">
       <div class="topbar-left">
         <div class="topbar-title">关心</div>
         <div class="ring-tag is-connected" onclick="toast('跳 P6 设备管理')" title="戒指连接状态">
-          <span class="ring-emoji">🟢</span>
+          <span class="dot"></span>
           <span>已连接</span>
-          <span style="opacity:.6;">·</span>
-          <span class="ring-battery"><span class="ring-battery-fill" style="width:85%;"></span></span>
-          <span>85%</span>
+          <span class="battery">
+            <span class="battery-icon" style="--battery-pct:85%;"><span class="battery-fill"></span></span>
+            <span>85%</span>
+          </span>
         </div>
       </div>
       <div class="topbar-right">
-        <div class="icon-btn" onclick="toggleTheme()" title="主题切换"><span class="theme-icon" id="themeIcon">🌙</span></div>
+        <div class="icon-btn" onclick="onMsgCenterClick()" title="消息中心" style="position:relative">
+          <svg viewBox="0 0 48 48" width="22" height="22" aria-hidden="true" style="display:block"><path fill="currentColor" d="M7,38 L7.00004975,37.9645627 C5.30387842,37.7219693 4,36.2632532 4,34.5 L4,32.6568542 C4,31.5959883 4.42142736,30.5785726 5.17157288,29.8284271 L7,28 L7,21 C7,11.6111593 14.6111593,4 24,4 C33.3888407,4 41,11.6111593 41,21 L41,28 L42.8284271,29.8284271 C43.5785726,30.5785726 44,31.5959883 44,32.6568542 L44,34.5 C44,36.2629068 42.6966339,37.7213961 41.0009499,37.9644196 L41,38 L30.9290789,38.0002251 C30.4437524,41.3924095 27.5263939,44 24,44 C20.4736061,44 17.5562476,41.3924095 17.0709211,38.0002251 L7,38 Z M27.8737446,38.0009238 L20.125,38 L20.1799062,38.189716 C20.6864262,39.8178673 22.2051622,41 24,41 C25.794488,41 27.3129817,39.8183281 27.8197974,38.1906681 L27.8737446,38.0009238 Z M24,7 C16.3724998,7 10.1696731,13.0997524 10.003422,20.687355 L10,21 L10,29.0769553 C10,29.1830419 9.95785726,29.2847834 9.88284271,29.359798 L7.29289322,31.9497475 L7.29289322,31.9497475 C7.1366129,32.1060278 7.03740171,32.3087092 7.00867243,32.5254103 L7,32.6568542 L7,34.5 C7,34.7178229 7.14158244,34.9070074 7.33767609,34.9738837 L7.4247998,34.9947837 L7.466,35 L40.533,35 L40.5753422,34.9947633 C40.7851759,34.9646902 40.9529292,34.7989963 40.9915889,34.5913076 L41,34.5 L41,32.6568542 C41,32.4358405 40.9268355,32.2223702 40.7939194,32.0488247 L40.7071068,31.9497475 L38.1171573,29.359798 C38.0421427,29.2847834 38,29.1830419 38,29.0769553 L38,21 C38,13.2680135 31.7319865,7 24,7 Z"/></svg>
+          <span style="position:absolute;top:2px;right:2px;min-width:16px;height:16px;padding:0 4px;border-radius:999px;background:var(--color-semantic-danger,#FF7851);color:#fff;font-size:10px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;line-height:1;border:1.5px solid #fff;">12</span>
+        </div>
         <!-- § 6.1 b.2 已登录：用户头像（36px 圆形真人头像）/ 未登录：白底 + shadow-card + 👤 -->
         <div class="icon-btn is-loggedin" id="personBtn" onclick="goToCareProfilePage()" title="个人设置">
           <img class="real-photo" src="https://i.pravatar.cc/150?img=33" alt="我">
@@ -1430,7 +1600,7 @@
         </div>
         <div class="podium-row">
           <!-- 第二名 -->
-          <div class="podium-slot second" onclick="goto('c5')">
+          <div class="podium-slot second" onclick="openUserProfile('林雨晴')">
             <div class="podium-avatar">
               <img class="real-photo" src="https://i.pravatar.cc/150?img=47" alt="林雨晴">
               <span class="podium-medal">🥈</span>
@@ -1440,7 +1610,7 @@
             <div class="podium-xp-lbl">XP</div>
           </div>
           <!-- 第一名 -->
-          <div class="podium-slot first" onclick="goto('c5')">
+          <div class="podium-slot first" onclick="openUserProfile('阿戒')">
             <div class="podium-laurel">🌿🏆🌿</div>
             <div class="podium-avatar">
               <img class="real-photo" src="https://i.pravatar.cc/150?img=60" alt="阿戒">
@@ -1451,7 +1621,7 @@
             <div class="podium-xp-lbl">冠军 XP</div>
           </div>
           <!-- 第三名 -->
-          <div class="podium-slot third" onclick="goto('c5')">
+          <div class="podium-slot third" onclick="openUserProfile('周妈妈')">
             <div class="podium-avatar">
               <img class="real-photo" src="https://i.pravatar.cc/150?img=32" alt="周妈妈">
               <span class="podium-medal">🥉</span>
@@ -1483,16 +1653,17 @@
       <div class="subpanel active" data-panel="a">
 
         <!-- 动态卡 1 -->
-        <div class="dyn-card">
+        <div class="dyn-time-hint">今早 06:30 · 今日挑战 · 完成</div>
+      <div class="dyn-card" data-uid="周妈妈">
           <div class="dyn-head">
-            <div class="avatar has-photo" onclick="goto('c5')">
+            <div class="avatar has-photo" onclick="openUserProfile('周妈妈')">
               <img class="real-photo" src="https://i.pravatar.cc/150?img=32" alt="周妈妈">
               <span class="ring-mark">R</span>
             </div>
             <div class="dyn-meta">
               <div class="dyn-name">
                 <span class="n">周妈妈</span>
-                <span class="tag-mini kin">亲友</span>
+                <span class="tag-mini special tag-care">特别关心</span>
               </div>
               <div class="dyn-sub">异地 · 连续 14 天达标 · 今日第 3 项</div>
             </div>
@@ -1510,34 +1681,42 @@
             </div>
             <div class="ch-text">今天坚持走完 8,000 步目标 · 比昨天多坚持了 15 分钟</div>
           </div>
-          <div class="act-bar">
-            <div class="act-btn" onclick="like(this)">
-              ❤️ <span>点赞</span><span class="xp">+3 XP</span>
-            </div>
-            <div class="act-btn" onclick="toggleComments(this)">💬 评论</div>
-            <div class="act-stat">· 8 人点赞</div>
-          </div>
-          <div class="cmt-wrap open">
-            <div class="cmt-item"><span class="u">林雨晴</span><span>妈妈最棒了！</span><span class="t">5 分钟前</span></div>
-            <div class="cmt-item"><span class="u me">我</span><span>明天我陪你一起走 🚶</span><span class="t">2 分钟前</span></div>
-            <div class="cmt-input">
-              <input type="text" placeholder="仅对方可见 · 写一句关心的话">
-              <button onclick="toast('已发送')">发送</button>
+          <div class="habit-social-actions" onclick="event.stopPropagation()">
+            <div class="habit-social-lines">
+              <div class="habit-social-line like">
+                <span class="habit-social-line-main">
+                  <button class="icon-btn like-btn" type="button" onclick="quickLikeMyChallenge(this)" aria-label="点赞 / 取消点赞"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button>
+                  <span class="habit-social-line-text"><span class="habit-social-name-link" onclick="event.stopPropagation();openCareNameLink(this)">林雨晴</span>、<span class="habit-social-name-link" onclick="event.stopPropagation();openCareNameLink(this)">陈乐</span> 等8个赞</span>
+                </span>
+                <button class="habit-social-button comment" type="button" onclick="openInlineCompose(this)">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                  <span>评论</span>
+                </button>
+              </div>
+              <div class="habit-social-line comment-line" data-commenter="林雨晴" onclick="replyToComment(this)">
+                <span class="habit-social-line-text"><span class="habit-social-name-link" onclick="event.stopPropagation();openCareNameLink(this)">林雨晴</span>：妈妈最棒了!</span>
+              </div>
+              <div class="habit-social-line comment-line" data-commenter="me" onclick="replyToComment(this)">
+                <span class="habit-social-line-text"><span class="habit-social-name-link" onclick="event.stopPropagation();openCareNameLink(this)">我</span>:明天我陪你一起走 🚶</span>
+              </div>
+              <div class="habit-social-line comment-line" data-commenter="周妈妈" data-reply-to="me" onclick="replyToComment(this)">
+                <span class="habit-social-line-text"><span class="habit-social-name-link" onclick="event.stopPropagation();openCareNameLink(this)">周妈妈</span> 回复 <span class="habit-social-name-link">我</span>：好啊，明早 7 点出发！</span>
+              </div>
             </div>
           </div>
         </div>
 
         <!-- 动态卡 2 -->
-        <div class="dyn-card">
+        <div class="dyn-card" data-uid="阿戒">
           <div class="dyn-head">
-            <div class="avatar has-photo" onclick="goto('c5')">
+            <div class="avatar has-photo" onclick="openUserProfile('阿戒')">
               <img class="real-photo" src="https://i.pravatar.cc/150?img=60" alt="阿戒">
               <span class="ring-mark">R</span>
             </div>
             <div class="dyn-meta">
               <div class="dyn-name">
                 <span class="n">阿戒</span>
-                <span class="tag-mini kin">亲友</span>
+                <span class="tag-mini special tag-care">特别关心</span>
               </div>
               <div class="dyn-sub">同城 · 连续 21 天 · 今日第 2 项</div>
             </div>
@@ -1555,33 +1734,36 @@
             </div>
             <div class="ch-text">昨晚获得了一个高质量的深睡周期 · 比上周平均提升 12 分钟</div>
           </div>
-          <div class="act-bar">
-            <div class="act-btn liked">
-              ❤️ <span>已点赞</span><span class="xp">+3 XP</span>
-            </div>
-            <div class="act-btn" onclick="toggleComments(this)">💬 评论</div>
-            <div class="act-stat">· 12 人点赞</div>
-          </div>
-          <div class="cmt-wrap open">
-            <div class="cmt-item"><span class="u">陈乐</span><span>羡慕你的深睡 😴</span><span class="t">8 分钟前</span></div>
-            <div class="cmt-input">
-              <input type="text" placeholder="仅对方可见 · 写一句关心的话">
-              <button onclick="toast('已发送')">发送</button>
+          <div class="habit-social-actions" onclick="event.stopPropagation()">
+            <div class="habit-social-lines">
+              <div class="habit-social-line like">
+                <span class="habit-social-line-main">
+                  <button class="icon-btn like-btn" type="button" onclick="quickLikeMyChallenge(this)" aria-label="点赞 / 取消点赞"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button>
+                  <span class="habit-social-line-text"><span class="habit-social-name-link" onclick="event.stopPropagation();openCareNameLink(this)">陈乐</span>、<span class="habit-social-name-link" onclick="event.stopPropagation();openCareNameLink(this)">周妈妈</span> 等12个赞</span>
+                </span>
+                <button class="habit-social-button comment" type="button" onclick="openInlineCompose(this)">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                  <span>评论</span>
+                </button>
+              </div>
+              <div class="habit-social-line comment-line" onclick="replyToComment(this)">
+                <span class="habit-social-line-text"><span class="habit-social-name-link" onclick="event.stopPropagation();openCareNameLink(this)">陈乐</span>：羡慕你的深睡 😴</span>
+              </div>
             </div>
           </div>
         </div>
 
         <!-- 动态卡 3 -->
-        <div class="dyn-card">
+        <div class="dyn-card" data-uid="林雨晴">
           <div class="dyn-head">
-            <div class="avatar has-photo" onclick="goto('c5')">
+            <div class="avatar has-photo" onclick="openUserProfile('林雨晴')">
               <img class="real-photo" src="https://i.pravatar.cc/150?img=47" alt="林雨晴">
               <span class="ring-mark">R</span>
             </div>
             <div class="dyn-meta">
               <div class="dyn-name">
                 <span class="n">林雨晴</span>
-                <span class="tag-mini follow">关注</span>
+                <span class="tag-mini special tag-care">特别关心</span>
               </div>
               <div class="dyn-sub">同城 · 第 5 天 · 进行中</div>
             </div>
@@ -1599,17 +1781,62 @@
             </div>
             <div class="ch-text">已经完成今日大部分目标 · 距离冲顶还差一组训练</div>
           </div>
-          <div class="act-bar">
-            <div class="act-btn" onclick="like(this)">
-              ❤️ <span>点赞</span><span class="xp">+3 XP</span>
+          <div class="habit-social-actions" onclick="event.stopPropagation()">
+            <div class="habit-social-lines">
+              <div class="habit-social-line like">
+                <span class="habit-social-line-main">
+                  <button class="icon-btn like-btn" type="button" onclick="quickLikeMyChallenge(this)" aria-label="点赞 / 取消点赞"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button>
+                  <span class="habit-social-line-text"><span class="habit-social-name-link" onclick="event.stopPropagation();openCareNameLink(this)">苏小桔</span>、<span class="habit-social-name-link" onclick="event.stopPropagation();openCareNameLink(this)">陈乐</span> 等4个赞</span>
+                </span>
+                <button class="habit-social-button comment" type="button" onclick="openInlineCompose(this)">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                  <span>评论</span>
+                </button>
+              </div>
             </div>
-            <div class="act-btn" onclick="toggleComments(this)">💬 评论</div>
-            <div class="act-stat">· 4 人点赞</div>
           </div>
-          <div class="cmt-wrap open">
-            <div class="cmt-input">
-              <input type="text" placeholder="仅对方可见 · 写一句关心的话">
-              <button onclick="toast('已发送')">发送</button>
+        </div>
+
+        <!-- 动态卡 4 · 表妹小可（通过邀请码加入的新好友） -->
+        <div class="dyn-card" data-uid="表妹小可">
+          <div class="dyn-head">
+            <div class="avatar has-photo" onclick="openUserProfile('表妹小可')">
+              <img class="real-photo" src="https://i.pravatar.cc/150?img=20" alt="表妹小可">
+              <span class="ring-mark">R</span>
+            </div>
+            <div class="dyn-meta">
+              <div class="dyn-name">
+                <span class="n">表妹小可</span>
+                <span class="tag-mini">新加入</span>
+              </div>
+              <div class="dyn-sub">通过邀请码 AIR-K8N3M2 加入 · 第 1 天</div>
+            </div>
+            <div class="dyn-time">昨天 19:42</div>
+          </div>
+          <div class="ch-block orange">
+            <div class="ch-top">
+              <div class="ch-icon">🚶</div>
+              <div class="ch-name">每日 6000 步</div>
+              <div class="ch-status">✓ 已完成</div>
+            </div>
+            <div class="ch-progress">
+              <div class="ch-bar"><div class="ch-bar-fill" style="width:100%;"></div></div>
+              <div class="ch-pct">100%</div>
+            </div>
+            <div class="ch-text">第一天就完成步数目标 · 期待你的更多动态</div>
+          </div>
+          <div class="habit-social-actions" onclick="event.stopPropagation()">
+            <div class="habit-social-lines">
+              <div class="habit-social-line like">
+                <span class="habit-social-line-main">
+                  <button class="icon-btn like-btn" type="button" onclick="quickLikeMyChallenge(this)" aria-label="点赞 / 取消点赞"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button>
+                  <span class="habit-social-line-text">还没有人点赞，去给表妹一个鼓励吧 👏</span>
+                </span>
+                <button class="habit-social-button comment" type="button" onclick="openInlineCompose(this)">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                  <span>评论</span>
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -1636,7 +1863,7 @@
         <!-- 推荐 1 -->
         <div class="rec-card">
           <div class="rec-head">
-            <div class="avatar has-photo" onclick="goto('c5')">
+            <div class="avatar has-photo" onclick="openUserProfile('苏小桔')">
               <img class="real-photo" src="https://i.pravatar.cc/150?img=5" alt="苏小桔">
               <span class="ring-mark">R</span>
             </div>
@@ -1672,7 +1899,7 @@
         <!-- 推荐 2 -->
         <div class="rec-card">
           <div class="rec-head">
-            <div class="avatar has-photo" onclick="goto('c5')">
+            <div class="avatar has-photo" onclick="openUserProfile('陈乐')">
               <img class="real-photo" src="https://i.pravatar.cc/150?img=14" alt="陈乐">
               <span class="ring-mark">R</span>
             </div>
@@ -1722,13 +1949,25 @@
             <div class="row-arrow">›</div>
           </div>
           <div class="row-card" onclick="goto('c4')">
-            <div class="row-icon red">🔔<span class="red-bubble">2</span></div>
+            <div class="row-icon red" style="position:relative"><svg viewBox="0 0 48 48" width="20" height="20" aria-hidden="true" style="display:block"><path fill="currentColor" d="M7,38 L7.00004975,37.9645627 C5.30387842,37.7219693 4,36.2632532 4,34.5 L4,32.6568542 C4,31.5959883 4.42142736,30.5785726 5.17157288,29.8284271 L7,28 L7,21 C7,11.6111593 14.6111593,4 24,4 C33.3888407,4 41,11.6111593 41,21 L41,28 L42.8284271,29.8284271 C43.5785726,30.5785726 44,31.5959883 44,32.6568542 L44,34.5 C44,36.2629068 42.6966339,37.7213961 41.0009499,37.9644196 L41,38 L30.9290789,38.0002251 C30.4437524,41.3924095 27.5263939,44 24,44 C20.4736061,44 17.5562476,41.3924095 17.0709211,38.0002251 L7,38 Z M27.8737446,38.0009238 L20.125,38 L20.1799062,38.189716 C20.6864262,39.8178673 22.2051622,41 24,41 C25.794488,41 27.3129817,39.8183281 27.8197974,38.1906681 L27.8737446,38.0009238 Z M24,7 C16.3724998,7 10.1696731,13.0997524 10.003422,20.687355 L10,21 L10,29.0769553 C10,29.1830419 9.95785726,29.2847834 9.88284271,29.359798 L7.29289322,31.9497475 L7.29289322,31.9497475 C7.1366129,32.1060278 7.03740171,32.3087092 7.00867243,32.5254103 L7,32.6568542 L7,34.5 C7,34.7178229 7.14158244,34.9070074 7.33767609,34.9738837 L7.4247998,34.9947837 L7.466,35 L40.533,35 L40.5753422,34.9947633 C40.7851759,34.9646902 40.9529292,34.7989963 40.9915889,34.5913076 L41,34.5 L41,32.6568542 C41,32.4358405 40.9268355,32.2223702 40.7939194,32.0488247 L40.7071068,31.9497475 L38.1171573,29.359798 C38.0421427,29.2847834 38,29.1830419 38,29.0769553 L38,21 C38,13.2680135 31.7319865,7 24,7 Z"/></svg><span class="red-bubble">2</span></div>
             <div class="row-info">
               <div class="row-title">好友通知</div>
               <div class="row-sub">2 条待处理</div>
             </div>
             <div class="row-arrow">›</div>
           </div>
+        </div>
+
+        <!-- 特别关心 分组（容器由 syncCare() 渲染；组内为空时整段隐藏） -->
+        <div class="care-set-section" id="careSection">
+          <div class="section-head" style="padding:0 20px;">
+            <div>
+              <div class="section-title">特别关心</div>
+              <div class="section-sub">TA 发布动态时通过系统通知提醒你</div>
+            </div>
+            <div class="badge-pill" id="careBadge">0 位</div>
+          </div>
+          <div id="careOnList"></div>
         </div>
 
         <!-- 我的好友列表 -->
@@ -1740,49 +1979,51 @@
           <div class="badge-pill">共 12 位</div>
         </div>
 
-        <div class="friend-row" onclick="goto('c5')">
-          <div class="avatar has-photo"><img class="real-photo" src="https://i.pravatar.cc/150?img=60" alt="阿戒"><span class="ring-mark">R</span></div>
-          <div class="row-info">
-            <div class="row-title">阿戒 <span class="tag-mini kin" style="margin-left:4px;">亲友</span></div>
-            <div class="row-sub">同城 · 连续 21 天达标</div>
+        <div id="myFriendsList">
+          <div class="friend-row" data-uid="阿戒" onclick="openUserProfile('阿戒')">
+            <div class="avatar has-photo"><img class="real-photo" src="https://i.pravatar.cc/150?img=60" alt="阿戒"><span class="ring-mark">R</span></div>
+            <div class="row-info">
+              <div class="row-title">阿戒</div>
+              <div class="row-sub">同城 · 连续 21 天达标</div>
+            </div>
+            <div class="row-arrow">›</div>
           </div>
-          <div class="row-arrow">›</div>
-        </div>
 
-        <div class="friend-row" onclick="goto('c5')">
-          <div class="avatar has-photo"><img class="real-photo" src="https://i.pravatar.cc/150?img=32" alt="周妈妈"><span class="ring-mark">R</span></div>
-          <div class="row-info">
-            <div class="row-title">周妈妈 <span class="tag-mini kin" style="margin-left:4px;">亲友</span></div>
-            <div class="row-sub">异地 · 连续 14 天达标</div>
+          <div class="friend-row" data-uid="周妈妈" onclick="openUserProfile('周妈妈')">
+            <div class="avatar has-photo"><img class="real-photo" src="https://i.pravatar.cc/150?img=32" alt="周妈妈"><span class="ring-mark">R</span></div>
+            <div class="row-info">
+              <div class="row-title">周妈妈</div>
+              <div class="row-sub">异地 · 连续 14 天达标</div>
+            </div>
+            <div class="row-arrow">›</div>
           </div>
-          <div class="row-arrow">›</div>
-        </div>
 
-        <div class="friend-row" onclick="goto('c5')">
-          <div class="avatar has-photo"><img class="real-photo" src="https://i.pravatar.cc/150?img=47" alt="林雨晴"><span class="ring-mark">R</span></div>
-          <div class="row-info">
-            <div class="row-title">林雨晴 <span class="tag-mini follow" style="margin-left:4px;">关注</span></div>
-            <div class="row-sub">同城 · 第 5 天</div>
+          <div class="friend-row" data-uid="林雨晴" onclick="openUserProfile('林雨晴')">
+            <div class="avatar has-photo"><img class="real-photo" src="https://i.pravatar.cc/150?img=47" alt="林雨晴"><span class="ring-mark">R</span></div>
+            <div class="row-info">
+              <div class="row-title">林雨晴</div>
+              <div class="row-sub">同城 · 第 5 天</div>
+            </div>
+            <div class="row-arrow">›</div>
           </div>
-          <div class="row-arrow">›</div>
-        </div>
 
-        <div class="friend-row" onclick="goto('c5')">
-          <div class="avatar has-photo"><img class="real-photo" src="https://i.pravatar.cc/150?img=5" alt="苏小桔"><span class="ring-mark">R</span></div>
-          <div class="row-info">
-            <div class="row-title">苏小桔 <span class="tag-mini follow" style="margin-left:4px;">关注</span></div>
-            <div class="row-sub">同城 · 第 12 天</div>
+          <div class="friend-row" data-uid="苏小桔" onclick="openUserProfile('苏小桔')">
+            <div class="avatar has-photo"><img class="real-photo" src="https://i.pravatar.cc/150?img=5" alt="苏小桔"><span class="ring-mark">R</span></div>
+            <div class="row-info">
+              <div class="row-title">苏小桔</div>
+              <div class="row-sub">同城 · 第 12 天</div>
+            </div>
+            <div class="row-arrow">›</div>
           </div>
-          <div class="row-arrow">›</div>
-        </div>
 
-        <div class="friend-row" onclick="goto('c5')">
-          <div class="avatar has-photo"><img class="real-photo" src="https://i.pravatar.cc/150?img=13" alt="爸爸"></div>
-          <div class="row-info">
-            <div class="row-title">爸爸 <span class="tag-mini kin" style="margin-left:4px;">亲友</span></div>
-            <div class="row-sub" style="color:#FFA31A;">未佩戴 Ring · 邀请佩戴</div>
+          <div class="friend-row" data-uid="爸爸" onclick="openUserProfile('爸爸')">
+            <div class="avatar has-photo"><img class="real-photo" src="https://i.pravatar.cc/150?img=13" alt="爸爸"></div>
+            <div class="row-info">
+              <div class="row-title">爸爸</div>
+              <div class="row-sub" style="color:#FFA31A;">未佩戴 Ring · 邀请佩戴</div>
+            </div>
+            <div class="row-arrow">›</div>
           </div>
-          <div class="row-arrow">›</div>
         </div>
 
       </div>
@@ -1791,10 +2032,10 @@
 
     <!-- 底部 Tab Bar -->
     <div class="tabbar">
-      <div class="tab" onclick="goToModulePage('01-今日模块.html')"><div class="ic">☀️</div><div>今日</div></div>
-      <div class="tab" onclick="goToModulePage('04-练级模块.html')"><div class="ic">📚</div><div>练级</div></div>
-      <div class="tab active"><div class="ic">❤️</div><div>关心</div></div>
-      <div class="tab" onclick="toast('收获 Tab 制作中')"><div class="ic">🎁</div><div>收获</div></div>
+      <div class="tab" onclick="goToModulePage('01-今日模块.html')"><div class="ic"><svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"> <path d="M3.19489 17.9858C3.51823 17.9144 3.80564 18.141 3.87697 18.4643C4.00536 19.0463 3.63917 19.6388 3.0572 19.7672L1.04136 20.2119C0.580311 20.3134 0.124353 20.0217 0.0226419 19.5606C-0.0790364 19.0996 0.212071 18.6441 0.672991 18.5421L3.19489 17.9858Z" fill="currentColor"/> <path d="M29.2763 12.2321C29.7372 12.1309 30.1931 12.4215 30.2948 12.8824C30.3964 13.3433 30.1053 13.7998 29.6446 13.9019L27.1406 14.4543C26.8241 14.5241 26.5145 14.3143 26.4446 13.9978C26.3158 13.4136 26.6568 12.8099 27.241 12.6811L29.2763 12.2321Z" fill="currentColor"/> <path d="M25.3899 5.7081C25.7385 5.38977 26.2792 5.41324 26.5978 5.76165C26.9163 6.1101 26.8915 6.651 26.5433 6.96972L24.7306 8.62604C24.3946 8.9331 23.8704 8.89213 23.557 8.56204C23.2345 8.22241 23.2322 7.67986 23.5779 7.36391L25.3899 5.7081Z" fill="currentColor"/> <path d="M0.496521 11.4637C0.638977 11.0135 1.11934 10.7637 1.56954 10.906L3.82928 11.621C4.2787 11.7632 4.50434 12.2616 4.35003 12.707C4.20199 13.1343 3.74626 13.3876 3.31508 13.2512L1.05404 12.5358C0.604085 12.3933 0.35449 11.9138 0.496521 11.4637Z" fill="currentColor"/> <path d="M18.7798 2.70314C18.9224 2.25318 19.4027 2.00309 19.8528 2.14542C20.3028 2.28783 20.5525 2.76835 20.4105 3.21843L19.842 5.01399C19.7016 5.4572 19.2143 5.68376 18.7724 5.53948C18.336 5.39702 18.0732 4.93534 18.2117 4.49772L18.7798 2.70314Z" fill="currentColor"/> <path d="M5.18965 4.94016C5.53815 4.62151 6.079 4.64628 6.39773 4.99467L7.81767 6.54748C8.13627 6.89589 8.07893 7.44343 7.72129 7.75162C7.37938 8.04626 6.86177 8.03486 6.55716 7.70181L5.1361 6.14803C4.81768 5.79953 4.84134 5.25882 5.18965 4.94016Z" fill="currentColor"/> <path d="M12.3104 1.24319C12.7714 1.14149 13.2278 1.4325 13.3299 1.89333L13.8502 4.25179C13.9427 4.67121 13.6449 5.04496 13.2255 5.13749C12.7403 5.24454 12.251 4.94026 12.1439 4.45499L11.6601 2.2617C11.5588 1.80086 11.8497 1.34508 12.3104 1.24319Z" fill="currentColor"/> <path d="M24.9475 25.8066C26.1274 25.8069 26.9284 26.9184 27.3684 27.3057C27.7771 27.6659 28.2512 28.9139 27.3684 28.9141C26.5819 28.9141 25.9159 27.4151 24.9475 27.415C23.9792 27.415 23.4647 28.914 22.0422 28.9141C20.6196 28.9141 20.0902 27.415 19.137 27.415C18.1839 27.4152 17.3513 28.9141 16.2317 28.9141C15.112 28.914 14.2947 27.4141 13.3264 27.4141C12.3584 27.4145 11.8286 28.9131 10.4211 28.9131C9.01363 28.9129 8.34819 27.4141 7.51587 27.4141C6.68353 27.4141 5.7512 28.1758 5.25122 28.1758C4.94879 28.1757 4.4755 28.0222 5.09497 27.3047C5.62953 26.6857 6.53238 25.8066 7.51587 25.8066C8.49974 25.8068 9.34705 27.3057 10.4211 27.3057C11.4952 27.3057 12.1615 25.8067 13.3264 25.8066C14.4914 25.8066 15.0516 27.3057 16.2317 27.3057C17.4118 27.3057 17.9716 25.8067 19.137 25.8066C20.3024 25.8066 20.9531 27.3057 22.0422 27.3057C23.1312 27.3054 23.7675 25.8066 24.9475 25.8066ZM15.2395 6C21.0385 6 25.7395 10.701 25.7395 16.5C25.7395 18.2572 25.3039 19.9113 24.5403 21.3662C24.6692 21.3275 24.8044 21.3057 24.9475 21.3057C26.1278 21.3057 26.9284 22.4198 27.3684 22.8057C27.7766 23.1658 27.9428 23.8053 27.3684 23.8057C26.5819 23.8057 25.9157 22.636 24.9475 22.6357C23.9793 22.6357 23.4645 24.1354 22.0422 24.1357C20.6197 24.1357 20.0901 22.6359 19.137 22.6357C18.1838 22.6357 17.3513 24.1355 16.2317 24.1357C15.112 24.1357 14.2946 22.6359 13.3264 22.6357C12.3582 22.6357 11.8287 24.1357 10.4211 24.1357C9.01364 24.1357 8.34812 22.636 7.51587 22.6357C6.68353 22.6357 5.39744 23.8056 5.09497 23.8057C4.79258 23.8057 4.47612 23.5243 5.09497 22.8057C5.37031 22.4869 5.74358 22.0985 6.17505 21.7969C5.26393 20.2417 4.7395 18.4326 4.7395 16.5C4.7395 10.701 9.44051 6 15.2395 6ZM18.2395 18C17.4111 18 16.7395 18.8954 16.7395 20C16.7395 20.5596 16.9129 21.0647 17.1907 21.4277C17.4611 21.1631 17.8312 21 18.2395 21C18.6475 21 19.0169 21.1634 19.2874 21.4277C19.5654 21.0647 19.7395 20.5598 19.7395 20C19.7395 18.8954 19.0679 18 18.2395 18ZM12.6321 12.917C11.7438 13.0307 11.1564 13.4097 10.7903 13.7881C10.6107 13.9738 10.4891 14.1544 10.4104 14.293C10.371 14.3623 10.3427 14.4223 10.3225 14.4678C10.3126 14.4901 10.3041 14.5092 10.2981 14.5244C10.2951 14.5321 10.2914 14.5402 10.2893 14.5459C10.2883 14.5484 10.2871 14.5506 10.2864 14.5527V14.5557L10.2844 14.5596C10.1754 14.8722 10.3409 15.2149 10.6536 15.3242C10.9272 15.4197 11.2234 15.3049 11.3665 15.0654L11.4133 14.9658L11.4153 14.9629L11.4163 14.96L11.4182 14.9551C11.424 14.942 11.4361 14.9179 11.4543 14.8857C11.4914 14.8205 11.555 14.7249 11.6536 14.623C11.8439 14.4263 12.1853 14.1831 12.7844 14.1064C13.3838 14.0298 13.7753 14.1797 14.009 14.3223C14.1301 14.3961 14.2156 14.4726 14.2678 14.5264C14.2936 14.5529 14.3117 14.5729 14.3206 14.584L14.3245 14.5898L14.3274 14.5928L14.3987 14.6777C14.5975 14.8734 14.9129 14.9095 15.1536 14.748C15.4286 14.5634 15.5022 14.1902 15.3176 13.915L15.3167 13.9141L15.3157 13.9121L15.3137 13.9102C15.3124 13.9082 15.3115 13.9057 15.3098 13.9033C15.3064 13.8984 15.301 13.8924 15.2961 13.8857C15.2864 13.8724 15.2735 13.8553 15.2581 13.8359C15.2271 13.7971 15.1845 13.7465 15.1292 13.6895C15.0181 13.5751 14.8547 13.4314 14.634 13.2969C14.1844 13.0228 13.5205 12.8033 12.6321 12.917ZM20.6477 11.6592C19.7595 11.7728 19.1721 12.1519 18.8059 12.5303C18.6262 12.716 18.5037 12.8966 18.425 13.0352C18.3857 13.1045 18.3574 13.1645 18.3372 13.21C18.3272 13.2323 18.3188 13.2514 18.3127 13.2666C18.3097 13.2743 18.307 13.2824 18.3049 13.2881C18.304 13.2906 18.3028 13.2928 18.302 13.2949L18.301 13.2979L18.3 13.2998V13.3018C18.1909 13.6145 18.3555 13.9571 18.6682 14.0664C18.9419 14.1621 19.238 14.0472 19.3811 13.8076L19.429 13.708L19.4309 13.7021L19.4329 13.6973C19.4387 13.6843 19.4517 13.6602 19.47 13.6279C19.507 13.5627 19.5698 13.467 19.6682 13.3652C19.8585 13.1685 20.1999 12.9254 20.7991 12.8486C21.3984 12.772 21.7909 12.9219 22.0247 13.0645C22.1454 13.1382 22.2303 13.2148 22.2825 13.2686C22.3082 13.2951 22.3263 13.315 22.3352 13.3262L22.3391 13.332L22.342 13.335L22.4133 13.4199C22.6121 13.6157 22.9275 13.6517 23.1682 13.4902C23.4434 13.3056 23.5178 12.9324 23.3333 12.6572L23.3313 12.6562L23.3293 12.6523C23.328 12.6504 23.3261 12.6479 23.3245 12.6455C23.321 12.6406 23.3156 12.6346 23.3108 12.6279C23.3011 12.6146 23.2891 12.5974 23.2737 12.5781C23.2427 12.5393 23.2002 12.4887 23.1448 12.4316C23.0337 12.3173 22.8693 12.1736 22.6487 12.0391C22.1991 11.7651 21.5358 11.5457 20.6477 11.6592Z" fill="currentColor"/> </svg></div><div>今日</div></div>
+      <div class="tab" onclick="goToModulePage('04-练级模块.html')"><div class="ic"><svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"> <path d="M26.167 10.0984C26.193 9.75368 26.0947 9.41499 25.8924 9.14523C25.5947 8.74659 24.7276 7.71853 23.1263 6.78338C21.1059 5.59946 18.7011 5 15.9754 5C13.2498 5 10.8507 5.59946 8.84191 6.78338C7.2493 7.72153 6.39085 8.75259 6.09603 9.15123C5.89659 9.42098 5.80121 9.75668 5.82722 10.0954V10.1074L7.11056 23.1035C7.15392 23.5891 7.44296 24.0177 7.86785 24.2245C7.94589 24.2635 8.10486 24.3534 8.28985 24.4553C9.65412 25.2166 12.8451 27 16.0217 27C19.1896 27 22.3488 25.2196 23.6957 24.4613C23.8836 24.3564 24.0454 24.2635 24.1235 24.2245C24.5484 24.0177 24.8374 23.5891 24.8808 23.1035L26.1641 10.1223L26.167 10.0984ZM22.8488 22.4831C22.8026 22.5101 22.7534 22.5371 22.7014 22.567C21.4932 23.2474 18.6606 24.845 16.0217 24.845C13.3712 24.845 10.5039 23.2444 9.27836 22.558C9.22923 22.5311 9.18587 22.5071 9.14252 22.4831L7.93144 10.2362C8.23493 9.88256 8.85637 9.25913 9.86801 8.66267C11.5589 7.66458 13.614 7.16104 15.9725 7.16104C18.334 7.16104 20.3949 7.66758 22.1002 8.66567C23.1205 9.26213 23.7506 9.88856 24.0599 10.2452L22.8488 22.4831ZM3.28945 15.4935C3.0611 15.4935 2.92237 15.7572 3.04665 15.955L4.39358 18.1281C4.45428 18.227 4.45428 18.3529 4.39358 18.4518L3.04665 20.6248C2.92237 20.8256 3.0611 21.0864 3.28945 21.0864H6.33015L5.77808 15.4905H3.28945V15.4935ZM27.6064 18.4518C27.5457 18.3529 27.5457 18.227 27.6064 18.1281L28.9533 15.955C29.0776 15.7542 28.9389 15.4935 28.7106 15.4935H26.2132L25.6612 21.0894H28.7106C28.9389 21.0894 29.0776 20.8256 28.9533 20.6278L27.6064 18.4518Z" fill="currentColor"/> <path d="M13.0128 12.1785H10.9317L10.3536 19.0362H15.1314L15.7095 16.8782H12.6457L13.0128 12.1785ZM18.6433 15.4275L17.7733 12.1785H15.7095L17.1952 19.0362H19.1578L22.2158 12.1785H19.9931L18.6433 15.4275Z" fill="currentColor"/> </svg></div><div>维度</div></div>
+      <div class="tab active"><div class="ic"><svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"> <path d="M25.4549 10.6114C25.179 9.58161 24.5845 8.66513 23.8304 7.91158C23.8302 7.91133 23.8298 7.9112 23.8295 7.9112C23.8291 7.9112 23.8288 7.91106 23.8285 7.91081C22.6502 6.7325 21.0653 6.05021 19.3995 6.00413C17.9779 5.96481 16.5896 6.39136 15.4413 7.20799C15.1027 7.44878 14.6401 7.44873 14.3016 7.20784C13.1538 6.39104 11.766 5.96396 10.3447 6.00238C8.67894 6.04742 7.09366 6.72842 5.91428 7.90558C4.7349 9.08273 4.05091 10.6667 4.00273 12.3323C3.95455 13.998 4.54583 15.6188 5.65519 16.8622L14.2943 25.5136C14.6129 25.8326 15.1298 25.8324 15.4482 25.5133L17.5307 23.4259C17.8492 23.1066 17.8479 22.5893 17.5277 22.2716L17.1427 21.8895C16.8238 21.5731 16.309 21.5743 15.9916 21.8923L15.4482 22.4367C15.1298 22.7558 14.6129 22.7558 14.2945 22.4368L7.24194 15.3733C6.52072 14.5426 6.14122 13.4695 6.17994 12.3701C6.21866 11.2707 6.67273 10.2269 7.45061 9.44904C8.23608 8.66357 9.29242 8.20857 10.4028 8.17745C11.5132 8.14632 12.5934 8.54143 13.4216 9.28167L14.3292 10.0949C14.639 10.3724 15.108 10.3722 15.4175 10.0944L16.3245 9.28058C17.1521 8.54099 18.2313 8.14614 19.3408 8.17706C20.4503 8.20798 21.5059 8.66232 22.2911 9.44687C22.8484 10.0039 23.2317 10.705 23.4356 11.4661C23.5003 11.7074 25.6839 11.4661 25.4549 10.6114Z" fill="currentColor"/> <g clip-path="url(#clip0_166_22)"> <path d="M22.455 12.5685C19.2948 12.5685 16.7329 15.1303 16.7329 18.2906C16.7329 21.4508 19.2948 24.0127 22.455 24.0127C25.6152 24.0127 28.1771 21.4508 28.1771 18.2906C28.1771 15.1303 25.6152 12.5685 22.455 12.5685ZM19.3985 16.6281C19.3985 16.206 19.7406 15.8639 20.1626 15.8639C20.5847 15.8639 20.9268 16.206 20.9268 16.6281C20.9268 17.0501 20.5847 17.3922 20.1626 17.3922C19.7406 17.3922 19.3985 17.0502 19.3985 16.6281ZM22.4374 21.0695C21.3759 21.0695 20.5064 20.247 20.4318 19.2043C21.7853 19.1822 23.3834 19.2131 24.443 19.2043C24.3685 20.2469 23.499 21.0695 22.4374 21.0695ZM24.7475 17.3922C24.3254 17.3922 23.9833 17.0502 23.9833 16.6281C23.9833 16.206 24.3254 15.8639 24.7475 15.8639C25.1696 15.8639 25.5115 16.206 25.5115 16.6281C25.5115 17.0501 25.1696 17.3922 24.7475 17.3922Z" fill="currentColor"/> </g> <defs> <clipPath id="clip0_166_22"> <rect width="13.0418" height="13.0418" fill="white" transform="translate(15.9583 11.7074)"/> </clipPath> </defs> </svg></div><div>关心</div></div>
+      <div class="tab" onclick="toast('收获 Tab 制作中')"><div class="ic"><svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"> <path d="M19.9939 5.22891C20.1111 4.99451 20.3455 4.87731 20.5799 4.99451C20.6971 4.99451 20.8143 5.11171 20.8143 5.22891L21.6346 7.8073C21.6346 7.9245 21.7518 8.0417 21.869 8.0417L24.213 9.21369C24.4474 9.33089 24.5646 9.56529 24.4474 9.79969C24.4474 9.91689 24.3302 9.91689 24.213 10.0341L21.869 11.2061C21.7518 11.2061 21.6346 11.3233 21.6346 11.4405L20.8143 14.0189C20.6971 14.2533 20.4627 14.3705 20.2283 14.2533C20.1111 14.2533 19.9939 14.1361 19.9939 14.0189L19.1735 11.4405C19.1735 11.3233 19.0563 11.2061 18.9391 11.2061L16.5951 10.0341C16.3607 9.91689 16.2435 9.68249 16.3607 9.44809C16.3607 9.33089 16.4779 9.33089 16.5951 9.21369L18.9391 8.0417C19.0563 8.0417 19.1735 7.9245 19.1735 7.8073L19.9939 5.22891ZM25.971 2.65052C25.971 2.53333 26.0882 2.53333 26.0882 2.53333C26.0882 2.53333 26.2054 2.53333 26.2054 2.65052L26.7914 4.40852C26.7914 4.40852 26.7914 4.52571 26.9086 4.52571L28.5494 5.22891C28.6666 5.22891 28.6666 5.34611 28.6666 5.46331L28.5494 5.58051L26.9086 6.28371L26.7914 6.40091L26.2054 8.1589C26.2054 8.2761 26.0882 8.2761 26.0882 8.2761C26.0882 8.2761 25.971 8.2761 25.971 8.1589L25.385 6.40091C25.385 6.40091 25.385 6.28371 25.2678 6.28371L23.627 5.58051C23.5098 5.58051 23.5098 5.46331 23.5098 5.34611L23.627 5.22891L25.2678 4.52571L25.385 4.40852L25.971 2.65052Z" fill="currentColor"/> <path d="M15.4612 14.1172C15.4612 14 15.5784 14 15.5784 14C15.5784 14 15.6956 14 15.6956 14.1172L16.2816 15.8752C16.2816 15.8752 16.2816 15.9924 16.3988 15.9924L18.0396 16.6956C18.1568 16.6956 18.1568 16.8128 18.1568 16.93L18.0396 17.0472L16.3988 17.7504L16.2816 17.8676L15.6956 19.6256C15.6956 19.7428 15.5784 19.7428 15.5784 19.7428C15.5784 19.7428 15.4612 19.7428 15.4612 19.6256L14.8752 17.8676C14.8752 17.8676 14.8752 17.7504 14.758 17.7504L13.1172 17.0472C13 17.0472 13 16.93 13 16.8128L13.1172 16.6956L14.758 15.9924L14.8752 15.8752L15.4612 14.1172Z" fill="currentColor"/> <path d="M16.3607 27.614H9.32877C8.74277 27.614 8.27397 28.0828 8.27397 28.6688C8.27397 29.2548 8.74277 29.7236 9.32877 29.7236H16.3607C16.9467 29.7236 17.4155 29.2548 17.4155 28.6688C17.4155 28.0828 16.9467 27.614 16.3607 27.614ZM17.4155 21.5197L17.1811 21.6369C16.0091 22.3401 15.8919 23.512 15.7747 23.9808V24.098H9.91476V23.9808C9.91476 23.512 9.68037 22.2229 8.50837 21.4025C6.28158 19.8789 4.99239 17.4177 4.99239 14.7221V14.3705C5.34399 10.0341 8.85997 6.75253 13.0791 6.75253C13.8995 6.75253 14.7199 6.86973 15.5403 7.10413L17.7671 5.81494C16.3607 5.11174 14.7199 4.64294 13.0791 4.64294C7.57078 4.64294 3 9.09652 3 14.7221C3 18.1209 4.64079 21.1681 7.45358 23.0432L7.57078 23.1604C7.80517 23.3948 7.92237 23.7464 7.92237 24.098V24.5668C7.92237 25.5044 8.62557 26.2076 9.56317 26.2076H16.2435C17.1811 26.2076 17.8843 25.5044 17.8843 24.5668V24.098C17.8843 23.8636 18.0015 23.6292 18.2359 23.512C21.1659 21.7541 23.1583 18.5897 23.2755 15.1909L21.0487 16.4801C20.4627 18.4725 19.1735 20.3477 17.4155 21.5197Z" fill="currentColor"/> </svg></div><div>收获</div></div>
     </div>
   </div>
 
@@ -1821,14 +2062,14 @@
         <div class="my-rank-num">7</div>
         <div class="my-rank-avatar"><img class="real-photo" src="https://i.pravatar.cc/150?img=33" alt="我"></div>
         <div class="my-rank-info">
-          <div class="my-rank-name">你 <span class="tag-mini follow" style="margin-left:4px;">我</span></div>
+          <div class="my-rank-name">你</div>
           <div class="my-rank-sub">☀️ 今日已获 +48 XP · 点赞 6 次 · 评论 3 次</div>
         </div>
         <div class="my-rank-xp">142<small>XP</small></div>
       </div>
 
       <div class="lb-list">
-        <div class="lb-row top-1" onclick="goto('c5')">
+        <div class="lb-row top-1" onclick="openUserProfile('阿戒')">
           <div class="lb-rank top-1">1<div class="lb-rank-medal">🏆</div></div>
           <div class="lb-avatar"><img src="https://i.pravatar.cc/150?img=60" alt="阿戒"></div>
           <div class="lb-info">
@@ -1837,7 +2078,7 @@
           </div>
           <div class="lb-total">2,148<small>XP</small></div>
         </div>
-        <div class="lb-row top-2" onclick="goto('c5')">
+        <div class="lb-row top-2" onclick="openUserProfile('林雨晴')">
           <div class="lb-rank top-2">2<div class="lb-rank-medal">🥈</div></div>
           <div class="lb-avatar"><img src="https://i.pravatar.cc/150?img=47" alt="林雨晴"></div>
           <div class="lb-info">
@@ -1846,7 +2087,7 @@
           </div>
           <div class="lb-total">1,876<small>XP</small></div>
         </div>
-        <div class="lb-row top-3" onclick="goto('c5')">
+        <div class="lb-row top-3" onclick="openUserProfile('周妈妈')">
           <div class="lb-rank top-3">3<div class="lb-rank-medal">🥉</div></div>
           <div class="lb-avatar"><img src="https://i.pravatar.cc/150?img=32" alt="周妈妈"></div>
           <div class="lb-info">
@@ -1855,7 +2096,7 @@
           </div>
           <div class="lb-total">1,432<small>XP</small></div>
         </div>
-        <div class="lb-row" onclick="goto('c5')">
+        <div class="lb-row" onclick="openUserProfile('苏小桔')">
           <div class="lb-rank">4</div>
           <div class="lb-avatar"><img src="https://i.pravatar.cc/150?img=5" alt="苏小桔"></div>
           <div class="lb-info">
@@ -1864,7 +2105,7 @@
           </div>
           <div class="lb-total">988<small>XP</small></div>
         </div>
-        <div class="lb-row" onclick="goto('c5')">
+        <div class="lb-row" onclick="openUserProfile('陈乐')">
           <div class="lb-rank">5</div>
           <div class="lb-avatar"><img src="https://i.pravatar.cc/150?img=14" alt="陈乐"></div>
           <div class="lb-info">
@@ -1873,7 +2114,7 @@
           </div>
           <div class="lb-total">762<small>XP</small></div>
         </div>
-        <div class="lb-row" onclick="goto('c5')">
+        <div class="lb-row" onclick="openUserProfile('王医生')">
           <div class="lb-rank">6</div>
           <div class="lb-avatar"><img src="https://i.pravatar.cc/150?img=8" alt="王医生"></div>
           <div class="lb-info">
@@ -1886,7 +2127,7 @@
           <div class="lb-rank">7</div>
           <div class="lb-avatar"><img src="https://i.pravatar.cc/150?img=33" alt="我"></div>
           <div class="lb-info">
-            <div class="lb-name">你 <span class="tag-mini follow" style="margin-left:4px;">我</span></div>
+            <div class="lb-name">你</div>
             <div class="lb-meta"><strong>今日 +48 XP</strong> · 点赞 6 次</div>
           </div>
           <div class="lb-total">142<small>XP</small></div>
@@ -2060,15 +2301,16 @@
     </div>
     <div class="app-topbar--secondary">
       <div class="back" onclick="goto('c1')">‹</div>
-      <div class="title">阿戒 的主页</div>
+      <div class="title" id="c5Title" style="padding-right:0;">阿戒 的主页</div>
+      <div class="topbar-set-btn" onclick="openCareSet()" title="主页设置">⚙️</div>
     </div>
     <div class="scroll page-content-2">
       <div class="profile-hero">
         <div class="profile-row">
-          <div class="profile-avatar"><img class="real-photo" src="https://i.pravatar.cc/150?img=60" alt="阿戒"><span class="ring-mark">R</span></div>
+          <div class="profile-avatar"><img id="c5Avatar" class="real-photo" src="https://i.pravatar.cc/150?img=60" alt="阿戒"><span class="ring-mark">R</span></div>
           <div class="profile-info">
-            <div class="profile-name">阿戒 <span class="tag-mini kin">亲友</span></div>
-            <div class="profile-meta">同城 · 已关注 86 天 · 本名 戒小明</div>
+            <div class="profile-name" id="c5Name">阿戒 <span class="tag-mini special tag-care">特别关心</span></div>
+            <div class="profile-meta" id="c5Meta">同城 · 已关注 86 天 · 本名 戒小明</div>
           </div>
           <button class="note-btn" onclick="toast('打开备注编辑')">✏️ 备注</button>
         </div>
@@ -2094,7 +2336,9 @@
         </div>
       </div>
 
-      <div class="dyn-card" style="margin:0 16px 14px;">
+      <!-- 阿戒 · 深睡（今日挑战 · 完成）-->
+      <div class="dyn-time-hint">今早 06:30 · 今日挑战 · 完成</div>
+      <div class="dyn-card" data-feed-type="daily" data-trigger="completed" data-time="2026-05-05T06:30" style="margin:0 16px 14px;">
         <div class="ch-block purple">
           <div class="ch-top">
             <div class="ch-icon">😴</div>
@@ -2107,14 +2351,26 @@
           </div>
           <div class="ch-text">昨晚获得了一个高质量的深睡周期 · 比上周平均提升 12 分钟</div>
         </div>
-        <div class="act-bar">
-          <div class="act-btn liked">❤️ <span>已点赞</span></div>
-          <div class="act-btn" onclick="toggleComments(this)">💬 评论</div>
-          <div class="act-stat">· 12 人点赞</div>
+        
+        <div class="habit-social-actions" onclick="event.stopPropagation()">
+          <div class="habit-social-lines">
+            <div class="habit-social-line like">
+              <span class="habit-social-line-main">
+                <button class="icon-btn like-btn" type="button" onclick="quickLikeMyChallenge(this)" aria-label="点赞 / 取消点赞"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button>
+                <span class="habit-social-line-text"><span class="habit-social-name-link" onclick="event.stopPropagation();openCareNameLink(this)">陈乐</span>、<span class="habit-social-name-link" onclick="event.stopPropagation();openCareNameLink(this)">周妈妈</span> 等12个赞</span>
+              </span>
+              <button class="habit-social-button comment" type="button" onclick="openInlineCompose(this)">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                <span>评论</span>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div class="dyn-card" style="margin:0 16px 14px;">
+      <!-- 阿戒 · 8000 步（今日挑战 · 完成）-->
+      <div class="dyn-time-hint">昨天 19:24 · 今日挑战 · 完成</div>
+      <div class="dyn-card" data-feed-type="daily" data-trigger="completed" data-time="2026-05-04T19:24" style="margin:0 16px 14px;">
         <div class="ch-block green">
           <div class="ch-top">
             <div class="ch-icon">🚶</div>
@@ -2127,10 +2383,279 @@
           </div>
           <div class="ch-text">连续 21 天达成 · 本周累计 6 万步</div>
         </div>
-        <div class="act-bar">
-          <div class="act-btn" onclick="like(this)">❤️ 点赞 <span class="xp">+3 XP</span></div>
-          <div class="act-btn" onclick="toggleComments(this)">💬 评论</div>
-          <div class="act-stat">· 8 人点赞</div>
+        
+        <div class="habit-social-actions" onclick="event.stopPropagation()">
+          <div class="habit-social-lines">
+            <div class="habit-social-line like">
+              <span class="habit-social-line-main">
+                <button class="icon-btn like-btn" type="button" onclick="quickLikeMyChallenge(this)" aria-label="点赞 / 取消点赞"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button>
+                <span class="habit-social-line-text"><span class="habit-social-name-link" onclick="event.stopPropagation();openCareNameLink(this)">林雨晴</span>、<span class="habit-social-name-link" onclick="event.stopPropagation();openCareNameLink(this)">苏小桔</span> 等8个赞</span>
+              </span>
+              <button class="habit-social-button comment" type="button" onclick="openInlineCompose(this)">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                <span>评论</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ PAGE: C-Me 我的动态（参考 C5 个人主页结构） ============ -->
+  <div class="page" data-page="c-me">
+    <div class="ios-status-bar">
+      <div class="iss-time">9:41</div>
+      <div class="iss-right">
+        <div class="iss-signal">
+          <span class="iss-bar"></span><span class="iss-bar"></span>
+          <span class="iss-bar"></span><span class="iss-bar"></span>
+        </div>
+        <div class="iss-network">5G</div>
+        <div class="iss-battery"><span class="iss-battery-pct">85</span></div>
+      </div>
+    </div>
+    <div class="app-topbar--secondary">
+      <div class="back" onclick="goto('c1')">‹</div>
+      <div class="title" style="padding-right:0;">我的动态</div>
+      <div class="topbar-set-btn" onclick="goToCareProfilePage()" title="主页设置">⚙️</div>
+    </div>
+    <div class="scroll page-content-2">
+      <div class="profile-hero">
+        <div class="profile-row">
+          <div class="profile-avatar"><img class="real-photo" src="https://i.pravatar.cc/150?img=33" alt="清晨的雾"><span class="ring-mark">R</span></div>
+          <div class="profile-info">
+            <div class="profile-name">清晨的雾 <span class="tag-mini special">本人</span></div>
+            <div class="profile-meta">戒指已连接 · 连续 7 天达标 · 今日第 3 项</div>
+          </div>
+          <button class="note-btn" onclick="toast('打开个人资料编辑')">✏️ 编辑</button>
+        </div>
+        <!-- 健康标签：基于我进行中的挑战自动生成 -->
+        <div class="tag-row profile-tag-row">
+          <div class="t hl">🔥 连续 7 天达标</div>
+          <div class="t">早起伙伴</div>
+          <div class="t">饮水达人</div>
+          <div class="t">步数挑战者</div>
+        </div>
+        <div class="triple">
+          <div class="it"><div class="vv">42</div><div class="lb">我给好友点赞</div></div>
+          <div class="it"><div class="vv">28</div><div class="lb">好友给我点赞</div></div>
+          <div class="it"><div class="vv">7</div><div class="lb">今日挑战卡</div></div>
+        </div>
+      </div>
+
+      <div class="section-head" style="padding:0 20px;">
+        <div>
+          <div class="section-title">我的挑战动态</div>
+          <div class="section-sub">仅展示你已开启"分享到关心圈"的挑战</div>
+        </div>
+      </div>
+
+      <!-- 走路（今日挑战 · 完成时发动态） -->
+      <div class="dyn-time-hint">今天 12 分钟前 · 今日挑战 · 完成</div>
+      <div class="dyn-card my-dyn-card" data-feed="walk" data-feed-type="daily" data-trigger="completed" data-time="2026-05-05T14:30" style="margin:0 16px 14px;">
+        <div class="ch-block green">
+          <div class="ch-top">
+            <div class="ch-icon">🚶</div>
+            <div class="ch-name">每日 8000 步</div>
+            <div class="ch-status">✓ 已完成</div>
+          </div>
+          <div class="ch-progress">
+            <div class="ch-bar"><div class="ch-bar-fill" style="width:100%;"></div></div>
+            <div class="ch-pct">100%</div>
+          </div>
+          <div class="ch-text">今天已完成 8,000 步目标 · 比昨天多走了 1.2 公里</div>
+        </div>
+        
+        <div class="habit-social-actions" onclick="event.stopPropagation()">
+          <div class="habit-social-lines">
+            <div class="habit-social-line like">
+              <span class="habit-social-line-main">
+                <span class="habit-social-line-icon" onclick="quickLikeMyChallenge(this)" role="button" aria-label="点赞 / 取消点赞">❤️</span>
+                <span class="habit-social-line-text"><span class="habit-social-name-link" data-liker="周妈妈" onclick="event.stopPropagation();openCareNameLink(this)">周妈妈</span>、<span class="habit-social-name-link" onclick="event.stopPropagation();openCareNameLink(this)">阿戒</span>、<span class="habit-social-name-link" onclick="event.stopPropagation();openCareNameLink(this)">林雨晴</span> 等5个赞</span>
+              </span>
+            </div>
+            <div class="habit-social-line comment-line" data-commenter="林雨晴" onclick="replyToComment(this)">
+              <span class="habit-social-line-text"><span class="habit-social-name-link" onclick="event.stopPropagation();openCareNameLink(this)">林雨晴</span>：步数稳定！明天我也加入 🚶‍♀️</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 睡眠（今日挑战 · 完成时发动态） -->
+      <div class="dyn-time-hint">今天 1 小时前 · 今日挑战 · 完成</div>
+      <div class="dyn-card my-dyn-card" data-feed="sleep" data-feed-type="daily" data-trigger="completed" data-time="2026-05-05T13:30" style="margin:0 16px 14px;">
+        <div class="ch-block purple">
+          <div class="ch-top">
+            <div class="ch-icon">😴</div>
+            <div class="ch-name">22:30 前入睡</div>
+            <div class="ch-status">✓ 已完成</div>
+          </div>
+          <div class="ch-progress">
+            <div class="ch-bar"><div class="ch-bar-fill" style="width:100%;"></div></div>
+            <div class="ch-pct">100%</div>
+          </div>
+          <div class="ch-text">昨晚 22:18 入睡 · 连续 7 天达成</div>
+        </div>
+        
+        <div class="habit-social-actions" onclick="event.stopPropagation()">
+          <div class="habit-social-lines">
+            <div class="habit-social-line like">
+              <span class="habit-social-line-main">
+                <span class="habit-social-line-icon" onclick="quickLikeMyChallenge(this)" role="button" aria-label="点赞 / 取消点赞">🤍</span>
+                <span class="habit-social-line-text"><span class="habit-social-name-link" onclick="event.stopPropagation();openCareNameLink(this)">阿戒</span> 1个赞</span>
+              </span>
+            </div>
+            <div class="habit-social-line comment-line" data-commenter="阿戒" onclick="replyToComment(this)">
+              <span class="habit-social-line-text"><span class="habit-social-name-link" onclick="event.stopPropagation();openCareNameLink(this)">阿戒</span>：睡眠节奏稳了，要不要一起来个深睡 90 分钟挑战？</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 喝水（今日挑战 · 完成时发动态） -->
+      <div class="dyn-time-hint">今天 11:30 · 今日挑战 · 完成</div>
+      <div class="dyn-card my-dyn-card" data-feed="water" data-feed-type="daily" data-trigger="completed" data-time="2026-05-05T11:30" style="margin:0 16px 14px;">
+        <div class="ch-block cyan">
+          <div class="ch-top">
+            <div class="ch-icon">💧</div>
+            <div class="ch-name">每日 8 杯水</div>
+            <div class="ch-status">✓ 已完成</div>
+          </div>
+          <div class="ch-progress">
+            <div class="ch-bar"><div class="ch-bar-fill" style="width:100%;"></div></div>
+            <div class="ch-pct">100%</div>
+          </div>
+          <div class="ch-text">今日 8 杯水目标已达成 · 节奏保持稳定</div>
+        </div>
+        
+        <div class="habit-social-actions" onclick="event.stopPropagation()">
+          <div class="habit-social-lines">
+            <div class="habit-social-line like">
+              <span class="habit-social-line-main">
+                <span class="habit-social-line-icon" onclick="quickLikeMyChallenge(this)" role="button" aria-label="点赞 / 取消点赞">🤍</span>
+                <span class="habit-social-line-text">还没有人点赞</span>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 樱花漫步（练级挑战 · 50% 里程碑发动态） -->
+      <div class="dyn-time-hint">今天 09:42 · 练级挑战 · 50% 进度</div>
+      <div class="dyn-card my-dyn-card" data-feed="sakura-50" data-feed-type="level" data-trigger="progress-50" data-time="2026-05-05T09:42" style="margin:0 16px 14px;">
+        <div class="ch-block pink">
+          <div class="ch-top">
+            <div class="ch-icon">🌸</div>
+            <div class="ch-name">樱花漫步 · 30 天累计 50 公里</div>
+            <div class="ch-status">⏳ 50% 里程碑</div>
+          </div>
+          <div class="ch-progress">
+            <div class="ch-bar"><div class="ch-bar-fill" style="width:50%;"></div></div>
+            <div class="ch-pct">25 / 50 公里</div>
+          </div>
+          <div class="ch-text">已经走完一半 · 还有 15 天达成全部目标</div>
+        </div>
+        
+        <div class="habit-social-actions" onclick="event.stopPropagation()">
+          <div class="habit-social-lines">
+            <div class="habit-social-line like">
+              <span class="habit-social-line-main">
+                <span class="habit-social-line-icon" onclick="quickLikeMyChallenge(this)" role="button" aria-label="点赞 / 取消点赞">❤️</span>
+                <span class="habit-social-line-text"><span class="habit-social-name-link" onclick="event.stopPropagation();openCareNameLink(this)">阿戒</span>、<span class="habit-social-name-link" onclick="event.stopPropagation();openCareNameLink(this)">林雨晴</span> 2 个赞</span>
+              </span>
+            </div>
+            <div class="habit-social-line comment-line" data-commenter="阿戒" onclick="replyToComment(this)">
+              <span class="habit-social-line-text"><span class="habit-social-name-link" onclick="event.stopPropagation();openCareNameLink(this)">阿戒</span>：节奏正好 · 后半程加油</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 跑步（今日挑战 · 完成时发动态） -->
+      <div class="dyn-time-hint">昨天 18:42 · 今日挑战 · 完成</div>
+      <div class="dyn-card my-dyn-card" data-feed="run" data-feed-type="daily" data-trigger="completed" data-time="2026-05-04T18:42" style="margin:0 16px 14px;">
+        <div class="ch-block pink">
+          <div class="ch-top">
+            <div class="ch-icon">🏃</div>
+            <div class="ch-name">3 公里慢跑</div>
+            <div class="ch-status">✓ 已完成</div>
+          </div>
+          <div class="ch-progress">
+            <div class="ch-bar"><div class="ch-bar-fill" style="width:100%;"></div></div>
+            <div class="ch-pct">100%</div>
+          </div>
+          <div class="ch-text">配速比上周提升 8% · 心率区间稳定</div>
+        </div>
+        
+        <div class="habit-social-actions" onclick="event.stopPropagation()">
+          <div class="habit-social-lines">
+            <div class="habit-social-line like">
+              <span class="habit-social-line-main">
+                <span class="habit-social-line-icon" onclick="quickLikeMyChallenge(this)" role="button" aria-label="点赞 / 取消点赞">🤍</span>
+                <span class="habit-social-line-text"><span class="habit-social-name-link" onclick="event.stopPropagation();openCareNameLink(this)">林雨晴</span>、<span class="habit-social-name-link" onclick="event.stopPropagation();openCareNameLink(this)">阿戒</span> 2个赞</span>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 吃药打卡（今日挑战 · 完成时发动态） -->
+      <div class="dyn-time-hint">昨天 09:08 · 今日挑战 · 完成</div>
+      <div class="dyn-card my-dyn-card" data-feed="medicine" data-feed-type="daily" data-trigger="completed" data-time="2026-05-04T09:08" style="margin:0 16px 14px;">
+        <div class="ch-block blue">
+          <div class="ch-top">
+            <div class="ch-icon">💊</div>
+            <div class="ch-name">按时打卡</div>
+            <div class="ch-status">✓ 累计 18 天</div>
+          </div>
+          <div class="ch-progress">
+            <div class="ch-bar"><div class="ch-bar-fill" style="width:90%;"></div></div>
+            <div class="ch-pct">本月 90%</div>
+          </div>
+          <div class="ch-text">坚持就是力量 · 仅展示打卡天数，药品 / 剂量 / 时间永不外传（隐私铁律）</div>
+        </div>
+        
+        <div class="habit-social-actions" onclick="event.stopPropagation()">
+          <div class="habit-social-lines">
+            <div class="habit-social-line like">
+              <span class="habit-social-line-main">
+                <span class="habit-social-line-icon" onclick="quickLikeMyChallenge(this)" role="button" aria-label="点赞 / 取消点赞">❤️</span>
+                <span class="habit-social-line-text"><span class="habit-social-name-link" onclick="event.stopPropagation();openCareNameLink(this)">周妈妈</span> 1个赞</span>
+              </span>
+            </div>
+            <div class="habit-social-line comment-line" data-commenter="周妈妈" onclick="replyToComment(this)">
+              <span class="habit-social-line-text"><span class="habit-social-name-link" onclick="event.stopPropagation();openCareNameLink(this)">周妈妈</span>：宝贝坚持得真好 ❤️</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 30 天早睡早起（练级挑战 · 加入时发动态） -->
+      <div class="dyn-time-hint">3 天前 · 练级挑战 · 加入</div>
+      <div class="dyn-card my-dyn-card" data-feed="early-bird-join" data-feed-type="level" data-trigger="joined" data-time="2026-05-02T21:08" style="margin:0 16px 14px;">
+        <div class="ch-block purple">
+          <div class="ch-top">
+            <div class="ch-icon">🌅</div>
+            <div class="ch-name">30 天早睡早起</div>
+            <div class="ch-status">📌 已加入</div>
+          </div>
+          <div class="ch-progress">
+            <div class="ch-bar"><div class="ch-bar-fill" style="width:0%;"></div></div>
+            <div class="ch-pct">0 / 30 天</div>
+          </div>
+          <div class="ch-text">和 4 位好友一起开始挑战 · 期待 30 天后的我</div>
+        </div>
+        
+        <div class="habit-social-actions" onclick="event.stopPropagation()">
+          <div class="habit-social-lines">
+            <div class="habit-social-line like">
+              <span class="habit-social-line-main">
+                <span class="habit-social-line-icon" onclick="quickLikeMyChallenge(this)" role="button" aria-label="点赞 / 取消点赞">❤️</span>
+                <span class="habit-social-line-text"><span class="habit-social-name-link" onclick="event.stopPropagation();openCareNameLink(this)">林夕</span>、<span class="habit-social-name-link" onclick="event.stopPropagation();openCareNameLink(this)">阿戒</span> 4 个赞</span>
+              </span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -2437,6 +2962,23 @@
     </div>
   </div>
 
+  <!-- ============ Modal: C5.1 主页设置（特别关心） ============ -->
+  <div class="modal-mask" id="careSetModal">
+    <div class="modal" style="text-align:left;">
+      <div class="ttl" style="text-align:center;">主页设置</div>
+      <div class="care-set-row">
+        <div class="info">
+          <div class="t">特别关心</div>
+          <div class="s">开启后 TA 发布动态时会推送 App 系统通知<br>TA 也会单独显示在「特别关心」分组中</div>
+        </div>
+        <div class="toggle on" id="careToggle" onclick="toggleCare()"></div>
+      </div>
+      <div class="btns">
+        <button class="btn primary" style="flex:1;" onclick="closeCareSet()">完成</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Toast -->
   <div class="toast" id="toast"></div>
 </div>
@@ -2479,6 +3021,14 @@
     window.location.href = target;
   }
 
+  // v1.9 起：顶栏第一按钮改为 🔔 消息中心 → 跳《03-个人中心》P7
+  function onMsgCenterClick(){
+    const target = activeCareState === 'logged-out'
+      ? '03-个人中心.html?page=P1.1'
+      : '03-个人中心.html?page=P7';
+    window.location.href = target;
+  }
+
   /* ===== Side-nav click handler ===== */
   document.querySelectorAll('.side-nav .nav-item').forEach(n=>{
     n.addEventListener('click', ()=>{
@@ -2493,6 +3043,10 @@
         n.classList.add('is-active');
       } else if(t === 'modal' && n.dataset.modal === 'confirm'){
         openConfirm(n.dataset.name || '阿戒', n.dataset.src || '通过昵称搜索');
+      } else if(t === 'modal' && n.dataset.modal === 'careSet'){
+        // 默认演示阿戒（已被设为特别关心）的设置弹层
+        openUserProfile('阿戒');
+        setTimeout(openCareSet, 80);
       }
     });
   });
@@ -2530,7 +3084,11 @@
     if(homeMyRank) homeMyRank.style.display = '';
     const homeSlots = document.querySelectorAll('.podium-card .podium-slot');
     homeSlots.forEach(sl=>{
-      sl.onclick = ()=>goto('c5');
+      // applyState 还原 podium HTML 后，按 .podium-name 推断点击对象
+      sl.onclick = ()=>{
+        const nm = sl.querySelector('.podium-name')?.textContent?.trim();
+        if(nm) openUserProfile(nm); else goto('c5');
+      };
       sl.style.cursor = 'pointer';
     });
     // 重置：恢复 C1 主体内容显示，隐藏登录引导卡
@@ -2752,6 +3310,46 @@
     return 'https://i.pravatar.cc/150?img=' + (NAME_PHOTO[name] || 33);
   }
 
+  /* ===== 用户元数据：从任意头像点进 C5 时按这里渲染信息 =====
+     special:true 表示该好友被设为"特别关心"（demo：仅阿戒预设为 true） */
+  const USERS = {
+    '阿戒':   {meta:'同城 · 已关注 86 天 · 本名 戒小明',  special:true },
+    '周妈妈': {meta:'异地 · 已关注 102 天 · 本名 周慧兰', special:false},
+    '林雨晴': {meta:'同城 · 已关注 12 天',                special:false},
+    '苏小桔': {meta:'同城 · 已关注 28 天',                special:false},
+    '爸爸':   {meta:'异地 · 已关注 1095 天 · 本名 王国强', special:false},
+    '陈乐':   {meta:'同城 · 已关注 56 天',                special:false},
+    '王医生': {meta:'同城 · 已关注 18 天',                special:false},
+    '林叔叔': {meta:'异地 · 已关注 240 天 · 本名 林志远', special:false},
+    '高维维': {meta:'异地 · 已关注 22 天',                special:false},
+    '表妹小可': {meta:'同城 · 已关注 1 天 · 通过邀请码加入', special:false}
+  };
+  function getUserData(name){
+    return USERS[name] || {meta:'同城 · 已关注 — · 关注', special:false};
+  }
+  function renderProfileName(name, special){
+    const nameEl = document.getElementById('c5Name');
+    if(!nameEl) return;
+    nameEl.innerHTML = special
+      ? `${name} <span class="tag-mini special tag-care">特别关心</span>`
+      : `${name}`;
+  }
+  /* 从任意好友头像 / 行点进来都用这个：把 C5 hero 区切成对应用户
+     全部用 getElementById 直取，避开 class 链 querySelector 在某些缓存版本下
+     可能命中其它元素的隐患。 */
+  function openUserProfile(name){
+    const data = getUserData(name);
+    goto('c5');
+    const t = document.getElementById('c5Title');
+    if(t) t.textContent = name + ' 的主页';
+    const img = document.getElementById('c5Avatar');
+    if(img){ img.src = pravatarOf(name); img.setAttribute('alt', name); }
+    const m = document.getElementById('c5Meta');
+    if(m) m.textContent = data.meta;
+    renderProfileName(name, data.special);
+    document.getElementById('phone').dataset.profileUser = name;
+  }
+
   /* ===== Confirm modal ===== */
   function openConfirm(name, src){
     document.getElementById('confirmName').textContent = name;
@@ -2761,6 +3359,73 @@
   }
   function closeConfirm(){
     document.getElementById('confirmModal').classList.remove('open');
+  }
+
+  /* ===== C5.1 主页设置：特别关心开关 =====
+     · toggle 跟随当前查看的 user
+     · syncCare() 把 USERS.special 一次性投影到三处：好友动态卡 .tag-care、
+       我的好友列表（隐藏原行 + 在"特别关心"分组里克隆出来）、当前 C5 名牌 */
+  const FRIEND_UIDS = ['阿戒','周妈妈','林雨晴','苏小桔','爸爸'];
+
+  function syncCare(){
+    const careList = document.getElementById('careOnList');
+    if(careList) careList.innerHTML = '';
+    let count = 0;
+
+    FRIEND_UIDS.forEach(uid => {
+      const isOn = !!(USERS[uid] && USERS[uid].special);
+      // 我的好友列表里的原行
+      const origRow = document.querySelector('#myFriendsList .friend-row[data-uid="'+uid+'"]');
+      if(origRow) origRow.classList.toggle('moved-to-care', isOn);
+      // 好友动态卡（如果有）
+      document.querySelectorAll('.dyn-card[data-uid="'+uid+'"]').forEach(c => {
+        c.classList.toggle('care-on', isOn);
+      });
+      // "特别关心"分组：克隆该好友的行进来（带 .care-on 让 .tag-care 显示）
+      if(isOn && origRow && careList){
+        const clone = origRow.cloneNode(true);
+        clone.classList.remove('moved-to-care');
+        clone.classList.add('care-on');
+        // 在 .row-title 末尾追加 .tag-care span（如果克隆出来的还没有）
+        const titleEl = clone.querySelector('.row-title');
+        if(titleEl && !titleEl.querySelector('.tag-care')){
+          const span = document.createElement('span');
+          span.className = 'tag-mini special tag-care';
+          span.style.marginLeft = '4px';
+          span.textContent = '特别关心';
+          titleEl.appendChild(span);
+        }
+        careList.appendChild(clone);
+        count++;
+      }
+    });
+
+    // 分组本身：只有有人时才显示
+    const sec = document.getElementById('careSection');
+    if(sec) sec.classList.toggle('has-friends', count > 0);
+    const badge = document.getElementById('careBadge');
+    if(badge) badge.textContent = count + ' 位';
+
+    // 当前 C5 名牌按当前查看的 user 重渲染（标签的存在与否随 USERS.special）
+    const curr = document.getElementById('phone').dataset.profileUser;
+    if(curr) renderProfileName(curr, !!(USERS[curr] && USERS[curr].special));
+  }
+
+  function openCareSet(){
+    const user = document.getElementById('phone').dataset.profileUser || '阿戒';
+    const t = document.getElementById('careToggle');
+    t.classList.toggle('on', !!getUserData(user).special);
+    document.getElementById('careSetModal').classList.add('open');
+  }
+  function closeCareSet(){ document.getElementById('careSetModal').classList.remove('open'); }
+  function toggleCare(){
+    const t = document.getElementById('careToggle');
+    const user = document.getElementById('phone').dataset.profileUser || '阿戒';
+    const on = !t.classList.contains('on');
+    t.classList.toggle('on', on);
+    if(USERS[user]) USERS[user].special = on;
+    syncCare();
+    toast(on ? '🔔 已设为特别关心 · TA 发动态会推送系统通知' : '已取消特别关心');
   }
   function doAddFriend(){
     const src = document.getElementById('confirmSrc').textContent;
@@ -2866,7 +3531,7 @@
       card.style.transition = 'all .35s ease';
       card.innerHTML = `
         <div class="rec-head">
-          <div class="avatar has-photo" onclick="goto('c5')">
+          <div class="avatar has-photo" onclick="openUserProfile('${r.name}')">
             <img class="real-photo" src="${r.photo}" alt="${r.name}">
             <span class="ring-mark">R</span>
           </div>
@@ -2931,6 +3596,286 @@
     }
     openConfirm('AIR-Friend', '通过邀请码');
   }
+
+  /* ==========================================================
+     URL 参数：从今日模块跳来时按 ?user=XXX 切到 C5 + 改主页姓名
+     例：./02-关心模块.html?user=阿宁#c5 → C5 页头 / .profile-name → 阿宁
+     ========================================================== */
+  (function applyUserFromQuery(){
+    function run(){
+      let user = '';
+      try {
+        const params = new URLSearchParams(window.location.search);
+        user = (params.get('user') || '').trim();
+      } catch (_) { /* 旧浏览器兜底，留空 */ }
+      if (!user) return;
+      // 复用 openUserProfile：切到 C5 + 渲染顶栏 / 头像 / 名字 / meta
+      try { openUserProfile(user); } catch (_) {}
+    }
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', run);
+    } else {
+      run();
+    }
+  })();
+
+  /* 初始化：按 USERS.special 把"特别关心"分组、动态卡标签、好友列表一次性投影到位 */
+  (function initCare(){
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', syncCare);
+    } else {
+      syncCare();
+    }
+  })();
+
+  /* ==========================================================
+     好友动态卡：点赞 + 评论 + ⋯ 菜单（与 01-今日模块.html 一致）
+     - ⋯ 按钮：toggle 同卡的弹出菜单，互斥关闭
+     - 点赞按钮 / 心形：把"我"加入名字列表 + 计数 ±1
+     - 评论按钮：在 .habit-social-lines 末尾插入输入条
+     - 评论行点击：以该评论作者为回复对象再次打开输入条
+     ========================================================== */
+  function toggleHabitSocialMenu(btn) {
+    const menu = btn.parentElement && btn.parentElement.querySelector('.habit-social-menu');
+    if (!menu) return;
+    document.querySelectorAll('.habit-social-menu.show').forEach(m => {
+      if (m !== menu) m.classList.remove('show');
+    });
+    menu.classList.toggle('show');
+  }
+  function _escapeHabitText(s) {
+    return String(s == null ? '' : s).replace(/[<>&"']/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+  function _wrapNameLink(name) {
+    return '<span class="habit-social-name-link" onclick="event.stopPropagation();openCareNameLink(this)">'
+         + _escapeHabitText(name) + '</span>';
+  }
+  function openCareNameLink(el) {
+    const name = (el && el.textContent || '').trim();
+    if (!name) return;
+    // 点击"我"标识 → 跳到我的动态页 C-Me（v2.4）
+    if (name === '我') {
+      if (typeof goto === 'function') goto('c-me');
+      return;
+    }
+    if (typeof openUserProfile === 'function') openUserProfile(name);
+  }
+  function quickLikeMyChallenge(btn) {
+    const card = btn.closest('.dyn-card');
+    if (!card) return;
+    const likeBtn = card.querySelector('.habit-social-line.like .like-btn');
+    const textEl = card.querySelector('.habit-social-line.like .habit-social-line-text');
+    if (!likeBtn || !textEl) return;
+    if (!card.dataset.likeBaseNames) {
+      const m = textEl.textContent.match(/^(.+?)\s+等(\d+)个赞$/);
+      if (m) { card.dataset.likeBaseNames = m[1]; card.dataset.likeBaseCount = m[2]; }
+      else { card.dataset.likeBaseNames = textEl.textContent; card.dataset.likeBaseCount = '0'; }
+    }
+    const baseNames = (card.dataset.likeBaseNames || '').split('、').filter(Boolean);
+    const baseCount = parseInt(card.dataset.likeBaseCount || '0', 10);
+    const liked = likeBtn.classList.contains('is-liked');
+    if (liked) {
+      likeBtn.classList.remove('is-liked');
+      textEl.innerHTML = baseNames.map(_wrapNameLink).join('、') + ` 等${baseCount}个赞`;
+    } else {
+      likeBtn.classList.add('is-liked');
+      textEl.innerHTML = ['我'].concat(baseNames).map(_wrapNameLink).join('、') + ` 等${baseCount + 1}个赞`;
+    }
+  }
+  function openInlineCompose(btn) {
+    const card = btn.closest('.dyn-card');
+    if (!card) return;
+    const lines = card.querySelector('.habit-social-lines');
+    if (!lines) return;
+    let composer = lines.querySelector('.habit-social-inline-compose');
+    if (!composer) {
+      composer = document.createElement('div');
+      composer.className = 'habit-social-inline-compose';
+      composer.innerHTML = '<input class="habit-social-inline-input" type="text" maxlength="80" placeholder="写下你的评论" />'
+        + '<button class="habit-social-inline-send" type="button" onclick="sendInlineComment(this)">发送</button>';
+      lines.appendChild(composer);
+      composer.addEventListener('click', e => e.stopPropagation());
+      const input = composer.querySelector('input');
+      if (input) {
+        input.addEventListener('keydown', e => {
+          if (e.key === 'Enter') { e.preventDefault(); sendInlineComment(composer.querySelector('.habit-social-inline-send')); }
+        });
+      }
+    }
+    delete composer.dataset.replyTo;
+    const input = composer.querySelector('input');
+    if (input) { input.placeholder = '写下你的评论'; input.value = ''; }
+    composer.classList.add('show');
+    if (input) input.focus();
+    const menu = btn.closest('.habit-social-menu');
+    if (menu) menu.classList.remove('show');
+  }
+  function replyToComment(row) {
+    const card = row.closest('.dyn-card');
+    if (!card) return;
+    const nameEl = row.querySelector('.habit-social-name-link');
+    const replyName = (nameEl && nameEl.textContent.trim()) || '';
+    openInlineCompose(row);
+    const composer = card.querySelector('.habit-social-inline-compose');
+    if (!composer) return;
+    if (replyName) composer.dataset.replyTo = replyName;
+    const input = composer.querySelector('input');
+    if (input) { input.placeholder = replyName ? `回复 ${replyName}：` : '写下你的评论'; input.focus(); }
+  }
+  function sendInlineComment(sendBtn) {
+    const composer = sendBtn.closest('.habit-social-inline-compose');
+    if (!composer) return;
+    const input = composer.querySelector('input');
+    const text = (input && input.value || '').trim();
+    if (!text) { composer.classList.remove('show'); return; }
+    const lines = composer.parentElement;
+    const replyName = composer.dataset.replyTo || '';
+    const safe = _escapeHabitText(text);
+    const newLine = document.createElement('div');
+    newLine.className = 'habit-social-line comment-line';
+    newLine.setAttribute('onclick', 'replyToComment(this)');
+    let html;
+    if (replyName) {
+      html = '<span class="habit-social-line-text">' + _wrapNameLink('我') + ' 回复 ' + _wrapNameLink(replyName) + '：' + safe + '</span>';
+    } else {
+      html = '<span class="habit-social-line-text">' + _wrapNameLink('我') + '：' + safe + '</span>';
+    }
+    newLine.innerHTML = html;
+    lines.insertBefore(newLine, composer);
+    input.value = '';
+    composer.classList.remove('show');
+    delete composer.dataset.replyTo;
+  }
+  // 点击菜单 / 输入条以外区域，关闭所有打开的菜单
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.habit-social-menu-wrap')) {
+      document.querySelectorAll('.habit-social-menu.show').forEach(m => m.classList.remove('show'));
+    }
+  });
+
+  // 来自消息中心的跳转反馈（按 P7 § c.1 直跳目的页规则 · 真实联动）
+  (function notifyFromMsgCenter() {
+    const p = new URLSearchParams(window.location.search);
+    const section = p.get('section');
+    const dynUid = p.get('dynUid');           // 情景 B · 跳到某个好友的动态卡（C1.A 内）
+    const myComment = p.get('myComment') === 'true';
+    const meFeed = p.get('meFeed');           // 情景 A · 跳到我的动态页面 C-Me，对应 my-dyn-card[data-feed="..."]
+    const liker = p.get('liker');
+    const commenter = p.get('commenter');
+    const profileUid = p.get('profileUid');   // 跳到某个好友的 C5 个人主页
+    const goMine = p.get('goMine') === 'true'; // 跳到我的动态 C-Me
+
+    setTimeout(() => {
+      // 跳到我的动态页 C-Me（如从 01 / 02 中点击"我"标识跨过来）
+      if (goMine) {
+        if (typeof goto === 'function') goto('c-me');
+        toast('📬 已打开你的动态页');
+        return;
+      }
+      // 跳 C5 好友主页（如：通过邀请码加入 → 直接打开对方主页）
+      if (profileUid) {
+        if (typeof openUserProfile === 'function') {
+          openUserProfile(profileUid);
+          toast(`📬 来自消息中心 · 已打开 ${profileUid} 的主页`);
+        } else {
+          toast(`📬 来自消息中心 · 即将打开 ${profileUid} 的主页`);
+        }
+        return;
+      }
+
+      // 情景 A · 别人给我点赞 / 评论 → 跳"我的动态" C-Me + 滚动到对应 my-dyn-card + 高亮
+      if (meFeed) {
+        if (typeof goto === 'function') goto('c-me');
+        setTimeout(() => {
+          const card = document.querySelector(`.my-dyn-card[data-feed="${meFeed}"]`);
+          if (!card) {
+            toast(`📬 来自消息中心 · 未找到我的动态卡（${meFeed}）`);
+            return;
+          }
+          card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          card.classList.add('is-msg-focus');
+          setTimeout(() => card.classList.remove('is-msg-focus'), 1700);
+
+          // 评论：再二次定位评论行（按 data-commenter 匹配）
+          if (commenter) {
+            setTimeout(() => {
+              const commentLine = card.querySelector(`.comment-line[data-commenter="${commenter}"]`);
+              if (commentLine) {
+                commentLine.classList.add('is-msg-focus');
+                setTimeout(() => commentLine.classList.remove('is-msg-focus'), 1700);
+              }
+              toast(`📬 已定位到我的动态 · ${commenter} 在评论区留言`);
+            }, 800);
+          } else if (liker) {
+            // 点赞：在 .like 行上再次高亮
+            setTimeout(() => {
+              const likeLine = card.querySelector('.habit-social-line.like');
+              if (likeLine) {
+                likeLine.classList.add('is-msg-focus');
+                setTimeout(() => likeLine.classList.remove('is-msg-focus'), 1700);
+              }
+              toast(`📬 已定位到我的动态 · ${liker} 给你点了赞 ❤️`);
+            }, 800);
+          } else {
+            toast(`📬 已定位到我的动态卡（${meFeed}）`);
+          }
+        }, 220);
+        return;
+      }
+
+      // 加好友请求 / 我发出的请求 → 切到 C4 好友通知页 + 高亮对应区段
+      if (section === 'pending' || section === 'sent') {
+        if (typeof goto === 'function') goto('c4');
+        setTimeout(() => {
+          const phone = document.getElementById('phone');
+          const sections = phone ? phone.querySelectorAll('[data-page="c4"] .section-card, [data-page="c4"] .c4-section') : [];
+          const target = sections[section === 'pending' ? 0 : 1] || phone.querySelector('[data-page="c4"]');
+          if (target) {
+            target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            target.classList.add('is-msg-focus');
+            setTimeout(() => target.classList.remove('is-msg-focus'), 1700);
+          }
+          toast(`📬 来自消息中心 · 已打开 C4 ${section === 'pending' ? '· 待我同意' : '· 我发送的'}`);
+        }, 200);
+        return;
+      }
+
+      // 我的评论被回复 / 跳 TA 的动态卡（情景 B）
+      // dynUid 对应 02 中 .dyn-card[data-uid="..."] 已存在好友：周妈妈 / 阿戒 / 林雨晴
+      if (dynUid) {
+        // 确保在 C1 关心首页 + Tab 切到「好友动态」面板
+        if (typeof goto === 'function') goto('c1');
+        if (typeof gotoSub === 'function') gotoSub('c1', 'a');
+
+        setTimeout(() => {
+          const card = document.querySelector(`.dyn-card[data-uid="${dynUid}"]`);
+          if (!card) {
+            toast(`📬 来自消息中心 · 未找到 ${dynUid} 的动态卡`);
+            return;
+          }
+          card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          card.classList.add('is-msg-focus');
+          setTimeout(() => card.classList.remove('is-msg-focus'), 1700);
+
+          // myComment=true：高亮"对方回复我"那行（data-reply-to="me"），而不是"我"那行
+          if (myComment) {
+            setTimeout(() => {
+              const replyLine = card.querySelector('.comment-line[data-reply-to="me"]')
+                || card.querySelector(`.comment-line[data-commenter="${dynUid}"]`);
+              if (replyLine) {
+                replyLine.classList.add('is-msg-focus');
+                setTimeout(() => replyLine.classList.remove('is-msg-focus'), 1700);
+              }
+              toast(`📬 已定位到 ${dynUid} 的动态卡 · TA 回复你的那行已高亮`);
+            }, 800);
+          } else {
+            toast(`📬 已定位到 ${dynUid} 的动态卡`);
+          }
+        }, 200);
+        return;
+      }
+    }, 600);
+  })();
 </script>
 </body>
 </html>
