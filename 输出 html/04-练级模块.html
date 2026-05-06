@@ -1569,6 +1569,12 @@ button { font: inherit; color: inherit; background: transparent; border: 0; padd
   background: linear-gradient(180deg, rgba(244,245,247,0.96), rgba(244,245,247,0.82));
   backdrop-filter: blur(10px);
 }
+.mlv-head-main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
 .mlv-head .ov-back,
 .mlv-head .more {
   width: 36px;
@@ -1587,6 +1593,15 @@ button { font: inherit; color: inherit; background: transparent; border: 0; padd
   font-size: 18px;
   font-weight: 800;
   letter-spacing: -0.2px;
+}
+.mlv-head--with-tabs {
+  padding: 18px 0 0;
+  align-items: stretch;
+  flex-direction: column;
+  gap: 10px;
+}
+.mlv-head--with-tabs .mlv-head-main {
+  padding: 0 20px;
 }
 .mlv-page {
   padding: 10px 16px 40px;
@@ -1990,7 +2005,7 @@ button { font: inherit; color: inherit; background: transparent; border: 0; padd
     linear-gradient(180deg, #f8f9ff 0%, #f4f6fb 100%);
 }
 .medal-wall-page {
-  padding: 8px 16px 34px;
+  padding: 8px 0 34px;
 }
 .medal-profile {
   padding: 8px 0 18px;
@@ -2022,50 +2037,184 @@ button { font: inherit; color: inherit; background: transparent; border: 0; padd
   color: var(--text3);
   font-weight: 600;
 }
+/* —— Vant 下划线风格 tab，参考 03-个人中心 P7 消息中心 —— */
 .medal-tabs {
   display: flex;
-  gap: 8px;
-  margin: 10px 0 14px;
-  overflow-x: auto;                    /* 5 个 tab 时支持横向滚动 */
+  align-items: stretch;
+  margin: 0;                                  /* 与标题栏无缝衔接 */
+  padding: 0 12px;
+  background: transparent;
+  border-bottom: 1px solid var(--border-soft);
+  overflow-x: auto;
   scrollbar-width: none;
-  -ms-overflow-style: none;
+  flex-shrink: 0;
+  position: relative;
 }
 .medal-tabs::-webkit-scrollbar { display: none; }
 .medal-tab {
-  flex: 0 0 auto;                      /* 自适应宽度，不再均分 */
-  padding: 0 16px;
-  height: 42px;
-  border-radius: 16px;
-  background: rgba(255,255,255,0.84);
-  border: 1px solid var(--border);
-  color: var(--text3);
-  font-size: 13px;
-  font-weight: 800;
+  flex: 1; flex-shrink: 0;
+  display: inline-flex;
+  align-items: center; justify-content: center;
+  gap: 4px;
+  height: 44px;
+  padding: 0 12px;
+  background: transparent !important;          /* 防御：清掉任何遗留底色 */
+  border: 0 !important;
+  border-radius: 0 !important;                 /* 防御：清掉任何全局按钮圆角 */
+  box-shadow: none !important;                 /* 防御：清掉任何全局按钮阴影 */
+  color: var(--text2);
+  font-size: 14px;
+  font-weight: 500;
   white-space: nowrap;
   cursor: pointer;
+  font-family: inherit;
+  position: relative;
+  transition: color 0.15s ease;
 }
 .medal-tab.active {
-  background: linear-gradient(135deg, #6c5ce7, #a855f7);
-  border-color: transparent;
-  color: #fff;
-  box-shadow: 0 10px 20px rgba(108,92,231,0.18);
+  color: var(--color-brand-primary);
+  font-weight: 600;
 }
+.medal-tab.active::after {
+  content: '';
+  position: absolute;
+  left: 50%; bottom: 4px;
+  transform: translateX(-50%);
+  width: 24px; height: 3px;
+  border-radius: 999px;
+  background: var(--color-brand-primary);
+}
+/* —— 系列折叠卡（成长历程 / 限时挑战 共用） —— */
 .medal-wall {
+  display: block;
+  padding: 0 16px;
+}
+.medal-series {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  margin-bottom: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(15,23,42,0.04);
+}
+.medal-series-head {
+  padding: 14px 16px;
+  display: flex; align-items: center; justify-content: space-between;
+  cursor: pointer;
+  user-select: none;
+}
+.medal-series-head .ms-titlewrap { flex: 1; min-width: 0; }
+.medal-series-head .ms-title {
+  font-size: 16px; font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.2px;
+}
+.medal-series-head .ms-meta {
+  margin-top: 3px;
+  font-size: 11px; color: var(--text3);
+  font-weight: 700;
+}
+.medal-series-head .ms-arrow {
+  flex-shrink: 0;
+  width: 24px; height: 24px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; line-height: 1;
+  color: var(--text3);
+  transition: transform 0.25s;
+}
+.medal-series.is-open .ms-arrow { transform: rotate(180deg); }
+
+.medal-series-body {
+  display: none;
+  padding: 4px 0 14px;                       /* 卡片更宽：移除内层左右 padding */
+}
+.medal-series.is-open .medal-series-body {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 18px 10px;
+  gap: 12px 8px;
+  padding: 4px 8px 14px;                     /* 仅留 8px 内边距防卡贴边 */
 }
+.medal-series-body .medal-card.is-extra { display: none; }
+.medal-series.is-expanded .medal-series-body .medal-card.is-extra { display: block; }
+.medal-series-body .ms-more {
+  grid-column: 1 / -1;
+  margin-top: 4px;
+  padding: 8px;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-brand-primary);
+  cursor: pointer;
+  border-top: 1px dashed var(--border-soft);
+}
+/* 一旦展开过（.is-expanded），"查看更多"链接自身隐藏 —— 不允许收起 */
+.medal-series.is-expanded .ms-more { display: none; }
+.medal-series-body .medal-card {
+  width: 100%;
+  text-align: center;
+  cursor: pointer;
+  min-width: 0;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+.medal-series-body .medal-card .icon-wrap {
+  width: 100%;
+  aspect-ratio: auto;
+  border-radius: 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+}
+.medal-series-body .medal-card.is-locked .icon-wrap {
+  background: transparent;
+}
+.medal-series-body .medal-card .hex {
+  width: 88px;
+  height: 88px;
+  display: flex; align-items: center; justify-content: center;
+}
+.medal-series-body .medal-card.is-locked .hex { filter: grayscale(1); opacity: 0.4; }
+.medal-series-body .medal-card .name {
+  margin-top: 8px;
+  font-size: 12px; font-weight: 800;
+  color: var(--text);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  max-width: 96px;
+}
+.medal-series-body .medal-card .level {
+  margin-top: 2px;
+  font-size: 10px; font-weight: 800;
+  color: #8a6200;
+  letter-spacing: 0.06em;
+}
+.medal-series-body .medal-card .meta {
+  margin-top: 2px;
+  font-size: 10px;
+  color: var(--text3);
+  font-weight: 700;
+}
+.medal-series-body .medal-card.is-locked .name,
+.medal-series-body .medal-card.is-locked .meta,
+.medal-series-body .medal-card.is-locked .level {
+  color: #a1a7b5;
+}
+
 .medal-card {
   text-align: center;
   cursor: pointer;
 }
 .medal-card .icon-wrap {
   width: 100%;
-  aspect-ratio: 1 / 1.05;
-  border-radius: 24px;
-  background: #FFFFFF;                              /* 纯白底，与页面其它白卡风格融合 */
-  border: 1px solid var(--border);
-  box-shadow: 0 4px 14px rgba(15,23,42,0.05);       /* 阴影同步收一点，更轻盈 */
+  aspect-ratio: auto;
+  border-radius: 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2087,14 +2236,15 @@ button { font: inherit; color: inherit; background: transparent; border: 0; padd
   object-fit: contain;
   /* 去掉 drop-shadow，让图片本身视觉干净，不再悬浮投影 */
 }
-/* 等级 LV.X 现在是名称下方独立一行（不再绝对定位在图标上） */
+/* 名称下方改为展示获取条件，支持较长文本 */
 .medal-card .level {
   margin-top: 4px;
   text-align: center;
   font-size: 11px;
-  font-weight: 800;
-  color: #8a6200;
-  letter-spacing: 0.08em;
+  line-height: 1.4;
+  font-weight: 700;
+  color: var(--text3);
+  letter-spacing: 0;
 }
 .medal-card .name {
   margin-top: 10px;
@@ -2110,7 +2260,7 @@ button { font: inherit; color: inherit; background: transparent; border: 0; padd
   font-weight: 700;
 }
 .medal-card.is-locked .icon-wrap {
-  background: var(--color-bg-surface-muted);          /* 未获得：浅灰底 + 同款边框，与白底卡区分但风格一致 */
+  background: transparent;
 }
 .medal-card.is-locked .hex {
   filter: grayscale(1);
@@ -2121,6 +2271,26 @@ button { font: inherit; color: inherit; background: transparent; border: 0; padd
 .medal-card.is-locked .meta,
 .medal-card.is-locked .level {
   color: #a1a7b5;
+}
+.medal-flat-grid {
+  padding: 0 16px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px 8px;
+}
+.medal-flat-grid .medal-card {
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+.medal-flat-grid .medal-card .icon-wrap {
+  aspect-ratio: auto;
+}
+.medal-flat-grid .medal-card .hex {
+  width: 88px;
+  height: 88px;
 }
 .medal-detail-overlay {
   background:
@@ -2183,6 +2353,9 @@ button { font: inherit; color: inherit; background: transparent; border: 0; padd
   color: #9a6c18;
   letter-spacing: 0.08em;
 }
+.medal-podium .lv:empty {
+  display: none;
+}
 .medal-podium .desc {
   margin-top: 12px;
   font-size: 15px;
@@ -2197,6 +2370,9 @@ button { font: inherit; color: inherit; background: transparent; border: 0; padd
   font-size: 13px;
   color: var(--text2);
   line-height: 1.7;
+}
+.medal-podium .next:empty {
+  display: none;
 }
 .medal-detail-actions {
   margin-top: 18px;
@@ -3124,18 +3300,15 @@ button { font: inherit; color: inherit; background: transparent; border: 0; padd
   </div>
 
   <div class="fs-overlay medal-wall-overlay" id="myMedalsOverlay">
-    <div class="mlv-head">
-      <div class="ov-back" onclick="closeOverlay('myMedalsOverlay')">‹</div>
-      <div class="title">我的勋章</div>
-      <div class="more">⋯</div>
-    </div>
-    <div class="medal-wall-page">
-      <div class="medal-profile">
-        <div class="av">戒</div>
-        <div class="name">阿戒的勋章墙</div>
-        <div class="sub" id="medalWallSummary">已获得 8 / 16 枚 · 点击勋章查看获取条件</div>
+    <div class="mlv-head mlv-head--with-tabs">
+      <div class="mlv-head-main">
+        <div class="ov-back" onclick="closeOverlay('myMedalsOverlay')">‹</div>
+        <div class="title">我的勋章</div>
+        <div class="more">⋯</div>
       </div>
       <div class="medal-tabs" id="medalTabs"></div>
+    </div>
+    <div class="medal-wall-page">
       <div class="medal-wall" id="medalWall"></div>
     </div>
   </div>
@@ -3202,7 +3375,7 @@ button { font: inherit; color: inherit; background: transparent; border: 0; padd
         </div>
         <div class="mlv-summary-main">
           <div class="mlv-summary-figure">
-            <img src="/Users/yinsong/Desktop/人物.png" alt="人物形象">
+            <img src="./等级人物/人物.png" alt="人物形象">
           </div>
           <div class="mlv-summary-copy">
             <div class="main"><strong>Lv.8</strong> 圣幕</div>
@@ -3224,17 +3397,17 @@ button { font: inherit; color: inherit; background: transparent; border: 0; padd
         </div>
         <div class="mlv-current-grid">
           <div class="mlv-current-card">
-            <div class="ic"><img src="/Users/yinsong/Desktop/披风.png" alt="蓝色披风"></div>
+            <div class="ic"><img src="./等级人物/披风.png" alt="蓝色披风"></div>
             <div class="v">蓝色披风</div>
             <div class="s">1.25 倍 XP</div>
           </div>
           <div class="mlv-current-card">
-            <div class="ic"><img src="/Users/yinsong/Desktop/头盔.png" alt="轻便头盔"></div>
+            <div class="ic"><img src="./等级人物/头盔.png" alt="轻便头盔"></div>
             <div class="v">轻便头盔</div>
             <div class="s">晨间收益 +10%</div>
           </div>
           <div class="mlv-current-card">
-            <div class="ic"><img src="/Users/yinsong/Desktop/武器.png" alt="训练木剑"></div>
+            <div class="ic"><img src="./等级人物/武器.png" alt="训练木剑"></div>
             <div class="v">训练木剑</div>
             <div class="s">10% XP 暴击</div>
           </div>
@@ -3256,7 +3429,7 @@ button { font: inherit; color: inherit; background: transparent; border: 0; padd
           <div class="mlv-diff-row">
             <!-- 旧装备：蓝色披风（与"当前等级"卡的披风同步） -->
             <div class="mlv-diff-side mlv-diff-from">
-              <div class="ic"><img src="/Users/yinsong/Desktop/披风.png" alt="蓝色披风"></div>
+              <div class="ic"><img src="./等级人物/披风.png" alt="蓝色披风"></div>
               <div class="name">蓝色披风</div>
               <span class="pill">1.25 倍 XP</span>
             </div>
@@ -3265,7 +3438,7 @@ button { font: inherit; color: inherit; background: transparent; border: 0; padd
             <!-- 新装备：骑士披风（图片放在桌面 /Users/yinsong/Desktop/骑士披风.png；
                  若文件不存在浏览器会显示破图，提供该图后即可正确预览升级前后对比） -->
             <div class="mlv-diff-side mlv-diff-to">
-              <div class="ic"><img src="/Users/yinsong/Desktop/骑士披风.png" alt="骑士披风"></div>
+              <div class="ic"><img src="./等级人物/骑士披风.png" alt="骑士披风"></div>
               <div class="name">骑士披风</div>
               <span class="pill">1.30 倍 XP</span>
             </div>
@@ -4037,15 +4210,506 @@ const MEDAL_ICONS = {
   'ring-bronze': 'images/04-img-11-99e8ce23.png',
   'ring-gold': 'images/04-img-12-b051a28f.png',
   'ring-silver': 'images/04-img-13-39c3bcf5.png',
+  'challenge-sleep': 'images/04-img-14-67c0dd22.png',
+  'challenge-burn': 'images/04-img-15-dbaf7023.png',
+  'challenge-meds': 'images/04-img-16-2e5ed7df.png',
+  'metric-spo2': 'images/04-img-17-0fe9fdd8.png',
+  'metric-temp': 'images/04-img-18-6afe10e7.png',
+  'metric-rhr': 'images/04-img-19-b46a8f72.png',
 };
 
+const MEDAL_ICON_BASE_DIR = './勋章新图标/';
+const MEDAL_LIFECYCLE_ICON_DIR = `${MEDAL_ICON_BASE_DIR}${encodeURIComponent('成长历程')}/`;
+const MEDAL_LIMITED_ICON_DIR = `${MEDAL_ICON_BASE_DIR}${encodeURIComponent('限时挑战')}/`;
+const medalIconFile = (filename, type = 'lifecycle') => {
+  const baseDir = type === 'limited' ? MEDAL_LIMITED_ICON_DIR : MEDAL_LIFECYCLE_ICON_DIR;
+  return baseDir + encodeURIComponent(filename);
+};
+const MEDAL_LEVEL_PLACEHOLDER_STEM = '连接戒指';
+const MEDAL_ICON_LEVEL_FILES = {
+  'ring-gold': {
+    1: '金牌01.png',
+    2: '金牌02.png',
+    3: '金牌03.png',
+    4: '金牌04.png',
+    5: '金牌 05.png'
+  },
+  'ring-silver': {
+    1: '银牌01.png',
+    2: '银牌02.png',
+    3: '银牌03.png',
+    4: '银牌04.png',
+    5: '银牌05.png'
+  },
+  'ring-bronze': {
+    1: '铜牌01.png',
+    2: '铜牌02.png',
+    3: '铜牌03.png',
+    4: '铜牌04.png',
+    5: '铜牌05.png'
+  }
+};
+const MEDAL_ICON_VARIANT_STEMS = {
+  'onboarding-ring-connect': '连接戒指',
+  'ring-gold': '金牌',
+  'ring-silver': '银牌',
+  'ring-bronze': '铜牌',
+  'metric-stress': '心理压力',
+  'metric-recovery': '身体恢复度',
+  'metric-sleep': '睡眠',
+  'metric-steps': '步数',
+  'metric-hrv': 'hrv',
+  'metric-spo2': '血氧'
+};
+const LIMITED_MEDAL_ICON_FILES = {
+  'limited-sakura-l4': '春日马拉松.png',
+  'limited-sheep-l3': '夏夜睡眠修复.png',
+  'limited-water-l2': '春日补水.png',
+  'limited-annual-l1': '春日马拉松.png',
+  'limited-breath-l5': '夏夜睡眠修复.png',
+  'limited-runner-l4': '春日马拉松.png',
+  'limited-stream-l3': '夏夜睡眠修复.png',
+  'limited-sakura-l5': '春日马拉松.png',
+  'limited-water-l4': '春日补水.png',
+  'limited-annual-l5': '春日马拉松.png',
+  'limited-sheep-l5': '夏夜睡眠修复.png',
+  'limited-breath-l2': '夏夜睡眠修复.png'
+};
+
+function getLevelNumber(level){
+  const match = String(level || '').match(/(\d+)/);
+  return match ? Number(match[1]) : 0;
+}
+
+function getMedalLevelIconSrc(iconKey, level){
+  const levelNumber = getLevelNumber(level) || 1;
+  const explicitFilename = MEDAL_ICON_LEVEL_FILES[iconKey]?.[levelNumber];
+  if(explicitFilename) return medalIconFile(explicitFilename, 'lifecycle');
+  const stem = MEDAL_ICON_VARIANT_STEMS[iconKey] || MEDAL_LEVEL_PLACEHOLDER_STEM;
+  const suffix = String(levelNumber).padStart(2, '0');
+  return medalIconFile(`${stem}${suffix}.png`, 'lifecycle');
+}
+
+function hasDedicatedMedalIconSet(iconKey){
+  return Boolean(MEDAL_ICON_VARIANT_STEMS[iconKey]);
+}
+
+function getLimitedMedalIconSrc(medal){
+  const filename = LIMITED_MEDAL_ICON_FILES[medal.id] || '春日马拉松.png';
+  return medalIconFile(filename, 'limited');
+}
+
+Object.assign(MEDAL_ICONS, {
+  'onboarding-ring-connect': medalIconFile('连接戒指01.png'),
+  'ring-gold': medalIconFile('金牌01.png'),
+  'ring-silver': medalIconFile('银牌01.png'),
+  'ring-bronze': medalIconFile('铜牌01.png'),
+  'metric-stress': medalIconFile('心理压力01.png'),
+  'metric-recovery': medalIconFile('身体恢复度01.png'),
+  'metric-sleep': medalIconFile('睡眠01.png'),
+  'metric-steps': medalIconFile('步数01.png'),
+  'metric-hrv': medalIconFile('hrv01.png'),
+  'metric-spo2': medalIconFile('血氧01.png')
+});
+
 const MEDAL_TABS = [
-  { id:'daily',     label:'日常活跃' },
-  { id:'body',      label:'身体指标' },
-  { id:'challenge', label:'挑战目标' },
-  { id:'ring',      label:'圆环徽章' },
-  { id:'event',     label:'活动限定' }
+  { id:'lifecycle', label:'成长历程' },
+  { id:'limited',   label:'限时挑战' }
 ];
+
+/* 勋章系列数据：每个 tab 下含多个系列，每个系列含 5 枚 L1-L5 勋章 */
+const MEDAL_SERIES = {
+  lifecycle: [
+    { id:'onboarding', title:'使用进阶', desc:'从首次连接到熟练使用唯戒', iconKey:'onboarding-ring-connect',
+      levels:[
+        { level:'L1', name:'戒指初连者',     rule:'完成 1 天有效佩戴',    obtained:true,  obtainedAt:'2026/01/02' },
+        { level:'L2', name:'佩戴启程者',     rule:'完成 3 天有效佩戴',    obtained:true,  obtainedAt:'2026/01/03' },
+        { level:'L3', name:'数据掌握者',     rule:'完成 7 天有效佩戴',    obtained:true,  obtainedAt:'2026/01/05' },
+        { level:'L4', name:'唯戒进阶者',     rule:'完成 30 天有效佩戴',   obtained:true,  obtainedAt:'2026/01/12' },
+        { level:'L5', name:'唯戒老手',      rule:'完成 90 天有效佩戴',   obtained:false, obtainedAt:'' }
+      ]
+    },
+    { id:'metric-stress', title:'心理压力', desc:'累计 + 连续达标双轨推进', iconKey:'metric-stress',
+      levels:[
+        { level:'L1', name:'低压起步',    rule:'累计达标 3 天',  obtained:true,  obtainedAt:'2026/02/05' },
+        { level:'L2', name:'低压稳态',    rule:'累计达标 7 天',  obtained:true,  obtainedAt:'2026/02/14' },
+        { level:'L3', name:'低压连胜',    rule:'连续达标 5 天',  obtained:false, obtainedAt:'' },
+        { level:'L4', name:'心境平衡者',   rule:'累计达标 21 天', obtained:false, obtainedAt:'' },
+        { level:'L5', name:'稳定心境大师', rule:'连续达标 30 天', obtained:false, obtainedAt:'' }
+      ]
+    },
+    { id:'metric-recovery', title:'身体恢复度', desc:'恢复质量与节奏回升', iconKey:'metric-recovery',
+      levels:[
+        { level:'L1', name:'恢复启动',   rule:'累计达标 3 天',  obtained:true,  obtainedAt:'2026/02/08' },
+        { level:'L2', name:'恢复上线',   rule:'连续达标 5 天',  obtained:false, obtainedAt:'' },
+        { level:'L3', name:'恢复进阶',   rule:'累计达标 10 天', obtained:false, obtainedAt:'' },
+        { level:'L4', name:'恢复稳定者', rule:'连续达标 10 天', obtained:false, obtainedAt:'' },
+        { level:'L5', name:'恢复掌控者', rule:'累计达标 30 天', obtained:false, obtainedAt:'' }
+      ]
+    },
+    { id:'metric-sleep', title:'睡眠（身体指标）', desc:'晨间反馈 / 周报 / 长期改善', iconKey:'metric-sleep',
+      levels:[
+        { level:'L1', name:'一夜好眠',     rule:'首次达标',       obtained:true,  obtainedAt:'2026/01/15' },
+        { level:'L2', name:'深睡旅人',     rule:'连续达标 3 天',  obtained:true,  obtainedAt:'2026/02/01' },
+        { level:'L3', name:'睡眠稳定者',   rule:'累计达标 10 天', obtained:true,  obtainedAt:'2026/02/22' },
+        { level:'L4', name:'作息修复者',   rule:'连续达标 7 天',  obtained:false, obtainedAt:'' },
+        { level:'L5', name:'睡眠节律大师', rule:'累计达标 30 天', obtained:false, obtainedAt:'' }
+      ]
+    },
+    { id:'metric-steps', title:'步数（身体指标）', desc:'走路心智 / 活动徽章联动', iconKey:'metric-steps',
+      levels:[
+        { level:'L1', name:'步数起行者', rule:'累计达标 3 天',  obtained:true,  obtainedAt:'2026/02/04' },
+        { level:'L2', name:'步数达标者', rule:'累计达标 7 天',  obtained:true,  obtainedAt:'2026/02/14' },
+        { level:'L3', name:'步行连胜者', rule:'连续达标 7 天',  obtained:false, obtainedAt:'' },
+        { level:'L4', name:'步数领航者', rule:'累计达标 21 天', obtained:false, obtainedAt:'' },
+        { level:'L5', name:'步行王者',   rule:'连续达标 30 天', obtained:false, obtainedAt:'' }
+      ]
+    },
+    { id:'metric-spo2', title:'血氧', desc:'呼吸状态 / 稳定监测', iconKey:'metric-spo2',
+      levels:[
+        { level:'L1', name:'血氧初稳者',   rule:'累计达标 3 天',  obtained:false, obtainedAt:'' },
+        { level:'L2', name:'血氧守护者',   rule:'累计达标 7 天',  obtained:false, obtainedAt:'' },
+        { level:'L3', name:'血氧连胜者',   rule:'连续达标 7 天',  obtained:false, obtainedAt:'' },
+        { level:'L4', name:'血氧稳定者',   rule:'累计达标 21 天', obtained:false, obtainedAt:'' },
+        { level:'L5', name:'血氧恒守大师', rule:'连续达标 30 天', obtained:false, obtainedAt:'' }
+      ]
+    },
+    { id:'metric-temp', title:'体温', desc:'日常状态感知 / 稳定波动管理', iconKey:'metric-temp',
+      levels:[
+        { level:'L1', name:'体温感知者',   rule:'累计达标 3 天',  obtained:false, obtainedAt:'' },
+        { level:'L2', name:'体温平衡者',   rule:'累计达标 7 天',  obtained:false, obtainedAt:'' },
+        { level:'L3', name:'体温稳行者',   rule:'连续达标 7 天',  obtained:false, obtainedAt:'' },
+        { level:'L4', name:'体温守恒者',   rule:'累计达标 21 天', obtained:false, obtainedAt:'' },
+        { level:'L5', name:'体温稳定大师', rule:'连续达标 30 天', obtained:false, obtainedAt:'' }
+      ]
+    },
+    { id:'metric-hrv', title:'HRV', desc:'恢复 / 压力管理 / 高质量状态', iconKey:'metric-hrv',
+      levels:[
+        { level:'L1', name:'HRV 起势者',   rule:'累计达标 3 天',  obtained:true,  obtainedAt:'2026/02/06' },
+        { level:'L2', name:'HRV 提升者',   rule:'累计达标 7 天',  obtained:false, obtainedAt:'' },
+        { level:'L3', name:'HRV 稳定者',   rule:'连续达标 7 天',  obtained:false, obtainedAt:'' },
+        { level:'L4', name:'HRV 强韧者',   rule:'累计达标 21 天', obtained:false, obtainedAt:'' },
+        { level:'L5', name:'HRV 恢复大师', rule:'连续达标 30 天', obtained:false, obtainedAt:'' }
+      ]
+    },
+    { id:'metric-rhr', title:'静息心率', desc:'长期健康感 / 心肺恢复趋势', iconKey:'metric-rhr',
+      levels:[
+        { level:'L1', name:'静息初稳者',   rule:'累计达标 3 天',  obtained:false, obtainedAt:'' },
+        { level:'L2', name:'静息平衡者',   rule:'累计达标 7 天',  obtained:false, obtainedAt:'' },
+        { level:'L3', name:'静息稳定者',   rule:'连续达标 7 天',  obtained:false, obtainedAt:'' },
+        { level:'L4', name:'静息守恒者',   rule:'累计达标 21 天', obtained:false, obtainedAt:'' },
+        { level:'L5', name:'静息心率大师', rule:'连续达标 30 天', obtained:false, obtainedAt:'' }
+      ]
+    },
+    { id:'challenge-walk', title:'步数挑战', desc:'今日走路目标累计完成', iconKey:'challenge-walk',
+      levels:[
+        { level:'L1', name:'步数挑战家', rule:'累计完成 3 次',  obtained:true,  obtainedAt:'2026/02/03' },
+        { level:'L2', name:'步数进阶者', rule:'累计完成 7 次',  obtained:true,  obtainedAt:'2026/02/12' },
+        { level:'L3', name:'步数连胜者', rule:'累计完成 15 次', obtained:false, obtainedAt:'' },
+        { level:'L4', name:'步数领跑者', rule:'累计完成 30 次', obtained:false, obtainedAt:'' },
+        { level:'L5', name:'步数王者',   rule:'累计完成 60 次', obtained:false, obtainedAt:'' }
+      ]
+    },
+    { id:'challenge-hydration', title:'喝水挑战', desc:'轻量高频目标，建立陪伴感', iconKey:'challenge-hydration',
+      levels:[
+        { level:'L1', name:'饮水起步者',   rule:'累计完成 3 次',  obtained:true,  obtainedAt:'2026/02/05' },
+        { level:'L2', name:'饮水打卡王',   rule:'累计完成 7 次',  obtained:true,  obtainedAt:'2026/02/15' },
+        { level:'L3', name:'饮水稳定者',   rule:'累计完成 15 次', obtained:false, obtainedAt:'' },
+        { level:'L4', name:'饮水守护者',   rule:'累计完成 30 次', obtained:false, obtainedAt:'' },
+        { level:'L5', name:'饮水大师',     rule:'累计完成 60 次', obtained:false, obtainedAt:'' }
+      ]
+    },
+    { id:'challenge-sleep', title:'睡眠挑战', desc:'作息改善 / 夜间仪式感', iconKey:'challenge-sleep',
+      levels:[
+        { level:'L1', name:'睡眠起步者',   rule:'累计完成 3 次',  obtained:true,  obtainedAt:'2026/01/30' },
+        { level:'L2', name:'睡眠守护者',   rule:'累计完成 7 次',  obtained:false, obtainedAt:'' },
+        { level:'L3', name:'睡眠稳定者',   rule:'累计完成 15 次', obtained:false, obtainedAt:'' },
+        { level:'L4', name:'睡眠进阶者',   rule:'累计完成 30 次', obtained:false, obtainedAt:'' },
+        { level:'L5', name:'睡眠大师',     rule:'累计完成 60 次', obtained:false, obtainedAt:'' }
+      ]
+    },
+    { id:'challenge-burn', title:'消耗挑战', desc:'训练与燃脂', iconKey:'challenge-burn',
+      levels:[
+        { level:'L1', name:'消耗点火者',   rule:'累计完成 3 次',  obtained:false, obtainedAt:'' },
+        { level:'L2', name:'燃动进阶者',   rule:'累计完成 7 次',  obtained:false, obtainedAt:'' },
+        { level:'L3', name:'消耗稳定者',   rule:'累计完成 15 次', obtained:false, obtainedAt:'' },
+        { level:'L4', name:'燃动挑战家',   rule:'累计完成 30 次', obtained:false, obtainedAt:'' },
+        { level:'L5', name:'消耗王者',     rule:'累计完成 60 次', obtained:false, obtainedAt:'' }
+      ]
+    },
+    { id:'challenge-meds', title:'吃药挑战', desc:'强场景化健康价值', iconKey:'challenge-meds',
+      levels:[
+        { level:'L1', name:'按时服药者', rule:'累计完成 3 次',  obtained:false, obtainedAt:'' },
+        { level:'L2', name:'服药稳定者', rule:'累计完成 7 次',  obtained:false, obtainedAt:'' },
+        { level:'L3', name:'服药连胜者', rule:'累计完成 15 次', obtained:false, obtainedAt:'' },
+        { level:'L4', name:'服药守时者', rule:'累计完成 30 次', obtained:false, obtainedAt:'' },
+        { level:'L5', name:'服药掌控者', rule:'累计完成 60 次', obtained:false, obtainedAt:'' }
+      ]
+    },
+    { id:'challenge-cardio', title:'心肺锻炼', desc:'高质量运动参与 / 课程联动', iconKey:'challenge-cardio',
+      levels:[
+        { level:'L1', name:'心肺起步者', rule:'累计完成 3 次',  obtained:true,  obtainedAt:'2026/03/22' },
+        { level:'L2', name:'心肺进阶者', rule:'累计完成 7 次',  obtained:false, obtainedAt:'' },
+        { level:'L3', name:'心肺稳定者', rule:'累计完成 15 次', obtained:false, obtainedAt:'' },
+        { level:'L4', name:'心肺强韧者', rule:'累计完成 30 次', obtained:false, obtainedAt:'' },
+        { level:'L5', name:'心肺王者',   rule:'累计完成 60 次', obtained:false, obtainedAt:'' }
+      ]
+    },
+    { id:'challenge-stand', title:'站立挑战', desc:'久坐提醒 + 即时反馈', iconKey:'challenge-generic-upgrade',
+      levels:[
+        { level:'L1', name:'站立起身者',   rule:'累计完成 3 次',  obtained:false, obtainedAt:'' },
+        { level:'L2', name:'站立响应者',   rule:'累计完成 7 次',  obtained:false, obtainedAt:'' },
+        { level:'L3', name:'站立稳定者',   rule:'累计完成 15 次', obtained:false, obtainedAt:'' },
+        { level:'L4', name:'站立守律者',   rule:'累计完成 30 次', obtained:false, obtainedAt:'' },
+        { level:'L5', name:'站立节律大师', rule:'累计完成 60 次', obtained:false, obtainedAt:'' }
+      ]
+    },
+    { id:'ring-gold', title:'金牌系列', desc:'当天结算为金牌时累计', iconKey:'ring-gold',
+      levels:[
+        { level:'L1', name:'金牌首得',     rule:'累计获得 1 枚金牌',  obtained:true,  obtainedAt:'2026/01/20' },
+        { level:'L2', name:'金牌7连藏',    rule:'累计获得 7 枚金牌',  obtained:false, obtainedAt:'' },
+        { level:'L3', name:'金牌进阶者',   rule:'累计获得 30 枚金牌', obtained:false, obtainedAt:'' },
+        { level:'L4', name:'金牌王者',     rule:'累计获得 90 枚金牌', obtained:false, obtainedAt:'' },
+        { level:'L5', name:'金牌殿堂者',   rule:'累计获得 180 枚金牌', obtained:false, obtainedAt:'' }
+      ]
+    },
+    { id:'ring-silver', title:'银牌系列', desc:'当天结算为银牌时累计', iconKey:'ring-silver',
+      levels:[
+        { level:'L1', name:'银牌首得',     rule:'累计获得 1 枚银牌',  obtained:true,  obtainedAt:'2026/01/18' },
+        { level:'L2', name:'银牌7连藏',    rule:'累计获得 7 枚银牌',  obtained:true,  obtainedAt:'2026/02/14' },
+        { level:'L3', name:'银牌进阶者',   rule:'累计获得 30 枚银牌', obtained:false, obtainedAt:'' },
+        { level:'L4', name:'银牌稳定者',   rule:'累计获得 90 枚银牌', obtained:false, obtainedAt:'' },
+        { level:'L5', name:'银牌高光者',   rule:'累计获得 180 枚银牌', obtained:false, obtainedAt:'' }
+      ]
+    },
+    { id:'ring-bronze', title:'铜牌系列', desc:'当天结算为铜牌时累计', iconKey:'ring-bronze',
+      levels:[
+        { level:'L1', name:'铜牌首得',       rule:'累计获得 1 枚铜牌',   obtained:true,  obtainedAt:'2026/01/15' },
+        { level:'L2', name:'铜牌7连藏',      rule:'累计获得 7 枚铜牌',   obtained:true,  obtainedAt:'2026/02/02' },
+        { level:'L3', name:'铜牌收藏家',     rule:'累计获得 30 枚铜牌',  obtained:false, obtainedAt:'' },
+        { level:'L4', name:'铜牌累进者',     rule:'累计获得 90 枚铜牌',  obtained:false, obtainedAt:'' },
+        { level:'L5', name:'铜牌长线玩家',   rule:'累计获得 180 枚铜牌', obtained:false, obtainedAt:'' }
+      ]
+    }
+  ],
+  limited: [
+    { id:'monthly-spring-walk', title:'春日走路马拉松', desc:'2026 年 4 月 · 月度限定', iconKey:'challenge-walk',
+      levels:[
+        { level:'L1', name:'起步者',     rule:'累计步行 3 万步',   obtained:true,  obtainedAt:'2026/04/06' },
+        { level:'L2', name:'漫步者',     rule:'累计步行 8 万步',   obtained:true,  obtainedAt:'2026/04/14' },
+        { level:'L3', name:'踏春人',     rule:'累计步行 15 万步',  obtained:false, obtainedAt:'' },
+        { level:'L4', name:'城市探险家', rule:'累计步行 25 万步',  obtained:false, obtainedAt:'' },
+        { level:'L5', name:'马拉松达人', rule:'累计步行 42 万步',  obtained:false, obtainedAt:'' }
+      ]
+    },
+    { id:'monthly-hydration', title:'秋日补水巡航', desc:'2026 年 9 月 · 月度限定', iconKey:'challenge-hydration',
+      levels:[
+        { level:'L1', name:'初次启程',   rule:'当月达标 3 天',  obtained:false, obtainedAt:'' },
+        { level:'L2', name:'每周补给',   rule:'当月达标 7 天',  obtained:false, obtainedAt:'' },
+        { level:'L3', name:'稳定补给',   rule:'当月达标 15 天', obtained:false, obtainedAt:'' },
+        { level:'L4', name:'秋日护卫',   rule:'当月达标 22 天', obtained:false, obtainedAt:'' },
+        { level:'L5', name:'金秋畅饮王', rule:'当月达标 30 天', obtained:false, obtainedAt:'' }
+      ]
+    },
+    { id:'quarterly-recovery', title:'冬日恢复挑战', desc:'2026 Q1 · 季度限定', iconKey:'metric-recovery',
+      levels:[
+        { level:'L1', name:'恢复入门',     rule:'季度累计达标 7 天',  obtained:true,  obtainedAt:'2026/01/22' },
+        { level:'L2', name:'恢复进阶',     rule:'季度累计达标 21 天', obtained:false, obtainedAt:'' },
+        { level:'L3', name:'恢复稳定',     rule:'季度累计达标 45 天', obtained:false, obtainedAt:'' },
+        { level:'L4', name:'恢复掌控',     rule:'季度累计达标 70 天', obtained:false, obtainedAt:'' },
+        { level:'L5', name:'冬日守护者',   rule:'季度累计达标 90 天', obtained:false, obtainedAt:'' }
+      ]
+    },
+    { id:'yearly-city',  title:'年度城市挑战者', desc:'2026 全年 · 年度限定', iconKey:'onboarding-ring-connect',
+      levels:[
+        { level:'L1', name:'城市初行',     rule:'参与城市活动 1 次',   obtained:false, obtainedAt:'' },
+        { level:'L2', name:'城市达人',     rule:'参与城市活动 3 次',   obtained:false, obtainedAt:'' },
+        { level:'L3', name:'城市探索家',   rule:'参与城市活动 6 次',   obtained:false, obtainedAt:'' },
+        { level:'L4', name:'城市同行者',   rule:'参与城市活动 10 次',  obtained:false, obtainedAt:'' },
+        { level:'L5', name:'年度城市王者', rule:'完成全年城市挑战体系',  obtained:false, obtainedAt:'' }
+      ]
+    }
+  ]
+};
+
+const LIMITED_MEDALS = [
+  {
+    id:'limited-sakura-l4',
+    iconKey:'challenge-walk',
+    title:'樱花漫步',
+    name:'落英长行者',
+    level:'L4',
+    obtained:true,
+    obtainedAt:'2026/04/21',
+    rule:'在「樱花漫步，落英缤纷」月度挑战中累计完成 25 万步。'
+  },
+  {
+    id:'limited-sheep-l3',
+    iconKey:'metric-sleep',
+    title:'绵羊咩咩',
+    name:'深睡追梦人',
+    level:'L3',
+    obtained:true,
+    obtainedAt:'2026/04/16',
+    rule:'在「绵羊咩咩，数着入眠」挑战中累计达成 15 个高质量睡眠夜晚。'
+  },
+  {
+    id:'limited-water-l2',
+    iconKey:'challenge-hydration',
+    title:'一日清泉',
+    name:'补水巡航员',
+    level:'L2',
+    obtained:true,
+    obtainedAt:'2026/04/13',
+    rule:'在「一日清泉，润物无声」挑战中累计完成 7 天饮水达标。'
+  },
+  {
+    id:'limited-annual-l1',
+    iconKey:'challenge-walk',
+    title:'年度心动 200 万',
+    name:'心动启程者',
+    level:'L1',
+    obtained:true,
+    obtainedAt:'2026/03/28',
+    rule:'参与年度官方挑战并累计完成 20 万步。'
+  },
+  {
+    id:'limited-breath-l5',
+    iconKey:'metric-stress',
+    title:'千江有水',
+    name:'呼吸成莲者',
+    level:'L5',
+    obtained:false,
+    obtainedAt:'',
+    rule:'在「千江有水，呼吸成莲」挑战中连续 30 天完成 10 分钟呼吸练习。'
+  },
+  {
+    id:'limited-runner-l4',
+    iconKey:'challenge-cardio',
+    title:'燕成排飞',
+    name:'追风领跑者',
+    level:'L4',
+    obtained:false,
+    obtainedAt:'',
+    rule:'在「燕成排飞，人追风跑」挑战中累计完成 18 次跑步训练。'
+  },
+  {
+    id:'limited-stream-l3',
+    iconKey:'metric-recovery',
+    title:'溪边放空',
+    name:'放空稳心者',
+    level:'L3',
+    obtained:false,
+    obtainedAt:'',
+    rule:'在「溪边放空，发呆冥想」挑战中累计完成 15 次冥想打卡。'
+  },
+  {
+    id:'limited-sakura-l5',
+    iconKey:'challenge-walk',
+    title:'樱花漫步',
+    name:'春日马拉松达人',
+    level:'L5',
+    obtained:false,
+    obtainedAt:'',
+    rule:'在「樱花漫步，落英缤纷」挑战中累计完成 42 万步。'
+  },
+  {
+    id:'limited-water-l4',
+    iconKey:'challenge-hydration',
+    title:'一日清泉',
+    name:'清泉守护者',
+    level:'L4',
+    obtained:false,
+    obtainedAt:'',
+    rule:'在「一日清泉，润物无声」挑战中累计完成 22 天饮水达标。'
+  },
+  {
+    id:'limited-annual-l5',
+    iconKey:'onboarding-ring-connect',
+    title:'年度城市挑战者',
+    name:'年度城市王者',
+    level:'L5',
+    obtained:false,
+    obtainedAt:'',
+    rule:'完成全年城市挑战体系，并参与 10 次城市联动活动。'
+  },
+  {
+    id:'limited-sheep-l5',
+    iconKey:'metric-sleep',
+    title:'绵羊咩咩',
+    name:'梦境守夜大师',
+    level:'L5',
+    obtained:false,
+    obtainedAt:'',
+    rule:'在「绵羊咩咩，数着入眠」挑战中累计达成 30 个高质量睡眠夜晚。'
+  },
+  {
+    id:'limited-breath-l2',
+    iconKey:'metric-stress',
+    title:'千江有水',
+    name:'呼吸稳流者',
+    level:'L2',
+    obtained:false,
+    obtainedAt:'',
+    rule:'在「千江有水，呼吸成莲」挑战中累计完成 7 天呼吸练习。'
+  }
+];
+
+function normalizeSeriesLevels(series){
+  const hasDedicatedIcons = hasDedicatedMedalIconSet(series.iconKey);
+  return [...series.levels]
+    .map(level => {
+      const normalized = { ...level, seriesId: series.id, iconKey: series.iconKey };
+      if(!hasDedicatedIcons){
+        normalized.obtained = false;
+        normalized.obtainedAt = '';
+      }
+      return normalized;
+    })
+    .sort((a, b) => {
+      if(a.obtained !== b.obtained) return a.obtained ? -1 : 1;
+      return getLevelNumber(b.level) - getLevelNumber(a.level);
+    });
+}
+
+const RING_SERIES_IDS = ['ring-gold', 'ring-silver', 'ring-bronze'];
+
+function getNormalizedMedalSeries(tabId){
+  const normalizedList = (MEDAL_SERIES[tabId] || []).map(series => ({
+    ...series,
+    levels: normalizeSeriesLevels(series)
+  }));
+  if(tabId !== 'lifecycle') return normalizedList;
+  const ringSeries = normalizedList.filter(series => RING_SERIES_IDS.includes(series.id));
+  if(!ringSeries.length) return normalizedList;
+  const ringGroup = {
+    id: 'today-rings',
+    title: '今日圆环',
+    desc: '获取金牌、银牌、铜牌的累计次数',
+    iconKey: 'ring-gold',
+    levels: ringSeries
+      .flatMap(series => series.levels)
+      .sort((a, b) => {
+        if(a.obtained !== b.obtained) return a.obtained ? -1 : 1;
+        const levelDiff = getLevelNumber(b.level) - getLevelNumber(a.level);
+        if(levelDiff !== 0) return levelDiff;
+        return RING_SERIES_IDS.indexOf(a.seriesId) - RING_SERIES_IDS.indexOf(b.seriesId);
+      })
+  };
+  const withoutRings = normalizedList.filter(series => !RING_SERIES_IDS.includes(series.id));
+  return [
+    ringGroup,
+    ...withoutRings
+  ];
+}
+
+function getNormalizedLimitedMedals(){
+  return [...LIMITED_MEDALS].sort((a, b) => {
+    if(a.obtained !== b.obtained) return a.obtained ? -1 : 1;
+    return getLevelNumber(b.level) - getLevelNumber(a.level);
+  });
+}
+
 
 const MEDALS = [
   /* 日常活跃：天天都能解锁，主要看坚持 */
@@ -5200,7 +5864,7 @@ function openMyLevel(){
   document.getElementById('myLvOverlay').scrollTop = 0;
 }
 
-let currentMedalTab = 'daily';
+let currentMedalTab = 'lifecycle';
 
 function renderMedalTabs(){
   const wrap = document.getElementById('medalTabs');
@@ -5208,11 +5872,18 @@ function renderMedalTabs(){
   wrap.innerHTML = MEDAL_TABS.map(tab => `
     <button class="medal-tab ${currentMedalTab === tab.id ? 'active' : ''}" onclick="setMedalTab('${tab.id}')">${tab.label}</button>
   `).join('');
-  /* 动态刷新顶部"已获得 X / Y 枚"小字 */
+  /* 顶部"已获得 X / Y 枚" — 基于全部系列勋章统计 */
   const summary = document.getElementById('medalWallSummary');
   if(summary){
-    const total = MEDALS.length;
-    const owned = MEDALS.filter(m => m.obtained).length;
+    let total = 0, owned = 0;
+    getNormalizedMedalSeries('lifecycle').forEach(series => series.levels.forEach(level => {
+      total++;
+      if(level.obtained) owned++;
+    }));
+    getNormalizedLimitedMedals().forEach(medal => {
+      total++;
+      if(medal.obtained) owned++;
+    });
     summary.textContent = `已获得 ${owned} / ${total} 枚 · 点击勋章查看获取条件`;
   }
 }
@@ -5220,18 +5891,108 @@ function renderMedalTabs(){
 function renderMedalWall(){
   const wall = document.getElementById('medalWall');
   if(!wall) return;
-  const list = MEDALS.filter(item => item.category === currentMedalTab);
-  wall.innerHTML = list.map(item => `
-    <div class="medal-card ${item.obtained ? '' : 'is-locked'}" onclick="openMedalDetail('${item.id}')">
-      <div class="icon-wrap">
-        <div class="hex">${item.iconKey && MEDAL_ICONS[item.iconKey] ? `<img class="hex-img" src="${MEDAL_ICONS[item.iconKey]}" alt="${item.name}">` : item.icon}</div>
+  if(currentMedalTab === 'limited'){
+    const medals = getNormalizedLimitedMedals();
+    const renderLimitedCards = (list) => list.map(medal => `
+      <div class="medal-card ${medal.obtained ? '' : 'is-locked'}" onclick="event.stopPropagation();openLimitedMedalDetail('${medal.id}')">
+        <div class="icon-wrap">
+          <div class="hex"><img class="hex-img" src="${getLimitedMedalIconSrc(medal)}" alt="${medal.name}"></div>
+        </div>
+        <div class="name">${medal.name}</div>
       </div>
-      <div class="name">${item.name}</div>
-      <div class="level">${item.level}</div>
-      <div class="meta">${item.obtained ? '已获得' : '未获得'}</div>
-    </div>
-  `).join('');
+    `).join('');
+    wall.innerHTML = `<div class="medal-flat-grid">${renderLimitedCards(medals)}</div>`;
+    return;
+  }
+  const list = getNormalizedMedalSeries(currentMedalTab);
+  wall.innerHTML = list.map((series) => {
+    const ownedCount = series.levels.filter(l => l.obtained).length;
+    const cards = series.levels.map((l) => `
+      <div class="medal-card ${l.obtained ? '' : 'is-locked'}" onclick="event.stopPropagation();openSeriesLevelDetail('${l.seriesId || series.id}','${l.level}')">
+        <div class="icon-wrap">
+          <div class="hex"><img class="hex-img" src="${getMedalLevelIconSrc(l.iconKey || series.iconKey, l.level)}" alt="${l.name}"></div>
+        </div>
+        <div class="name">${l.name}</div>
+      </div>`).join('');
+    return `
+    <div class="medal-series is-open is-expanded" data-series-id="${series.id}">
+      <div class="medal-series-head" onclick="toggleSeries('${series.id}')">
+        <div class="ms-titlewrap">
+          <div class="ms-title">${series.title}</div>
+          <div class="ms-meta">${ownedCount} / ${series.levels.length} 枚 · ${series.desc}</div>
+        </div>
+        <div class="ms-arrow">⌄</div>
+      </div>
+      <div class="medal-series-body">
+        ${cards}
+      </div>
+    </div>`;
+  }).join('');
 }
+
+/* 系列内"查看剩余 N 枚"切换 */
+function toggleSeriesExpand(id){
+  const card = document.querySelector(`.medal-series[data-series-id="${id}"]`);
+  if(card) card.classList.add('is-expanded');   /* 单向展开，不再 toggle */
+}
+
+/* 折叠 / 展开系列卡 */
+function toggleSeries(id){
+  const card = document.querySelector(`.medal-series[data-series-id="${id}"]`);
+  if(card) card.classList.toggle('is-open');
+}
+
+/* 点系列内任一级勋章 → 弹详情（兼容旧 openMedalDetail 流） */
+function openSeriesLevelDetail(seriesId, lvl){
+  const series = Object.values(MEDAL_SERIES).flat().find(s => s.id === seriesId); if(!series) return;
+  const lv = normalizeSeriesLevels(series).find(l => l.level === lvl); if(!lv) return;
+  const adapted = {
+    id: seriesId + '-' + lvl,
+    iconKey: series.iconKey,
+    icon: '🏅',
+    name: lv.name,
+    level: lvl,
+    obtained: lv.obtained,
+    obtainedAt: lv.obtainedAt,
+    condition: lv.rule,
+    next: '',
+    bg: '#FFFFFF'
+  };
+  /* 临时挂载到全局 MEDALS 池后调旧函数 */
+  window.__TEMP_MEDAL__ = adapted;
+  document.getElementById('medalDetailName').textContent = adapted.name;
+  document.getElementById('medalDetailDate').textContent = adapted.obtained ? `获得时间：${adapted.obtainedAt}` : '尚未获得';
+  const hex = document.getElementById('medalDetailHex');
+  hex.innerHTML = `<img class="hex-img" src="${getMedalLevelIconSrc(series.iconKey, lv.level)}" alt="${adapted.name}">`;
+  hex.style.background = '';
+  document.getElementById('medalDetailLevel').textContent = '';
+  document.getElementById('medalDetailDesc').textContent = `获取条件：${adapted.condition}`;
+  document.getElementById('medalDetailNext').textContent = '';
+  document.getElementById('medalWearBtn').textContent = adapted.obtained ? '去佩戴' : '去挑战';
+  document.getElementById('medalWearBtn').onclick = () => {
+    toast(adapted.obtained ? `已佩戴「${adapted.name}」` : `去完成「${adapted.name}」对应条件`);
+  };
+  openOverlay('medalDetailOverlay');
+}
+
+function openLimitedMedalDetail(id){
+  const medal = getNormalizedLimitedMedals().find(item => item.id === id);
+  if(!medal) return;
+  document.getElementById('medalDetailName').textContent = medal.name;
+  document.getElementById('medalDetailDate').textContent = medal.obtained ? `获得时间：${medal.obtainedAt}` : '尚未获得';
+  const hex = document.getElementById('medalDetailHex');
+  hex.innerHTML = `<img class="hex-img" src="${getLimitedMedalIconSrc(medal)}" alt="${medal.name}">`;
+  hex.style.background = '';
+  document.getElementById('medalDetailLevel').textContent = '';
+  document.getElementById('medalDetailDesc').textContent = `获取条件：${medal.rule}`;
+  document.getElementById('medalDetailNext').textContent = '';
+  document.getElementById('medalWearBtn').textContent = medal.obtained ? '去佩戴' : '去挑战';
+  document.getElementById('medalWearBtn').onclick = () => {
+    toast(medal.obtained ? `已佩戴「${medal.name}」` : `去完成「${medal.title}」活动对应条件`);
+  };
+  openOverlay('medalDetailOverlay');
+}
+
 
 function setMedalTab(tabId){
   currentMedalTab = tabId;
@@ -5241,7 +6002,7 @@ function setMedalTab(tabId){
 
 function openMyMedals(){
   /* 进入勋章页时默认选中第一个 tab（避免旧默认值与新分类不匹配导致无 tab 激活） */
-  currentMedalTab = (MEDAL_TABS[0] && MEDAL_TABS[0].id) || 'daily';
+  currentMedalTab = (MEDAL_TABS[0] && MEDAL_TABS[0].id) || 'lifecycle';
   renderMedalTabs();
   renderMedalWall();
   openOverlay('myMedalsOverlay');
@@ -5265,9 +6026,9 @@ function openMedalDetail(id){
   }
   hex.style.filter = medal.obtained ? 'none' : 'grayscale(1)';
   hex.style.opacity = medal.obtained ? '1' : '0.42';
-  document.getElementById('medalDetailLevel').textContent = medal.level;
-  document.getElementById('medalDetailDesc').textContent = medal.condition;
-  document.getElementById('medalDetailNext').textContent = medal.next;
+  document.getElementById('medalDetailLevel').textContent = '';
+  document.getElementById('medalDetailDesc').textContent = `获取条件：${medal.condition}`;
+  document.getElementById('medalDetailNext').textContent = '';
   document.getElementById('medalWearBtn').textContent = medal.obtained ? '去佩戴' : '去挑战';
   document.getElementById('medalWearBtn').onclick = () => {
     toast(medal.obtained ? `已佩戴「${medal.name}」` : `去完成「${medal.name}」对应条件`);

@@ -1538,11 +1538,13 @@
       min-height: 0;
       flex: 1;
     }
+    /* P7 分类 Tab · Vant 下划线样式（v2.5）
+       参考 https://vant-ui.github.io/vant/#/zh-CN/tab
+       特征：平铺、无背景、文字 + 选中态短下划线 */
     .msg-cat-tabs {
       display: flex;
-      align-items: center;
-      gap: var(--space-sm);
-      padding: var(--space-sm) var(--space-lg);
+      align-items: stretch;
+      padding: 0;
       background: var(--color-bg-surface);
       border-bottom: 1px solid var(--color-border-subtle);
       overflow-x: auto;
@@ -1551,27 +1553,39 @@
     }
     .msg-cat-tabs::-webkit-scrollbar { display: none; }
     .msg-cat-tab {
+      flex: 1;
       flex-shrink: 0;
+      position: relative;
       display: inline-flex;
       align-items: center;
-      gap: var(--space-xs);
-      height: 30px;
-      padding: 0 var(--space-md);
-      border-radius: var(--radius-pill);
-      font-size: var(--font-sm);
-      font-weight: var(--weight-medium);
-      color: var(--color-text-secondary);
-      background: var(--color-fill-neutral);
+      justify-content: center;
+      gap: 4px;
+      height: 44px;
+      padding: 0 var(--space-sm);
+      background: transparent;
       border: none;
+      color: var(--color-text-secondary);
+      font-size: var(--font-md);
+      font-weight: var(--weight-medium);
       cursor: pointer;
       font-family: inherit;
       white-space: nowrap;
-      transition: background 0.15s ease, color 0.15s ease;
+      transition: color 0.15s ease;
     }
     .msg-cat-tab.is-active {
-      background: var(--color-brand-primary);
-      color: var(--color-text-on-dark);
+      color: var(--color-brand-primary);
       font-weight: var(--weight-semi);
+    }
+    .msg-cat-tab.is-active::after {
+      content: '';
+      position: absolute;
+      bottom: 4px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 24px;
+      height: 3px;
+      background: var(--color-brand-primary);
+      border-radius: var(--radius-pill);
     }
     .msg-cat-tab .cat-count {
       display: inline-flex;
@@ -1586,10 +1600,6 @@
       font-size: 10px;
       font-weight: var(--weight-bold);
       line-height: 1;
-    }
-    .msg-cat-tab.is-active .cat-count {
-      background: var(--color-text-on-dark);
-      color: var(--color-brand-primary);
     }
     .msg-cat-tab.is-zero .cat-count { display: none; }
 
