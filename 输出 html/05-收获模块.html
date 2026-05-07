@@ -1,0 +1,3231 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>唯戒 · 收获模块</title>
+<style>
+/* ==========================================================
+   设计 Token —— 与 00-设计规范.md / 01-今日 / 04-练级 同源
+   收获模块以"金 + 紫粉"为主色，呼应 IP 形象 + 季节皮肤的视觉沉淀
+   ========================================================== */
+:root {
+  --color-brand-primary: #3A6FE0;
+  --color-brand-secondary: #4C5CD8;
+  --color-brand-accent: #1E8FFF;
+  --color-semantic-success: #39C16C;
+  --color-semantic-warning: #FFA31A;
+  --color-semantic-danger: #FF7851;
+  --color-text-primary: #141619;
+  --color-text-secondary: #8A8DA4;
+  --color-text-tertiary: #9AA2B8;
+  --color-text-on-dark: #FFFFFF;
+  --color-bg-page: #EAF3FF;
+  --color-bg-surface: #FFFFFF;
+  --color-bg-surface-muted: #F5F7FB;
+  --color-border-subtle: #E6EDF4;
+  --color-tag-success-bg: #E8F9F2;
+  --color-tag-warning-bg: #FFF3DC;
+  --color-peak-pink: #F25EFF;
+
+  --gradient-xp-gold: linear-gradient(135deg, #FFD66B 0%, #FFA31A 60%, #FF7851 100%);
+  --gradient-purple-pink: linear-gradient(135deg, #6c5ce7 0%, #a855f7 55%, #ec4899 100%);
+  --gradient-spring: linear-gradient(180deg, #ffe1ee 0%, #ffd6e7 50%, #f7c5d8 100%);
+  --gradient-summer: linear-gradient(180deg, #d4f4e7 0%, #aee6d2 50%, #6bd3b1 100%);
+  --gradient-autumn: linear-gradient(180deg, #fde6c4 0%, #f9c490 50%, #ec9d6b 100%);
+  --gradient-winter: linear-gradient(180deg, #e1ecf7 0%, #c5d8eb 50%, #99b6d4 100%);
+  --gradient-default-skin: linear-gradient(180deg, #ebe6f7 0%, #d4cfe8 50%, #b8b1d4 100%);
+
+  --space-xxs: 2px; --space-xs: 4px; --space-sm: 8px; --space-md: 12px;
+  --space-lg: 16px; --space-xl: 20px; --space-xxl: 24px;
+  --radius-xs: 4px; --radius-sm: 8px; --radius-md: 12px;
+  --radius-lg: 16px; --radius-xl: 22px; --radius-pill: 999px;
+  --font-xs: 11px; --font-sm: 13px; --font-md: 14px; --font-lg: 16px;
+  --font-xl: 18px; --font-2xl: 22px; --font-3xl: 28px;
+  --weight-regular: 400; --weight-medium: 500; --weight-semi: 600; --weight-bold: 700;
+  --font-sans: Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-sans-cjk: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --shadow-card: 0 4px 12px rgba(0, 0, 0, 0.05);
+  --shadow-card-elevated: 0 8px 24px rgba(0, 0, 0, 0.08);
+  --shadow-tabbar: 0 12px 28px rgba(58, 111, 224, 0.10);
+  --shadow-modal: 0 20px 60px rgba(0, 0, 0, 0.22);
+
+  --bg: linear-gradient(180deg, #f4f5f7 0%, #f8f7fc 60%, #ffffff 100%);
+  --card: var(--color-bg-surface);
+  --text: var(--color-text-primary);
+  --text2: var(--color-text-secondary);
+  --text3: var(--color-text-tertiary);
+  --border: var(--color-border-subtle);
+  --border-soft: #eef0f3;
+
+  --gold: #FFA31A;
+  --gold-deep: #E08A0E;
+  --rose: #ec4899;
+  --accent: #6c5ce7;
+  --accent2: #a855f7;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  background: #E5E9F2;
+  font-family: var(--font-sans-cjk), var(--font-sans);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+button { font: inherit; color: inherit; background: transparent; border: 0; padding: 0; cursor: pointer; }
+
+/* ==========================================================
+   双栏布局：左侧导航 + 右侧手机原型
+   ========================================================== */
+.layout { display: flex; min-height: 100vh; }
+.side-nav {
+  width: 280px; flex-shrink: 0;
+  background: #fff;
+  border-right: 1px solid var(--border);
+  padding: 24px 16px;
+  position: sticky; top: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+.side-nav::-webkit-scrollbar { width: 4px; }
+.side-nav::-webkit-scrollbar-thumb { background: var(--color-bg-surface-muted); border-radius: 2px; }
+.nav-brand {
+  display: flex; align-items: center; gap: 8px;
+  padding: 0 8px 16px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 12px;
+}
+.nav-brand .nav-logo {
+  width: 32px; height: 32px; border-radius: 8px;
+  background: var(--gradient-xp-gold);
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-weight: 800; font-size: 14px;
+}
+.nav-brand .nav-title { font-size: 14px; font-weight: 700; }
+.nav-brand .nav-version { font-size: 10px; color: var(--text3); }
+.nav-section-label {
+  font-size: 10px; font-weight: 700;
+  color: var(--text3);
+  letter-spacing: 0.08em; text-transform: uppercase;
+  padding: 12px 8px 6px;
+}
+
+/* 状态切换器 */
+.state-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 6px;
+  padding: 0 4px 8px;
+}
+.state-btn {
+  padding: 8px 6px; font-size: 11px;
+  border-radius: 8px;
+  background: var(--color-bg-surface-muted);
+  color: var(--text2);
+  font-weight: 500;
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  text-align: center; line-height: 1.2;
+}
+.state-btn .icon { font-size: 14px; }
+.state-btn.is-active {
+  background: var(--gradient-xp-gold); color: #fff;
+}
+/* 导航项 */
+.nav-list { display: flex; flex-direction: column; gap: 1px; }
+.nav-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 10px; border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--text);
+  transition: background 0.15s;
+}
+.nav-item:hover { background: var(--color-bg-surface-muted); }
+.nav-item.is-active {
+  background: rgba(255, 163, 26, 0.10);
+  color: var(--gold-deep);
+  font-weight: 600;
+}
+.nav-item .nav-id {
+  width: 50px; flex-shrink: 0;
+  font-family: var(--font-sans);
+  font-size: 11px; font-weight: 700;
+  color: var(--text3);
+}
+.nav-item.is-active .nav-id { color: var(--gold-deep); }
+.nav-item .nav-name { flex: 1; }
+.nav-item .nav-tag {
+  font-size: 9px; padding: 1px 6px;
+  border-radius: 99px;
+  background: var(--color-bg-surface-muted);
+  color: var(--text3);
+  font-weight: 500;
+  white-space: nowrap;
+}
+.nav-item .nav-tag.tag-page  { background: rgba(58,111,224,0.10); color: var(--color-brand-primary); }
+.nav-item .nav-tag.tag-sheet { background: rgba(108,92,231,0.12); color: #6c5ce7; }
+.nav-item .nav-tag.tag-modal { background: rgba(168,85,247,0.12); color: #a855f7; }
+.nav-item .nav-tag.tag-sub   { background: rgba(57,193,108,0.12); color: var(--color-semantic-success); }
+.nav-item .nav-tag.tag-full  { background: rgba(255,163,26,0.18); color: var(--gold-deep); }
+
+.nav-foot {
+  margin-top: 12px; padding: 12px 10px;
+  border-top: 1px solid var(--border);
+  font-size: 10px; color: var(--text3); line-height: 1.6;
+}
+.nav-foot strong { color: var(--text2); }
+
+/* 右侧主区 */
+.preview-area {
+  flex: 1; min-width: 0;
+  display: flex; align-items: flex-start; justify-content: center;
+  padding: 32px 16px 60px;
+}
+
+/* ---------- 手机外壳 ---------- */
+.phone-frame {
+  width: 375px; height: 812px;
+  border-radius: 44px;
+  background: #fff;
+  position: relative; overflow: hidden;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.18), 0 0 0 8px #1c1f2b, 0 0 0 10px #2c3142;
+}
+.notch {
+  position: absolute; top: 8px; left: 50%; transform: translateX(-50%);
+  width: 110px; height: 28px; background: #1c1f2b; border-radius: 16px; z-index: 8;
+}
+
+/* iOS 系统状态栏 */
+.ios-status-bar {
+  height: 44px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 22px;
+  font-family: var(--font-sans);
+  color: var(--color-text-primary);
+  user-select: none;
+  position: absolute; top: 0; left: 0; right: 0; z-index: 7;
+}
+.ios-status-bar.is-on-glass {
+  background: transparent;
+}
+.ios-status-bar { color: #fff; }
+.ios-status-bar .iss-battery {
+  background: rgba(255, 255, 255, 0.96);
+  color: #141619;
+}
+.ios-status-bar .iss-battery::after {
+  background: rgba(255, 255, 255, 0.96);
+}
+.ios-status-bar.is-on-dark { color: #fff; }
+.ios-status-bar.is-on-dark .iss-battery { background: #fff; color: #141619; }
+.ios-status-bar.is-on-dark .iss-battery::after { background: #fff; }
+.ios-status-bar .iss-time { font-size: 17px; font-weight: 600; letter-spacing: -0.4px; }
+.ios-status-bar .iss-right { display: inline-flex; align-items: center; gap: 5px; }
+.ios-status-bar .iss-signal { display: inline-flex; align-items: flex-end; gap: 2px; height: 11px; }
+.ios-status-bar .iss-bar { width: 3px; background: currentColor; border-radius: 1px; }
+.ios-status-bar .iss-bar:nth-child(1) { height: 3px; }
+.ios-status-bar .iss-bar:nth-child(2) { height: 5px; }
+.ios-status-bar .iss-bar:nth-child(3) { height: 7px; }
+.ios-status-bar .iss-bar:nth-child(4) { height: 9px; }
+.ios-status-bar .iss-network { font-size: 15px; font-weight: 600; letter-spacing: -0.4px; }
+.ios-status-bar .iss-battery {
+  position: relative;
+  width: 26px; height: 13px;
+  background: var(--color-text-primary);
+  color: var(--color-text-on-dark);
+  border-radius: 3.5px;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.ios-status-bar .iss-battery::after {
+  content: ""; position: absolute;
+  right: -2.5px; top: 4px;
+  width: 1.5px; height: 5px;
+  background: var(--color-text-primary);
+  border-radius: 0 1px 1px 0;
+}
+.ios-status-bar .iss-battery-pct {
+  font-size: 10px; font-weight: 700;
+  letter-spacing: -0.5px; line-height: 1;
+}
+
+/* ---------- 一级页面顶栏（收获模块在 IP 森林背景上保持透明 + 白字） ---------- */
+.app-topbar {
+  position: absolute; top: 44px; left: 0; right: 0; height: 52px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 var(--space-lg);
+  z-index: 6;
+  background: transparent;
+}
+.topbar-left { display: flex; align-items: center; gap: var(--space-sm); flex: 1; min-width: 0; }
+.topbar-title {
+  font-size: var(--font-3xl); font-weight: 800;
+  color: #fff;
+  line-height: 1; white-space: nowrap;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
+}
+.ring-tag {
+  display: inline-flex; align-items: center; gap: 4px;
+  height: 24px; padding: 0 10px;
+  border-radius: var(--radius-pill);
+  font-size: var(--font-xs); font-weight: var(--weight-semi);
+  white-space: nowrap; cursor: pointer; transition: opacity 0.15s;
+}
+.ring-tag:active { opacity: 0.7; }
+.ring-tag.is-connected { background: var(--color-tag-success-bg); color: var(--color-semantic-success); }
+.ring-tag .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.ring-tag .battery { display: inline-flex; align-items: center; gap: 4px; }
+.battery-icon {
+  position: relative; display: inline-block;
+  width: 18px; height: 10px;
+  border: 1.2px solid currentColor; border-radius: 2.5px;
+  padding: 1px; box-sizing: border-box;
+}
+.battery-icon::after {
+  content: ""; position: absolute;
+  right: -3px; top: 2.5px;
+  width: 2px; height: 4px;
+  background: currentColor; border-radius: 0 1px 1px 0;
+}
+.battery-icon .battery-fill {
+  display: block;
+  width: var(--battery-pct, 100%); height: 100%;
+  background: currentColor; border-radius: 1px;
+  transition: width 0.3s ease;
+}
+.topbar-right { display: inline-flex; align-items: center; gap: var(--space-sm); }
+.topbar-icon-btn {
+  width: 36px; height: 36px; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 16px;
+  background: rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+  position: relative;
+}
+.topbar-icon-btn.profile {
+  background: var(--gradient-xp-gold); color: #fff;
+  font-weight: 700; font-size: 13px;
+  box-shadow: var(--shadow-card);
+}
+.topbar-icon-btn .badge-dot {
+  position: absolute; top: 2px; right: 2px;
+  min-width: 16px; height: 16px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: var(--color-semantic-danger);
+  color: #fff;
+  font-size: 10px; font-weight: 700;
+  display: inline-flex; align-items: center; justify-content: center;
+  line-height: 1; border: 1.5px solid #fff;
+}
+
+/* ---------- 主滚动区 ---------- */
+.scroll-area {
+  position: absolute; top: 0; left: 0; right: 0; bottom: 80px;
+  overflow-y: auto; -webkit-overflow-scrolling: touch;
+  padding-bottom: 8px;
+  background: linear-gradient(180deg, #f8f6ff 0%, #f6f7fb 60%, #fff 100%);
+}
+.scroll-area::-webkit-scrollbar { display: none; }
+
+/* ---------- 底部 Tab Bar ---------- */
+.tab-bar {
+  position: absolute; left: 12px; right: 12px; bottom: 12px;
+  height: 64px; padding: 8px 12px; border-radius: 28px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  display: flex; justify-content: space-around; align-items: center;
+  box-shadow: var(--shadow-tabbar); z-index: 5;
+}
+.tab-bar .tb-item {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+  cursor: pointer; flex: 1;
+  color: #99A2BC;
+  transition: color .16s ease, transform .16s ease;
+}
+.tab-bar .tb-item.is-active { color: var(--gold); }
+.tab-bar .tb-item .ico { font-size: 24px; line-height: 1; }
+.tab-bar .tb-item .ico svg { width: 24px; height: 24px; display: block; }
+.tab-bar .tb-item .lbl { font-size: 11px; font-weight: 600; color: currentColor; }
+.tab-bar .tb-item.is-active .ico { transform: translateY(-1px) scale(1.04); }
+
+/* ==========================================================
+   H1.A IP 形象主视觉
+   ========================================================== */
+.h-hero {
+  margin: 0; padding: 96px 0 20px;
+  position: relative; overflow: hidden;
+  min-height: 460px;
+  background: #ddeed6 url('./等级人物/收获背景-IP森林.png') center top / cover no-repeat;
+  transition: background 0.4s ease;
+}
+/* 季节皮肤切换在新版本中先停用，主视觉以 IP 森林背景图为主 */
+.h-hero.is-skin-default,
+.h-hero.is-skin-spring,
+.h-hero.is-skin-summer,
+.h-hero.is-skin-autumn,
+.h-hero.is-skin-winter {
+  background: #ddeed6 url('./等级人物/收获背景-IP森林.png') center top / cover no-repeat;
+}
+
+/* 季节装饰 */
+.h-decor { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.h-decor .petal {
+  position: absolute; font-size: 18px; opacity: 0; animation: petal-fall 8s linear infinite;
+}
+.h-hero.is-skin-spring .h-decor .petal { opacity: 1; }
+.h-hero.is-skin-summer .h-decor .petal,
+.h-hero.is-skin-autumn .h-decor .petal,
+.h-hero.is-skin-winter .h-decor .petal { opacity: 0; }
+.h-hero.is-skin-summer .h-decor .leaf { opacity: 1; }
+.h-hero.is-skin-autumn .h-decor .maple { opacity: 1; }
+.h-hero.is-skin-winter .h-decor .snow { opacity: 1; }
+.h-decor .leaf, .h-decor .maple, .h-decor .snow { position: absolute; font-size: 18px; opacity: 0; animation: petal-fall 10s linear infinite; }
+.h-decor .petal:nth-child(1) { left: 12%; animation-delay: 0s; }
+.h-decor .petal:nth-child(2) { left: 30%; animation-delay: 1.5s; font-size: 14px; }
+.h-decor .petal:nth-child(3) { left: 50%; animation-delay: 3s; }
+.h-decor .petal:nth-child(4) { left: 72%; animation-delay: 0.8s; font-size: 14px; }
+.h-decor .petal:nth-child(5) { left: 88%; animation-delay: 2.2s; }
+.h-decor .leaf:nth-child(6) { left: 22%; animation-delay: 0.4s; }
+.h-decor .leaf:nth-child(7) { left: 60%; animation-delay: 2s; }
+.h-decor .leaf:nth-child(8) { left: 80%; animation-delay: 4s; }
+.h-decor .maple:nth-child(9) { left: 18%; animation-delay: 1s; }
+.h-decor .maple:nth-child(10) { left: 50%; animation-delay: 3s; }
+.h-decor .maple:nth-child(11) { left: 78%; animation-delay: 5s; }
+.h-decor .snow:nth-child(12) { left: 14%; animation-delay: 0s; }
+.h-decor .snow:nth-child(13) { left: 38%; animation-delay: 1.6s; }
+.h-decor .snow:nth-child(14) { left: 60%; animation-delay: 3.2s; }
+.h-decor .snow:nth-child(15) { left: 82%; animation-delay: 5s; }
+@keyframes petal-fall {
+  0% { transform: translateY(-30px) rotate(0deg); opacity: 0; }
+  20% { opacity: 1; }
+  100% { transform: translateY(420px) rotate(360deg); opacity: 0; }
+}
+
+/* 融合卡：身份信息 + 进度条 + 升级提示（同一张玻璃卡） */
+.h-fusion-card {
+  position: relative;
+  margin: 8px 16px 0;
+  background: rgba(255, 248, 230, 0.78);
+  backdrop-filter: blur(18px) saturate(160%);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  border-radius: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow: 0 10px 28px rgba(80, 50, 130, 0.14);
+  overflow: visible;
+}
+.h-fc-identity {
+  padding: 16px 16px 16px 16px;
+  display: flex;
+  align-items: stretch;
+  gap: 14px;
+}
+/* 信息列默认通栏（让进度条 / 升级胶囊延伸到卡片右边距 16px）；
+   昵称 / 勋章 行单独 padding-right 70px 避开右上角"成长档案 ›"按钮 */
+.h-fc-identity .h-id-info { padding-right: 0; }
+.h-fc-identity .h-id-info > .h-id-name,
+.h-fc-identity .h-id-info > .h-id-medals { padding-right: 70px; }
+/* 头像顶部与昵称顶部对齐 */
+.h-fc-identity .h-id-avatar-wrap { align-self: flex-start; }
+/* .h-id-archive 现在用绝对定位，从 flex 流中脱离 */
+.h-fc-divider {
+  height: 1px;
+  margin: 0 16px;
+  background: linear-gradient(90deg, transparent, rgba(80, 50, 130, 0.14), transparent);
+}
+.h-fc-progress {
+  padding: 12px 16px 14px;
+  text-align: center;
+}
+.h-id-avatar-wrap {
+  position: relative;
+  width: 60px; height: 60px;
+  flex-shrink: 0;
+}
+.h-id-avatar {
+  position: relative; z-index: 1;
+  width: 60px; height: 60px; border-radius: 50%;
+  margin: 0;
+  background: linear-gradient(135deg, #6c5ce7 0%, #a855f7 50%, #ec4899 100%);
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-weight: 800; font-size: 24px;
+  box-shadow:
+    0 0 0 2px #fff inset,
+    0 0 0 3px var(--gold),
+    0 0 0 5px #fff,
+    0 4px 12px rgba(108, 92, 231, 0.25);
+  cursor: pointer;
+}
+/* LV 12 椭圆徽章：头像底部中央，向下溢出 */
+.h-id-lv-badge {
+  position: absolute;
+  bottom: -10px; left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  min-width: 40px; height: 22px;
+  padding: 0 9px;
+  border-radius: 999px;
+  background: var(--gradient-xp-gold);
+  color: #fff; font-size: 11px; font-weight: 900;
+  display: inline-flex; align-items: center; justify-content: center;
+  box-shadow:
+    0 0 0 2px #fff,
+    0 4px 8px rgba(255, 163, 26, 0.40);
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+.h-id-info {
+  flex: 1; min-width: 0;
+  display: flex; flex-direction: column;
+  gap: 5px;
+  align-self: stretch;
+  justify-content: flex-start;
+}
+.h-id-name {
+  font-size: 18px; font-weight: 800;
+  color: #2a1a45;
+  line-height: 1.1; letter-spacing: -0.3px;
+}
+.h-id-title-pill {
+  display: inline-flex; align-self: flex-start;
+  align-items: center; gap: 4px;
+  padding: 3px 10px; border-radius: 999px;
+  background: var(--gradient-purple-pink);
+  color: #fff; font-size: 11px; font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(108, 92, 231, 0.28);
+}
+.h-id-title-pill::before { content: '🏷️'; font-size: 10px; }
+.h-id-stage {
+  font-size: 11px; font-weight: 600;
+  color: #5a2a7a; opacity: 0.85;
+}
+/* 勋章 mini 图标行（最近解锁 3 枚，紧密排列） */
+.h-id-medals {
+  display: flex; align-items: center;
+  gap: 2px;
+  margin: 2px 0;
+  cursor: pointer;
+}
+.h-id-medals .h-id-mini {
+  width: 22px; height: 22px;
+  display: inline-flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  overflow: visible;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.12));
+}
+.h-id-medals .h-id-mini img {
+  width: 100%; height: 100%;
+  object-fit: contain;
+}
+/* 进度条：金色渐变填充，无明显底色 */
+.h-id-bar {
+  height: 6px; border-radius: 999px;
+  background: rgba(108, 92, 231, 0.12);
+  overflow: hidden;
+  position: relative;
+}
+.h-id-bar .fill {
+  height: 100%; border-radius: 999px;
+  background: var(--gradient-xp-gold);
+  width: 73%;
+  position: relative;
+}
+.h-id-bar .fill::after {
+  content: ''; position: absolute;
+  right: -2px; top: -1px;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: #FFE6A8;
+  box-shadow: 0 0 6px rgba(255, 163, 26, 0.6);
+}
+.h-id-meta {
+  font-size: 12px; font-weight: 700;
+  color: #5a2a7a;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 8px;
+}
+/* XP 加成倍率胶囊（在融合卡进度行右侧 / XP 记录标题旁） */
+.h-id-boost {
+  display: inline-flex; align-items: center; gap: 3px;
+  padding: 2px 8px; border-radius: 999px;
+  background: linear-gradient(135deg, #FFD66B 0%, #FFA31A 60%, #FF7851 100%);
+  color: #fff;
+  font-size: 11px; font-weight: 800;
+  letter-spacing: -0.2px;
+  box-shadow: 0 2px 6px rgba(255, 163, 26, 0.32);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.h-id-boost::before { content: '⚡'; font-size: 10px; }
+/* 升级提示：浅米色胶囊 + 🎁 + 深棕字（通栏，与进度条对齐到卡片右边距 16px） */
+.h-id-uptip {
+  display: flex; align-self: stretch;
+  align-items: center; gap: 6px;
+  margin-top: 2px;
+  padding: 6px 14px 6px 12px;
+  border-radius: 999px;
+  background: rgba(255, 246, 220, 0.95);
+  border: 1px solid rgba(255, 200, 100, 0.35);
+  font-size: 12px; font-weight: 700;
+  color: #B86A2A;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.h-id-uptip::before { content: '🎁'; font-size: 12px; flex-shrink: 0; }
+/* 成长档案 ›：绝对定位在卡片右上角，纯文字按钮 */
+.h-id-archive {
+  position: absolute;
+  top: 14px; right: 16px;
+  z-index: 3;
+  display: inline-flex; align-items: center; gap: 2px;
+  padding: 4px 4px 4px 10px;
+  background: transparent;
+  font-size: 12px; font-weight: 600;
+  color: #9B8AB8;
+  cursor: pointer;
+  white-space: nowrap;
+  letter-spacing: 0.2px;
+  border: 0;
+}
+.h-id-archive:hover { color: #6c5ce7; }
+
+/* 季节 chip 行（档案链接已迁移到身份卡，居中展示季节标签） */
+.h-season-row {
+  position: relative;
+  display: flex; align-items: center; justify-content: center;
+  padding: 0 16px 6px;
+}
+.h-season-chip {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 4px 12px; border-radius: 999px;
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(8px);
+  font-size: 11px; font-weight: 800;
+  color: #5a2a7a;
+}
+
+/* 中部主体 · 中性人物形象 */
+.h-figure-wrap {
+  position: relative;
+  display: flex; align-items: center; justify-content: center;
+  padding: 4px 0 6px;
+  height: 280px;
+  margin-top: 8px;
+}
+.h-figure {
+  font-size: 130px;
+  filter: drop-shadow(0 12px 24px rgba(50, 30, 80, 0.18));
+  animation: figure-breathe 3.6s ease-in-out infinite;
+  user-select: none;
+}
+.h-figure-img {
+  width: 255px; height: 255px;
+  object-fit: contain;
+  filter: drop-shadow(0 14px 28px rgba(40, 60, 30, 0.22));
+  user-select: none;
+  pointer-events: auto;
+  cursor: pointer;
+  /* IP 角色单独下移 80px，不影响 hero 背景与下方融合卡布局 */
+  transform: translateY(80px);
+  animation: figure-breathe-shifted 3.6s ease-in-out infinite;
+}
+@keyframes figure-breathe-shifted {
+  0%, 100% { transform: translateY(80px); }
+  50% { transform: translateY(74px); }
+}
+@keyframes figure-breathe {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+.h-figure-glow {
+  position: absolute; left: 50%; top: 55%;
+  transform: translate(-50%, -50%);
+  width: 180px; height: 180px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,210,90,0.5) 0%, rgba(255,210,90,0) 70%);
+  pointer-events: none;
+  display: none;
+}
+.h-hero[data-stage="共生"] .h-figure-glow,
+.h-hero[data-stage="圆满"] .h-figure-glow { display: block; }
+.h-hero[data-stage="共生"] .h-figure,
+.h-hero[data-stage="圆满"] .h-figure { animation: figure-float 4s ease-in-out infinite; }
+@keyframes figure-float {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-12px) scale(1.02); }
+}
+
+/* 进度条 + 升级提示（包裹于 .h-fusion-card .h-fc-progress 内） */
+.h-progress-bar {
+  margin: 4px auto 6px;
+  width: 240px; height: 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.55);
+  overflow: hidden;
+  position: relative;
+}
+.h-progress-bar .fill {
+  height: 100%; border-radius: 999px;
+  background: var(--gradient-xp-gold);
+  width: 73%;
+  position: relative;
+}
+.h-progress-bar .fill::after {
+  content: ''; position: absolute;
+  right: -3px; top: -2px;
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: #FFE6A8;
+  box-shadow: 0 0 8px rgba(255, 163, 26, 0.6);
+}
+.h-progress-meta {
+  font-size: 11px; font-weight: 600;
+  color: #5a2a7a;
+}
+.h-upgrade-tip {
+  display: inline-flex; align-items: center; gap: 4px;
+  margin-top: 10px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(8px);
+  font-size: 12px; font-weight: 700;
+  color: var(--gold-deep);
+  cursor: default;
+}
+.h-upgrade-tip::before { content: '🎁'; }
+
+/* 季节指示器 */
+.h-season-dots {
+  display: flex; justify-content: center; gap: 8px;
+  margin-top: 16px;
+}
+.h-season-dots .dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: rgba(255,255,255,0.4);
+  border: 1px solid rgba(120,80,160,0.2);
+}
+.h-season-dots .dot.is-unlocked { background: rgba(120,80,160,0.5); }
+.h-season-dots .dot.is-active {
+  width: 10px; height: 10px;
+  background: var(--gold);
+  box-shadow: 0 0 12px rgba(255, 163, 26, 0.6);
+}
+.h-season-dots .dot.is-active.is-spring { background: #ec4899; }
+.h-season-dots .dot.is-active.is-summer { background: #22c55e; }
+.h-season-dots .dot.is-active.is-autumn { background: #f97316; }
+.h-season-dots .dot.is-active.is-winter { background: #60a5fa; }
+
+/* ==========================================================
+   H1.B 等级里程碑横滑卡片
+   ========================================================== */
+.h-section-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 18px 16px 10px;
+}
+.h-section-head .t {
+  font-size: 20px; font-weight: 800;
+  color: var(--text); letter-spacing: -0.3px;
+}
+.h-section-head .more {
+  font-size: 12px; font-weight: 700;
+  color: var(--accent); cursor: pointer;
+}
+.h-milestone-rail {
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-padding-left: 16px;
+  padding: 0 16px 4px;
+  -webkit-overflow-scrolling: touch;
+}
+.h-milestone-rail::-webkit-scrollbar { display: none; }
+.h-milestone-inner {
+  display: inline-flex;
+  gap: 8px;
+  padding-right: 16px;
+}
+.h-mcard {
+  flex: 0 0 132px;
+  width: 132px; height: 168px;
+  background: #fff;
+  border-radius: 16px;
+  scroll-snap-align: start;
+  box-shadow: var(--shadow-card);
+  cursor: pointer;
+  overflow: hidden;
+  position: relative;
+  transition: transform 0.18s ease;
+}
+.h-mcard:active { transform: scale(0.97); }
+.h-mcard .h-mc-bar { height: 4px; }
+.h-mcard.is-stage-雏形 .h-mc-bar { background: #b8b1d4; }
+.h-mcard.is-stage-觉醒 .h-mc-bar { background: linear-gradient(90deg, #4ade80, #22c55e); }
+.h-mcard.is-stage-行动 .h-mc-bar { background: linear-gradient(90deg, #f97316, #fb923c); }
+.h-mcard.is-stage-平衡 .h-mc-bar { background: linear-gradient(90deg, #a855f7, #6c5ce7); }
+.h-mcard.is-stage-共生 .h-mc-bar { background: var(--gradient-xp-gold); }
+.h-mcard.is-stage-圆满 .h-mc-bar { background: linear-gradient(90deg, #6c5ce7, #ec4899, #FFA31A); }
+.h-mcard .h-mc-body { padding: 10px 12px; }
+.h-mcard .h-mc-lv {
+  font-size: 22px; font-weight: 900;
+  color: var(--text); line-height: 1.1;
+}
+.h-mcard .h-mc-stage {
+  font-size: 11px; font-weight: 700;
+  color: var(--text3); margin-top: 2px;
+}
+.h-mcard .h-mc-rewards {
+  display: flex; gap: 4px; margin-top: 10px; min-height: 28px;
+  flex-wrap: wrap;
+}
+.h-mcard .h-mc-rewards .h-mc-icon {
+  width: 24px; height: 24px; border-radius: 6px;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 14px;
+  background: var(--color-bg-surface-muted);
+}
+.h-mcard.is-locked .h-mc-rewards .h-mc-icon { filter: grayscale(1); opacity: 0.5; }
+.h-mcard .h-mc-status {
+  position: absolute; left: 12px; bottom: 8px; right: 12px;
+  display: flex; flex-direction: column; gap: 2px;
+}
+.h-mcard .h-mc-status-pill {
+  display: inline-flex; align-items: center; gap: 3px;
+  padding: 3px 8px; border-radius: 999px;
+  font-size: 10px; font-weight: 800;
+  align-self: flex-start;
+}
+.h-mcard.is-done .h-mc-status-pill { background: var(--color-tag-success-bg); color: var(--color-semantic-success); }
+.h-mcard.is-locked .h-mc-status-pill { background: var(--color-bg-surface-muted); color: var(--text3); }
+.h-mcard.is-current .h-mc-status-pill { background: rgba(108,92,231,0.12); color: var(--accent); }
+.h-mcard .h-mc-sub {
+  font-size: 10px; font-weight: 600;
+  color: var(--text3);
+}
+.h-mcard.is-current { box-shadow: 0 0 0 2px var(--accent), var(--shadow-card); }
+.h-mcard.is-current .h-mc-progress {
+  margin-top: 4px; height: 3px; border-radius: 999px;
+  background: rgba(108,92,231,0.16);
+  overflow: hidden;
+}
+.h-mcard.is-current .h-mc-progress .fill {
+  height: 100%; background: var(--gradient-purple-pink);
+  width: 73%;
+}
+
+/* ==========================================================
+   H1.C 我的资产 三入口
+   ========================================================== */
+.h-assets-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+  padding: 0 16px;
+}
+.h-asset-card {
+  position: relative;
+  border-radius: 18px;
+  padding: 14px 12px 12px;
+  color: #fff;
+  cursor: pointer;
+  overflow: hidden;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.10);
+  transition: transform 0.18s ease;
+}
+.h-asset-card:active { transform: scale(0.97); }
+.h-asset-card.h-asset-title { background: var(--gradient-purple-pink); }
+.h-asset-card.h-asset-medal { background: var(--gradient-xp-gold); }
+.h-asset-card.h-asset-frame { background: linear-gradient(135deg, #06b6d4, #3b82f6); }
+.h-asset-card .h-ac-emoji { font-size: 24px; line-height: 1; margin-bottom: 6px; }
+.h-asset-card .h-ac-title { font-size: 13px; font-weight: 800; }
+.h-asset-card .h-ac-num {
+  font-size: 11px; font-weight: 700;
+  opacity: 0.85; margin-top: 2px;
+}
+.h-asset-card .h-ac-cta {
+  display: inline-flex; align-items: center; gap: 2px;
+  margin-top: 10px;
+  background: #fff;
+  padding: 4px 10px; border-radius: 999px;
+  font-size: 11px; font-weight: 800;
+}
+.h-asset-card.h-asset-title .h-ac-cta { color: var(--accent); }
+.h-asset-card.h-asset-medal .h-ac-cta { color: var(--gold-deep); }
+.h-asset-card.h-asset-frame .h-ac-cta { color: #0e7490; }
+.h-asset-card .h-ac-redot {
+  position: absolute; top: 8px; right: 8px;
+  width: 8px; height: 8px; border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 0 2px rgba(255,255,255,0.4);
+  display: none;
+}
+.h-asset-card.has-new .h-ac-redot { display: block; }
+
+/* ==========================================================
+   勋章进度卡（资产卡与 XP 记录之间，外跳到 04 勋章墙）
+   ========================================================== */
+.h-medals-progress {
+  margin: 12px 16px 0;
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #fffaf0 0%, #fef3c7 100%);
+  border: 1px solid rgba(245, 158, 11, 0.20);
+  box-shadow: 0 6px 18px rgba(245, 158, 11, 0.10);
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.18s ease;
+}
+.h-medals-progress:active { transform: scale(0.99); }
+.h-mp-head {
+  display: flex; align-items: center; gap: 12px;
+}
+.h-mp-ico {
+  width: 38px; height: 38px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+  box-shadow: 0 4px 10px rgba(245, 158, 11, 0.32);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+}
+.h-mp-text { flex: 1; min-width: 0; padding-right: 22px; }
+.h-mp-title {
+  font-size: 14px; font-weight: 800;
+  color: #92400e; letter-spacing: -0.2px;
+}
+.h-mp-title .num { color: #f59e0b; }
+.h-mp-sub {
+  font-size: 11px; color: #b45309;
+  margin-top: 2px; font-weight: 600;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.h-mp-arrow {
+  position: absolute; top: 18px; right: 14px;
+  color: #92400e; font-size: 18px; font-weight: 700;
+  pointer-events: none;
+}
+.h-mp-bar {
+  height: 6px; border-radius: 999px;
+  background: rgba(245, 158, 11, 0.16);
+  overflow: hidden;
+  margin: 12px 0 10px;
+}
+.h-mp-bar .fill {
+  height: 100%; border-radius: 999px;
+  background: linear-gradient(90deg, #fbbf24, #f59e0b, #FF7851);
+  width: 21.8%;
+  position: relative;
+}
+.h-mp-bar .fill::after {
+  content: ''; position: absolute;
+  right: -2px; top: -1px;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: #FFE6A8;
+  box-shadow: 0 0 6px rgba(255, 163, 26, 0.6);
+}
+.h-mp-recent {
+  display: flex; align-items: center;
+}
+.h-mp-mini {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  background: #fff;
+  display: inline-flex; align-items: center; justify-content: center;
+  margin-right: -8px;
+  box-shadow: 0 2px 5px rgba(245, 158, 11, 0.22);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.h-mp-mini img { width: 100%; height: 100%; object-fit: contain; }
+.h-mp-recent-label {
+  font-size: 11px; font-weight: 700;
+  color: #92400e;
+  margin-left: 16px;
+  letter-spacing: 0.2px;
+}
+
+/* ==========================================================
+   H1.D XP 来源记录
+   ========================================================== */
+.h-xp-section { padding: 0 16px 24px; }
+.h-xp-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 18px 0 10px;
+}
+.h-xp-head .t { font-size: 20px; font-weight: 800; color: var(--text); }
+.h-xp-head .h-date-chip {
+  display: inline-flex; align-items: center; gap: 2px;
+  padding: 4px 10px; border-radius: 999px;
+  background: rgba(108,92,231,0.10);
+  color: var(--accent);
+  font-size: 11px; font-weight: 700;
+  cursor: pointer;
+}
+.h-xp-head .h-total-pill {
+  background: var(--gradient-xp-gold);
+  color: #fff;
+  padding: 4px 10px; border-radius: 999px;
+  font-size: 11px; font-weight: 800;
+}
+.h-xp-list {
+  background: #fff;
+  border-radius: 18px;
+  padding: 4px 14px;
+  box-shadow: var(--shadow-card);
+}
+.h-xp-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 0;
+  border-top: 1px dashed var(--border-soft);
+}
+.h-xp-row:first-child { border-top: none; }
+.h-xp-row .h-xp-ico {
+  width: 36px; height: 36px; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 16px; color: #fff;
+  flex-shrink: 0;
+}
+.h-xp-row .h-xp-ico.is-step { background: #22c55e; }
+.h-xp-row .h-xp-ico.is-cardio { background: #ef4444; }
+.h-xp-row .h-xp-ico.is-water { background: #06b6d4; }
+.h-xp-row .h-xp-ico.is-sleep { background: #6c5ce7; }
+.h-xp-row .h-xp-ico.is-meds { background: #3b82f6; }
+.h-xp-row .h-xp-ico.is-stand { background: #a855f7; }
+.h-xp-row .h-xp-ico.is-burn { background: #f97316; }
+.h-xp-row .h-xp-ico.is-event { background: var(--gold); }
+.h-xp-row .h-xp-ico.is-care { background: #ec4899; }
+.h-xp-row .h-xp-body { flex: 1; min-width: 0; }
+.h-xp-row .h-xp-name { font-size: 13px; font-weight: 800; color: var(--text); }
+.h-xp-row .h-xp-time { font-size: 11px; font-weight: 600; color: var(--text3); margin-top: 2px; }
+.h-xp-row .h-xp-val {
+  text-align: right;
+}
+.h-xp-row .h-xp-main {
+  font-size: 17px; font-weight: 800;
+  color: var(--accent); line-height: 1;
+}
+.h-xp-row .h-xp-split {
+  font-size: 10px; font-weight: 600;
+  color: var(--text3); margin-top: 4px;
+}
+.h-xp-foot {
+  text-align: center; padding: 10px 0 4px;
+  font-size: 11px; font-weight: 600; color: var(--text3);
+}
+.h-xp-empty {
+  padding: 36px 16px; text-align: center;
+  color: var(--text3);
+}
+.h-xp-empty .ico { font-size: 38px; margin-bottom: 8px; }
+.h-xp-empty .ttl { font-size: 14px; font-weight: 700; color: var(--text2); }
+.h-xp-empty .body { font-size: 12px; margin-top: 4px; }
+
+/* ==========================================================
+   未登录引导
+   ========================================================== */
+.h-empty {
+  display: none;
+  position: absolute; inset: 0;
+  padding: 200px 32px 100px;
+  text-align: center;
+  color: var(--text3);
+  background: linear-gradient(180deg, #fff8e8 0%, #fff 60%);
+  z-index: 4;
+}
+.h-empty .ico { font-size: 72px; margin-bottom: 16px; }
+.h-empty .ttl { font-size: 22px; font-weight: 800; color: var(--text); }
+.h-empty .body { font-size: 13px; margin-top: 8px; line-height: 1.7; color: var(--text2); }
+.h-empty .cta {
+  display: inline-block; margin-top: 24px;
+  padding: 14px 40px; border-radius: var(--radius-pill);
+  background: var(--color-brand-primary);
+  color: #fff; font-size: 16px; font-weight: 700;
+  box-shadow: 0 6px 18px rgba(58, 111, 224, 0.32);
+  cursor: pointer;
+}
+.phone-frame.is-logged-out .h-empty { display: block; }
+.phone-frame.is-logged-out .scroll-area > .h-hero,
+.phone-frame.is-logged-out .scroll-area > .h-section-head,
+.phone-frame.is-logged-out .scroll-area > .h-milestone-rail,
+.phone-frame.is-logged-out .scroll-area > .h-assets-row,
+.phone-frame.is-logged-out .scroll-area > .h-xp-section { display: none; }
+
+/* 状态：满级 / 新用户 视觉变化通过 data 属性切换 */
+
+/* ==========================================================
+   全屏滑入页 fs-overlay（H2 / H3 / H4 / H5 / H5.1）
+   ========================================================== */
+.fs-overlay {
+  position: absolute; inset: 0;
+  background: var(--card);
+  z-index: 50;
+  transform: translateX(100%);
+  transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
+  overflow-y: auto;
+  border-radius: 44px;
+}
+.fs-overlay.show { transform: translateX(0); }
+.fs-overlay::-webkit-scrollbar { display: none; }
+.ov-head {
+  position: sticky; top: 0; z-index: 5;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 56px 16px 12px;
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+.ov-head .ov-back, .ov-head .ov-more {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--color-bg-surface-muted);
+  display: inline-flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  font-size: 18px; color: var(--text);
+}
+.ov-head .ov-title {
+  font-size: 17px; font-weight: 800;
+  color: var(--text);
+  flex: 1; text-align: center;
+}
+
+/* ==========================================================
+   H2 我的皮肤
+   ========================================================== */
+.h-skins-page { padding-bottom: 100px; }
+.h-skins-current {
+  margin: 16px;
+  padding: 18px 16px;
+  border-radius: 22px;
+  background: linear-gradient(135deg, #6c5ce7 0%, #a855f7 50%, #ec4899 100%);
+  color: #fff;
+  display: flex; align-items: center; gap: 14px;
+  box-shadow: 0 8px 24px rgba(108,92,231,0.32);
+  position: relative;
+  overflow: hidden;
+}
+.h-skins-current::before {
+  content: ''; position: absolute;
+  top: -40px; right: -40px;
+  width: 160px; height: 160px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,255,255,0.22), transparent 70%);
+  pointer-events: none;
+}
+.h-skins-current .h-sc-img {
+  width: 80px; height: 80px;
+  border-radius: 16px;
+  background: rgba(255,255,255,0.22);
+  display: inline-flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  font-size: 44px;
+  position: relative; z-index: 1;
+  border: 2px solid rgba(255,255,255,0.45);
+  overflow: hidden;
+}
+.h-skins-current .h-sc-img img {
+  width: 100%; height: 100%;
+  object-fit: contain;
+}
+.h-skins-current .h-sc-body { flex: 1; min-width: 0; position: relative; z-index: 1; }
+.h-skins-current .h-sc-eyebrow {
+  font-size: 11px; font-weight: 700;
+  opacity: 0.85; letter-spacing: 0.5px;
+}
+.h-skins-current .h-sc-name {
+  font-size: 19px; font-weight: 800;
+  letter-spacing: -0.3px;
+  margin-top: 4px;
+}
+.h-skins-current .h-sc-from {
+  font-size: 11px; opacity: 0.78;
+  margin-top: 4px;
+}
+.h-skins-current .h-sc-active {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.22);
+  font-size: 11px; font-weight: 800;
+  letter-spacing: 0.3px;
+}
+.h-skins-current .h-sc-stat {
+  position: absolute; top: 16px; right: 16px;
+  z-index: 2;
+  font-size: 11px; font-weight: 800;
+  background: rgba(255,255,255,0.22);
+  padding: 4px 10px; border-radius: 999px;
+}
+/* 皮肤行 */
+.h-skin-row {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 12px 14px;
+  margin: 0 16px 8px;
+  display: flex; align-items: center; gap: 14px;
+  box-shadow: var(--shadow-card);
+}
+.h-skin-row.is-locked {
+  background: var(--color-bg-surface-muted);
+  border-color: transparent;
+  box-shadow: none;
+}
+.h-skin-row .h-sk-img {
+  width: 56px; height: 56px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(108,92,231,0.10), rgba(236,72,153,0.10));
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 32px;
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+}
+.h-skin-row .h-sk-img img {
+  width: 100%; height: 100%;
+  object-fit: contain;
+}
+.h-skin-row.is-locked .h-sk-img {
+  background: var(--color-bg-surface-muted);
+  filter: grayscale(1);
+  opacity: 0.55;
+}
+.h-skin-row.is-locked .h-sk-img::after {
+  content: '🔒'; position: absolute;
+  inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px;
+  filter: none;
+}
+.h-skin-row .h-sk-body { flex: 1; min-width: 0; }
+.h-skin-row .h-sk-name {
+  font-size: 14px; font-weight: 800;
+  color: var(--text);
+}
+.h-skin-row.is-locked .h-sk-name { color: var(--text3); }
+.h-skin-row .h-sk-from {
+  font-size: 11px; color: var(--text3);
+  margin-top: 3px;
+}
+.h-skin-row .h-sk-date {
+  font-size: 10px; color: var(--text3);
+  margin-top: 2px;
+}
+.h-sk-btn {
+  flex-shrink: 0;
+  padding: 6px 14px; border-radius: 999px;
+  font-size: 12px; font-weight: 800;
+  background: #fff; color: var(--accent);
+  border: 1px solid var(--accent);
+  cursor: pointer;
+}
+.h-sk-btn.is-using { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+/* 旧 H2 兼容样式（保留以防外部引用，业务上已废弃） */
+.h-titles-page { padding-bottom: 100px; }
+.h-titles-current {
+  margin: 16px;
+  padding: 16px;
+  border-radius: 18px;
+  background: var(--gradient-purple-pink);
+  color: #fff;
+  display: flex; align-items: center; gap: 12px;
+  box-shadow: 0 6px 18px rgba(108,92,231,0.28);
+}
+.h-titles-current .h-tc-ico {
+  width: 44px; height: 44px; border-radius: 50%;
+  background: rgba(255,255,255,0.22);
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+.h-titles-current .h-tc-body { flex: 1; min-width: 0; }
+.h-titles-current .h-tc-name { font-size: 17px; font-weight: 800; }
+.h-titles-current .h-tc-from { font-size: 11px; opacity: 0.85; margin-top: 2px; }
+.h-titles-current .h-tc-stat {
+  font-size: 11px; font-weight: 700; opacity: 0.95;
+  background: rgba(255,255,255,0.22);
+  padding: 4px 10px; border-radius: 999px;
+}
+
+.h-group-head {
+  padding: 16px 16px 8px;
+  font-size: 13px; font-weight: 700;
+  color: var(--text2);
+}
+.h-titles-list { padding: 0 16px; }
+.h-title-row {
+  background: #fff; border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 12px 14px;
+  margin-bottom: 8px;
+  display: flex; align-items: center; gap: 12px;
+}
+.h-title-row.is-locked { background: var(--color-bg-surface-muted); border-color: transparent; }
+.h-title-row .h-tr-ico {
+  width: 36px; height: 36px; border-radius: 10px;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  background: rgba(108,92,231,0.10);
+  color: var(--accent);
+  flex-shrink: 0;
+}
+.h-title-row.is-locked .h-tr-ico { background: var(--color-bg-surface-muted); color: var(--text3); filter: grayscale(1); }
+.h-title-row .h-tr-body { flex: 1; min-width: 0; }
+.h-title-row .h-tr-name { font-size: 14px; font-weight: 800; color: var(--text); }
+.h-title-row.is-locked .h-tr-name { color: var(--text3); }
+.h-title-row .h-tr-from { font-size: 11px; color: var(--text3); margin-top: 2px; }
+.h-title-row .h-tr-date { font-size: 10px; color: var(--text3); margin-top: 1px; }
+.h-tr-btn {
+  flex-shrink: 0;
+  padding: 6px 14px; border-radius: 999px;
+  font-size: 12px; font-weight: 800;
+  background: #fff; color: var(--accent);
+  border: 1px solid var(--accent);
+  cursor: pointer;
+}
+.h-tr-btn.is-wearing { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+/* ==========================================================
+   H3 头像框选择器
+   ========================================================== */
+.h-frames-page { padding-bottom: 100px; }
+.h-frames-preview {
+  margin: 20px 16px 8px;
+  padding: 22px 20px 18px;
+  background: linear-gradient(180deg, #fff7e8, #fff);
+  border-radius: 22px;
+  text-align: center;
+  border: 1px solid var(--border);
+}
+.h-frames-preview .h-fp-avatar {
+  margin: 0 auto 12px;
+  width: 100px; height: 100px;
+  position: relative;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6c5ce7, #ec4899);
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-weight: 800; font-size: 36px;
+  box-shadow: 0 0 0 3px #fff inset, 0 0 0 6px var(--gold);
+}
+.h-frames-preview .h-fp-name { font-size: 17px; font-weight: 800; color: var(--text); }
+.h-frames-preview .h-fp-num { font-size: 11px; font-weight: 700; color: var(--text3); margin-top: 4px; }
+
+.h-frames-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+  padding: 0 16px;
+}
+.h-frame-item {
+  background: #fff;
+  border-radius: 14px;
+  padding: 12px 8px 10px;
+  text-align: center;
+  position: relative;
+  border: 1.5px solid transparent;
+  cursor: pointer;
+  overflow: visible;
+  box-shadow: var(--shadow-card);
+}
+.h-frame-item.is-locked { background: var(--color-bg-surface-muted); box-shadow: none; }
+.h-frame-item.is-active { border-color: var(--accent); }
+.h-frame-item.is-active::after {
+  content: '✓'; position: absolute;
+  top: -6px; right: -6px;
+  width: 20px; height: 20px; border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  font-size: 12px; font-weight: 800;
+  display: inline-flex; align-items: center; justify-content: center;
+  box-shadow: 0 0 0 2px #fff;
+}
+.h-frame-item .h-fi-preview {
+  width: 64px; height: 64px;
+  border-radius: 50%;
+  margin: 0 auto 8px;
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-weight: 800; font-size: 22px;
+  box-shadow: 0 0 0 2px #fff inset;
+  position: relative;
+}
+.h-frame-item.is-locked .h-fi-preview {
+  background: var(--color-bg-surface-muted);
+  color: var(--text3);
+  box-shadow: 0 0 0 2px #fff inset;
+}
+.h-frame-item.is-locked .h-fi-preview::before {
+  content: '🔒'; position: absolute;
+  inset: 0; display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+  background: rgba(245,247,251,0.85);
+  border-radius: 50%;
+}
+.h-frame-item .h-fi-name { font-size: 12px; font-weight: 700; color: var(--text); }
+.h-frame-item.is-locked .h-fi-name { color: var(--text3); }
+.h-frame-item .h-fi-cond { font-size: 10px; color: var(--text3); margin-top: 2px; }
+.h-frame-item .h-fi-tag {
+  position: absolute; top: 6px; right: 6px;
+  padding: 1px 6px; border-radius: 8px;
+  font-size: 9px; font-weight: 800;
+  background: var(--gradient-xp-gold);
+  color: #fff;
+}
+
+/* ==========================================================
+   H4 等级形象档案
+   ========================================================== */
+.h-archive-page { padding-bottom: 100px; }
+.h-archive-intro {
+  margin: 16px;
+  padding: 16px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #f1ecff, #fff);
+  border: 1px solid #e6def8;
+}
+.h-archive-intro .ttl { font-size: 17px; font-weight: 800; color: var(--text); }
+.h-archive-intro .sub { font-size: 12px; color: var(--text2); margin-top: 6px; line-height: 1.6; }
+
+.h-stage-card {
+  margin: 12px 16px;
+  padding: 16px;
+  border-radius: 20px;
+  background: #fff;
+  display: flex; flex-direction: column; gap: 12px;
+  border: 1px solid var(--border-soft);
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+}
+.h-stage-card.is-locked {
+  background: var(--color-bg-surface-muted);
+  box-shadow: none;
+}
+/* 顶部：树精灵图（左）+ 身份信息（右） */
+.h-stage-card .h-sc-top {
+  display: flex; align-items: stretch; gap: 14px;
+}
+/* 底部：解锁奖励列表 */
+.h-sc-rewards-wrap {
+  border-top: 1px dashed rgba(108, 92, 231, 0.18);
+  padding-top: 10px;
+}
+.h-stage-card.is-locked .h-sc-rewards-wrap {
+  border-top-color: rgba(154, 162, 184, 0.32);
+}
+.h-sc-rewards-label {
+  font-size: 11px; font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 6px;
+}
+.h-stage-card.is-locked .h-sc-rewards-label { color: var(--text3); }
+.h-sc-rewards {
+  display: flex; flex-wrap: wrap; gap: 6px;
+}
+.h-sc-reward {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(108, 92, 231, 0.10);
+  font-size: 11px; font-weight: 700;
+  color: var(--accent);
+}
+.h-sc-reward .e { font-size: 12px; line-height: 1; }
+.h-sc-reward.h-sc-reward--skin  { background: rgba(108, 92, 231, 0.10); color: var(--accent); }
+.h-sc-reward.h-sc-reward--frame { background: rgba(6, 182, 212, 0.12);  color: #0e7490; }
+.h-sc-reward.h-sc-reward--title { background: rgba(236, 72, 153, 0.12); color: #be185d; }
+.h-sc-reward.h-sc-reward--boost { background: rgba(255, 163, 26, 0.16); color: var(--gold-deep); }
+.h-stage-card.is-locked .h-sc-reward {
+  background: var(--color-bg-surface-muted) !important;
+  color: var(--text3) !important;
+  filter: grayscale(0.4);
+  opacity: 0.7;
+}
+.h-stage-card .h-sc-figure {
+  width: 130px; height: 150px;
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 90px;
+  filter: drop-shadow(0 6px 12px rgba(60, 100, 30, 0.18));
+  position: relative;
+}
+.h-stage-card .h-sc-figure img {
+  width: 100%; height: 100%;
+  object-fit: contain;
+}
+.h-stage-card.is-locked .h-sc-figure { filter: blur(6px) grayscale(0.8); opacity: 0.45; }
+.h-stage-card.is-locked .h-sc-figure::after {
+  content: '🔒'; position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 36px; filter: none;
+  opacity: 1.5;
+}
+.h-stage-card .h-sc-body { flex: 1; min-width: 0; padding: 4px 0; }
+.h-stage-card .h-sc-name { font-size: 22px; font-weight: 900; color: var(--text); line-height: 1.1; }
+.h-stage-card .h-sc-range { font-size: 13px; font-weight: 700; color: var(--accent); margin-top: 4px; }
+.h-stage-card.is-locked .h-sc-range { color: var(--text3); }
+.h-stage-card .h-sc-desc { font-size: 12px; color: var(--text2); margin-top: 8px; line-height: 1.6; }
+.h-stage-card .h-sc-pills { margin-top: 10px; display: flex; gap: 6px; flex-wrap: wrap; }
+.h-stage-card .h-sc-pill {
+  padding: 3px 8px; border-radius: 999px;
+  font-size: 10px; font-weight: 700;
+  background: var(--color-bg-surface-muted);
+  color: var(--text2);
+}
+.h-stage-card .h-sc-pill.is-current { background: rgba(108,92,231,0.14); color: var(--accent); }
+.h-stage-card .h-sc-pill.is-date { background: rgba(255,163,26,0.14); color: var(--gold-deep); }
+
+/* ==========================================================
+   H5 勋章墙
+   ========================================================== */
+.h-medals-page { padding-bottom: 100px; }
+.h-mw-stat {
+  margin: 12px 16px 8px;
+  padding: 18px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #fff7e8, #fff);
+  border: 1px solid var(--border);
+  display: flex; align-items: flex-end; justify-content: space-between;
+}
+.h-mw-stat .h-mw-num {
+  font-size: 38px; font-weight: 900;
+  background: var(--gradient-xp-gold);
+  -webkit-background-clip: text; background-clip: text;
+  color: transparent;
+  line-height: 1;
+}
+.h-mw-stat .h-mw-sub { font-size: 11px; font-weight: 700; color: var(--text3); margin-top: 4px; }
+.h-mw-stat .h-mw-right { text-align: right; }
+.h-mw-stat .h-mw-total { font-size: 22px; font-weight: 800; color: var(--text3); }
+.h-mw-stat .h-mw-bar {
+  position: absolute;
+}
+.h-mw-progress {
+  margin: 4px 16px 12px;
+  height: 6px; border-radius: 999px;
+  background: rgba(255,163,26,0.14);
+  overflow: hidden;
+}
+.h-mw-progress .fill {
+  height: 100%; border-radius: 999px;
+  background: var(--gradient-xp-gold);
+}
+
+.h-mw-tabs {
+  display: flex; gap: 8px;
+  padding: 4px 16px 12px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.h-mw-tabs::-webkit-scrollbar { display: none; }
+.h-mw-tab {
+  flex-shrink: 0;
+  padding: 6px 14px; border-radius: 999px;
+  font-size: 12px; font-weight: 700;
+  background: #fff;
+  color: var(--text2);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.h-mw-tab.is-active {
+  background: var(--gradient-purple-pink);
+  color: #fff;
+  border-color: transparent;
+}
+.h-mw-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+  padding: 0 16px;
+}
+.h-medal-item {
+  background: #fff;
+  border-radius: 14px;
+  padding: 12px 8px 10px;
+  text-align: center;
+  position: relative;
+  cursor: pointer;
+  box-shadow: var(--shadow-card);
+}
+.h-medal-item .h-mi-img {
+  width: 72px; height: 72px;
+  margin: 0 auto 6px;
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+}
+.h-medal-item .h-mi-img img {
+  max-width: 100%; max-height: 100%;
+  object-fit: contain;
+}
+.h-medal-item .h-mi-img .emoji-medal {
+  font-size: 56px;
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.12));
+}
+.h-medal-item.is-locked .h-mi-img { opacity: 0.4; filter: grayscale(1); }
+.h-medal-item.is-locked .h-mi-img::after {
+  content: '🔒'; position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; filter: none; opacity: 1;
+}
+.h-medal-item .h-mi-name { font-size: 11px; font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.h-medal-item.is-locked .h-mi-name { color: var(--text3); }
+.h-medal-item .h-mi-tag {
+  position: absolute; top: 6px; right: 6px;
+  padding: 1px 6px; border-radius: 8px;
+  font-size: 9px; font-weight: 800;
+  background: var(--gradient-xp-gold);
+  color: #fff;
+}
+.h-medal-item .h-mi-tag.is-multi { background: linear-gradient(135deg, #ec4899, #6c5ce7, #06b6d4); }
+
+/* ==========================================================
+   H5.1 勋章详情
+   ========================================================== */
+.h-md-page { padding-bottom: 110px; background: linear-gradient(180deg, #fff7e8 0%, #fff 360px); }
+.h-md-status {
+  margin: 8px 16px 12px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 12px; font-weight: 800;
+  text-align: center;
+}
+.h-md-status.is-done { background: var(--color-tag-success-bg); color: var(--color-semantic-success); }
+.h-md-status.is-locked { background: var(--color-bg-surface-muted); color: var(--text3); }
+.h-md-hero {
+  text-align: center;
+  padding: 8px 16px 24px;
+}
+.h-md-hero .h-mh-img {
+  width: 160px; height: 160px;
+  margin: 0 auto 12px;
+  display: flex; align-items: center; justify-content: center;
+  filter: drop-shadow(0 12px 24px rgba(0,0,0,0.18));
+}
+.h-md-hero .h-mh-img img { max-width: 100%; max-height: 100%; object-fit: contain; }
+.h-md-hero .h-mh-img .emoji-medal { font-size: 120px; }
+.h-md-hero .h-mh-mat {
+  display: inline-flex; padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 11px; font-weight: 800;
+  background: var(--gradient-xp-gold); color: #fff;
+}
+.h-md-card {
+  margin: 12px 16px;
+  padding: 16px;
+  background: #fff;
+  border-radius: 18px;
+  border: 1px solid var(--border-soft);
+  box-shadow: var(--shadow-card);
+}
+.h-md-card .h-mc-name { font-size: 22px; font-weight: 900; color: var(--text); }
+.h-md-card .h-mc-tags { display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap; }
+.h-md-card .h-mc-tag {
+  padding: 2px 8px; border-radius: 999px;
+  font-size: 11px; font-weight: 700;
+  background: rgba(108,92,231,0.10);
+  color: var(--accent);
+}
+.h-md-card .h-mc-row { display: flex; justify-content: space-between; align-items: flex-start; margin-top: 10px; gap: 10px; }
+.h-md-card .h-mc-label { font-size: 11px; color: var(--text3); font-weight: 700; }
+.h-md-card .h-mc-val { font-size: 14px; font-weight: 700; color: var(--text); margin-top: 2px; line-height: 1.5; }
+.h-md-title-row {
+  margin: 12px 16px;
+  padding: 14px 16px;
+  background: #fff;
+  border: 2px solid rgba(108,92,231,0.18);
+  border-radius: 18px;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px;
+}
+.h-md-title-row .h-mtl-label { font-size: 11px; color: var(--text3); font-weight: 700; }
+.h-md-title-row .h-mtl-name {
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: var(--gradient-purple-pink);
+  color: #fff;
+  font-size: 14px; font-weight: 800;
+  margin-top: 4px;
+}
+.h-md-source {
+  margin: 12px 16px;
+  padding: 14px 16px;
+  background: linear-gradient(135deg, #fff7e8, #fff);
+  border: 1px solid rgba(255,163,26,0.22);
+  border-radius: 16px;
+}
+.h-md-source .lbl { font-size: 11px; color: var(--text3); font-weight: 700; }
+.h-md-source .val { font-size: 14px; font-weight: 700; color: var(--text); margin-top: 4px; }
+.h-md-source .sub { font-size: 11px; color: var(--text3); margin-top: 2px; }
+
+.h-md-cta {
+  position: absolute; left: 16px; right: 16px; bottom: 16px;
+  height: 52px; border-radius: 26px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 17px; font-weight: 800; color: #fff;
+  background: var(--gradient-purple-pink);
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(108,92,231,0.30);
+}
+.h-md-cta.is-wearing {
+  background: #fff; color: var(--accent);
+  border: 2px solid var(--accent);
+}
+
+/* ==========================================================
+   H1.E 等级里程碑节点详情（底部弹层）
+   ========================================================== */
+.modal-overlay {
+  position: absolute; inset: 0;
+  background: rgba(15,23,42,0.38);
+  z-index: 200;
+  display: none;
+  align-items: flex-end;
+  border-radius: 44px;
+  overflow: hidden;
+}
+.modal-overlay.show { display: flex; }
+.modal-overlay.is-toast {
+  align-items: center; justify-content: center;
+  background: rgba(15,23,42,0.28);
+  z-index: 600;
+}
+.bottom-sheet {
+  width: 100%; max-height: 78vh;
+  background: #fff;
+  border-radius: 22px 22px 0 0;
+  padding: 12px 0 24px;
+  position: relative;
+  overflow-y: auto;
+}
+.bottom-sheet::-webkit-scrollbar { display: none; }
+.bs-handle {
+  width: 32px; height: 4px;
+  background: rgba(0,0,0,0.18);
+  border-radius: 999px;
+  margin: 0 auto 12px;
+}
+.bs-close {
+  position: absolute; top: 12px; right: 16px;
+  width: 28px; height: 28px; border-radius: 50%;
+  background: var(--color-bg-surface-muted);
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 14px; cursor: pointer;
+}
+.bs-status-bar {
+  margin: 0 16px 14px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  text-align: center;
+  font-size: 12px; font-weight: 800;
+}
+.bs-status-bar.is-done { background: var(--color-tag-success-bg); color: var(--color-semantic-success); }
+.bs-status-bar.is-current { background: rgba(108,92,231,0.10); color: var(--accent); }
+.bs-status-bar.is-locked { background: var(--color-bg-surface-muted); color: var(--text3); }
+.bs-lv-block {
+  text-align: center;
+  padding: 4px 16px 14px;
+}
+.bs-lv-num {
+  font-size: 36px; font-weight: 900;
+  background: var(--gradient-xp-gold);
+  -webkit-background-clip: text; background-clip: text;
+  color: transparent;
+  line-height: 1;
+}
+.bs-lv-stage { font-size: 13px; font-weight: 700; color: var(--text2); margin-top: 4px; }
+.bs-rewards { padding: 0 16px; }
+.bs-reward {
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px;
+  border-radius: 14px;
+  background: #fff;
+  border: 1px solid var(--border-soft);
+  margin-bottom: 8px;
+}
+.bs-reward.is-locked { background: var(--color-bg-surface-muted); border-color: transparent; }
+.bs-reward .br-ico {
+  width: 40px; height: 40px; border-radius: 12px;
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  display: inline-flex; align-items: center; justify-content: center;
+  color: #fff; font-size: 20px;
+  flex-shrink: 0;
+}
+.bs-reward.is-locked .br-ico { background: var(--color-bg-surface-muted); color: var(--text3); }
+.bs-reward .br-body { flex: 1; min-width: 0; }
+.bs-reward .br-label { font-size: 11px; color: var(--text3); font-weight: 700; }
+.bs-reward .br-name { font-size: 14px; font-weight: 800; color: var(--text); margin-top: 2px; }
+.bs-reward.is-locked .br-name { color: var(--text3); }
+.bs-reward .br-btn {
+  padding: 6px 12px; border-radius: 999px;
+  font-size: 11px; font-weight: 800;
+  background: var(--accent); color: #fff;
+  cursor: pointer;
+}
+.bs-reward .br-btn.is-active {
+  background: #fff; color: var(--accent);
+  border: 1px solid var(--accent);
+}
+.bs-reward .br-btn.is-disabled { background: var(--color-bg-surface-muted); color: var(--text3); }
+
+.bs-foot {
+  font-size: 11px; color: var(--text3);
+  text-align: center;
+  padding: 12px 24px 0;
+  line-height: 1.6;
+}
+
+/* ==========================================================
+   H6 普通升级浮层 / H8 XP 获取浮层
+   ========================================================== */
+.h-toast-cap {
+  position: absolute; top: 104px; left: 16px; right: 16px;
+  padding: 14px 16px; border-radius: 18px;
+  display: flex; align-items: center; gap: 12px;
+  color: #fff;
+  z-index: 250;
+  opacity: 0;
+  transform: translateY(-160%);
+  transition: transform 0.25s cubic-bezier(.4,0,.2,1), opacity 0.25s ease;
+  box-shadow: 0 12px 32px rgba(0,0,0,0.22);
+  pointer-events: none;
+}
+.h-toast-cap.show { pointer-events: auto; opacity: 1; }
+.h-toast-cap.show { transform: translateY(0); opacity: 1; }
+.h-toast-cap.is-levelup { background: var(--gradient-purple-pink); }
+.h-toast-cap.is-xp { background: var(--gradient-xp-gold); }
+.h-toast-cap .h-tc-ico {
+  width: 44px; height: 44px; border-radius: 50%;
+  background: rgba(255,255,255,0.22);
+  display: inline-flex; align-items: center; justify-content: center;
+  font-weight: 900; font-size: 16px;
+  flex-shrink: 0;
+}
+.h-toast-cap .h-tc-body { flex: 1; min-width: 0; }
+.h-toast-cap .h-tc-main { font-size: 15px; font-weight: 800; }
+.h-toast-cap .h-tc-sub { font-size: 11px; font-weight: 600; opacity: 0.92; margin-top: 2px; }
+.h-toast-cap .h-tc-x {
+  width: 24px; height: 24px;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 14px; cursor: pointer; opacity: 0.85;
+}
+
+/* ==========================================================
+   H7 进化全屏弹层
+   ========================================================== */
+.h-evolve-overlay {
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at center top, #4c1d6f 0%, #1a0a30 60%, #050010 100%);
+  z-index: 800;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  border-radius: 44px;
+  overflow: hidden;
+  padding: 80px 24px 32px;
+}
+.h-evolve-overlay.show { display: flex; animation: evolve-fade 0.5s ease-out; }
+@keyframes evolve-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.h-evolve-particles {
+  position: absolute; inset: 0;
+  pointer-events: none;
+  background-image:
+    radial-gradient(circle 1px at 20% 30%, rgba(255,210,90,0.6), transparent 100%),
+    radial-gradient(circle 1.5px at 70% 50%, rgba(255,210,90,0.4), transparent 100%),
+    radial-gradient(circle 1px at 50% 80%, rgba(168,85,247,0.5), transparent 100%),
+    radial-gradient(circle 1px at 80% 20%, rgba(236,72,153,0.4), transparent 100%),
+    radial-gradient(circle 1px at 30% 60%, rgba(255,255,255,0.5), transparent 100%);
+}
+.h-evolve-overlay .he-eyebrow { font-size: 13px; font-weight: 700; color: #fff; opacity: 0.7; }
+.h-evolve-overlay .he-sub { font-size: 11px; font-weight: 600; color: #fff; opacity: 0.5; margin-top: 4px; }
+.h-evolve-figure {
+  margin: 32px 0 16px;
+  font-size: 160px;
+  filter: drop-shadow(0 0 40px rgba(255,210,90,0.6));
+  animation: evolve-figure 2.5s ease-out;
+}
+@keyframes evolve-figure {
+  0% { transform: scale(0.6); opacity: 0; filter: drop-shadow(0 0 0 rgba(255,210,90,0)); }
+  60% { transform: scale(1.1); opacity: 1; filter: drop-shadow(0 0 60px rgba(255,210,90,0.9)); }
+  100% { transform: scale(1); filter: drop-shadow(0 0 40px rgba(255,210,90,0.6)); }
+}
+.h-evolve-stage {
+  font-size: 34px; font-weight: 900;
+  background: var(--gradient-xp-gold);
+  -webkit-background-clip: text; background-clip: text;
+  color: transparent;
+  letter-spacing: -0.5px;
+}
+.h-evolve-lvnum { font-size: 13px; font-weight: 800; color: #fff; opacity: 0.85; margin-top: 4px; }
+.h-evolve-rewards {
+  margin-top: 24px;
+  display: flex; gap: 8px;
+  width: 100%;
+  justify-content: center;
+}
+.h-evolve-rew {
+  flex: 1; max-width: 80px;
+  background: rgba(255,255,255,0.10);
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 14px;
+  padding: 12px 6px;
+  text-align: center;
+  color: #fff;
+}
+.h-evolve-rew .e { font-size: 22px; line-height: 1; }
+.h-evolve-rew .n { font-size: 10px; font-weight: 700; margin-top: 4px; line-height: 1.3; }
+.h-evolve-skin {
+  margin-top: 24px;
+  text-align: center;
+  color: #fff;
+}
+.h-evolve-skin .ask { font-size: 13px; font-weight: 700; opacity: 0.9; }
+.h-evolve-skin .chips { display: flex; gap: 8px; justify-content: center; margin-top: 10px; }
+.h-evolve-skin .chip {
+  padding: 6px 14px; border-radius: 999px;
+  font-size: 12px; font-weight: 700;
+  background: rgba(255,255,255,0.10);
+  border: 1px solid rgba(255,255,255,0.20);
+  color: #fff;
+  cursor: pointer;
+}
+.h-evolve-skin .chip.is-active {
+  background: var(--gradient-xp-gold);
+  border-color: transparent;
+  color: #fff;
+}
+
+.h-evolve-foot {
+  position: absolute; left: 24px; right: 24px; bottom: 32px;
+}
+.h-evolve-cta {
+  width: 100%; height: 52px; border-radius: 26px;
+  background: var(--gradient-xp-gold);
+  color: #fff;
+  font-size: 17px; font-weight: 800;
+  border: 0; cursor: pointer;
+  box-shadow: 0 12px 32px rgba(255,163,26,0.42);
+}
+
+/* ==========================================================
+   Toast 提示
+   ========================================================== */
+.toast-bar {
+  position: absolute; bottom: 100px; left: 50%;
+  transform: translate(-50%, 10px);
+  background: rgba(15,23,42,0.92);
+  color: #fff;
+  padding: 10px 18px;
+  border-radius: 22px;
+  font-size: 13px; font-weight: 700;
+  opacity: 0; pointer-events: none;
+  transition: all 0.3s;
+  z-index: 700;
+  white-space: nowrap;
+  max-width: 80%;
+}
+.toast-bar.show { opacity: 1; transform: translate(-50%, 0); }
+
+/* ==========================================================
+   状态切换：满级 / 新用户 / 未登录
+   ========================================================== */
+.phone-frame.is-l25 { /* 满级 */ }
+.phone-frame.is-newbie { /* 新用户 */ }
+
+</style>
+</head>
+<body>
+
+<div class="layout">
+
+  <!-- ============================
+       左侧导航
+       ============================ -->
+  <aside class="side-nav">
+    <div class="nav-brand">
+      <div class="nav-logo">收</div>
+      <div>
+        <div class="nav-title">唯戒 · 收获模块</div>
+        <div class="nav-version">v1.0 · 2026-05-07</div>
+      </div>
+    </div>
+
+    <div class="nav-section-label">状态切换</div>
+    <div class="state-grid">
+      <button class="state-btn is-active" data-state="default">
+        <span class="icon">🟢</span><span>默认（LV12）</span>
+      </button>
+      <button class="state-btn" data-state="newbie">
+        <span class="icon">🌱</span><span>新用户 LV1</span>
+      </button>
+      <button class="state-btn" data-state="l25">
+        <span class="icon">🌟</span><span>满级 LV25</span>
+      </button>
+      <button class="state-btn" data-state="logged-out">
+        <span class="icon">👤</span><span>未登录</span>
+      </button>
+    </div>
+
+    <div class="nav-section-label">页面 / 区段</div>
+    <div class="nav-list">
+      <div class="nav-item is-active" data-target="page" data-section="top">
+        <span class="nav-id">H1</span><span class="nav-name">收获首页</span><span class="nav-tag tag-page">一级</span>
+      </div>
+      <div class="nav-item" data-target="scroll" data-anchor="hHero">
+        <span class="nav-id">H1.A</span><span class="nav-name">IP 形象主视觉</span>
+      </div>
+      <div class="nav-item" data-target="scroll" data-anchor="hMilestones">
+        <span class="nav-id">H1.B</span><span class="nav-name">等级里程碑横滑</span>
+      </div>
+      <div class="nav-item" data-target="scroll" data-anchor="hAssets">
+        <span class="nav-id">H1.C</span><span class="nav-name">我的资产 · 三入口</span>
+      </div>
+      <div class="nav-item" data-target="scroll" data-anchor="hXpSect">
+        <span class="nav-id">H1.D</span><span class="nav-name">XP 来源记录</span>
+      </div>
+    </div>
+
+    <div class="nav-section-label">二级页面</div>
+    <div class="nav-list">
+      <div class="nav-item" data-target="overlay" data-overlay="titlesOv">
+        <span class="nav-id">H2</span><span class="nav-name">我的皮肤</span><span class="nav-tag tag-page">二级</span>
+      </div>
+      <div class="nav-item" data-target="overlay" data-overlay="framesOv">
+        <span class="nav-id">H3</span><span class="nav-name">头像框选择器</span><span class="nav-tag tag-page">二级</span>
+      </div>
+      <div class="nav-item" data-target="overlay" data-overlay="archiveOv">
+        <span class="nav-id">H4</span><span class="nav-name">等级形象档案</span><span class="nav-tag tag-page">二级</span>
+      </div>
+      <div class="nav-item" data-target="action" data-action="goToMedals">
+        <span class="nav-id">H5</span><span class="nav-name">勋章墙（共用 04 练级模块）</span><span class="nav-tag tag-full">外跳</span>
+      </div>
+    </div>
+
+    <div class="nav-section-label">弹层 / 浮层</div>
+    <div class="nav-list">
+      <div class="nav-item" data-target="sheet" data-sheet="milestoneSheet">
+        <span class="nav-id">H1.E</span><span class="nav-name">里程碑节点详情</span><span class="nav-tag tag-sheet">弹层</span>
+      </div>
+      <div class="nav-item" data-target="action" data-action="showLevelup">
+        <span class="nav-id">H6</span><span class="nav-name">普通升级浮层</span><span class="nav-tag tag-modal">浮层</span>
+      </div>
+      <div class="nav-item" data-target="action" data-action="showEvolve">
+        <span class="nav-id">H7</span><span class="nav-name">进化全屏弹层</span><span class="nav-tag tag-full">全屏</span>
+      </div>
+      <div class="nav-item" data-target="action" data-action="showXpToast">
+        <span class="nav-id">H8</span><span class="nav-name">XP 获取浮层</span><span class="nav-tag tag-modal">浮层</span>
+      </div>
+      <div class="nav-item" data-target="action" data-action="showEmpty">
+        <span class="nav-id">H9</span><span class="nav-name">未登录引导</span><span class="nav-tag tag-page">空态</span>
+      </div>
+    </div>
+
+    <div class="nav-foot">
+      <strong>使用提示：</strong><br>
+      • 点击导航 → 在右侧手机里直接定位 / 打开<br>
+      • 状态切换：默认 LV12 / 新用户 / 满级 / 未登录<br>
+      • 主视觉：左右滑动主体可切换季节皮肤<br>
+      • 皮肤 / 头像框 / 勋章入口 → 全屏二级页面<br>
+      • H1.E / H6 / H7 / H8 → 弹层 / 浮层
+    </div>
+  </aside>
+
+  <!-- ============================
+       右侧手机原型
+       ============================ -->
+  <main class="preview-area">
+    <div class="phone-frame" id="phone">
+      <div class="notch"></div>
+
+      <!-- iOS 系统状态栏 -->
+      <div class="ios-status-bar is-on-glass">
+        <div class="iss-time">9:41</div>
+        <div class="iss-right">
+          <div class="iss-signal"><span class="iss-bar"></span><span class="iss-bar"></span><span class="iss-bar"></span><span class="iss-bar"></span></div>
+          <div class="iss-network">5G</div>
+          <div class="iss-battery"><span class="iss-battery-pct">85</span></div>
+        </div>
+      </div>
+
+      <!-- 一级页面顶栏 -->
+      <div class="app-topbar">
+        <div class="topbar-left">
+          <div class="topbar-title">收获</div>
+          <div class="ring-tag is-connected" onclick="window.location.href='03-个人中心.html?page=P6'">
+            <span class="dot"></span>
+            <span>已连接</span>
+            <span class="battery">
+              <span class="battery-icon" style="--battery-pct:85%;"><span class="battery-fill"></span></span>
+              <span>85%</span>
+            </span>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <div class="topbar-icon-btn" title="消息中心" onclick="onMsgCenterClick()">
+            🔔
+            <span class="badge-dot">12</span>
+          </div>
+          <div class="topbar-icon-btn profile" title="个人设置" onclick="goToProfilePage()">L</div>
+        </div>
+      </div>
+
+      <!-- 主滚动内容区 -->
+      <div class="scroll-area" id="scrollArea">
+
+        <!-- H1.A IP 形象主视觉 -->
+        <div class="h-hero is-skin-default" id="hHero" data-stage="行动">
+          <div class="h-decor">
+            <span class="petal">🌸</span><span class="petal">🌸</span><span class="petal">🌸</span><span class="petal">🌸</span><span class="petal">🌸</span>
+            <span class="leaf">🍃</span><span class="leaf">🍃</span><span class="leaf">🍃</span>
+            <span class="maple">🍂</span><span class="maple">🍂</span><span class="maple">🍂</span>
+            <span class="snow">❄️</span><span class="snow">❄️</span><span class="snow">❄️</span><span class="snow">❄️</span>
+          </div>
+          <!-- IP 角色图（取代原 emoji 中性人物） -->
+          <div class="h-figure-wrap">
+            <img class="h-figure-img" id="hFigure" src="./树精灵/树精灵03.png" alt="IP 角色 · 绽放阶段" onclick="openOverlay('archiveOv')" ontouchstart="onFigureTouchStart(event)" ontouchend="onFigureTouchEnd(event)">
+          </div>
+          <!-- 融合卡：身份（头像 / 等级 / 昵称 / 最近 3 枚勋章 / 进度条 / 升级提示）+ 成长档案入口 -->
+          <div class="h-fusion-card">
+            <div class="h-fc-identity">
+              <div class="h-id-avatar-wrap">
+                <div class="h-id-avatar" onclick="openOverlay('framesOv')" id="hAvatar">L</div>
+                <div class="h-id-lv-badge" id="hLvBadge">LV 12</div>
+              </div>
+              <div class="h-id-info">
+                <div class="h-id-name" id="hUserName">林野</div>
+                <!-- 最近解锁的 3 枚勋章（mini 头像） -->
+                <div class="h-id-medals" onclick="goToMedals()">
+                  <span class="h-id-mini"><img src="./勋章新图标/成长历程/睡眠05.png" alt="睡眠节律大师"></span>
+                  <span class="h-id-mini"><img src="./勋章新图标/成长历程/心理压力04.png" alt="心境平衡者"></span>
+                  <span class="h-id-mini"><img src="./勋章新图标/成长历程/hrv04.png" alt="HRV 强韧者"></span>
+                </div>
+                <div class="h-id-bar"><div class="fill" id="hProgressFill" style="width:73%"></div></div>
+                <div class="h-id-meta">
+                  <span id="hProgressMeta">距 LV 13 还差 660 XP</span>
+                  <span class="h-id-boost" id="hBoostPill">1.10 倍</span>
+                </div>
+                <div class="h-id-uptip" id="hUpgradeTip">LV 15 即可解锁秋季皮肤</div>
+              </div>
+              <div class="h-id-archive" onclick="openOverlay('archiveOv')">成长档案 ›</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- H1.B 等级里程碑（v1.1 Figma 调整：暂时合并到融合卡，区段已撤）-->
+
+        <!-- H1.C 我的资产 · 三入口（顺序：角色皮肤 / 头像框 / 勋章） -->
+        <div class="h-section-head" id="hAssets">
+          <div class="t">我的资产</div>
+        </div>
+        <div class="h-assets-row">
+          <div class="h-asset-card h-asset-title" onclick="openOverlay('titlesOv')">
+            <div class="h-ac-redot"></div>
+            <div class="h-ac-emoji">🏷️</div>
+            <div class="h-ac-title">角色皮肤</div>
+            <div class="h-ac-num" id="hTitleNum">1 / 5</div>
+            <div class="h-ac-cta">更改 ›</div>
+          </div>
+          <div class="h-asset-card h-asset-frame" onclick="openOverlay('framesOv')">
+            <div class="h-ac-emoji">🖼️</div>
+            <div class="h-ac-title">头像框</div>
+            <div class="h-ac-num" id="hFrameNum">5 / 12</div>
+            <div class="h-ac-cta">佩戴 ›</div>
+          </div>
+          <div class="h-asset-card h-asset-medal has-new" onclick="goToMedals()">
+            <div class="h-ac-redot"></div>
+            <div class="h-ac-emoji">🏆</div>
+            <div class="h-ac-title">勋章</div>
+            <div class="h-ac-num" id="hMedalNum">24 / 110</div>
+            <div class="h-ac-cta">浏览 ›</div>
+          </div>
+        </div>
+
+        <!-- H1.D XP 来源记录 -->
+        <div class="h-xp-section" id="hXpSect">
+          <div class="h-xp-head">
+            <div style="display:flex;align-items:center;gap:10px">
+              <div class="t">XP 记录</div>
+              <span class="h-id-boost" id="hBoostPillXp">1.10 倍</span>
+            </div>
+            <div style="display:flex;gap:8px;align-items:center">
+              <div class="h-date-chip" onclick="toast('滚轮选择器（最近 30 天）')">昨日 ▾</div>
+              <div class="h-total-pill">+185 XP</div>
+            </div>
+          </div>
+          <div class="h-xp-list" id="hXpList">
+            <!-- JS 动态注入 -->
+          </div>
+          <div class="h-xp-foot">等级永久加成倍率 1.10 倍 · 完成更多挑战获得更多 XP</div>
+        </div>
+
+      </div>
+
+      <!-- ===== H9 未登录引导 ===== -->
+      <div class="h-empty" id="hEmpty">
+        <div class="ico">🏆</div>
+        <div class="ttl">登录后开启你的收获之旅</div>
+        <div class="body">等级、勋章、皮肤、头像框<br>都将在这里等你。</div>
+        <div class="cta" onclick="window.location.href='03-个人中心.html?page=P1.1'">立即登录</div>
+      </div>
+
+      <!-- 底部 Tab Bar（SVG 图标，与 01 / 02 / 04 一致） -->
+      <div class="tab-bar">
+        <div class="tb-item" onclick="goToModulePage('01-今日模块.html')">
+          <span class="ico"><svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3.19489 17.9858C3.51823 17.9144 3.80564 18.141 3.87697 18.4643C4.00536 19.0463 3.63917 19.6388 3.0572 19.7672L1.04136 20.2119C0.580311 20.3134 0.124353 20.0217 0.0226419 19.5606C-0.0790364 19.0996 0.212071 18.6441 0.672991 18.5421L3.19489 17.9858Z" fill="currentColor"/><path d="M29.2763 12.2321C29.7372 12.1309 30.1931 12.4215 30.2948 12.8824C30.3964 13.3433 30.1053 13.7998 29.6446 13.9019L27.1406 14.4543C26.8241 14.5241 26.5145 14.3143 26.4446 13.9978C26.3158 13.4136 26.6568 12.8099 27.241 12.6811L29.2763 12.2321Z" fill="currentColor"/><path d="M25.3899 5.7081C25.7385 5.38977 26.2792 5.41324 26.5978 5.76165C26.9163 6.1101 26.8915 6.651 26.5433 6.96972L24.7306 8.62604C24.3946 8.9331 23.8704 8.89213 23.557 8.56204C23.2345 8.22241 23.2322 7.67986 23.5779 7.36391L25.3899 5.7081Z" fill="currentColor"/><path d="M0.496521 11.4637C0.638977 11.0135 1.11934 10.7637 1.56954 10.906L3.82928 11.621C4.2787 11.7632 4.50434 12.2616 4.35003 12.707C4.20199 13.1343 3.74626 13.3876 3.31508 13.2512L1.05404 12.5358C0.604085 12.3933 0.35449 11.9138 0.496521 11.4637Z" fill="currentColor"/><path d="M18.7798 2.70314C18.9224 2.25318 19.4027 2.00309 19.8528 2.14542C20.3028 2.28783 20.5525 2.76835 20.4105 3.21843L19.842 5.01399C19.7016 5.4572 19.2143 5.68376 18.7724 5.53948C18.336 5.39702 18.0732 4.93534 18.2117 4.49772L18.7798 2.70314Z" fill="currentColor"/><path d="M5.18965 4.94016C5.53815 4.62151 6.079 4.64628 6.39773 4.99467L7.81767 6.54748C8.13627 6.89589 8.07893 7.44343 7.72129 7.75162C7.37938 8.04626 6.86177 8.03486 6.55716 7.70181L5.1361 6.14803C4.81768 5.79953 4.84134 5.25882 5.18965 4.94016Z" fill="currentColor"/><path d="M12.3104 1.24319C12.7714 1.14149 13.2278 1.4325 13.3299 1.89333L13.8502 4.25179C13.9427 4.67121 13.6449 5.04496 13.2255 5.13749C12.7403 5.24454 12.251 4.94026 12.1439 4.45499L11.6601 2.2617C11.5588 1.80086 11.8497 1.34508 12.3104 1.24319Z" fill="currentColor"/><path d="M24.9475 25.8066C26.1274 25.8069 26.9284 26.9184 27.3684 27.3057C27.7771 27.6659 28.2512 28.9139 27.3684 28.9141C26.5819 28.9141 25.9159 27.4151 24.9475 27.415C23.9792 27.415 23.4647 28.914 22.0422 28.9141C20.6196 28.9141 20.0902 27.415 19.137 27.415C18.1839 27.4152 17.3513 28.9141 16.2317 28.9141C15.112 28.914 14.2947 27.4141 13.3264 27.4141C12.3584 27.4145 11.8286 28.9131 10.4211 28.9131C9.01363 28.9129 8.34819 27.4141 7.51587 27.4141C6.68353 27.4141 5.7512 28.1758 5.25122 28.1758C4.94879 28.1757 4.4755 28.0222 5.09497 27.3047C5.62953 26.6857 6.53238 25.8066 7.51587 25.8066C8.49974 25.8068 9.34705 27.3057 10.4211 27.3057C11.4952 27.3057 12.1615 25.8067 13.3264 25.8066C14.4914 25.8066 15.0516 27.3057 16.2317 27.3057C17.4118 27.3057 17.9716 25.8067 19.137 25.8066C20.3024 25.8066 20.9531 27.3057 22.0422 27.3057C23.1312 27.3054 23.7675 25.8066 24.9475 25.8066ZM15.2395 6C21.0385 6 25.7395 10.701 25.7395 16.5C25.7395 18.2572 25.3039 19.9113 24.5403 21.3662C24.6692 21.3275 24.8044 21.3057 24.9475 21.3057C26.1278 21.3057 26.9284 22.4198 27.3684 22.8057C27.7766 23.1658 27.9428 23.8053 27.3684 23.8057C26.5819 23.8057 25.9157 22.636 24.9475 22.6357C23.9793 22.6357 23.4645 24.1354 22.0422 24.1357C20.6197 24.1357 20.0901 22.6359 19.137 22.6357C18.1838 22.6357 17.3513 24.1355 16.2317 24.1357C15.112 24.1357 14.2946 22.6359 13.3264 22.6357C12.3582 22.6357 11.8287 24.1357 10.4211 24.1357C9.01364 24.1357 8.34812 22.636 7.51587 22.6357C6.68353 22.6357 5.39744 23.8056 5.09497 23.8057C4.79258 23.8057 4.47612 23.5243 5.09497 22.8057C5.37031 22.4869 5.74358 22.0985 6.17505 21.7969C5.26393 20.2417 4.7395 18.4326 4.7395 16.5C4.7395 10.701 9.44051 6 15.2395 6ZM18.2395 18C17.4111 18 16.7395 18.8954 16.7395 20C16.7395 20.5596 16.9129 21.0647 17.1907 21.4277C17.4611 21.1631 17.8312 21 18.2395 21C18.6475 21 19.0169 21.1634 19.2874 21.4277C19.5654 21.0647 19.7395 20.5598 19.7395 20C19.7395 18.8954 19.0679 18 18.2395 18ZM12.6321 12.917C11.7438 13.0307 11.1564 13.4097 10.7903 13.7881C10.6107 13.9738 10.4891 14.1544 10.4104 14.293C10.371 14.3623 10.3427 14.4223 10.3225 14.4678C10.3126 14.4901 10.3041 14.5092 10.2981 14.5244C10.2951 14.5321 10.2914 14.5402 10.2893 14.5459C10.2883 14.5484 10.2871 14.5506 10.2864 14.5527V14.5557L10.2844 14.5596C10.1754 14.8722 10.3409 15.2149 10.6536 15.3242C10.9272 15.4197 11.2234 15.3049 11.3665 15.0654L11.4133 14.9658L11.4153 14.9629L11.4163 14.96L11.4182 14.9551C11.424 14.942 11.4361 14.9179 11.4543 14.8857C11.4914 14.8205 11.555 14.7249 11.6536 14.623C11.8439 14.4263 12.1853 14.1831 12.7844 14.1064C13.3838 14.0298 13.7753 14.1797 14.009 14.3223C14.1301 14.3961 14.2156 14.4726 14.2678 14.5264C14.2936 14.5529 14.3117 14.5729 14.3206 14.584L14.3245 14.5898L14.3274 14.5928L14.3987 14.6777C14.5975 14.8734 14.9129 14.9095 15.1536 14.748C15.4286 14.5634 15.5022 14.1902 15.3176 13.915L15.3167 13.9141L15.3157 13.9121L15.3137 13.9102C15.3124 13.9082 15.3115 13.9057 15.3098 13.9033C15.3064 13.8984 15.301 13.8924 15.2961 13.8857C15.2864 13.8724 15.2735 13.8553 15.2581 13.8359C15.2271 13.7971 15.1845 13.7465 15.1292 13.6895C15.0181 13.5751 14.8547 13.4314 14.634 13.2969C14.1844 13.0228 13.5205 12.8033 12.6321 12.917ZM20.6477 11.6592C19.7595 11.7728 19.1721 12.1519 18.8059 12.5303C18.6262 12.716 18.5037 12.8966 18.425 13.0352C18.3857 13.1045 18.3574 13.1645 18.3372 13.21C18.3272 13.2323 18.3188 13.2514 18.3127 13.2666C18.3097 13.2743 18.307 13.2824 18.3049 13.2881C18.304 13.2906 18.3028 13.2928 18.302 13.2949L18.301 13.2979L18.3 13.2998V13.3018C18.1909 13.6145 18.3555 13.9571 18.6682 14.0664C18.9419 14.1621 19.238 14.0472 19.3811 13.8076L19.429 13.708L19.4309 13.7021L19.4329 13.6973C19.4387 13.6843 19.4517 13.6602 19.47 13.6279C19.507 13.5627 19.5698 13.467 19.6682 13.3652C19.8585 13.1685 20.1999 12.9254 20.7991 12.8486C21.3984 12.772 21.7909 12.9219 22.0247 13.0645C22.1454 13.1382 22.2303 13.2148 22.2825 13.2686C22.3082 13.2951 22.3263 13.315 22.3352 13.3262L22.3391 13.332L22.342 13.335L22.4133 13.4199C22.6121 13.6157 22.9275 13.6517 23.1682 13.4902C23.4434 13.3056 23.5178 12.9324 23.3333 12.6572L23.3313 12.6562L23.3293 12.6523C23.328 12.6504 23.3261 12.6479 23.3245 12.6455C23.321 12.6406 23.3156 12.6346 23.3108 12.6279C23.3011 12.6146 23.2891 12.5974 23.2737 12.5781C23.2427 12.5393 23.2002 12.4887 23.1448 12.4316C23.0337 12.3173 22.8693 12.1736 22.6487 12.0391C22.1991 11.7651 21.5358 11.5457 20.6477 11.6592Z" fill="currentColor"/></svg></span><span class="lbl">今日</span>
+        </div>
+        <div class="tb-item" onclick="goToModulePage('04-练级模块.html')">
+          <span class="ico"><svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M26.167 10.0984C26.193 9.75368 26.0947 9.41499 25.8924 9.14523C25.5947 8.74659 24.7276 7.71853 23.1263 6.78338C21.1059 5.59946 18.7011 5 15.9754 5C13.2498 5 10.8507 5.59946 8.84191 6.78338C7.2493 7.72153 6.39085 8.75259 6.09603 9.15123C5.89659 9.42098 5.80121 9.75668 5.82722 10.0954V10.1074L7.11056 23.1035C7.15392 23.5891 7.44296 24.0177 7.86785 24.2245C7.94589 24.2635 8.10486 24.3534 8.28985 24.4553C9.65412 25.2166 12.8451 27 16.0217 27C19.1896 27 22.3488 25.2196 23.6957 24.4613C23.8836 24.3564 24.0454 24.2635 24.1235 24.2245C24.5484 24.0177 24.8374 23.5891 24.8808 23.1035L26.1641 10.1223L26.167 10.0984ZM22.8488 22.4831C22.8026 22.5101 22.7534 22.5371 22.7014 22.567C21.4932 23.2474 18.6606 24.845 16.0217 24.845C13.3712 24.845 10.5039 23.2444 9.27836 22.558C9.22923 22.5311 9.18587 22.5071 9.14252 22.4831L7.93144 10.2362C8.23493 9.88256 8.85637 9.25913 9.86801 8.66267C11.5589 7.66458 13.614 7.16104 15.9725 7.16104C18.334 7.16104 20.3949 7.66758 22.1002 8.66567C23.1205 9.26213 23.7506 9.88856 24.0599 10.2452L22.8488 22.4831ZM3.28945 15.4935C3.0611 15.4935 2.92237 15.7572 3.04665 15.955L4.39358 18.1281C4.45428 18.227 4.45428 18.3529 4.39358 18.4518L3.04665 20.6248C2.92237 20.8256 3.0611 21.0864 3.28945 21.0864H6.33015L5.77808 15.4905H3.28945V15.4935ZM27.6064 18.4518C27.5457 18.3529 27.5457 18.227 27.6064 18.1281L28.9533 15.955C29.0776 15.7542 28.9389 15.4935 28.7106 15.4935H26.2132L25.6612 21.0894H28.7106C28.9389 21.0894 29.0776 20.8256 28.9533 20.6278L27.6064 18.4518Z" fill="currentColor"/><path d="M13.0128 12.1785H10.9317L10.3536 19.0362H15.1314L15.7095 16.8782H12.6457L13.0128 12.1785ZM18.6433 15.4275L17.7733 12.1785H15.7095L17.1952 19.0362H19.1578L22.2158 12.1785H19.9931L18.6433 15.4275Z" fill="currentColor"/></svg></span><span class="lbl">维度</span>
+        </div>
+        <div class="tb-item" onclick="goToModulePage('02-关心模块.html')">
+          <span class="ico"><svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M25.4549 10.6114C25.179 9.58161 24.5845 8.66513 23.8304 7.91158C23.8302 7.91133 23.8298 7.9112 23.8295 7.9112C23.8291 7.9112 23.8288 7.91106 23.8285 7.91081C22.6502 6.7325 21.0653 6.05021 19.3995 6.00413C17.9779 5.96481 16.5896 6.39136 15.4413 7.20799C15.1027 7.44878 14.6401 7.44873 14.3016 7.20784C13.1538 6.39104 11.766 5.96396 10.3447 6.00238C8.67894 6.04742 7.09366 6.72842 5.91428 7.90558C4.7349 9.08273 4.05091 10.6667 4.00273 12.3323C3.95455 13.998 4.54583 15.6188 5.65519 16.8622L14.2943 25.5136C14.6129 25.8326 15.1298 25.8324 15.4482 25.5133L17.5307 23.4259C17.8492 23.1066 17.8479 22.5893 17.5277 22.2716L17.1427 21.8895C16.8238 21.5731 16.309 21.5743 15.9916 21.8923L15.4482 22.4367C15.1298 22.7558 14.6129 22.7558 14.2945 22.4368L7.24194 15.3733C6.52072 14.5426 6.14122 13.4695 6.17994 12.3701C6.21866 11.2707 6.67273 10.2269 7.45061 9.44904C8.23608 8.66357 9.29242 8.20857 10.4028 8.17745C11.5132 8.14632 12.5934 8.54143 13.4216 9.28167L14.3292 10.0949C14.639 10.3724 15.108 10.3722 15.4175 10.0944L16.3245 9.28058C17.1521 8.54099 18.2313 8.14614 19.3408 8.17706C20.4503 8.20798 21.5059 8.66232 22.2911 9.44687C22.8484 10.0039 23.2317 10.705 23.4356 11.4661C23.5003 11.7074 25.6839 11.4661 25.4549 10.6114Z" fill="currentColor"/><g clip-path="url(#h-care-clip)"><path d="M22.455 12.5685C19.2948 12.5685 16.7329 15.1303 16.7329 18.2906C16.7329 21.4508 19.2948 24.0127 22.455 24.0127C25.6152 24.0127 28.1771 21.4508 28.1771 18.2906C28.1771 15.1303 25.6152 12.5685 22.455 12.5685ZM19.3985 16.6281C19.3985 16.206 19.7406 15.8639 20.1626 15.8639C20.5847 15.8639 20.9268 16.206 20.9268 16.6281C20.9268 17.0501 20.5847 17.3922 20.1626 17.3922C19.7406 17.3922 19.3985 17.0502 19.3985 16.6281ZM22.4374 21.0695C21.3759 21.0695 20.5064 20.247 20.4318 19.2043C21.7853 19.1822 23.3834 19.2131 24.443 19.2043C24.3685 20.2469 23.499 21.0695 22.4374 21.0695ZM24.7475 17.3922C24.3254 17.3922 23.9833 17.0502 23.9833 16.6281C23.9833 16.206 24.3254 15.8639 24.7475 15.8639C25.1696 15.8639 25.5115 16.206 25.5115 16.6281C25.5115 17.0501 25.1696 17.3922 24.7475 17.3922Z" fill="currentColor"/></g><defs><clipPath id="h-care-clip"><rect width="13.0418" height="13.0418" fill="white" transform="translate(15.9583 11.7074)"/></clipPath></defs></svg></span><span class="lbl">关心</span>
+        </div>
+        <div class="tb-item is-active">
+          <span class="ico"><svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M19.9939 5.22891C20.1111 4.99451 20.3455 4.87731 20.5799 4.99451C20.6971 4.99451 20.8143 5.11171 20.8143 5.22891L21.6346 7.8073C21.6346 7.9245 21.7518 8.0417 21.869 8.0417L24.213 9.21369C24.4474 9.33089 24.5646 9.56529 24.4474 9.79969C24.4474 9.91689 24.3302 9.91689 24.213 10.0341L21.869 11.2061C21.7518 11.2061 21.6346 11.3233 21.6346 11.4405L20.8143 14.0189C20.6971 14.2533 20.4627 14.3705 20.2283 14.2533C20.1111 14.2533 19.9939 14.1361 19.9939 14.0189L19.1735 11.4405C19.1735 11.3233 19.0563 11.2061 18.9391 11.2061L16.5951 10.0341C16.3607 9.91689 16.2435 9.68249 16.3607 9.44809C16.3607 9.33089 16.4779 9.33089 16.5951 9.21369L18.9391 8.0417C19.0563 8.0417 19.1735 7.9245 19.1735 7.8073L19.9939 5.22891ZM25.971 2.65052C25.971 2.53333 26.0882 2.53333 26.0882 2.53333C26.0882 2.53333 26.2054 2.53333 26.2054 2.65052L26.7914 4.40852C26.7914 4.40852 26.7914 4.52571 26.9086 4.52571L28.5494 5.22891C28.6666 5.22891 28.6666 5.34611 28.6666 5.46331L28.5494 5.58051L26.9086 6.28371L26.7914 6.40091L26.2054 8.1589C26.2054 8.2761 26.0882 8.2761 26.0882 8.2761C26.0882 8.2761 25.971 8.2761 25.971 8.1589L25.385 6.40091C25.385 6.40091 25.385 6.28371 25.2678 6.28371L23.627 5.58051C23.5098 5.58051 23.5098 5.46331 23.5098 5.34611L23.627 5.22891L25.2678 4.52571L25.385 4.40852L25.971 2.65052Z" fill="currentColor"/><path d="M15.4612 14.1172C15.4612 14 15.5784 14 15.5784 14C15.5784 14 15.6956 14 15.6956 14.1172L16.2816 15.8752C16.2816 15.8752 16.2816 15.9924 16.3988 15.9924L18.0396 16.6956C18.1568 16.6956 18.1568 16.8128 18.1568 16.93L18.0396 17.0472L16.3988 17.7504L16.2816 17.8676L15.6956 19.6256C15.6956 19.7428 15.5784 19.7428 15.5784 19.7428C15.5784 19.7428 15.4612 19.7428 15.4612 19.6256L14.8752 17.8676C14.8752 17.8676 14.8752 17.7504 14.758 17.7504L13.1172 17.0472C13 17.0472 13 16.93 13 16.8128L13.1172 16.6956L14.758 15.9924L14.8752 15.8752L15.4612 14.1172Z" fill="currentColor"/><path d="M16.3607 27.614H9.32877C8.74277 27.614 8.27397 28.0828 8.27397 28.6688C8.27397 29.2548 8.74277 29.7236 9.32877 29.7236H16.3607C16.9467 29.7236 17.4155 29.2548 17.4155 28.6688C17.4155 28.0828 16.9467 27.614 16.3607 27.614ZM17.4155 21.5197L17.1811 21.6369C16.0091 22.3401 15.8919 23.512 15.7747 23.9808V24.098H9.91476V23.9808C9.91476 23.512 9.68037 22.2229 8.50837 21.4025C6.28158 19.8789 4.99239 17.4177 4.99239 14.7221V14.3705C5.34399 10.0341 8.85997 6.75253 13.0791 6.75253C13.8995 6.75253 14.7199 6.86973 15.5403 7.10413L17.7671 5.81494C16.3607 5.11174 14.7199 4.64294 13.0791 4.64294C7.57078 4.64294 3 9.09652 3 14.7221C3 18.1209 4.64079 21.1681 7.45358 23.0432L7.57078 23.1604C7.80517 23.3948 7.92237 23.7464 7.92237 24.098V24.5668C7.92237 25.5044 8.62557 26.2076 9.56317 26.2076H16.2435C17.1811 26.2076 17.8843 25.5044 17.8843 24.5668V24.098C17.8843 23.8636 18.0015 23.6292 18.2359 23.512C21.1659 21.7541 23.1583 18.5897 23.2755 15.1909L21.0487 16.4801C20.4627 18.4725 19.1735 20.3477 17.4155 21.5197Z" fill="currentColor"/></svg></span><span class="lbl">收获</span>
+        </div>
+      </div>
+
+      <!-- ===== 全屏滑入页 ===== -->
+      <!-- H2 我的皮肤（IP 角色形象选择） -->
+      <div class="fs-overlay" id="titlesOv">
+        <div class="ov-head">
+          <div class="ov-back" onclick="closeOverlay('titlesOv')">‹</div>
+          <div class="ov-title">我的皮肤</div>
+          <div class="ov-more"></div>
+        </div>
+        <div class="h-skins-page">
+          <!-- 当前激活皮肤大卡 -->
+          <div class="h-skins-current">
+            <div class="h-sc-img" id="hSkinCurImg">🌸</div>
+            <div class="h-sc-body">
+              <div class="h-sc-eyebrow">当前皮肤</div>
+              <div class="h-sc-name" id="hSkinCurName">绽放 · 花朵相伴</div>
+              <div class="h-sc-from" id="hSkinCurFrom">来自等级里程碑 LV 10</div>
+              <div class="h-sc-active">✓ 使用中</div>
+            </div>
+            <div class="h-sc-stat" id="hSkinCurStat">3 / 5</div>
+          </div>
+          <div class="h-group-head">已解锁 (<span id="hSkinUnlockedCount">3</span>)</div>
+          <div id="hSkinsUnlocked"></div>
+          <div class="h-group-head">未解锁 (<span id="hSkinLockedCount">2</span>)</div>
+          <div id="hSkinsLocked"></div>
+        </div>
+      </div>
+
+      <!-- H3 头像框选择器 -->
+      <div class="fs-overlay" id="framesOv">
+        <div class="ov-head">
+          <div class="ov-back" onclick="closeOverlay('framesOv')">‹</div>
+          <div class="ov-title">头像框</div>
+          <div class="ov-more"></div>
+        </div>
+        <div class="h-frames-page">
+          <div class="h-frames-preview">
+            <div class="h-fp-avatar" id="hFpAvatar" style="box-shadow:0 0 0 3px #fff inset, 0 0 0 6px #FFA31A">L</div>
+            <div class="h-fp-name" id="hFpName">夏荷</div>
+            <div class="h-fp-num">已拥有 5 / 12</div>
+          </div>
+          <div class="h-group-head">已拥有 (5)</div>
+          <div class="h-frames-grid" id="hFramesOwned"></div>
+          <div class="h-group-head">未拥有 (7)</div>
+          <div class="h-frames-grid" id="hFramesLocked"></div>
+        </div>
+      </div>
+
+      <!-- H4 等级形象档案 -->
+      <div class="fs-overlay" id="archiveOv">
+        <div class="ov-head">
+          <div class="ov-back" onclick="closeOverlay('archiveOv')">‹</div>
+          <div class="ov-title">形象档案</div>
+          <div class="ov-more"></div>
+        </div>
+        <div class="h-archive-page">
+          <div class="h-archive-intro">
+            <div class="ttl">你的成长史</div>
+            <div class="sub">从雏形到圆满，每一阶段都是身体记忆的勋章。</div>
+          </div>
+          <div id="hArchiveStages"></div>
+        </div>
+      </div>
+
+      <!-- H5 勋章墙 -->
+      <div class="fs-overlay" id="medalsOv">
+        <div class="ov-head">
+          <div class="ov-back" onclick="closeOverlay('medalsOv')">‹</div>
+          <div class="ov-title">勋章墙</div>
+          <div class="ov-more"></div>
+        </div>
+        <div class="h-medals-page">
+          <div class="h-mw-stat">
+            <div>
+              <div class="h-mw-num" id="hMwNum">24</div>
+              <div class="h-mw-sub">已解锁</div>
+            </div>
+            <div class="h-mw-right">
+              <div class="h-mw-total" id="hMwTotal">/ 110</div>
+              <div class="h-mw-sub">勋章总数</div>
+            </div>
+          </div>
+          <div class="h-mw-progress"><div class="fill" style="width:21.8%"></div></div>
+          <div class="h-mw-tabs" id="hMwTabs">
+            <div class="h-mw-tab is-active" data-cat="all">全部</div>
+            <div class="h-mw-tab" data-cat="daily">日常</div>
+            <div class="h-mw-tab" data-cat="event">活动</div>
+            <div class="h-mw-tab" data-cat="limited">限定</div>
+            <div class="h-mw-tab" data-cat="hidden">隐藏</div>
+          </div>
+          <div class="h-mw-grid" id="hMwGrid"></div>
+        </div>
+      </div>
+
+      <!-- H5.1 勋章详情 -->
+      <div class="fs-overlay" id="medalDetailOv">
+        <div class="ov-head">
+          <div class="ov-back" onclick="closeOverlay('medalDetailOv')">‹</div>
+          <div class="ov-title">勋章详情</div>
+          <div class="ov-more"></div>
+        </div>
+        <div class="h-md-page" id="hMdPage">
+          <div class="h-md-status is-done" id="hMdStatus">✓ 已解锁 · 2026-04-22</div>
+          <div class="h-md-hero">
+            <div class="h-mh-img" id="hMhImg">
+              <img src="勋章新图标/成长历程/步数03.png" alt="">
+            </div>
+            <div class="h-mh-mat" id="hMhMat">银 · L3</div>
+          </div>
+          <div class="h-md-card">
+            <div class="h-mc-name" id="hMcName">步行连胜者</div>
+            <div class="h-mc-tags">
+              <div class="h-mc-tag" id="hMcCategory">日常</div>
+              <div class="h-mc-tag" id="hMcSeries" style="background:rgba(255,163,26,0.10);color:var(--gold-deep)">身体指标 · 步数</div>
+            </div>
+            <div class="h-mc-row">
+              <div>
+                <div class="h-mc-label">解锁条件</div>
+                <div class="h-mc-val" id="hMcCond">连续达标 7 天</div>
+              </div>
+              <div>
+                <div class="h-mc-label">解锁日期</div>
+                <div class="h-mc-val" id="hMcDate" style="color:var(--accent)">2026-04-22</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== H1.E 等级里程碑节点详情（底部弹层） ===== -->
+      <div class="modal-overlay is-sheet" id="milestoneSheet" onclick="if(event.target===this)closeSheet('milestoneSheet')">
+        <div class="bottom-sheet">
+          <div class="bs-handle"></div>
+          <div class="bs-close" onclick="closeSheet('milestoneSheet')">✕</div>
+          <div class="bs-status-bar is-current" id="bsStatus">📍 当前等级 · 再 660 XP 升下一级</div>
+          <div class="bs-lv-block">
+            <div class="bs-lv-num" id="bsLvNum">LV 12</div>
+            <div class="bs-lv-stage" id="bsLvStage">行动</div>
+          </div>
+          <div class="bs-rewards" id="bsRewards"></div>
+          <div class="bs-foot" id="bsFoot">L10 行动 · 从觉知走向行动，是练级的关键转折。</div>
+        </div>
+      </div>
+
+      <!-- ===== H6 普通升级浮层 / H8 XP 获取浮层 ===== -->
+      <div class="h-toast-cap is-levelup" id="toastLevelup">
+        <div class="h-tc-ico">LV<br>13</div>
+        <div class="h-tc-body">
+          <div class="h-tc-main">恭喜升级！</div>
+          <div class="h-tc-sub">新等级 · 行动</div>
+        </div>
+        <div class="h-tc-x" onclick="hideToast('toastLevelup')">✕</div>
+      </div>
+      <div class="h-toast-cap is-xp" id="toastXp">
+        <div class="h-tc-ico">⚡</div>
+        <div class="h-tc-body">
+          <div class="h-tc-main">+33 XP</div>
+          <div class="h-tc-sub">基础 +30 · 加成 +3</div>
+        </div>
+        <div class="h-tc-x" onclick="hideToast('toastXp')">›</div>
+      </div>
+
+      <!-- ===== H7 进化全屏弹层 ===== -->
+      <div class="h-evolve-overlay" id="evolveOv">
+        <div class="h-evolve-particles"></div>
+        <div class="he-eyebrow">阶段进化</div>
+        <div class="he-sub">你的身体在变化</div>
+        <div class="h-evolve-figure" id="hEvolveFigure">🧚</div>
+        <div class="h-evolve-stage" id="hEvolveStage">觉醒</div>
+        <div class="h-evolve-lvnum" id="hEvolveLv">LV 5</div>
+        <div class="h-evolve-rewards">
+          <div class="h-evolve-rew"><div class="e">🌸</div><div class="n">春季皮肤</div></div>
+          <div class="h-evolve-rew"><div class="e">🖼️</div><div class="n">春芽框</div></div>
+          <div class="h-evolve-rew"><div class="e">🏷️</div><div class="n">抽枝者</div></div>
+          <div class="h-evolve-rew"><div class="e">⚡</div><div class="n">XP × 1.05</div></div>
+        </div>
+        <div class="h-evolve-skin" id="hEvolveSkin">
+          <div class="ask">要立即切换到 春季皮肤 吗？</div>
+          <div class="chips">
+            <div class="chip is-active" data-skin="apply">立即切换</div>
+            <div class="chip" data-skin="keep">保持当前</div>
+          </div>
+        </div>
+        <div class="h-evolve-foot">
+          <button class="h-evolve-cta" onclick="closeEvolve()">继续</button>
+        </div>
+      </div>
+
+      <!-- Toast -->
+      <div class="toast-bar" id="toastBar"></div>
+
+    </div>
+  </main>
+
+</div>
+
+<script>
+/* ==========================================================
+   收获模块原型 · JS 渲染与交互
+   ========================================================== */
+
+/* ---------- 通用：toast / overlay / sheet ---------- */
+let toastTimer;
+function toast(msg) {
+  const bar = document.getElementById('toastBar');
+  bar.textContent = msg;
+  bar.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => bar.classList.remove('show'), 1700);
+}
+function openOverlay(id) {
+  closeAllOverlays();
+  document.getElementById(id).classList.add('show');
+  const o = document.getElementById(id); if (o) o.scrollTop = 0;
+}
+function closeOverlay(id) { document.getElementById(id).classList.remove('show'); }
+function closeAllOverlays() {
+  document.querySelectorAll('.fs-overlay.show').forEach(o => o.classList.remove('show'));
+}
+function openSheet(id) { document.getElementById(id).classList.add('show'); }
+function closeSheet(id) { document.getElementById(id).classList.remove('show'); }
+function goToModulePage(href) { window.location.href = href; }
+/* 顶栏 🔔 消息中心 → 跳《03-个人中心》P7 */
+function onMsgCenterClick() {
+  window.location.href = '03-个人中心.html?page=P7';
+}
+/* 顶栏 头像 / 个人设置 → 跳《03-个人中心》P5（已登录）/ P1.1（未登录） */
+function goToProfilePage() {
+  const phone = document.getElementById('phone');
+  const target = phone && phone.classList.contains('is-logged-out')
+    ? '03-个人中心.html?page=P1.1'
+    : '03-个人中心.html?page=P5';
+  window.location.href = target;
+}
+/* 勋章入口：直接跳到 04 练级模块的"我的勋章"页（共用同一勋章系统） */
+function goToMedals() {
+  window.location.href = '04-练级模块.html?openMedals=1';
+}
+
+/* ---------- 数据 ----------
+   IP 形象档案 · 5 个树精灵阶段（图素来自 ./树精灵/树精灵01-05.png）
+   文案紧扣每张图的视觉特征：嫩苗 → 舒展 → 绽放 → 繁茂 → 圆满
+   rewards 列表：每阶段对应解锁的核心资产（皮肤 / 头像框 / XP 加成倍率） */
+const STAGES = [
+  {
+    range: [1, 4], name: '萌芽', figure: '🌱', img: './树精灵/树精灵01.png',
+    desc: '嫩绿小苗，怯生生地探出叶冠 — 一切刚开始，先让身体慢下来。',
+    rewards: [
+      { type: 'skin',  emoji: '🌱', label: '萌芽皮肤' },
+      { type: 'frame', emoji: '🟢', label: '简约线框' },
+      { type: 'boost', emoji: '⚡', label: 'XP 1.00 倍' }
+    ]
+  },
+  {
+    range: [5, 9], name: '舒展', figure: '😊', img: './树精灵/树精灵02.png',
+    desc: '叶冠丰满，咧出灿烂笑颜 — 你开始注意到自己的呼吸。',
+    rewards: [
+      { type: 'skin',  emoji: '😊', label: '舒展皮肤' },
+      { type: 'frame', emoji: '🌸', label: '春芽框' },
+      { type: 'boost', emoji: '⚡', label: 'XP 1.05 倍' }
+    ]
+  },
+  {
+    range: [10, 14], name: '绽放', figure: '🌸', img: './树精灵/树精灵03.png',
+    desc: '花朵点缀，蘑菇相伴 — 习惯固化，身体回应你的努力。',
+    rewards: [
+      { type: 'skin',  emoji: '🌸', label: '绽放皮肤' },
+      { type: 'frame', emoji: '🪷', label: '夏荷框' },
+      { type: 'boost', emoji: '⚡', label: 'XP 1.10 倍' }
+    ]
+  },
+  {
+    range: [15, 19], name: '繁茂', figure: '🌳', img: './树精灵/树精灵04.png',
+    desc: '树冠饱满，花叶交织 — 在节律中找到从容。',
+    rewards: [
+      { type: 'skin',  emoji: '🌳', label: '繁茂皮肤' },
+      { type: 'frame', emoji: '🍁', label: '秋枫框' },
+      { type: 'boost', emoji: '⚡', label: 'XP 1.15 倍' }
+    ]
+  },
+  {
+    range: [20, 25], name: '圆满', figure: '✨', img: './树精灵/树精灵05.png',
+    desc: '光晕环绕、动物相伴 — 你已是身体的同行者。',
+    rewards: [
+      { type: 'skin',  emoji: '✨', label: '圆满皮肤' },
+      { type: 'frame', emoji: '🌲', label: '雪松框' },
+      { type: 'boost', emoji: '⚡', label: 'XP 1.20 → 1.25 倍' }
+    ]
+  }
+];
+const LEVEL_FRAMES = {
+  1: { name: '简约线框', emoji: '🟢', color: '#22c55e' },
+  5: { name: '春芽', emoji: '🌸', color: '#ec4899' },
+  10: { name: '夏荷', emoji: '🪷', color: '#06b6d4' },
+  15: { name: '秋枫', emoji: '🍁', color: '#f97316' },
+  20: { name: '雪松', emoji: '🌲', color: '#6c5ce7' }
+};
+const SEASONS = [
+  { key: 'default', name: '尚未启程', unlock: 1, emoji: '⚪' },
+  { key: 'spring', name: '春', unlock: 5, emoji: '🌸' },
+  { key: 'summer', name: '夏', unlock: 10, emoji: '🪷' },
+  { key: 'autumn', name: '秋', unlock: 15, emoji: '🍁' },
+  { key: 'winter', name: '冬', unlock: 20, emoji: '❄️' }
+];
+const XP_BOOSTS = { 1: 1.00, 5: 1.05, 10: 1.10, 15: 1.15, 20: 1.20, 25: 1.25 };
+
+function stageOf(lv) {
+  return STAGES.find(s => lv >= s.range[0] && lv <= s.range[1]) || STAGES[0];
+}
+function nextMilestoneLv(lv) {
+  if (lv < 5) return 5;
+  if (lv < 10) return 10;
+  if (lv < 15) return 15;
+  if (lv < 20) return 20;
+  if (lv < 25) return 25;
+  return 25;
+}
+
+/* ---------- 状态管理 ---------- */
+let currentLv = 12;
+let currentXp = 1840;
+let xpToNext = 660;
+let activeSeason = 'default';
+let unlockedSeasons = ['default', 'spring', 'summer'];
+let currentFrame = '夏荷';
+
+function applyState(state) {
+  const phone = document.getElementById('phone');
+  phone.classList.remove('is-logged-out', 'is-newbie', 'is-l25');
+  closeAllOverlays();
+  document.getElementById('milestoneSheet').classList.remove('show');
+  document.getElementById('evolveOv').classList.remove('show');
+
+  if (state === 'logged-out') {
+    phone.classList.add('is-logged-out');
+    return;
+  }
+  if (state === 'newbie') {
+    phone.classList.add('is-newbie');
+    currentLv = 1; currentXp = 0; xpToNext = 100;
+    activeSeason = 'default'; unlockedSeasons = ['default'];
+    currentFrame = '简约线框';
+  } else if (state === 'l25') {
+    phone.classList.add('is-l25');
+    currentLv = 25; currentXp = 12480; xpToNext = 0;
+    activeSeason = 'winter'; unlockedSeasons = ['default','spring','summer','autumn','winter'];
+    currentFrame = '雪松';
+  } else {
+    currentLv = 12; currentXp = 1840; xpToNext = 660;
+    activeSeason = 'default'; unlockedSeasons = ['default','spring','summer'];
+    currentFrame = '夏荷';
+  }
+  renderHero();
+  renderMilestones();
+  renderXpList();
+  renderSkinsPage();
+  renderFramesPage();
+  renderArchive();
+  renderMedalsWall();
+}
+
+function renderHero() {
+  const stg = stageOf(currentLv);
+  document.getElementById('hLvBadge').textContent = `LV ${currentLv}`;
+  // 当前 XP 加成倍率（LV1=1.00 / LV5=1.05 / LV10=1.10 / LV15=1.15 / LV20=1.20 / LV25=1.25）
+  const boostMilestone = currentLv >= 25 ? 25 : currentLv >= 20 ? 20 : currentLv >= 15 ? 15 : currentLv >= 10 ? 10 : currentLv >= 5 ? 5 : 1;
+  const boostText = (XP_BOOSTS[boostMilestone] || 1).toFixed(2) + ' 倍';
+  const boostPill = document.getElementById('hBoostPill');
+  if (boostPill) boostPill.textContent = boostText;
+  const boostPillXp = document.getElementById('hBoostPillXp');
+  if (boostPillXp) boostPillXp.textContent = boostText;
+  // v1.1 Figma 调整：阶段名（hStageName）已合并进背景图，元素被移除 → null 守卫
+  const stageEl = document.getElementById('hStageName');
+  if (stageEl) stageEl.textContent = `${stg.name} · ${currentLv >= 10 ? '维度探索者' : currentLv >= 5 ? '健康同行者' : '健康新生'}`;
+  // hFigure 是 <img>，根据当前阶段切换树精灵图（5 个阶段对应 5 张图）
+  const figureEl = document.getElementById('hFigure');
+  if (figureEl) {
+    if (figureEl.tagName === 'IMG' && stg.img) {
+      figureEl.src = stg.img;
+      figureEl.alt = `IP 角色 · ${stg.name}阶段`;
+    } else if (figureEl.tagName !== 'IMG') {
+      figureEl.textContent = stg.figure;
+    }
+  }
+  document.getElementById('hHero').setAttribute('data-stage', stg.name);
+
+  // Skin
+  const hero = document.getElementById('hHero');
+  hero.className = 'h-hero is-skin-' + activeSeason;
+  hero.setAttribute('data-stage', stg.name);
+  const seasonObj = SEASONS.find(s => s.key === activeSeason);
+  const seasonChipEl = document.getElementById('hSeasonChip');
+  if (seasonChipEl) seasonChipEl.textContent = seasonObj.name;
+
+  // Title pill
+  // 昵称
+  document.getElementById('hUserName').textContent = '林野';
+
+  // Avatar frame color
+  const frameItem = Object.values(LEVEL_FRAMES).find(f => f.name === currentFrame);
+  const avatar = document.getElementById('hAvatar');
+  if (frameItem) {
+    avatar.style.boxShadow = `0 0 0 2px #fff inset, 0 0 0 4px ${frameItem.color}, 0 0 0 6px #fff`;
+  }
+
+  // Progress
+  const segXpBase = 1000; // 简化：每段 1000 XP
+  const pct = currentLv === 25 ? 100 : Math.round(((segXpBase - xpToNext) / segXpBase) * 100);
+  document.getElementById('hProgressFill').style.width = pct + '%';
+
+  if (currentLv === 25) {
+    document.getElementById('hProgressMeta').textContent = '已达圆满 · 累计 XP 12,480';
+    document.getElementById('hUpgradeTip').textContent = '✨ 已达圆满 · 累计 XP 12,480';
+    document.getElementById('hUpgradeTip').style.background = 'var(--gradient-xp-gold)';
+    document.getElementById('hUpgradeTip').style.color = '#fff';
+  } else {
+    document.getElementById('hProgressMeta').textContent = `距 LV ${currentLv + 1} 还差 ${xpToNext} XP`;
+    const nextSeasonLv = nextMilestoneLv(currentLv);
+    const nextSeasonName = (SEASONS.find(s => s.unlock === nextSeasonLv) || {}).name || '圆满';
+    if (nextSeasonLv === 25) {
+      document.getElementById('hUpgradeTip').textContent = `LV 25 即可达成圆满`;
+    } else {
+      document.getElementById('hUpgradeTip').textContent = `LV ${nextSeasonLv} 即可解锁${nextSeasonName}季皮肤`;
+    }
+  }
+
+  // Season dots（v1.1 移除区段，元素可能不存在 → 静默跳过）
+  const seasonDotsEl = document.getElementById('hSeasonDots');
+  if (seasonDotsEl) {
+    const dotsHtml = SEASONS.map(s => {
+      const unlocked = unlockedSeasons.includes(s.key);
+      const isActive = s.key === activeSeason;
+      return `<span class="dot ${unlocked ? 'is-unlocked' : ''} ${isActive ? 'is-active is-' + s.key : ''}"></span>`;
+    }).join('');
+    seasonDotsEl.innerHTML = dotsHtml;
+  }
+
+  // 资产数量（v1.3 顺序：角色皮肤(IP 树精灵 5 阶段) / 头像框 / 勋章）
+  // hTitleNum 现在表示「角色皮肤 N/5」（萌芽/舒展/绽放/繁茂/圆满）
+  if (currentLv === 25) {
+    document.getElementById('hTitleNum').textContent = '5 / 5';
+    document.getElementById('hMedalNum').textContent = '105 / 110';
+    document.getElementById('hFrameNum').textContent = '12 / 12';
+  } else if (currentLv === 1) {
+    document.getElementById('hTitleNum').textContent = '1 / 5';
+    document.getElementById('hMedalNum').textContent = '0 / 110';
+    document.getElementById('hFrameNum').textContent = '1 / 12';
+  } else {
+    document.getElementById('hTitleNum').textContent = '3 / 5';
+    document.getElementById('hMedalNum').textContent = '24 / 110';
+    document.getElementById('hFrameNum').textContent = '5 / 12';
+  }
+}
+
+function renderMilestones() {
+  const inner = document.getElementById('hMilestoneInner');
+  if (!inner) return; // v1.1 Figma 调整：等级里程碑区段已移除
+  const html = [];
+  for (let lv = 1; lv <= 25; lv++) {
+    const stg = stageOf(lv);
+    const isMilestoneLv = (lv === 1 || lv % 5 === 0);
+    let status = 'is-locked';
+    let pillText = `🔒 距当前 ${lv - currentLv} 级`;
+    let subText = `距当前 ${lv - currentLv} 级`;
+    if (lv < currentLv) { status = 'is-done'; pillText = '✓ 已达成'; subText = `2026-${String(((lv * 7) % 12) + 1).padStart(2,'0')}-${String(((lv * 11) % 28) + 1).padStart(2,'0')}`; }
+    else if (lv === currentLv) { status = 'is-current'; pillText = '📍 当前'; subText = `${currentXp} XP / ${xpToNext} 距升级`; }
+
+    // 奖励缩略图（皮肤 / 头像框 / XP 加成）
+    const rewards = [];
+    if (isMilestoneLv) {
+      const seasonObj = SEASONS.find(s => s.unlock === lv);
+      if (seasonObj && lv > 1) rewards.push(seasonObj.emoji);
+      const frameObj = LEVEL_FRAMES[lv];
+      if (frameObj) rewards.push(frameObj.emoji);
+      rewards.push('⚡');
+    } else {
+      rewards.push('💫');
+    }
+    html.push(`
+      <div class="h-mcard is-stage-${stg.name} ${status}" onclick="openMilestoneSheet(${lv})">
+        <div class="h-mc-bar"></div>
+        <div class="h-mc-body">
+          <div class="h-mc-lv">LV ${lv}</div>
+          <div class="h-mc-stage">${stg.name}</div>
+          <div class="h-mc-rewards">${rewards.map(r => `<span class="h-mc-icon">${r}</span>`).join('')}</div>
+        </div>
+        <div class="h-mc-status">
+          <span class="h-mc-status-pill">${pillText}</span>
+          <span class="h-mc-sub">${subText}</span>
+          ${lv === currentLv ? `<div class="h-mc-progress"><div class="fill"></div></div>` : ''}
+        </div>
+      </div>
+    `);
+  }
+  inner.innerHTML = html.join('');
+  // 滚到当前等级
+  setTimeout(() => {
+    const rail = document.querySelector('.h-milestone-rail');
+    if (rail) rail.scrollLeft = (currentLv - 1) * 140 - 80;
+  }, 100);
+}
+
+/* ---------- H1.E 里程碑节点详情 ---------- */
+function openMilestoneSheet(lv) {
+  const stg = stageOf(lv);
+  const isMilestoneLv = (lv === 1 || lv % 5 === 0);
+
+  let statusEl = document.getElementById('bsStatus');
+  if (lv < currentLv) {
+    statusEl.className = 'bs-status-bar is-done';
+    statusEl.textContent = `✓ 已达成 · 2026-${String(((lv*7)%12)+1).padStart(2,'0')}-${String(((lv*11)%28)+1).padStart(2,'0')}`;
+  } else if (lv === currentLv) {
+    statusEl.className = 'bs-status-bar is-current';
+    statusEl.textContent = `📍 当前等级 · 再 ${xpToNext} XP 升下一级`;
+  } else {
+    statusEl.className = 'bs-status-bar is-locked';
+    statusEl.textContent = `🔒 距当前还差 ${lv - currentLv} 级`;
+  }
+
+  document.getElementById('bsLvNum').textContent = `LV ${lv}`;
+  document.getElementById('bsLvStage').textContent = stg.name;
+
+  const rewards = [];
+  const isUnlocked = lv <= currentLv;
+  const seasonObj = SEASONS.find(s => s.unlock === lv);
+  if (seasonObj && lv >= 5) {
+    rewards.push({
+      label: 'IP 皮肤',
+      name: `解锁${seasonObj.name}季皮肤`,
+      emoji: seasonObj.emoji,
+      btn: isUnlocked ? (activeSeason === seasonObj.key ? { text: '已激活', cls: 'is-active' } : { text: '立即激活', cls: '' }) : { text: '未达成', cls: 'is-disabled' },
+      action: () => { activeSeason = seasonObj.key; if (!unlockedSeasons.includes(seasonObj.key)) unlockedSeasons.push(seasonObj.key); renderHero(); openMilestoneSheet(lv); toast(`已激活${seasonObj.name}季皮肤`); }
+    });
+  }
+  const frameObj = LEVEL_FRAMES[lv];
+  if (frameObj) {
+    rewards.push({
+      label: '头像框',
+      name: frameObj.name,
+      emoji: frameObj.emoji,
+      btn: isUnlocked ? (currentFrame === frameObj.name ? { text: '已佩戴', cls: 'is-active' } : { text: '立即佩戴', cls: '' }) : { text: '未达成', cls: 'is-disabled' },
+      action: () => { currentFrame = frameObj.name; renderHero(); renderFramesPage(); openMilestoneSheet(lv); toast('佩戴成功'); }
+    });
+  }
+  const boost = XP_BOOSTS[lv];
+  if (boost) {
+    rewards.push({
+      label: 'XP 加成',
+      name: `XP 加成提升至 ${boost.toFixed(2)} 倍`,
+      emoji: '⚡',
+      btn: isUnlocked ? { text: '已生效', cls: 'is-active' } : { text: '未生效', cls: 'is-disabled' },
+      action: () => {}
+    });
+  }
+  if (rewards.length === 0) {
+    rewards.push({
+      label: '中间等级',
+      name: `XP 累积升级 · 无新解锁`,
+      emoji: '💫',
+      btn: { text: isUnlocked ? '已达成' : '未达成', cls: 'is-disabled' },
+      action: () => {}
+    });
+  }
+
+  const html = rewards.map((r, i) => `
+    <div class="bs-reward ${isUnlocked ? '' : 'is-locked'}">
+      <div class="br-ico">${r.emoji}</div>
+      <div class="br-body">
+        <div class="br-label">${r.label}</div>
+        <div class="br-name">${r.name}</div>
+      </div>
+      <div class="br-btn ${r.btn.cls}" data-i="${i}">${r.btn.text}</div>
+    </div>
+  `).join('');
+  document.getElementById('bsRewards').innerHTML = html;
+  document.getElementById('bsRewards').querySelectorAll('.br-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const i = +btn.dataset.i;
+      if (rewards[i].btn.cls.includes('disabled')) return;
+      if (rewards[i].btn.cls.includes('active')) return;
+      rewards[i].action();
+    });
+  });
+
+  document.getElementById('bsFoot').textContent = {
+    '雏形': 'L1 雏形 · 一切刚开始，让身体先慢下来。',
+    '觉醒': 'L5 觉醒 · 你开始注意到自己的呼吸。',
+    '行动': 'L10 行动 · 从觉知走向行动，是练级的关键转折。',
+    '平衡': 'L15 平衡 · 在节律中找到从容。',
+    '共生': 'L20 共生 · 人物悬浮金光，与身体达成共生。',
+    '圆满': 'L25 圆满 · 你已是身体的同行者。'
+  }[stg.name] || '';
+
+  openSheet('milestoneSheet');
+}
+
+/* ---------- H1.D XP 来源记录 ---------- */
+const XP_LOGS = [
+  { name: '步数挑战完成', time: '昨日 22:14', cls: 'is-step', icon: '🚶', base: 30, mult: 1.10 },
+  { name: '心肺训练完成', time: '昨日 19:42', cls: 'is-cardio', icon: '❤️', base: 20, mult: 1.10 },
+  { name: '维度挑战日累计', time: '昨日 18:30', cls: 'is-event', icon: '🏆', base: 50, mult: 1.10 },
+  { name: '喝水挑战完成', time: '昨日 17:08', cls: 'is-water', icon: '💧', base: 25, mult: 1.10 },
+  { name: '站立目标达成', time: '昨日 14:25', cls: 'is-stand', icon: '🧍', base: 20, mult: 1.10 },
+  { name: '给好友点赞 (×3)', time: '昨日 12:10', cls: 'is-care', icon: '👍', base: 15, mult: 1.10 },
+  { name: '吃药目标达成', time: '昨日 09:00', cls: 'is-meds', icon: '💊', base: 20, mult: 1.10 }
+];
+function renderXpList() {
+  const list = document.getElementById('hXpList');
+  if (currentLv === 1) {
+    list.innerHTML = `<div class="h-xp-empty"><div class="ico">🌱</div><div class="ttl">昨日暂无 XP 获取记录</div><div class="body">完成今日挑战开启你的练级</div></div>`;
+    return;
+  }
+  const html = XP_LOGS.map(log => {
+    const bonus = Math.floor(log.base * (log.mult - 1));
+    const total = log.base + bonus;
+    return `
+      <div class="h-xp-row">
+        <div class="h-xp-ico ${log.cls}">${log.icon}</div>
+        <div class="h-xp-body">
+          <div class="h-xp-name">${log.name}</div>
+          <div class="h-xp-time">${log.time}</div>
+        </div>
+        <div class="h-xp-val">
+          <div class="h-xp-main">+${total} XP</div>
+          <div class="h-xp-split">基础 +${log.base} · 加成 +${bonus}</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+  list.innerHTML = html;
+}
+
+/* ---------- H2 我的皮肤 ---------- */
+/* ==========================================================
+   H2 我的皮肤 · 数据 + 渲染
+   ========================================================== */
+const ALL_SKINS = [
+  { name: '萌芽 · 嫩绿小苗', stage: '萌芽', from: '来自等级里程碑 LV 1',  date: '2026-01-15', icon: '🌱', img: './树精灵/树精灵01.png', unlocked: true },
+  { name: '舒展 · 灿烂笑颜', stage: '舒展', from: '来自等级里程碑 LV 5',  date: '2026-02-20', icon: '😊', img: './树精灵/树精灵02.png', unlocked: true },
+  { name: '绽放 · 花朵相伴', stage: '绽放', from: '来自等级里程碑 LV 10', date: '2026-03-28', icon: '🌸', img: './树精灵/树精灵03.png', unlocked: true },
+  { name: '繁茂 · 花叶交织', stage: '繁茂', from: '达到 LV 15 解锁',          icon: '🌳', img: './树精灵/树精灵04.png', unlocked: false },
+  { name: '圆满 · 光晕环绕', stage: '圆满', from: '达到 LV 20 解锁',          icon: '✨', img: './树精灵/树精灵05.png', unlocked: false },
+];
+let currentSkin = '绽放 · 花朵相伴';
+
+function renderSkinsPage() {
+  const cur = ALL_SKINS.find(s => s.name === currentSkin) || ALL_SKINS[0];
+  const imgEl = document.getElementById('hSkinCurImg');
+  if (imgEl) {
+    if (cur.img) imgEl.innerHTML = `<img src="${cur.img}" alt="${cur.name}">`;
+    else imgEl.textContent = cur.icon;
+  }
+  const nameEl = document.getElementById('hSkinCurName'); if (nameEl) nameEl.textContent = cur.name;
+  const fromEl = document.getElementById('hSkinCurFrom'); if (fromEl) fromEl.textContent = cur.from;
+
+  const unlocked = ALL_SKINS.filter(s => s.unlocked);
+  const locked = ALL_SKINS.filter(s => !s.unlocked);
+  const ucEl = document.getElementById('hSkinUnlockedCount'); if (ucEl) ucEl.textContent = unlocked.length;
+  const lcEl = document.getElementById('hSkinLockedCount'); if (lcEl) lcEl.textContent = locked.length;
+  const statEl = document.getElementById('hSkinCurStat'); if (statEl) statEl.textContent = `${unlocked.length} / ${ALL_SKINS.length}`;
+
+  const unlockedList = document.getElementById('hSkinsUnlocked');
+  if (unlockedList) {
+    unlockedList.innerHTML = unlocked.map(s => `
+      <div class="h-skin-row">
+        <div class="h-sk-img">${s.img ? `<img src="${s.img}" alt="">` : s.icon}</div>
+        <div class="h-sk-body">
+          <div class="h-sk-name">${s.name}</div>
+          <div class="h-sk-from">${s.from}</div>
+          <div class="h-sk-date">${s.date} 解锁</div>
+        </div>
+        <button class="h-sk-btn ${s.name === currentSkin ? 'is-using' : ''}" data-name="${s.name}">${s.name === currentSkin ? '使用中' : '使用'}</button>
+      </div>
+    `).join('');
+    unlockedList.querySelectorAll('.h-sk-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const name = btn.dataset.name;
+        if (name === currentSkin) return;
+        currentSkin = name;
+        renderSkinsPage();
+        toast('皮肤已切换');
+      });
+    });
+  }
+  const lockedList = document.getElementById('hSkinsLocked');
+  if (lockedList) {
+    lockedList.innerHTML = locked.map(s => `
+      <div class="h-skin-row is-locked">
+        <div class="h-sk-img">${s.icon}</div>
+        <div class="h-sk-body">
+          <div class="h-sk-name">${s.name}</div>
+          <div class="h-sk-from">${s.from}</div>
+        </div>
+      </div>
+    `).join('');
+  }
+}
+
+/* ---------- H3 头像框选择器 ---------- */
+const ALL_FRAMES = [
+  { name: '简约线框', from: 'LV1 解锁', date: '2026-01-15', emoji: '⬜', color: '#94a3b8', unlocked: true },
+  { name: '春芽', from: 'LV5 解锁', date: '2026-02-20', emoji: '🌸', color: '#ec4899', unlocked: true },
+  { name: '夏荷', from: 'LV10 解锁', date: '2026-03-28', emoji: '🪷', color: '#06b6d4', unlocked: true },
+  { name: '春日漫步限定框', from: '限时活动产出', date: '2026-04-30', emoji: '🌸', color: '#FFA31A', unlocked: true, isLimited: true },
+  { name: 'HRV 恢复者框', from: '勋章解锁颁发', date: '2026-04-15', emoji: '❤️', color: '#ef4444', unlocked: true },
+  { name: '秋枫', from: 'LV15 解锁', emoji: '🍁', color: '#f97316', unlocked: false, cond: '达到 LV15' },
+  { name: '雪松', from: 'LV20 解锁', emoji: '🌲', color: '#6c5ce7', unlocked: false, cond: '达到 LV20' },
+  { name: '夏夜限定框', from: '限时活动', emoji: '🌙', color: '#6c5ce7', unlocked: false, cond: '参加 2026 夏夜睡眠修复挑战', isLimited: true },
+  { name: '步行王者框', from: '勋章颁发', emoji: '🚶', color: '#22c55e', unlocked: false, cond: '解锁步行王者勋章' },
+  { name: '冥想大师框', from: '勋章颁发', emoji: '🧘', color: '#a855f7', unlocked: false, cond: '解锁冥想大师勋章' },
+  { name: '年度限定框', from: '年度活动', emoji: '🏆', color: '#FFD66B', unlocked: false, cond: '完成 2026 年度大挑战', isLimited: true },
+  { name: '隐藏款 · 守夜人', from: '隐藏勋章颁发', emoji: '🔒', color: '#475569', unlocked: false, cond: '???' }
+];
+function renderFramesPage() {
+  const cur = ALL_FRAMES.find(f => f.name === currentFrame) || ALL_FRAMES[0];
+  document.getElementById('hFpName').textContent = cur.name;
+  document.getElementById('hFpAvatar').style.boxShadow = `0 0 0 3px #fff inset, 0 0 0 6px ${cur.color}`;
+
+  const owned = ALL_FRAMES.filter(f => f.unlocked);
+  const locked = ALL_FRAMES.filter(f => !f.unlocked);
+  document.getElementById('hFramesOwned').innerHTML = owned.map(f => `
+    <div class="h-frame-item ${f.name === currentFrame ? 'is-active' : ''}" data-name="${f.name}">
+      ${f.isLimited ? `<div class="h-fi-tag">限定</div>` : ''}
+      <div class="h-fi-preview" style="background: linear-gradient(135deg, ${f.color}, ${f.color}99); box-shadow: 0 0 0 3px #fff inset, 0 0 0 5px ${f.color}40;">${f.emoji}</div>
+      <div class="h-fi-name">${f.name}</div>
+    </div>
+  `).join('');
+  document.getElementById('hFramesLocked').innerHTML = locked.map(f => `
+    <div class="h-frame-item is-locked">
+      ${f.isLimited ? `<div class="h-fi-tag">限定</div>` : ''}
+      <div class="h-fi-preview"></div>
+      <div class="h-fi-name">${f.name}</div>
+      <div class="h-fi-cond">${f.cond}</div>
+    </div>
+  `).join('');
+  document.querySelectorAll('#hFramesOwned .h-frame-item').forEach(item => {
+    item.addEventListener('click', () => {
+      const name = item.dataset.name;
+      if (name === currentFrame) return;
+      currentFrame = name;
+      renderHero();
+      renderFramesPage();
+      toast('佩戴成功');
+    });
+  });
+}
+
+/* ---------- H4 等级形象档案（用 ./树精灵/树精灵0X.png 渲染） ---------- */
+function renderArchive() {
+  const html = STAGES.map((s, i) => {
+    const isReached = currentLv >= s.range[0];
+    const isCurrent = currentLv >= s.range[0] && currentLv <= s.range[1];
+    const lockText = `达到 LV${s.range[0]} 解锁`;
+    const dateStr = isReached ? `2026-${String(((s.range[0]*5)%12)+1).padStart(2,'0')}-${String(((s.range[0]*7)%28)+1).padStart(2,'0')}` : '';
+    const rangeText = s.range[0] === s.range[1] ? `L${s.range[0]}` : `L${s.range[0]} - L${s.range[1]}`;
+    const rewardsHtml = (s.rewards || []).map(r => `
+      <span class="h-sc-reward h-sc-reward--${r.type}">
+        <span class="e">${r.emoji}</span><span class="l">${r.label}</span>
+      </span>
+    `).join('');
+    return `
+      <div class="h-stage-card ${isReached ? '' : 'is-locked'}">
+        <div class="h-sc-top">
+          <div class="h-sc-figure">${s.img ? `<img src="${s.img}" alt="${s.name}">` : s.figure}</div>
+          <div class="h-sc-body">
+            <div class="h-sc-name">${s.name}</div>
+            <div class="h-sc-range">${rangeText}</div>
+            <div class="h-sc-desc">${s.desc}</div>
+            <div class="h-sc-pills">
+              ${isCurrent ? `<span class="h-sc-pill is-current">📍 当前阶段</span>` : ''}
+              ${isReached ? `<span class="h-sc-pill is-date">${dateStr} 解锁</span>` : `<span class="h-sc-pill">🔒 ${lockText}</span>`}
+            </div>
+          </div>
+        </div>
+        <div class="h-sc-rewards-wrap">
+          <div class="h-sc-rewards-label">🎁 解锁奖励</div>
+          <div class="h-sc-rewards">${rewardsHtml}</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+  document.getElementById('hArchiveStages').innerHTML = html;
+}
+
+/* ---------- H5 勋章墙 ---------- */
+const MEDALS = [
+  // 新手引导 · 戒指连接
+  { id:'connect-1', name:'戒指初连者', cat:'daily', series:'新手引导 · 戒指连接', cond:'完成 1 天有效佩戴', mat:'铁 · L1', img:'勋章新图标/成长历程/连接戒指01.png', unlocked:true, date:'2026-01-15' },
+  { id:'connect-2', name:'佩戴启程者', cat:'daily', series:'新手引导 · 戒指连接', cond:'完成 3 天有效佩戴', mat:'铜 · L2', img:'勋章新图标/成长历程/连接戒指02.png', unlocked:true, date:'2026-01-18' },
+  { id:'connect-3', name:'数据掌握者', cat:'daily', series:'新手引导 · 戒指连接', cond:'完成 7 天有效佩戴', mat:'银 · L3', img:'勋章新图标/成长历程/连接戒指03.png', unlocked:true, date:'2026-01-22' },
+  { id:'connect-4', name:'唯戒进阶者', cat:'daily', series:'新手引导 · 戒指连接', cond:'完成 30 天有效佩戴', mat:'金 · L4', img:'勋章新图标/成长历程/连接戒指04.png', unlocked:true, date:'2026-02-15' },
+  { id:'connect-5', name:'唯戒老手', cat:'daily', series:'新手引导 · 戒指连接', cond:'完成 90 天有效佩戴', mat:'钻石 · L5', img:'勋章新图标/成长历程/连接戒指05.png', unlocked:false, cond_unlock:'再连续佩戴 22 天' },
+  // 步数
+  { id:'step-1', name:'步数起行者', cat:'daily', series:'身体指标 · 步数', cond:'累计达标 3 天', mat:'铁 · L1', img:'勋章新图标/成长历程/步数01.png', unlocked:true, date:'2026-02-22' },
+  { id:'step-2', name:'步数达标者', cat:'daily', series:'身体指标 · 步数', cond:'累计达标 7 天', mat:'铜 · L2', img:'勋章新图标/成长历程/步数02.png', unlocked:true, date:'2026-03-08' },
+  { id:'step-3', name:'步行连胜者', cat:'daily', series:'身体指标 · 步数', cond:'连续达标 7 天', mat:'银 · L3', img:'勋章新图标/成长历程/步数03.png', unlocked:true, date:'2026-04-22' },
+  { id:'step-4', name:'步数领航者', cat:'daily', series:'身体指标 · 步数', cond:'累计达标 21 天', mat:'金 · L4', img:'勋章新图标/成长历程/步数04.png', unlocked:false, cond_unlock:'再累计达标 4 天' },
+  { id:'step-5', name:'步行王者', cat:'daily', series:'身体指标 · 步数', cond:'连续达标 30 天', mat:'钻石 · L5', img:'勋章新图标/成长历程/步数05.png', unlocked:false, cond_unlock:'连续达标 30 天' },
+  // 睡眠
+  { id:'sleep-1', name:'一夜好眠', cat:'daily', series:'身体指标 · 睡眠', cond:'首次达标', mat:'铁 · L1', img:'勋章新图标/成长历程/睡眠01.png', unlocked:true, date:'2026-01-20' },
+  { id:'sleep-2', name:'深睡旅人', cat:'daily', series:'身体指标 · 睡眠', cond:'连续达标 3 天', mat:'铜 · L2', img:'勋章新图标/成长历程/睡眠02.png', unlocked:true, date:'2026-01-26' },
+  { id:'sleep-3', name:'睡眠稳定者', cat:'daily', series:'身体指标 · 睡眠', cond:'累计达标 10 天', mat:'银 · L3', img:'勋章新图标/成长历程/睡眠03.png', unlocked:true, date:'2026-02-28' },
+  { id:'sleep-4', name:'作息修复者', cat:'daily', series:'身体指标 · 睡眠', cond:'连续达标 7 天', mat:'金 · L4', img:'勋章新图标/成长历程/睡眠04.png', unlocked:true, date:'2026-03-15' },
+  { id:'sleep-5', name:'睡眠节律大师', cat:'daily', series:'身体指标 · 睡眠', cond:'累计达标 30 天', mat:'钻石 · L5', img:'勋章新图标/成长历程/睡眠05.png', unlocked:true, date:'2026-04-18' },
+  // HRV
+  { id:'hrv-1', name:'HRV 起势者', cat:'daily', series:'身体指标 · HRV', cond:'累计达标 3 天', mat:'铁 · L1', img:'勋章新图标/成长历程/hrv01.png', unlocked:true, date:'2026-02-12' },
+  { id:'hrv-2', name:'HRV 提升者', cat:'daily', series:'身体指标 · HRV', cond:'累计达标 7 天', mat:'铜 · L2', img:'勋章新图标/成长历程/hrv02.png', unlocked:true, date:'2026-03-01' },
+  { id:'hrv-3', name:'HRV 稳定者', cat:'daily', series:'身体指标 · HRV', cond:'连续达标 7 天', mat:'银 · L3', img:'勋章新图标/成长历程/hrv03.png', unlocked:false, cond_unlock:'连续达标 7 天' },
+  { id:'hrv-4', name:'HRV 强韧者', cat:'daily', series:'身体指标 · HRV', cond:'累计达标 21 天', mat:'金 · L4', img:'勋章新图标/成长历程/hrv04.png', unlocked:false, cond_unlock:'累计达标 21 天' },
+  { id:'hrv-5', name:'HRV 恢复大师', cat:'daily', series:'身体指标 · HRV', cond:'连续达标 30 天', mat:'钻石 · L5', img:'勋章新图标/成长历程/hrv05.png', unlocked:false, cond_unlock:'连续达标 30 天' },
+  // 心理压力
+  { id:'stress-1', name:'低压起步', cat:'daily', series:'身体指标 · 心理压力', cond:'累计达标 3 天', mat:'铁 · L1', img:'勋章新图标/成长历程/心理压力01.png', unlocked:true, date:'2026-02-08' },
+  { id:'stress-2', name:'低压稳态', cat:'daily', series:'身体指标 · 心理压力', cond:'累计达标 7 天', mat:'铜 · L2', img:'勋章新图标/成长历程/心理压力02.png', unlocked:true, date:'2026-02-25' },
+  { id:'stress-3', name:'低压连胜', cat:'daily', series:'身体指标 · 心理压力', cond:'连续达标 5 天', mat:'银 · L3', img:'勋章新图标/成长历程/心理压力03.png', unlocked:true, date:'2026-03-20' },
+  { id:'stress-4', name:'心境平衡者', cat:'daily', series:'身体指标 · 心理压力', cond:'累计达标 21 天', mat:'金 · L4', img:'勋章新图标/成长历程/心理压力04.png', unlocked:true, date:'2026-04-10' },
+  { id:'stress-5', name:'稳定心境大师', cat:'daily', series:'身体指标 · 心理压力', cond:'连续达标 30 天', mat:'钻石 · L5', img:'勋章新图标/成长历程/心理压力05.png', unlocked:false, cond_unlock:'连续达标 30 天' },
+  // 身体恢复度
+  { id:'rec-1', name:'恢复启动', cat:'daily', series:'身体指标 · 身体恢复度', cond:'累计达标 3 天', mat:'铁 · L1', img:'勋章新图标/成长历程/身体恢复度01.png', unlocked:true, date:'2026-02-10' },
+  { id:'rec-2', name:'恢复上线', cat:'daily', series:'身体指标 · 身体恢复度', cond:'连续达标 5 天', mat:'铜 · L2', img:'勋章新图标/成长历程/身体恢复度02.png', unlocked:true, date:'2026-02-28' },
+  { id:'rec-3', name:'恢复进阶', cat:'daily', series:'身体指标 · 身体恢复度', cond:'累计达标 10 天', mat:'银 · L3', img:'勋章新图标/成长历程/身体恢复度03.png', unlocked:false, cond_unlock:'再累计达标 3 天' },
+  { id:'rec-4', name:'恢复稳定者', cat:'daily', series:'身体指标 · 身体恢复度', cond:'连续达标 10 天', mat:'金 · L4', img:'勋章新图标/成长历程/身体恢复度04.png', unlocked:false, cond_unlock:'连续达标 10 天' },
+  { id:'rec-5', name:'恢复掌控者', cat:'daily', series:'身体指标 · 身体恢复度', cond:'累计达标 30 天', mat:'钻石 · L5', img:'勋章新图标/成长历程/身体恢复度05.png', unlocked:false, cond_unlock:'累计达标 30 天' },
+  // 血氧
+  { id:'spo-1', name:'血氧初稳者', cat:'daily', series:'身体指标 · 血氧', cond:'累计达标 3 天', mat:'铁 · L1', img:'勋章新图标/成长历程/血氧01.png', unlocked:true, date:'2026-02-15' },
+  { id:'spo-2', name:'血氧守护者', cat:'daily', series:'身体指标 · 血氧', cond:'累计达标 7 天', mat:'铜 · L2', img:'勋章新图标/成长历程/血氧02.png', unlocked:true, date:'2026-03-02' },
+  { id:'spo-3', name:'血氧连胜者', cat:'daily', series:'身体指标 · 血氧', cond:'连续达标 7 天', mat:'银 · L3', img:'勋章新图标/成长历程/血氧03.png', unlocked:false, cond_unlock:'连续达标 7 天' },
+  // 三环 · 金牌
+  { id:'gold-1', name:'金牌首得', cat:'daily', series:'三环累计 · 金牌', cond:'累计获得 1 枚金牌', mat:'铁 · L1', img:'勋章新图标/成长历程/金牌01.png', unlocked:true, date:'2026-01-25' },
+  { id:'gold-2', name:'金牌7连藏', cat:'daily', series:'三环累计 · 金牌', cond:'累计获得 7 枚金牌', mat:'铜 · L2', img:'勋章新图标/成长历程/金牌02.png', unlocked:true, date:'2026-02-20' },
+  { id:'gold-3', name:'金牌进阶者', cat:'daily', series:'三环累计 · 金牌', cond:'累计获得 30 枚金牌', mat:'银 · L3', img:'勋章新图标/成长历程/金牌03.png', unlocked:false, cond_unlock:'再获得 18 枚金牌' },
+  { id:'gold-4', name:'金牌王者', cat:'daily', series:'三环累计 · 金牌', cond:'累计获得 90 枚金牌', mat:'金 · L4', img:'勋章新图标/成长历程/金牌04.png', unlocked:false, cond_unlock:'累计获得 90 枚金牌' },
+  // 三环 · 银牌
+  { id:'silver-1', name:'银牌首得', cat:'daily', series:'三环累计 · 银牌', cond:'累计获得 1 枚银牌', mat:'铁 · L1', img:'勋章新图标/成长历程/银牌01.png', unlocked:true, date:'2026-01-22' },
+  { id:'silver-2', name:'银牌7连藏', cat:'daily', series:'三环累计 · 银牌', cond:'累计获得 7 枚银牌', mat:'铜 · L2', img:'勋章新图标/成长历程/银牌02.png', unlocked:true, date:'2026-02-12' },
+  { id:'silver-3', name:'银牌进阶者', cat:'daily', series:'三环累计 · 银牌', cond:'累计获得 30 枚银牌', mat:'银 · L3', img:'勋章新图标/成长历程/银牌03.png', unlocked:false, cond_unlock:'再获得 8 枚银牌' },
+  // 三环 · 铜牌
+  { id:'bronze-1', name:'铜牌首得', cat:'daily', series:'三环累计 · 铜牌', cond:'累计获得 1 枚铜牌', mat:'铁 · L1', img:'勋章新图标/成长历程/铜牌01.png', unlocked:true, date:'2026-01-18' },
+  { id:'bronze-2', name:'铜牌7连藏', cat:'daily', series:'三环累计 · 铜牌', cond:'累计获得 7 枚铜牌', mat:'铜 · L2', img:'勋章新图标/成长历程/铜牌02.png', unlocked:true, date:'2026-02-05' },
+  { id:'bronze-3', name:'铜牌收藏家', cat:'daily', series:'三环累计 · 铜牌', cond:'累计获得 30 枚铜牌', mat:'银 · L3', img:'勋章新图标/成长历程/铜牌03.png', unlocked:false, cond_unlock:'再获得 12 枚铜牌' },
+  // 限时活动
+  { id:'spring-water', name:'春日补水使者', cat:'limited', series:'2026 春日活动', cond:'参加 2026 春日补水挑战', mat:'多彩 · 限定', img:'勋章新图标/限时挑战/春日补水.png', unlocked:true, date:'2026-04-15' },
+  { id:'spring-mara', name:'春日马拉松完赛者', cat:'limited', series:'2026 春日活动', cond:'参加 2026 春日马拉松', mat:'多彩 · 限定', img:'勋章新图标/限时挑战/春日马拉松.png', unlocked:true, date:'2026-04-30' },
+  { id:'summer-sleep', name:'夏夜睡眠修复', cat:'event', series:'2026 夏季活动', cond:'参加 2026 夏夜睡眠修复挑战', mat:'多彩 · 月度', img:'勋章新图标/限时挑战/夏夜睡眠修复.png', unlocked:false, cond_unlock:'2026 年 6 月开启' }
+];
+
+let currentMedalCat = 'all';
+function renderMedalsWall() {
+  const total = MEDALS.length;
+  const unlockedCount = MEDALS.filter(m => m.unlocked).length;
+  document.getElementById('hMwNum').textContent = unlockedCount;
+  document.getElementById('hMwTotal').textContent = `/ ${total}`;
+  let visible = MEDALS;
+  if (currentMedalCat !== 'all') visible = MEDALS.filter(m => m.cat === currentMedalCat);
+  if (currentMedalCat === 'hidden') visible = []; // 隐藏类未解锁不显示
+  visible = visible.slice().sort((a, b) => (b.unlocked - a.unlocked));
+  const html = visible.map(m => `
+    <div class="h-medal-item ${m.unlocked ? '' : 'is-locked'}" data-id="${m.id}">
+      ${m.cat === 'limited' || m.cat === 'event' ? `<div class="h-mi-tag ${m.cat === 'event' ? '' : 'is-multi'}">${m.cat === 'event' ? '月度' : '限定'}</div>` : ''}
+      <div class="h-mi-img"><img src="${m.img}" alt="${m.name}"></div>
+      <div class="h-mi-name">${m.name}</div>
+    </div>
+  `).join('');
+  document.getElementById('hMwGrid').innerHTML = html || `<div style="grid-column:span 3;text-align:center;padding:48px 16px;color:var(--text3)">${currentMedalCat === 'limited' ? '暂无限定勋章 · 关注每月限时活动获取' : currentMedalCat === 'hidden' ? '隐藏勋章在解锁后才会出现 · 保持探索' : '暂无勋章'}</div>`;
+  document.querySelectorAll('#hMwGrid .h-medal-item').forEach(item => {
+    item.addEventListener('click', () => openMedalDetail(item.dataset.id));
+  });
+}
+document.querySelectorAll('#hMwTabs .h-mw-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('#hMwTabs .h-mw-tab').forEach(t => t.classList.remove('is-active'));
+    tab.classList.add('is-active');
+    currentMedalCat = tab.dataset.cat;
+    renderMedalsWall();
+  });
+});
+
+/* ---------- H5.1 勋章详情 ---------- */
+let currentMedalId = 'step-3';
+function openMedalDetail(id) {
+  const m = MEDALS.find(x => x.id === id);
+  if (!m) return;
+  currentMedalId = id;
+  document.getElementById('hMhImg').innerHTML = `<img src="${m.img}" alt="${m.name}">`;
+  document.getElementById('hMhMat').textContent = m.mat;
+  document.getElementById('hMcName').textContent = m.name;
+  document.getElementById('hMcCategory').textContent = { daily: '日常', event: '活动', limited: '限定', hidden: '隐藏' }[m.cat] || '日常';
+  document.getElementById('hMcSeries').textContent = m.series;
+  document.getElementById('hMcCond').textContent = m.cond;
+  document.getElementById('hMcDate').textContent = m.unlocked ? m.date : '—';
+  const status = document.getElementById('hMdStatus');
+  if (m.unlocked) { status.className = 'h-md-status is-done'; status.textContent = `✓ 已解锁 · ${m.date}`; }
+  else { status.className = 'h-md-status is-locked'; status.textContent = `🔒 未解锁 · ${m.cond_unlock || m.cond}`; }
+  if (m.cat === 'event' || m.cat === 'limited') {
+    let src = document.querySelector('.h-md-source');
+    if (!src) {
+      src = document.createElement('div');
+      src.className = 'h-md-source';
+      src.innerHTML = `<div class="lbl">来源</div><div class="val" id="hMdSrcVal"></div><div class="sub" id="hMdSrcSub"></div>`;
+      document.querySelector('.h-md-card').after(src);
+    }
+    document.getElementById('hMdSrcVal').textContent = m.series;
+    document.getElementById('hMdSrcSub').textContent = m.unlocked ? `${m.date} 获得` : '未参与';
+    src.style.display = 'block';
+  } else {
+    const src = document.querySelector('.h-md-source');
+    if (src) src.style.display = 'none';
+  }
+  openOverlay('medalDetailOv');
+}
+/* ---------- H6 / H7 / H8 浮层 ---------- */
+function showLevelup() {
+  const t = document.getElementById('toastLevelup');
+  t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.classList.remove('show'), 3500);
+}
+function showXpToast() {
+  const t = document.getElementById('toastXp');
+  t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.classList.remove('show'), 2000);
+}
+function hideToast(id) { document.getElementById(id).classList.remove('show'); }
+
+function showEvolve() {
+  document.getElementById('evolveOv').classList.add('show');
+}
+function closeEvolve() {
+  document.getElementById('evolveOv').classList.remove('show');
+  toast('🎉 进化完成 · 4 类奖励已入库');
+}
+document.querySelectorAll('#evolveOv .h-evolve-skin .chip').forEach(c => {
+  c.addEventListener('click', () => {
+    document.querySelectorAll('#evolveOv .h-evolve-skin .chip').forEach(x => x.classList.remove('is-active'));
+    c.classList.add('is-active');
+  });
+});
+
+/* ---------- H1.A 主视觉滑动切换季节皮肤 ---------- */
+let touchStartX = 0;
+const heroEl = document.getElementById('hHero');
+heroEl.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
+heroEl.addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].clientX - touchStartX;
+  if (Math.abs(dx) < 30) return;
+  const idx = SEASONS.findIndex(s => s.key === activeSeason);
+  let next = idx + (dx < 0 ? 1 : -1);
+  if (next < 0) next = 0;
+  if (next >= SEASONS.length) next = SEASONS.length - 1;
+  const nextSeason = SEASONS[next];
+  if (!unlockedSeasons.includes(nextSeason.key)) {
+    toast(`L${nextSeason.unlock} 解锁 ${nextSeason.name}季皮肤`);
+    return;
+  }
+  activeSeason = nextSeason.key;
+  renderHero();
+});
+// 鼠标拖动也支持（桌面预览）
+let mouseStartX = null;
+heroEl.addEventListener('mousedown', e => { mouseStartX = e.clientX; });
+heroEl.addEventListener('mouseup', e => {
+  if (mouseStartX === null) return;
+  const dx = e.clientX - mouseStartX;
+  mouseStartX = null;
+  if (Math.abs(dx) < 30) return;
+  const idx = SEASONS.findIndex(s => s.key === activeSeason);
+  let next = idx + (dx < 0 ? 1 : -1);
+  if (next < 0) next = 0;
+  if (next >= SEASONS.length) next = SEASONS.length - 1;
+  const nextSeason = SEASONS[next];
+  if (!unlockedSeasons.includes(nextSeason.key)) {
+    toast(`L${nextSeason.unlock} 解锁 ${nextSeason.name}季皮肤`);
+    return;
+  }
+  activeSeason = nextSeason.key;
+  renderHero();
+});
+let figureLongPressTimer;
+function onFigureTouchStart(e) {
+  figureLongPressTimer = setTimeout(() => { openOverlay('archiveOv'); }, 600);
+}
+function onFigureTouchEnd(e) { clearTimeout(figureLongPressTimer); }
+function onFigureLongPress() {} // mouse fallback
+
+/* ---------- 左侧导航点击 ---------- */
+function setActiveNav(item) {
+  document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('is-active'));
+  item.classList.add('is-active');
+}
+function scrollToAnchor(anchor) {
+  const scroll = document.getElementById('scrollArea');
+  if (anchor === 'top') { scroll.scrollTo({ top: 0, behavior: 'smooth' }); return; }
+  const target = document.getElementById(anchor);
+  if (!target) return;
+  scroll.scrollTo({ top: target.offsetTop - 90, behavior: 'smooth' });
+}
+document.querySelectorAll('.nav-item').forEach(item => {
+  item.addEventListener('click', () => {
+    const target = item.dataset.target;
+    setActiveNav(item);
+    if (target === 'page') {
+      closeAllOverlays();
+      scrollToAnchor(item.dataset.section || 'top');
+    } else if (target === 'scroll') {
+      closeAllOverlays();
+      scrollToAnchor(item.dataset.anchor);
+    } else if (target === 'overlay') {
+      openOverlay(item.dataset.overlay);
+    } else if (target === 'sheet') {
+      if (item.dataset.sheet === 'milestoneSheet') {
+        openMilestoneSheet(currentLv);
+      } else {
+        openSheet(item.dataset.sheet);
+      }
+    } else if (target === 'action') {
+      const a = item.dataset.action;
+      if (a === 'showLevelup') showLevelup();
+      else if (a === 'showEvolve') showEvolve();
+      else if (a === 'showXpToast') showXpToast();
+      else if (a === 'showEmpty') applyState('logged-out');
+      else if (a === 'goToMedals') goToMedals();
+    }
+  });
+});
+
+/* ---------- 状态切换按钮 ---------- */
+document.querySelectorAll('.state-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.state-btn').forEach(b => b.classList.remove('is-active'));
+    btn.classList.add('is-active');
+    applyState(btn.dataset.state);
+  });
+});
+
+/* ---------- 初始化 ---------- */
+applyState('default');
+</script>
+</body>
+</html>

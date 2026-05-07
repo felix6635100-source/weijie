@@ -4,6 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <title>唯戒 · 维度模块</title>
+<script>
+  // 来自收获模块跳转：URL ?openMedals=1 → 立即给 html 打标，让维度首页内容隐藏 + 勋章 overlay 立即在屏
+  if (/[?&]openMedals=1/.test(location.search)) document.documentElement.classList.add('is-direct-medals');
+</script>
 <style>
 /* ==========================================================
    设计 Token  —— 与 00-设计规范.md / 01-今日模块.html 同源
@@ -566,10 +570,10 @@ button { font: inherit; color: inherit; background: transparent; border: 0; padd
   pointer-events: none;
 }
 
-/* 我的维度容器（维度进度入口 + 成就勋章入口，左右两栏） */
+/* 我的维度容器（维度进度入口 + 成就勋章入口，左右两栏）
+   v1.2 后已隐藏：维度之路 / 成就勋章入口都迁到 05 收获模块 */
 .lv-mesect {
-  margin: 6px 16px 14px;
-  display: flex; gap: 8px;
+  display: none !important;
 }
 .lv-mecard {
   flex: 1; min-width: 0;
@@ -2038,52 +2042,44 @@ button { font: inherit; color: inherit; background: transparent; border: 0; padd
   font-weight: 600;
 }
 /* —— Vant 下划线风格 tab，参考 03-个人中心 P7 消息中心 —— */
+/* 我的勋章 · 分类 tab：胶囊形（与 02 关心模块 .subtabs 同款，但选中态保持均分宽度） */
 .medal-tabs {
-  display: flex;
-  align-items: stretch;
-  margin: 0;                                  /* 与标题栏无缝衔接 */
-  padding: 0 12px;
-  background: transparent;
-  border-bottom: 1px solid var(--border-soft);
-  overflow-x: auto;
-  scrollbar-width: none;
+  margin: 16px 16px 12px;
+  padding: 5px;
+  background: var(--color-bg-surface);
+  border-radius: 999px;
+  box-shadow: var(--shadow-card);
+  display: flex; gap: 4px; align-items: center;
   flex-shrink: 0;
   position: relative;
 }
 .medal-tabs::-webkit-scrollbar { display: none; }
 .medal-tab {
-  flex: 1; flex-shrink: 0;
-  display: inline-flex;
-  align-items: center; justify-content: center;
-  gap: 4px;
-  height: 44px;
-  padding: 0 12px;
-  background: transparent !important;          /* 防御：清掉任何遗留底色 */
-  border: 0 !important;
-  border-radius: 0 !important;                 /* 防御：清掉任何全局按钮圆角 */
-  box-shadow: none !important;                 /* 防御：清掉任何全局按钮阴影 */
-  color: var(--text2);
+  flex: 1; text-align: center;
+  height: auto;
+  padding: 8px 0;
   font-size: 14px;
+  color: var(--text2);
   font-weight: 500;
-  white-space: nowrap;
   cursor: pointer;
-  font-family: inherit;
   position: relative;
-  transition: color 0.15s ease;
+  border-radius: 999px;
+  display: inline-flex; align-items: center; justify-content: center; gap: 5px;
+  transition: color .2s ease, background .2s ease;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  font-family: inherit;
+  white-space: nowrap;
 }
 .medal-tab.active {
-  color: var(--color-brand-primary);
-  font-weight: 600;
+  /* 选中态保持 flex:1 均分宽度，仅切换底色 / 字色 / 阴影 */
+  background: linear-gradient(135deg, #6c5ce7, #a855f7) !important;
+  color: #fff;
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(113, 79, 247, 0.30) !important;
 }
-.medal-tab.active::after {
-  content: '';
-  position: absolute;
-  left: 50%; bottom: 4px;
-  transform: translateX(-50%);
-  width: 24px; height: 3px;
-  border-radius: 999px;
-  background: var(--color-brand-primary);
-}
+.medal-tab.active::after { content: none; }
 /* —— 系列折叠卡（成长历程 / 限时挑战 共用） —— */
 .medal-wall {
   display: block;
@@ -3136,6 +3132,102 @@ button { font: inherit; color: inherit; background: transparent; border: 0; padd
 .phone-frame.is-no-joined .lv-mcard .joined-tag { display: none; }
 
 .empty-logged-out { display: none; }
+
+/* ==========================================================
+   勋章进度卡（在 myMedalsOverlay 标题与分类 tab 之间）
+   与 05 收获模块同款金色暖色调
+   ========================================================== */
+.h-medals-progress {
+  margin: 12px 16px 0;
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #fffaf0 0%, #fef3c7 100%);
+  border: 1px solid rgba(245, 158, 11, 0.20);
+  box-shadow: 0 6px 18px rgba(245, 158, 11, 0.10);
+  position: relative;
+  cursor: default;
+}
+.h-mp-head { display: flex; align-items: center; gap: 12px; }
+.h-mp-ico {
+  width: 38px; height: 38px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+  box-shadow: 0 4px 10px rgba(245, 158, 11, 0.32);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+}
+.h-mp-text { flex: 1; min-width: 0; padding-right: 22px; }
+.h-mp-title { font-size: 14px; font-weight: 800; color: #92400e; letter-spacing: -0.2px; }
+.h-mp-title .num { color: #f59e0b; }
+.h-mp-sub {
+  font-size: 11px; color: #b45309;
+  margin-top: 2px; font-weight: 600;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.h-mp-arrow {
+  position: absolute; top: 18px; right: 14px;
+  color: #92400e; font-size: 18px; font-weight: 700;
+  pointer-events: none;
+}
+.h-mp-bar {
+  height: 6px; border-radius: 999px;
+  background: rgba(245, 158, 11, 0.16);
+  overflow: hidden;
+  margin: 12px 0 10px;
+}
+.h-mp-bar .fill {
+  height: 100%; border-radius: 999px;
+  background: linear-gradient(90deg, #fbbf24, #f59e0b, #FF7851);
+  width: 21.8%;
+  position: relative;
+}
+.h-mp-bar .fill::after {
+  content: ''; position: absolute;
+  right: -2px; top: -1px;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: #FFE6A8;
+  box-shadow: 0 0 6px rgba(255, 163, 26, 0.6);
+}
+.h-mp-recent { display: flex; align-items: center; }
+.h-mp-mini {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  background: #fff;
+  display: inline-flex; align-items: center; justify-content: center;
+  margin-right: -8px;
+  box-shadow: 0 2px 5px rgba(245, 158, 11, 0.22);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.h-mp-mini img { width: 100%; height: 100%; object-fit: contain; }
+.h-mp-recent-label {
+  font-size: 11px; font-weight: 700;
+  color: #92400e;
+  margin-left: 16px;
+  letter-spacing: 0.2px;
+}
+
+/* ==========================================================
+   "来自收获" 直跳态：URL ?openMedals=1 时立即只显示勋章 overlay
+   维度首页所有内容隐藏，勋章 overlay 立即在屏（无滑入动画）
+   ========================================================== */
+html.is-direct-medals .ios-status-bar,
+html.is-direct-medals .app-topbar,
+html.is-direct-medals .scroll-area,
+html.is-direct-medals .tab-bar { visibility: hidden; }
+html.is-direct-medals #myMedalsOverlay {
+  transform: translateX(0) !important;
+  transition: none !important;
+  visibility: visible;
+}
+html.is-direct-medals #myMedalsOverlay .ios-status-bar,
+html.is-direct-medals #myMedalsOverlay .app-topbar,
+html.is-direct-medals #myMedalsOverlay .scroll-area,
+html.is-direct-medals #myMedalsOverlay .tab-bar { visibility: visible; }
 </style>
 </head>
 <body>
@@ -3275,7 +3367,7 @@ button { font: inherit; color: inherit; background: transparent; border: 0; padd
   <div class="app-topbar">
     <div class="topbar-left">
       <div class="topbar-title">维度</div>
-      <div class="ring-tag is-connected" onclick="toast('跳 P6.1 设备详情')" title="戒指连接状态">
+      <div class="ring-tag is-connected" onclick="window.location.href='03-个人中心.html?page=P6'" title="戒指连接状态">
         <span class="dot"></span>
         <span>已连接</span>
         <span class="battery">
@@ -3306,8 +3398,29 @@ button { font: inherit; color: inherit; background: transparent; border: 0; padd
         <div class="title">我的勋章</div>
         <div class="more">⋯</div>
       </div>
-      <div class="medal-tabs" id="medalTabs"></div>
     </div>
+    <!-- 勋章进度卡（标题与分类 tab 之间） -->
+    <div class="h-medals-progress">
+      <div class="h-mp-arrow">›</div>
+      <div class="h-mp-head">
+        <div class="h-mp-ico">🏆</div>
+        <div class="h-mp-text">
+          <div class="h-mp-title">已解锁 <span class="num">24</span> / 110 枚</div>
+          <div class="h-mp-sub">距下一枚「步数领航者」还差 4 天达标</div>
+        </div>
+      </div>
+      <div class="h-mp-bar"><div class="fill"></div></div>
+      <div class="h-mp-recent">
+        <span class="h-mp-mini"><img src="勋章新图标/成长历程/睡眠05.png" alt=""></span>
+        <span class="h-mp-mini"><img src="勋章新图标/成长历程/心理压力04.png" alt=""></span>
+        <span class="h-mp-mini"><img src="勋章新图标/成长历程/hrv04.png" alt=""></span>
+        <span class="h-mp-mini"><img src="勋章新图标/成长历程/步数03.png" alt=""></span>
+        <span class="h-mp-mini"><img src="勋章新图标/成长历程/连接戒指04.png" alt=""></span>
+        <span class="h-mp-recent-label">最近解锁 5 枚</span>
+      </div>
+    </div>
+    <!-- 分类 tab（胶囊形，与 02 关心模块同款） -->
+    <div class="medal-tabs" id="medalTabs"></div>
     <div class="medal-wall-page">
       <div class="medal-wall" id="medalWall"></div>
     </div>
@@ -3351,7 +3464,7 @@ button { font: inherit; color: inherit; background: transparent; border: 0; padd
     <div class="tb-item" onclick="goToModulePage('02-关心模块.html')">
       <span class="ico"><svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"> <path d="M25.4549 10.6114C25.179 9.58161 24.5845 8.66513 23.8304 7.91158C23.8302 7.91133 23.8298 7.9112 23.8295 7.9112C23.8291 7.9112 23.8288 7.91106 23.8285 7.91081C22.6502 6.7325 21.0653 6.05021 19.3995 6.00413C17.9779 5.96481 16.5896 6.39136 15.4413 7.20799C15.1027 7.44878 14.6401 7.44873 14.3016 7.20784C13.1538 6.39104 11.766 5.96396 10.3447 6.00238C8.67894 6.04742 7.09366 6.72842 5.91428 7.90558C4.7349 9.08273 4.05091 10.6667 4.00273 12.3323C3.95455 13.998 4.54583 15.6188 5.65519 16.8622L14.2943 25.5136C14.6129 25.8326 15.1298 25.8324 15.4482 25.5133L17.5307 23.4259C17.8492 23.1066 17.8479 22.5893 17.5277 22.2716L17.1427 21.8895C16.8238 21.5731 16.309 21.5743 15.9916 21.8923L15.4482 22.4367C15.1298 22.7558 14.6129 22.7558 14.2945 22.4368L7.24194 15.3733C6.52072 14.5426 6.14122 13.4695 6.17994 12.3701C6.21866 11.2707 6.67273 10.2269 7.45061 9.44904C8.23608 8.66357 9.29242 8.20857 10.4028 8.17745C11.5132 8.14632 12.5934 8.54143 13.4216 9.28167L14.3292 10.0949C14.639 10.3724 15.108 10.3722 15.4175 10.0944L16.3245 9.28058C17.1521 8.54099 18.2313 8.14614 19.3408 8.17706C20.4503 8.20798 21.5059 8.66232 22.2911 9.44687C22.8484 10.0039 23.2317 10.705 23.4356 11.4661C23.5003 11.7074 25.6839 11.4661 25.4549 10.6114Z" fill="currentColor"/> <g clip-path="url(#clip0_166_22)"> <path d="M22.455 12.5685C19.2948 12.5685 16.7329 15.1303 16.7329 18.2906C16.7329 21.4508 19.2948 24.0127 22.455 24.0127C25.6152 24.0127 28.1771 21.4508 28.1771 18.2906C28.1771 15.1303 25.6152 12.5685 22.455 12.5685ZM19.3985 16.6281C19.3985 16.206 19.7406 15.8639 20.1626 15.8639C20.5847 15.8639 20.9268 16.206 20.9268 16.6281C20.9268 17.0501 20.5847 17.3922 20.1626 17.3922C19.7406 17.3922 19.3985 17.0502 19.3985 16.6281ZM22.4374 21.0695C21.3759 21.0695 20.5064 20.247 20.4318 19.2043C21.7853 19.1822 23.3834 19.2131 24.443 19.2043C24.3685 20.2469 23.499 21.0695 22.4374 21.0695ZM24.7475 17.3922C24.3254 17.3922 23.9833 17.0502 23.9833 16.6281C23.9833 16.206 24.3254 15.8639 24.7475 15.8639C25.1696 15.8639 25.5115 16.206 25.5115 16.6281C25.5115 17.0501 25.1696 17.3922 24.7475 17.3922Z" fill="currentColor"/> </g> <defs> <clipPath id="clip0_166_22"> <rect width="13.0418" height="13.0418" fill="white" transform="translate(15.9583 11.7074)"/> </clipPath> </defs> </svg></span><span class="lbl">关心</span>
     </div>
-    <div class="tb-item" onclick="toast('收获 Tab 制作中')">
+    <div class="tb-item" onclick="goToModulePage('05-收获模块.html')">
       <span class="ico"><svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"> <path d="M19.9939 5.22891C20.1111 4.99451 20.3455 4.87731 20.5799 4.99451C20.6971 4.99451 20.8143 5.11171 20.8143 5.22891L21.6346 7.8073C21.6346 7.9245 21.7518 8.0417 21.869 8.0417L24.213 9.21369C24.4474 9.33089 24.5646 9.56529 24.4474 9.79969C24.4474 9.91689 24.3302 9.91689 24.213 10.0341L21.869 11.2061C21.7518 11.2061 21.6346 11.3233 21.6346 11.4405L20.8143 14.0189C20.6971 14.2533 20.4627 14.3705 20.2283 14.2533C20.1111 14.2533 19.9939 14.1361 19.9939 14.0189L19.1735 11.4405C19.1735 11.3233 19.0563 11.2061 18.9391 11.2061L16.5951 10.0341C16.3607 9.91689 16.2435 9.68249 16.3607 9.44809C16.3607 9.33089 16.4779 9.33089 16.5951 9.21369L18.9391 8.0417C19.0563 8.0417 19.1735 7.9245 19.1735 7.8073L19.9939 5.22891ZM25.971 2.65052C25.971 2.53333 26.0882 2.53333 26.0882 2.53333C26.0882 2.53333 26.2054 2.53333 26.2054 2.65052L26.7914 4.40852C26.7914 4.40852 26.7914 4.52571 26.9086 4.52571L28.5494 5.22891C28.6666 5.22891 28.6666 5.34611 28.6666 5.46331L28.5494 5.58051L26.9086 6.28371L26.7914 6.40091L26.2054 8.1589C26.2054 8.2761 26.0882 8.2761 26.0882 8.2761C26.0882 8.2761 25.971 8.2761 25.971 8.1589L25.385 6.40091C25.385 6.40091 25.385 6.28371 25.2678 6.28371L23.627 5.58051C23.5098 5.58051 23.5098 5.46331 23.5098 5.34611L23.627 5.22891L25.2678 4.52571L25.385 4.40852L25.971 2.65052Z" fill="currentColor"/> <path d="M15.4612 14.1172C15.4612 14 15.5784 14 15.5784 14C15.5784 14 15.6956 14 15.6956 14.1172L16.2816 15.8752C16.2816 15.8752 16.2816 15.9924 16.3988 15.9924L18.0396 16.6956C18.1568 16.6956 18.1568 16.8128 18.1568 16.93L18.0396 17.0472L16.3988 17.7504L16.2816 17.8676L15.6956 19.6256C15.6956 19.7428 15.5784 19.7428 15.5784 19.7428C15.5784 19.7428 15.4612 19.7428 15.4612 19.6256L14.8752 17.8676C14.8752 17.8676 14.8752 17.7504 14.758 17.7504L13.1172 17.0472C13 17.0472 13 16.93 13 16.8128L13.1172 16.6956L14.758 15.9924L14.8752 15.8752L15.4612 14.1172Z" fill="currentColor"/> <path d="M16.3607 27.614H9.32877C8.74277 27.614 8.27397 28.0828 8.27397 28.6688C8.27397 29.2548 8.74277 29.7236 9.32877 29.7236H16.3607C16.9467 29.7236 17.4155 29.2548 17.4155 28.6688C17.4155 28.0828 16.9467 27.614 16.3607 27.614ZM17.4155 21.5197L17.1811 21.6369C16.0091 22.3401 15.8919 23.512 15.7747 23.9808V24.098H9.91476V23.9808C9.91476 23.512 9.68037 22.2229 8.50837 21.4025C6.28158 19.8789 4.99239 17.4177 4.99239 14.7221V14.3705C5.34399 10.0341 8.85997 6.75253 13.0791 6.75253C13.8995 6.75253 14.7199 6.86973 15.5403 7.10413L17.7671 5.81494C16.3607 5.11174 14.7199 4.64294 13.0791 4.64294C7.57078 4.64294 3 9.09652 3 14.7221C3 18.1209 4.64079 21.1681 7.45358 23.0432L7.57078 23.1604C7.80517 23.3948 7.92237 23.7464 7.92237 24.098V24.5668C7.92237 25.5044 8.62557 26.2076 9.56317 26.2076H16.2435C17.1811 26.2076 17.8843 25.5044 17.8843 24.5668V24.098C17.8843 23.8636 18.0015 23.6292 18.2359 23.512C21.1659 21.7541 23.1583 18.5897 23.2755 15.1909L21.0487 16.4801C20.4627 18.4725 19.1735 20.3477 17.4155 21.5197Z" fill="currentColor"/> </svg></span><span class="lbl">收获</span>
     </div>
   </div>
@@ -4197,25 +4310,25 @@ const MY_LEVEL_LADDER = [
 
 /* 勋章图标 · base64 内嵌（来源：输出 html/勋章图标/） */
 const MEDAL_ICONS = {
-  'challenge-cardio': 'images/04-img-01-b6278e5e.png',
-  'challenge-generic-upgrade': 'images/04-img-02-2f93eb9c.png',
-  'challenge-hydration': 'images/04-img-03-232a0534.png',
-  'challenge-walk': 'images/04-img-04-719eeca9.png',
-  'metric-hrv': 'images/04-img-05-8901e21a.png',
-  'metric-recovery': 'images/04-img-06-5e364cf7.png',
-  'metric-sleep': 'images/04-img-07-bc1e2f81.png',
-  'metric-steps': 'images/04-img-08-841dfaf0.png',
-  'metric-stress': 'images/04-img-09-88c2d20d.png',
-  'onboarding-ring-connect': 'images/04-img-10-bfeeee8b.png',
-  'ring-bronze': 'images/04-img-11-99e8ce23.png',
-  'ring-gold': 'images/04-img-12-b051a28f.png',
-  'ring-silver': 'images/04-img-13-39c3bcf5.png',
-  'challenge-sleep': 'images/04-img-14-67c0dd22.png',
-  'challenge-burn': 'images/04-img-15-dbaf7023.png',
-  'challenge-meds': 'images/04-img-16-2e5ed7df.png',
-  'metric-spo2': 'images/04-img-17-0fe9fdd8.png',
-  'metric-temp': 'images/04-img-18-6afe10e7.png',
-  'metric-rhr': 'images/04-img-19-b46a8f72.png',
+  'challenge-cardio': 'images/04-img-b6278e5e.png',
+  'challenge-generic-upgrade': 'images/04-img-2f93eb9c.png',
+  'challenge-hydration': 'images/04-img-232a0534.png',
+  'challenge-walk': 'images/04-img-719eeca9.png',
+  'metric-hrv': 'images/04-img-8901e21a.png',
+  'metric-recovery': 'images/04-img-5e364cf7.png',
+  'metric-sleep': 'images/04-img-bc1e2f81.png',
+  'metric-steps': 'images/04-img-841dfaf0.png',
+  'metric-stress': 'images/04-img-88c2d20d.png',
+  'onboarding-ring-connect': 'images/04-img-bfeeee8b.png',
+  'ring-bronze': 'images/04-img-99e8ce23.png',
+  'ring-gold': 'images/04-img-b051a28f.png',
+  'ring-silver': 'images/04-img-39c3bcf5.png',
+  'challenge-sleep': 'images/04-img-67c0dd22.png',
+  'challenge-burn': 'images/04-img-dbaf7023.png',
+  'challenge-meds': 'images/04-img-2e5ed7df.png',
+  'metric-spo2': 'images/04-img-0fe9fdd8.png',
+  'metric-temp': 'images/04-img-6afe10e7.png',
+  'metric-rhr': 'images/04-img-b46a8f72.png',
 };
 
 const MEDAL_ICON_BASE_DIR = './勋章新图标/';
@@ -4258,6 +4371,11 @@ const MEDAL_ICON_VARIANT_STEMS = {
   'metric-recovery': '身体恢复度',
   'metric-sleep': '睡眠',
   'metric-steps': '步数',
+  'milestone-steps': '步数里程碑',
+  'milestone-hydration': '喝水里程碑',
+  'milestone-burn': '消耗里程碑',
+  'milestone-stand': '站立里程碑',
+  'milestone-cardio': '心肺锻炼',
   'metric-hrv': 'hrv',
   'metric-spo2': '血氧'
 };
@@ -4308,6 +4426,11 @@ Object.assign(MEDAL_ICONS, {
   'metric-recovery': medalIconFile('身体恢复度01.png'),
   'metric-sleep': medalIconFile('睡眠01.png'),
   'metric-steps': medalIconFile('步数01.png'),
+  'milestone-steps': medalIconFile('步数里程碑01.png'),
+  'milestone-hydration': medalIconFile('喝水里程碑01.png'),
+  'milestone-burn': medalIconFile('消耗里程碑01.png'),
+  'milestone-stand': medalIconFile('站立里程碑01.png'),
+  'milestone-cardio': medalIconFile('心肺锻炼01.png'),
   'metric-hrv': medalIconFile('hrv01.png'),
   'metric-spo2': medalIconFile('血氧01.png')
 });
@@ -4462,6 +4585,51 @@ const MEDAL_SERIES = {
         { level:'L3', name:'站立稳定者',   rule:'累计完成 15 次', obtained:false, obtainedAt:'' },
         { level:'L4', name:'站立守律者',   rule:'累计完成 30 次', obtained:false, obtainedAt:'' },
         { level:'L5', name:'站立节律大师', rule:'累计完成 60 次', obtained:false, obtainedAt:'' }
+      ]
+    },
+    { id:'milestone-steps', title:'步行里程碑', desc:'单日突破与长期累计并行', iconKey:'milestone-steps',
+      levels:[
+        { level:'L1', name:'万步启程者',     rule:'单日步行达到 10000 步',    obtained:true,  obtainedAt:'2026/02/09' },
+        { level:'L2', name:'两万步突破者',   rule:'单日步行达到 20000 步',    obtained:false, obtainedAt:'' },
+        { level:'L3', name:'十万步积行者',   rule:'累计步行达到 100000 步',   obtained:true,  obtainedAt:'2026/03/05' },
+        { level:'L4', name:'五十万步远行者', rule:'累计步行达到 500000 步',   obtained:false, obtainedAt:'' },
+        { level:'L5', name:'百万步征途者',   rule:'累计步行达到 1000000 步',  obtained:false, obtainedAt:'' }
+      ]
+    },
+    { id:'milestone-burn', title:'消耗里程碑', desc:'燃烧峰值与累计消耗成就', iconKey:'milestone-burn',
+      levels:[
+        { level:'L1', name:'燃烧起势者',    rule:'单日消耗达到 500 千卡',     obtained:true,  obtainedAt:'2026/03/12' },
+        { level:'L2', name:'千卡突破者',    rule:'单日消耗达到 1000 千卡',    obtained:false, obtainedAt:'' },
+        { level:'L3', name:'万卡积燃者',    rule:'累计消耗达到 10000 千卡',   obtained:false, obtainedAt:'' },
+        { level:'L4', name:'五万卡强能者',  rule:'累计消耗达到 50000 千卡',   obtained:false, obtainedAt:'' },
+        { level:'L5', name:'十万卡王者',    rule:'累计消耗达到 100000 千卡',  obtained:false, obtainedAt:'' }
+      ]
+    },
+    { id:'milestone-stand', title:'站立里程碑', desc:'从站立习惯到长期节律养成', iconKey:'milestone-stand',
+      levels:[
+        { level:'L1', name:'站立五十次达成者',   rule:'累计站立达到 50 次',    obtained:true,  obtainedAt:'2026/03/08' },
+        { level:'L2', name:'站立两百次守护者',   rule:'累计站立达到 200 次',   obtained:false, obtainedAt:'' },
+        { level:'L3', name:'站立五百次稳定者',   rule:'累计站立达到 500 次',   obtained:false, obtainedAt:'' },
+        { level:'L4', name:'站立千次进阶者',     rule:'累计站立达到 1000 次',  obtained:false, obtainedAt:'' },
+        { level:'L5', name:'站立两千次节律大师', rule:'累计站立达到 2000 次',  obtained:false, obtainedAt:'' }
+      ]
+    },
+    { id:'milestone-cardio', title:'心肺锻炼里程碑', desc:'单次训练突破与总量积累', iconKey:'milestone-cardio',
+      levels:[
+        { level:'L1', name:'心肺十分钟起步者',   rule:'单次心肺锻炼达到 10 分钟',    obtained:true,  obtainedAt:'2026/03/18' },
+        { level:'L2', name:'心肺三十分钟突破者', rule:'单次心肺锻炼达到 30 分钟',    obtained:true,  obtainedAt:'2026/03/22' },
+        { level:'L3', name:'心肺百分钟积能者',   rule:'累计心肺锻炼达到 100 分钟',    obtained:false, obtainedAt:'' },
+        { level:'L4', name:'心肺千分钟强韧者',   rule:'累计心肺锻炼达到 1000 分钟',   obtained:false, obtainedAt:'' },
+        { level:'L5', name:'心肺万分钟大师',     rule:'累计心肺锻炼达到 10000 分钟',  obtained:false, obtainedAt:'' }
+      ]
+    },
+    { id:'milestone-hydration', title:'喝水里程碑', desc:'单日补水突破与长期补水积累', iconKey:'milestone-hydration',
+      levels:[
+        { level:'L1', name:'喝水起步者',      rule:'单日喝水 1万毫升',         obtained:true,  obtainedAt:'2026/02/26' },
+        { level:'L2', name:'喝水突破者',      rule:'单日喝水 1万毫升',         obtained:false, obtainedAt:'' },
+        { level:'L3', name:'补水十万稳定者',  rule:'累计完成喝水10 万毫升',    obtained:true,  obtainedAt:'2026/03/16' },
+        { level:'L4', name:'补水五十万守护者', rule:'累计完成喝水50 万毫升',    obtained:false, obtainedAt:'' },
+        { level:'L5', name:'补水百万大师',    rule:'累计完成喝水100 万毫升',   obtained:false, obtainedAt:'' }
       ]
     },
     { id:'ring-gold', title:'金牌系列', desc:'当天结算为金牌时累计', iconKey:'ring-gold',
@@ -6123,6 +6291,15 @@ renderStoryList();
   const cid = p.get('cid');
   const inviter = p.get('inviter');
   const focus = p.get('focus');
+  const openMedals = p.get('openMedals');
+
+  // 来自 05 收获模块的"我的勋章"直跳：立即（不延时）打开 overlay 并改写 ‹ 返回为回收获
+  if (openMedals === '1' && typeof openMyMedals === 'function') {
+    openMyMedals();
+    const backBtn = document.querySelector('#myMedalsOverlay .ov-back');
+    if (backBtn) backBtn.setAttribute('onclick', "window.location.href='05-收获模块.html'");
+    return;
+  }
 
   setTimeout(() => {
     if (cid && typeof openChallenge === 'function') {
