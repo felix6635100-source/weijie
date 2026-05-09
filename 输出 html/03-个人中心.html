@@ -3390,6 +3390,9 @@
       <div class="nav-item" data-page="P5.theme">
         <span class="nav-id">P5·θ</span><span class="nav-name">外观 · 主题切换三选一</span><span class="nav-tag tag-act">操作菜单</span>
       </div>
+      <div class="nav-item" data-page="P5.care">
+        <span class="nav-id">P5·关心</span><span class="nav-name">关心设置（社交标签 / 动态发送 / 显示范围）</span><span class="nav-tag tag-page">二级页面</span>
+      </div>
     </div>
 
     <div class="nav-section-label">消息中心</div>
@@ -3773,76 +3776,12 @@
     function pageP5() {
       const healthTags = ['高血压关注','糖尿病关注','备孕中','失眠','慢性病','减脂','增肌','孕期','哺乳期','老年关怀'];
       const selectedHealthTags = new Set(['失眠','减脂','慢性病']);
-      const socialTags = ['#步数挑战者','#早起伙伴','#饮水达人'];
-      const habits = [
-        // 7 个今日挑战，与《01-今日》T1 首页 7 张挑战卡完全对齐
-        { id:'walk',  icon:'🚶', name:'走路',  on:true,  show:'"今日步数目标已达成"',          hide:'具体步数 / 路线 / 配速',     theme:'walk',  cardTitle:'完成步数挑战', cardTag:'🚶 8,000 步目标',  cardStatus:'已完成', percent:'100%', progress:100, desc:'今日步数目标已达成 · 中低强度活动稳定保持' },
-        { id:'sleep', icon:'😴', name:'睡眠',  on:true,  show:'"22:30 前入睡 ✓" + 时长区间', hide:'具体入睡 / 起床时间、深睡比例', theme:'sleep', cardTitle:'修复深度睡眠', cardTag:'😴 22:30 前入睡',   cardStatus:'已完成', percent:'100%', progress:100, desc:'昨晚睡眠目标已达成 · 深度修复节奏保持稳定' },
-        { id:'burn',  icon:'🔥', name:'消耗',  on:false, show:'"燃脂达 500 千卡 ✓" 徽章',     hide:'心率、运动时长、具体千卡值',  theme:'burn',  cardTitle:'点亮燃脂成就', cardTag:'🔥 500 千卡徽章',   cardStatus:'已完成', percent:'100%', progress:100, desc:'今日燃脂达成 500 千卡目标 · 活跃消耗已补齐' },
-        { id:'water', icon:'💧', name:'喝水',  on:true,  show:'"今日饮水目标已达成"',         hide:'具体饮水量 / 时间分布',       theme:'water', cardTitle:'今日饮水目标', cardTag:'💧 8 杯水目标',     cardStatus:'已完成', percent:'100%', progress:100, desc:'今日饮水目标已达成 · 补水节奏稳定' },
-        { id:'run',   icon:'🏃', name:'跑步',  on:true,  show:'"3 公里慢跑 ✓"',                 hide:'具体配速 / 心率 / 路线',      theme:'burn',  cardTitle:'完成今日跑步', cardTag:'🏃 3 公里慢跑',     cardStatus:'已完成', percent:'100%', progress:100, desc:'今日跑步目标已达成 · 配速稳定' },
-        { id:'stand', icon:'🧍', name:'站立',  on:false, show:'"每小时起身 ✓ 12 小时全部站满"', hide:'每小时具体起身次数 / 时长',  theme:'sleep', cardTitle:'达成站立目标', cardTag:'🧍 12 小时站立',    cardStatus:'已完成', percent:'100%', progress:100, desc:'今日站立目标已达成 · 12 小时全部站满' },
-        { id:'med',   icon:'💊', name:'吃药',  on:false, show:'"按时打卡 ✓" + 累计天数',       hide:'药品名称、剂量、服药时间',    theme:'med',   cardTitle:'坚持按时打卡', cardTag:'💊 吃药打卡习惯',   cardStatus:'已完成', percent:'100%', progress:100, desc:'今日按时打卡已完成 · 累计 18 天 · 用药习惯保持稳定' }
-      ];
-
-      const habitRows = habits.map(h => `
-        <div class="profile-row-share ${h.on?'is-on':''}" data-habit="${h.id}">
-          <div class="profile-row-share-head">
-            <div class="profile-row-icon">${h.icon}</div>
-            <div class="profile-row-main">
-              <div class="profile-row-label">${h.name}</div>
-            </div>
-            <button class="profile-toggle ${h.on?'on':''}" type="button" aria-label="开关 ${h.name}"></button>
-          </div>
-          <div class="profile-share-detail">
-            <div class="profile-share-line is-show"><span class="profile-share-dot ok"></span><span><strong>仅显示：</strong>${h.show}</span></div>
-            <div class="profile-share-line is-hide"><span class="profile-share-dot no"></span><span><strong>不显示：</strong>${h.hide}</span></div>
-          </div>
-          <div class="profile-share-preview">
-            <div class="profile-share-preview-note">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
-              <span>好友在「关心圈」会看到</span>
-            </div>
-            <div class="profile-share-preview-card theme-${h.theme}">
-              <div class="profile-share-preview-top">
-                <div class="profile-share-preview-icon">${h.icon}</div>
-                <div class="profile-share-preview-main">
-                  <div class="profile-share-preview-title">${h.cardTitle}</div>
-                  <div class="profile-share-preview-tag">${h.cardTag}</div>
-                </div>
-                <div class="profile-share-preview-status">${h.cardStatus}</div>
-              </div>
-              <div class="profile-share-preview-bar-row">
-                <div class="profile-share-preview-bar">
-                  <div class="profile-share-preview-bar-fill" style="width:${h.progress}%"></div>
-                </div>
-                <div class="profile-share-preview-percent">${h.percent}</div>
-              </div>
-              <div class="profile-share-preview-desc">${h.desc}</div>
-            </div>
-          </div>
-        </div>`).join('');
-
       return `
         ${statusBar()}
         ${topbarSecondary('个人设置', 'T1.full')}
         <div class="scroll-area">
           <div class="profile-page">
             <div class="profile-body">
-
-              <!-- 消息与通知（P7 入口） -->
-              <div class="profile-section-title">消息与通知</div>
-              <div class="profile-section">
-                <div class="profile-row profile-msg-row" data-goto="P7">
-                  <div class="profile-row-icon"><svg viewBox="0 0 48 48" width="22" height="22" aria-hidden="true" style="display:block"><path fill="currentColor" d="M7,38 L7.00004975,37.9645627 C5.30387842,37.7219693 4,36.2632532 4,34.5 L4,32.6568542 C4,31.5959883 4.42142736,30.5785726 5.17157288,29.8284271 L7,28 L7,21 C7,11.6111593 14.6111593,4 24,4 C33.3888407,4 41,11.6111593 41,21 L41,28 L42.8284271,29.8284271 C43.5785726,30.5785726 44,31.5959883 44,32.6568542 L44,34.5 C44,36.2629068 42.6966339,37.7213961 41.0009499,37.9644196 L41,38 L30.9290789,38.0002251 C30.4437524,41.3924095 27.5263939,44 24,44 C20.4736061,44 17.5562476,41.3924095 17.0709211,38.0002251 L7,38 Z M27.8737446,38.0009238 L20.125,38 L20.1799062,38.189716 C20.6864262,39.8178673 22.2051622,41 24,41 C25.794488,41 27.3129817,39.8183281 27.8197974,38.1906681 L27.8737446,38.0009238 Z M24,7 C16.3724998,7 10.1696731,13.0997524 10.003422,20.687355 L10,21 L10,29.0769553 C10,29.1830419 9.95785726,29.2847834 9.88284271,29.359798 L7.29289322,31.9497475 L7.29289322,31.9497475 C7.1366129,32.1060278 7.03740171,32.3087092 7.00867243,32.5254103 L7,32.6568542 L7,34.5 C7,34.7178229 7.14158244,34.9070074 7.33767609,34.9738837 L7.4247998,34.9947837 L7.466,35 L40.533,35 L40.5753422,34.9947633 C40.7851759,34.9646902 40.9529292,34.7989963 40.9915889,34.5913076 L41,34.5 L41,32.6568542 C41,32.4358405 40.9268355,32.2223702 40.7939194,32.0488247 L40.7071068,31.9497475 L38.1171573,29.359798 C38.0421427,29.2847834 38,29.1830419 38,29.0769553 L38,21 C38,13.2680135 31.7319865,7 24,7 Z"/></svg></div>
-                  <div class="profile-row-main">
-                    <div class="profile-row-label">消息中心</div>
-                    <div class="profile-row-sub">好友 / 挑战 / 健康 / 系统</div>
-                  </div>
-                  <span class="profile-row-badge">12</span>
-                  <span class="profile-row-arrow">›</span>
-                </div>
-              </div>
 
               <!-- 外观（v2.1 主题切换从顶栏下沉） -->
               <div class="profile-section-title">外观</div>
@@ -3920,86 +3859,15 @@
                 </div>
               </div>
 
+              <!-- 关心设置（聚合 4 个子设置 → P5.care 子页面，v2.5） -->
+              <div class="profile-section-title">关心圈</div>
               <div class="profile-section">
-                <div class="profile-section-with-tags">
-                  <div class="profile-section-head">
-                    <span class="profile-section-head-title">社交标签</span>
-                    <span class="profile-section-head-sub">根据当前挑战自动生成</span>
-                  </div>
-                  <div class="profile-tags-list">
-                    ${socialTags.map(t=>`<span class="profile-tag-chip social">${t}</span>`).join('')}
-                  </div>
-                </div>
-              </div>
-
-              <!-- 完成今日挑战发送至好友动态（v2.4 由"动态发送到关心圈"改名 · 7 项与 01 对齐） -->
-              <div class="profile-section-title">完成今日挑战发送至好友动态</div>
-              <div class="notice-bar">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="12"/><circle cx="12" cy="16" r="0.5" fill="currentColor"/></svg>
-                <span>每个挑战<strong>完成时</strong>自动发送 1 条动态到关心圈；为保护身体指标隐私，<strong>仅展示完成状态与进度</strong>，不展示具体数值与时间细节。</span>
-              </div>
-              <div class="profile-share-list">
-                ${habitRows}
-              </div>
-
-              <!-- 练级挑战发送至好友动态（v2.5 全局开关 + 时机可多选 + 25% 进度预览卡） -->
-              <div class="profile-section-title">练级挑战发送至好友动态</div>
-              <div class="profile-share-list">
-                <div class="profile-row-share is-on" data-level-share-toggle>
-                  <div class="profile-row-share-head">
-                    <div class="profile-row-icon">🏅</div>
-                    <div class="profile-row-main">
-                      <div class="profile-row-label">自动发送练级挑战动态</div>
-                      <div class="profile-row-sub" style="font-size:var(--font-xs);color:var(--color-text-secondary);margin-top:2px;line-height:1.5">开启后，加入练级挑战后将根据进度自动发动态。</div>
-                    </div>
-                    <button class="profile-toggle on" type="button" aria-label="自动发送练级挑战动态"></button>
-                  </div>
-                  <div class="profile-share-detail">
-                    <div class="profile-share-line is-show" style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
-                      <span style="margin-right:2px"><strong>发送时机：</strong></span>
-                      <span class="milestone-chip is-active" data-milestone="joined">✓ 加入时</span>
-                      <span class="milestone-chip is-active" data-milestone="25">✓ 25%</span>
-                      <span class="milestone-chip is-active" data-milestone="50">✓ 50%</span>
-                      <span class="milestone-chip is-active" data-milestone="75">✓ 75%</span>
-                      <span class="milestone-chip is-active" data-milestone="100">✓ 100%</span>
-                    </div>
-                  </div>
-                  <div class="profile-share-preview">
-                    <div class="profile-share-preview-note">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
-                      <span>好友在「关心圈」会看到</span>
-                    </div>
-                    <div class="profile-share-preview-card theme-burn">
-                      <div class="profile-share-preview-top">
-                        <div class="profile-share-preview-icon">🌸</div>
-                        <div class="profile-share-preview-main">
-                          <div class="profile-share-preview-title">樱花漫步 · 30 天 50 公里</div>
-                          <div class="profile-share-preview-tag">⏳ 25% 里程碑</div>
-                        </div>
-                        <div class="profile-share-preview-status">进行中</div>
-                      </div>
-                      <div class="profile-share-preview-bar-row">
-                        <div class="profile-share-preview-bar">
-                          <div class="profile-share-preview-bar-fill" style="width:25%"></div>
-                        </div>
-                        <div class="profile-share-preview-percent">25%</div>
-                      </div>
-                      <div class="profile-share-preview-desc">练级挑战 · 已完成 25% 里程碑 · 仅展示进度，不展示具体公里数与配速</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- 动态显示范围 -->
-              <div class="profile-section-title">谁可以看到我的动态</div>
-              <div class="profile-section">
-                <div class="profile-row" data-goto="P5.4">
-                  <div class="profile-row-icon">👥</div>
+                <div class="profile-row" data-goto="P5.care">
+                  <div class="profile-row-icon">💞</div>
                   <div class="profile-row-main">
-                    <div class="profile-row-label">谁可以看到我的动态</div>
-                    <div class="profile-row-sub">控制关心圈中谁能看到你的挑战完成状态</div>
+                    <div class="profile-row-label">关心设置</div>
+                    <div class="profile-row-sub">社交标签 / 动态发送 / 谁可以看到我的动态</div>
                   </div>
-                  <div class="profile-row-value">${profileState.shareAudience}</div>
                   <span class="profile-row-arrow">›</span>
                 </div>
               </div>
@@ -4184,6 +4052,153 @@
         </div>`;
     }
 
+    // === P5.care 关心设置（v2.5：把"社交标签 / 动态发送 / 显示范围"4 个 section 移到独立子页） ===
+    function pageP5Care() {
+      const socialTags = ['#步数挑战者','#早起伙伴','#饮水达人'];
+      const habits = [
+        { id:'walk',  icon:'🚶', name:'走路',  on:true,  show:'"今日步数目标已达成"',          hide:'具体步数 / 路线 / 配速',     theme:'walk',  cardTitle:'完成步数挑战', cardTag:'🚶 8,000 步目标',  cardStatus:'已完成', percent:'100%', progress:100, desc:'今日步数目标已达成 · 中低强度活动稳定保持' },
+        { id:'sleep', icon:'😴', name:'睡眠',  on:true,  show:'"22:30 前入睡 ✓" + 时长区间', hide:'具体入睡 / 起床时间、深睡比例', theme:'sleep', cardTitle:'修复深度睡眠', cardTag:'😴 22:30 前入睡',   cardStatus:'已完成', percent:'100%', progress:100, desc:'昨晚睡眠目标已达成 · 深度修复节奏保持稳定' },
+        { id:'burn',  icon:'🔥', name:'消耗',  on:false, show:'"燃脂达 500 千卡 ✓" 徽章',     hide:'心率、运动时长、具体千卡值',  theme:'burn',  cardTitle:'点亮燃脂成就', cardTag:'🔥 500 千卡徽章',   cardStatus:'已完成', percent:'100%', progress:100, desc:'今日燃脂达成 500 千卡目标 · 活跃消耗已补齐' },
+        { id:'water', icon:'💧', name:'喝水',  on:true,  show:'"今日饮水目标已达成"',         hide:'具体饮水量 / 时间分布',       theme:'water', cardTitle:'今日饮水目标', cardTag:'💧 8 杯水目标',     cardStatus:'已完成', percent:'100%', progress:100, desc:'今日饮水目标已达成 · 补水节奏稳定' },
+        { id:'run',   icon:'🏃', name:'跑步',  on:true,  show:'"3 公里慢跑 ✓"',                 hide:'具体配速 / 心率 / 路线',      theme:'burn',  cardTitle:'完成今日跑步', cardTag:'🏃 3 公里慢跑',     cardStatus:'已完成', percent:'100%', progress:100, desc:'今日跑步目标已达成 · 配速稳定' },
+        { id:'stand', icon:'🧍', name:'站立',  on:false, show:'"每小时起身 ✓ 12 小时全部站满"', hide:'每小时具体起身次数 / 时长',  theme:'sleep', cardTitle:'达成站立目标', cardTag:'🧍 12 小时站立',    cardStatus:'已完成', percent:'100%', progress:100, desc:'今日站立目标已达成 · 12 小时全部站满' },
+        { id:'med',   icon:'💊', name:'吃药',  on:false, show:'"按时打卡 ✓" + 累计天数',       hide:'药品名称、剂量、服药时间',    theme:'med',   cardTitle:'坚持按时打卡', cardTag:'💊 吃药打卡习惯',   cardStatus:'已完成', percent:'100%', progress:100, desc:'今日按时打卡已完成 · 累计 18 天 · 用药习惯保持稳定' }
+      ];
+      const habitRows = habits.map(h => `
+        <div class="profile-row-share ${h.on?'is-on':''}" data-habit="${h.id}">
+          <div class="profile-row-share-head">
+            <div class="profile-row-icon">${h.icon}</div>
+            <div class="profile-row-main">
+              <div class="profile-row-label">${h.name}</div>
+            </div>
+            <button class="profile-toggle ${h.on?'on':''}" type="button" aria-label="开关 ${h.name}"></button>
+          </div>
+          <div class="profile-share-detail">
+            <div class="profile-share-line is-show"><span class="profile-share-dot ok"></span><span><strong>仅显示：</strong>${h.show}</span></div>
+            <div class="profile-share-line is-hide"><span class="profile-share-dot no"></span><span><strong>不显示：</strong>${h.hide}</span></div>
+          </div>
+          <div class="profile-share-preview">
+            <div class="profile-share-preview-note">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+              <span>好友在「关心圈」会看到</span>
+            </div>
+            <div class="profile-share-preview-card theme-${h.theme}">
+              <div class="profile-share-preview-top">
+                <div class="profile-share-preview-icon">${h.icon}</div>
+                <div class="profile-share-preview-main">
+                  <div class="profile-share-preview-title">${h.cardTitle}</div>
+                  <div class="profile-share-preview-tag">${h.cardTag}</div>
+                </div>
+                <div class="profile-share-preview-status">${h.cardStatus}</div>
+              </div>
+              <div class="profile-share-preview-bar-row">
+                <div class="profile-share-preview-bar">
+                  <div class="profile-share-preview-bar-fill" style="width:${h.progress}%"></div>
+                </div>
+                <div class="profile-share-preview-percent">${h.percent}</div>
+              </div>
+              <div class="profile-share-preview-desc">${h.desc}</div>
+            </div>
+          </div>
+        </div>`).join('');
+
+      return `
+        ${statusBar()}
+        ${topbarSecondary('关心设置', 'P5')}
+        <div class="scroll-area">
+          <div class="profile-page">
+            <div class="profile-body">
+
+              <!-- 社交标签（v2.6：上方加独立小标题，与其它 section 风格统一） -->
+              <div class="profile-section-title">社交标签</div>
+              <div class="profile-section">
+                <div class="profile-section-with-tags">
+                  <div class="profile-section-head">
+                    <span class="profile-section-head-sub" style="margin-left:auto">根据当前挑战自动生成</span>
+                  </div>
+                  <div class="profile-tags-list">
+                    ${socialTags.map(t=>`<span class="profile-tag-chip social">${t}</span>`).join('')}
+                  </div>
+                </div>
+              </div>
+
+              <!-- 完成今日挑战发送至好友动态 -->
+              <div class="profile-section-title">完成今日挑战发送至好友动态</div>
+              <div class="notice-bar">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="12"/><circle cx="12" cy="16" r="0.5" fill="currentColor"/></svg>
+                <span>每个挑战<strong>完成时</strong>自动发送 1 条动态到关心圈；为保护身体指标隐私，<strong>仅展示完成状态与进度</strong>，不展示具体数值与时间细节。</span>
+              </div>
+              <div class="profile-share-list">
+                ${habitRows}
+              </div>
+
+              <!-- 练级挑战发送至好友动态 -->
+              <div class="profile-section-title">练级挑战发送至好友动态</div>
+              <div class="profile-share-list">
+                <div class="profile-row-share is-on" data-level-share-toggle>
+                  <div class="profile-row-share-head">
+                    <div class="profile-row-icon">🏅</div>
+                    <div class="profile-row-main">
+                      <div class="profile-row-label">自动发送练级挑战动态</div>
+                      <div class="profile-row-sub" style="font-size:var(--font-xs);color:var(--color-text-secondary);margin-top:2px;line-height:1.5">开启后，加入练级挑战后将根据进度自动发动态。</div>
+                    </div>
+                    <button class="profile-toggle on" type="button" aria-label="自动发送练级挑战动态"></button>
+                  </div>
+                  <div class="profile-share-detail">
+                    <div class="profile-share-line is-show" style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+                      <span style="margin-right:2px"><strong>发送时机：</strong></span>
+                      <span class="milestone-chip is-active" data-milestone="joined">✓ 加入时</span>
+                      <span class="milestone-chip is-active" data-milestone="25">✓ 25%</span>
+                      <span class="milestone-chip is-active" data-milestone="50">✓ 50%</span>
+                      <span class="milestone-chip is-active" data-milestone="75">✓ 75%</span>
+                      <span class="milestone-chip is-active" data-milestone="100">✓ 100%</span>
+                    </div>
+                  </div>
+                  <div class="profile-share-preview">
+                    <div class="profile-share-preview-note">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+                      <span>好友在「关心圈」会看到</span>
+                    </div>
+                    <div class="profile-share-preview-card theme-burn">
+                      <div class="profile-share-preview-top">
+                        <div class="profile-share-preview-icon">🌸</div>
+                        <div class="profile-share-preview-main">
+                          <div class="profile-share-preview-title">樱花漫步 · 30 天 50 公里</div>
+                          <div class="profile-share-preview-tag">⏳ 25% 里程碑</div>
+                        </div>
+                        <div class="profile-share-preview-status">进行中</div>
+                      </div>
+                      <div class="profile-share-preview-bar-row">
+                        <div class="profile-share-preview-bar">
+                          <div class="profile-share-preview-bar-fill" style="width:25%"></div>
+                        </div>
+                        <div class="profile-share-preview-percent">25%</div>
+                      </div>
+                      <div class="profile-share-preview-desc">练级挑战 · 已完成 25% 里程碑 · 仅展示进度，不展示具体公里数与配速</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 谁可以看到我的动态 -->
+              <div class="profile-section-title">谁可以看到我的动态</div>
+              <div class="profile-section">
+                <div class="profile-row" data-goto="P5.4">
+                  <div class="profile-row-icon">👥</div>
+                  <div class="profile-row-main">
+                    <div class="profile-row-label">谁可以看到我的动态</div>
+                    <div class="profile-row-sub">控制关心圈中谁能看到你的挑战完成状态</div>
+                  </div>
+                  <div class="profile-row-value">${profileState.shareAudience}</div>
+                  <span class="profile-row-arrow">›</span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>`;
+    }
+
     // === P5.theme 主题切换三选一（操作菜单） ===
     function pageP5Theme() {
       const options = [
@@ -4236,9 +4251,14 @@
     // 单条消息：左圆形彩色图标 + 中标题副文 + 右时间 + 行内动作
     // 隐私铁律：健康类不暴露原始数值，符合《00-设计规范》§ 10
     function topbarMsgCenter() {
+      // 返回到进入前的页面（v2.5）：
+      // - 从一级页面顶栏 🔔 进 → sessionStorage 'p7-from' = 'ext:01-今日模块.html' / ext:02 / ext:04
+      // - 从 03 P5 → sessionStorage 'p7-from' = 'P5'
+      // - 默认 fallback 'P5'
+      const back = (typeof sessionStorage !== 'undefined' && sessionStorage.getItem('p7-from')) || 'P5';
       return `
         <div class="app-topbar">
-          <button class="app-topbar-back" type="button" data-goto="P5" aria-label="返回">
+          <button class="app-topbar-back" type="button" data-goto="${back}" aria-label="返回">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
           </button>
           <div class="app-topbar-center"><div class="app-topbar-title">消息中心</div></div>
@@ -5062,6 +5082,7 @@
       'P5.3': pageP53,
       'P5.4': pageP54,
       'P5.5': pageP55,
+      'P5.care':  pageP5Care,
       'P5.theme': pageP5Theme,
       'P7':       pageP7,
       'P7.read':  pageP7Read,
@@ -5127,7 +5148,38 @@
     }
 
     // 切到指定 page，并同步左侧导航高亮
-    function navigateTo(key) {
+    let lastNavigateKey = null;  // v2.5：追踪上一个渲染页，用于 P7.detail 深层栈
+    const P7_DETAIL_RETURN_PAGES = new Set(['P5', 'T1.full', 'T1.connected', 'T1.init']);
+
+    function navigateTo(key, options) {
+      const opts = options || {};
+      if (typeof sessionStorage !== 'undefined' && !opts.skipP7Hook) {
+        // P7 来源管理（v2.5）
+        // 1) 进入 P7 时，如果来源还没记录，标记为 'P5'（说明是从 03 内部跳的）
+        if (key === 'P7' && !sessionStorage.getItem('p7-from')) {
+          sessionStorage.setItem('p7-from', 'P5');
+        }
+        // 2) 跳到非 P7 / P7.* 时清除 p7-from（用户已离开 P7 上下文）
+        //    例外：从 P7.detail.* 跳到目的页（深层栈），仍保留 p7-from，因为 P7 上下文未离开
+        if (key && key !== 'P7' && !String(key).startsWith('P7.')) {
+          const fromDetail = lastNavigateKey && String(lastNavigateKey).startsWith('P7.detail.');
+          if (!fromDetail) {
+            sessionStorage.removeItem('p7-from');
+          }
+        }
+        // 3) P7.detail 深层栈管理：从 P7.detail.* 跳到非 P7 / P7.* / ext: 的目的页 → 记下当前 detail key
+        if (lastNavigateKey && String(lastNavigateKey).startsWith('P7.detail.')) {
+          if (key && key !== 'P7' && !String(key).startsWith('P7.') && !String(key).startsWith('ext:')) {
+            sessionStorage.setItem('p7-detail-from', lastNavigateKey);
+          }
+        }
+        // 4) 叶子目的页 ‹ 返回（默认目标如 P5 / T1.*）→ 拦截并重定向回 P7.detail.*
+        const detailFrom = sessionStorage.getItem('p7-detail-from');
+        if (detailFrom && P7_DETAIL_RETURN_PAGES.has(key)) {
+          sessionStorage.removeItem('p7-detail-from');
+          return navigateTo(detailFrom, { skipP7Hook: true });
+        }
+      }
       // ext: 前缀 → 外部 URL 跳转（用于 P7 直跳目的页：跨文件 01/02/04）
       if (typeof key === 'string' && key.startsWith('ext:')) {
         window.location.href = key.slice(4);
@@ -5142,6 +5194,7 @@
         i.classList.toggle('is-active', i.dataset.page === key);
       });
       renderPage(key);
+      lastNavigateKey = key;  // 渲染成功后才记录
     }
 
     function renderPage(key) {

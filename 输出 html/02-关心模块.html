@@ -3022,10 +3022,14 @@
   }
 
   // v1.9 起：顶栏第一按钮改为 🔔 消息中心 → 跳《03-个人中心》P7
+  // v2.5 起：跳前记录来源，让 P7 ‹ 返回时回到这里（而不是默认 P5）
   function onMsgCenterClick(){
     const target = activeCareState === 'logged-out'
       ? '03-个人中心.html?page=P1.1'
       : '03-个人中心.html?page=P7';
+    if (target.includes('page=P7')) {
+      try { sessionStorage.setItem('p7-from', 'ext:02-关心模块.html'); } catch(_) {}
+    }
     window.location.href = target;
   }
 

@@ -5747,7 +5747,9 @@ function goToProfilePage(){
   window.location.href = '03-个人中心.html?page=P5';
 }
 // v1.9 起：顶栏第一按钮改为 🔔 消息中心 → 跳《03-个人中心》P7
+// v2.5 起：跳前记录来源，让 P7 ‹ 返回时回到这里（而不是默认 P5）
 function onMsgCenterClick(){
+  try { sessionStorage.setItem('p7-from', 'ext:04-练级模块.html'); } catch(_) {}
   window.location.href = '03-个人中心.html?page=P7';
 }
 function switchLbTab(el){

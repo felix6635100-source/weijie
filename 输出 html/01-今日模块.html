@@ -2227,6 +2227,71 @@ body.is-dark-mode .ios-status-bar .iss-battery::after { background: #fff; }
 .form-suggest .fs-emoji { font-size: 18px; }
 .form-suggest .fs-text { font-size: 12px; color: #6B4D00; line-height: 1.5; }
 
+.med-setting-card {
+  background: var(--color-bg-surface-muted);
+  border-radius: 18px;
+  padding: 14px;
+  margin-bottom: 8px;
+}
+.med-setting-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.med-setting-main {
+  min-width: 0;
+  flex: 1;
+}
+.med-setting-title {
+  font-size: var(--font-md);
+  font-weight: var(--weight-semi);
+}
+.med-setting-sub {
+  margin-top: 3px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.45;
+}
+.med-time-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 12px;
+}
+.med-time-card {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  min-height: 62px;
+  padding: 10px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  text-align: center;
+  box-shadow: 0 3px 10px rgba(15, 23, 42, 0.03);
+}
+.med-time-card:active {
+  transform: scale(0.98);
+}
+.med-time-value {
+  font-size: 18px;
+  line-height: 1;
+  font-weight: 700;
+  color: #6B7CFF;
+  letter-spacing: -0.02em;
+}
+.med-time-label {
+  font-size: 11px;
+  color: var(--text-secondary);
+  line-height: 1.2;
+}
+.med-time-grid.is-disabled {
+  opacity: 0.45;
+  pointer-events: none;
+}
+
 /* ==========================================================
    T6.3 / T6.4 / T7 滚轮选择器（参考 antd-mobile Picker 重写）
    ----------------------------------------------------------
@@ -3845,7 +3910,7 @@ body.is-dark-mode .ios-status-bar .iss-battery::after { background: #fff; }
         <div class="goal-list-row" onclick="openT62('消耗', '500 kcal')"><span class="gl-emoji">🔥</span><span class="gl-name">消耗</span><span class="gl-value">500 kcal</span><span class="gl-arrow">›</span></div>
         <div class="goal-list-row" onclick="openT62('喝水', '2,000 ml')"><span class="gl-emoji">💧</span><span class="gl-name">喝水</span><span class="gl-value">2,000 ml</span><span class="gl-arrow">›</span></div>
         <div class="goal-list-row" onclick="openT62('站立', '每小时一次')"><span class="gl-emoji">🧍</span><span class="gl-name">站立</span><span class="gl-value">每小时一次</span><span class="gl-arrow">›</span></div>
-        <div class="goal-list-row" onclick="openT62('跑步', '5 公里')"><span class="gl-emoji">🏃</span><span class="gl-name">跑步</span><span class="gl-value">5 公里</span><span class="gl-arrow">›</span></div>
+        <div class="goal-list-row" data-challenge="跑步" onclick="openT62('跑步', '5 公里')"><span class="gl-emoji">🏃</span><span class="gl-name">跑步</span><span class="gl-value">5 公里</span><span class="gl-arrow">›</span></div>
         <div class="goal-list-row" onclick="openT62('吃药', '今日服药计划')"><span class="gl-emoji">💊</span><span class="gl-name">吃药</span><span class="gl-value">今日服药计划</span><span class="gl-arrow">›</span></div>
       </div>
     </div>
@@ -3882,19 +3947,15 @@ body.is-dark-mode .ios-status-bar .iss-battery::after { background: #fff; }
 
         <!-- 用药提醒（仅吃药态显示） -->
         <div id="t62MedBlock" style="display:none">
-          <div class="form-row" style="cursor:default">
-            <div class="form-label">用药提醒</div>
-            <div class="ios-switch is-on" onclick="this.classList.toggle('is-on')"></div>
-          </div>
-          <div class="form-row" onclick="openPicker('time')">
-            <div class="form-label" style="font-weight:500">早 · 提醒时间</div>
-            <div class="form-value">08:00</div>
-            <div class="form-arrow">›</div>
-          </div>
-          <div class="form-row" onclick="openPicker('time')">
-            <div class="form-label" style="font-weight:500">晚 · 提醒时间</div>
-            <div class="form-value">18:00</div>
-            <div class="form-arrow">›</div>
+          <div class="med-setting-card">
+            <div class="med-setting-head">
+              <div class="med-setting-main">
+                <div class="med-setting-title">用药提醒</div>
+                <div class="med-setting-sub" id="t62MedSub">每日 2 次 · 自动分配。点击数字可修改</div>
+              </div>
+              <div class="ios-switch is-on" id="t62MedToggle" onclick="toggleT62MedReminder(this)"></div>
+            </div>
+            <div class="med-time-grid" id="t62MedTimeGrid"></div>
           </div>
         </div>
 
@@ -3943,11 +4004,11 @@ body.is-dark-mode .ios-status-bar .iss-battery::after { background: #fff; }
       <div class="picker-head">
         <span class="picker-cancel" onclick="closeSheet('sheetT623')">取消</span>
         <span class="picker-title">选择时间</span>
-        <span class="picker-confirm" onclick="closeSheet('sheetT623');toast('已更新')">完成</span>
+        <span class="picker-confirm" onclick="confirmT623()">完成</span>
       </div>
       <div class="picker-body picker-double">
         <div class="picker-highlight"></div>
-        <div class="picker-list">
+        <div class="picker-list" id="t623HourList">
           <div class="picker-cell">06</div>
           <div class="picker-cell">07</div>
           <div class="picker-cell is-selected">08</div>
@@ -3955,7 +4016,7 @@ body.is-dark-mode .ios-status-bar .iss-battery::after { background: #fff; }
           <div class="picker-cell">10</div>
         </div>
         <div class="colon">:</div>
-        <div class="picker-list">
+        <div class="picker-list" id="t623MinuteList">
           <div class="picker-cell">00</div>
           <div class="picker-cell">05</div>
           <div class="picker-cell is-selected">10</div>
@@ -4238,7 +4299,9 @@ function onProfileClick() {
 }
 
 // v1.9 起：顶栏第一按钮改为 🔔 消息中心 → 跳《03-个人中心》P7
+// v2.5 起：跳前记录来源，让 P7 ‹ 返回时回到这里（而不是默认 P5）
 function onMsgCenterClick() {
+  try { sessionStorage.setItem('p7-from', 'ext:01-今日模块.html'); } catch(_) {}
   window.location.href = '03-个人中心.html?page=P7';
 }
 
@@ -4700,7 +4763,7 @@ const T5_DOW = ['一','二','三','四','五','六','日'];
 function openChallenge(name) {
   const d = CHALLENGE_DATA[name] || CHALLENGE_DATA['走路'];
   const color = CHALLENGE_COLOR[name] || '#1FA86A';
-  const title = (name === '跑步') ? getCardioTypeConfig().displayName : name;
+  const title = (name === '跑步') ? getCardioChallengeTitle() : name;
   const heroEmoji = (name === '跑步') ? getCardioTypeConfig().emoji : d.emoji;
 
   // 标题 + Hero
@@ -4877,7 +4940,7 @@ function renderT5HistoryList(weekly, unit, goal) {
 /* T5 → T6.2（点击⚙）：在 T5 之上叠加 T6.2，不关闭 T5 */
 function openT62FromT5() {
   const title = document.getElementById('t5Title').textContent;
-  const name = (title === getCardioTypeConfig().displayName) ? '跑步' : title;
+  const name = isCardioChallengeTitle(title) ? '跑步' : title;
   // 取该挑战的当前目标值文案（如 "10,000 步"）
   const d = CHALLENGE_DATA[name];
   const current = d ? d.goal.replace(/^\/\s*/, '') : '当前目标';
@@ -4901,15 +4964,127 @@ const GOAL_RANGES = {
 };
 
 /** 当前 T6.2 编辑会话的暂存值（保存时才生效） */
-const t62Draft = { name: null, daily: null, week: null, exerciseType: '跑步' };
+const t62Draft = { name: null, daily: null, week: null, exerciseType: '跑步', medEnabled: true, medTimes: [] };
+const DEFAULT_MED_TIMES = ['08:00', '11:00', '14:00', '17:00', '20:00', '22:00'];
+const t623Ctx = { type: null, index: -1, hour: 8, minute: 0 };
 
 function getCardioTypeConfig(type = currentExerciseType) {
   return CARDIO_TYPE_CONFIG[type] || CARDIO_TYPE_CONFIG['跑步'];
 }
 
+function getCardioChallengeTitle(type = currentExerciseType) {
+  return '心肺锻炼-' + getCardioTypeConfig(type).displayName;
+}
+
+function isCardioChallengeTitle(title) {
+  return typeof title === 'string' && title.indexOf('心肺锻炼-') === 0;
+}
+
 function getGoalRangeSet(name, exerciseType = currentExerciseType) {
   if (name === '跑步') return CARDIO_GOAL_RANGES[exerciseType] || CARDIO_GOAL_RANGES['跑步'];
   return GOAL_RANGES[name] || GOAL_RANGES['走路'];
+}
+
+function getMedicineTimesForCount(count, existing = []) {
+  const safeCount = Math.max(1, Math.min(6, Number(count || 1)));
+  const next = [];
+  for (let i = 0; i < safeCount; i++) {
+    next.push(existing[i] || DEFAULT_MED_TIMES[i] || '08:00');
+  }
+  return next;
+}
+
+function getMedicinePeriodLabel(timeText) {
+  const hour = Number(String(timeText || '08:00').split(':')[0] || 8);
+  if (hour < 11) return '上午';
+  if (hour < 13) return '中午';
+  if (hour < 18) return '下午';
+  return '晚上';
+}
+
+function renderT623Picker(hour = 8, minute = 0) {
+  const hourList = document.getElementById('t623HourList');
+  const minuteList = document.getElementById('t623MinuteList');
+  if (!hourList || !minuteList) return;
+  hourList.innerHTML = Array.from({ length: 24 }, (_, index) => {
+    const value = String(index).padStart(2, '0');
+    return `<div class="picker-cell${index === hour ? ' is-selected' : ''}" data-val="${value}">${value}</div>`;
+  }).join('');
+  minuteList.innerHTML = Array.from({ length: 12 }, (_, index) => {
+    const minuteValue = index * 5;
+    const value = String(minuteValue).padStart(2, '0');
+    return `<div class="picker-cell${minuteValue === minute ? ' is-selected' : ''}" data-val="${value}">${value}</div>`;
+  }).join('');
+  setTimeout(() => {
+    centerPickerCell(hourList, hourList.querySelector('.is-selected'));
+    centerPickerCell(minuteList, minuteList.querySelector('.is-selected'));
+  }, 50);
+}
+
+function renderT62Medicine() {
+  if (t62Draft.name !== '吃药') return;
+  t62Draft.medTimes = getMedicineTimesForCount(t62Draft.daily, t62Draft.medTimes);
+  const toggle = document.getElementById('t62MedToggle');
+  const sub = document.getElementById('t62MedSub');
+  const grid = document.getElementById('t62MedTimeGrid');
+  if (!toggle || !sub || !grid) return;
+  toggle.classList.toggle('is-on', !!t62Draft.medEnabled);
+  sub.textContent = `每日 ${t62Draft.daily} 次 · 自动分配。点击数字可修改`;
+  grid.classList.toggle('is-disabled', !t62Draft.medEnabled);
+  grid.innerHTML = t62Draft.medTimes.map((time, index) => `
+    <button class="med-time-card" type="button" onclick="openMedTimePicker(${index})">
+      <div class="med-time-value">${time}</div>
+      <div class="med-time-label">${getMedicinePeriodLabel(time)}</div>
+    </button>
+  `).join('');
+}
+
+function toggleT62MedReminder(el) {
+  t62Draft.medEnabled = !t62Draft.medEnabled;
+  if (el) el.classList.toggle('is-on', t62Draft.medEnabled);
+  renderT62Medicine();
+}
+
+function openMedTimePicker(index) {
+  if (t62Draft.name !== '吃药' || !t62Draft.medEnabled) return;
+  const current = t62Draft.medTimes[index] || DEFAULT_MED_TIMES[index] || '08:00';
+  const [hourText, minuteText] = current.split(':');
+  t623Ctx.type = 'medicine';
+  t623Ctx.index = index;
+  t623Ctx.hour = Number(hourText || 8);
+  t623Ctx.minute = Number(minuteText || 0);
+  renderT623Picker(t623Ctx.hour, t623Ctx.minute);
+  openSheet('sheetT623');
+}
+
+function getCenteredPickerValue(listId) {
+  const list = document.getElementById(listId);
+  if (!list) return null;
+  const cells = Array.from(list.querySelectorAll('.picker-cell'));
+  if (!cells.length) return null;
+  const rect = list.getBoundingClientRect();
+  const centerY = rect.top + rect.height / 2;
+  let nearest = cells[0];
+  let minDist = Infinity;
+  cells.forEach(cell => {
+    const cellRect = cell.getBoundingClientRect();
+    const dist = Math.abs((cellRect.top + cellRect.height / 2) - centerY);
+    if (dist < minDist) {
+      minDist = dist;
+      nearest = cell;
+    }
+  });
+  return nearest.dataset.val || nearest.textContent.trim();
+}
+
+function confirmT623() {
+  const hour = getCenteredPickerValue('t623HourList');
+  const minute = getCenteredPickerValue('t623MinuteList');
+  if (t623Ctx.type === 'medicine' && t623Ctx.index >= 0) {
+    t62Draft.medTimes[t623Ctx.index] = `${hour}:${minute}`;
+    renderT62Medicine();
+  }
+  closeSheet('sheetT623');
 }
 
 /** T6.2 打开（替代旧的 openT62）：初始化暂存值 + 渲染 */
@@ -4921,6 +5096,8 @@ function openT62(name, current) {
   // 周目标暂存值（独立维护，默认 5）
   t62Draft.week  = d._weekDays || 5;
   t62Draft.exerciseType = (name === '跑步') ? currentExerciseType : t62Draft.exerciseType;
+  t62Draft.medEnabled = d._medEnabled !== false;
+  t62Draft.medTimes = getMedicineTimesForCount(d.weeklyGoal, Array.isArray(d._medTimes) ? d._medTimes : []);
   // 副文 + 显示
   document.getElementById('t62Sub').textContent = '正在编辑：' + name;
   document.getElementById('t62Goal').textContent = formatGoalDisplay(name, t62Draft.daily, 'daily', t62Draft.exerciseType);
@@ -4928,6 +5105,7 @@ function openT62(name, current) {
   document.getElementById('t62TypeRow').style.display = (name === '跑步') ? 'flex' : 'none';
   document.getElementById('t62Type').textContent = t62Draft.exerciseType;
   document.getElementById('t62MedBlock').style.display = (name === '吃药') ? 'block' : 'none';
+  if (name === '吃药') renderT62Medicine();
   refreshT62Suggest();
   openSheet('sheetT62');
 }
@@ -4951,7 +5129,7 @@ function refreshT62Suggest() {
     '喝水': `每日 ${d}（约 ${Math.round(t62Draft.daily/250)} 杯），每周 ${w} 天达标。`,
     '站立': `每天 ${d}各起身一次，每周 ${w} 天达标。每小时起身 2 分钟。`,
     '跑步': `每周 ${w} 次${cardio.displayName}，单次 ${d}。心率保持在区间 2（138-152 bpm）。`,
-    '吃药': `每日 ${d}，按时按量，每周 ${w} 天达标。`,
+    '吃药': `每日 ${d}，按时按量，并同步设置 ${t62Draft.daily} 个提醒时段；每周 ${w} 天达标。`,
   };
   document.getElementById('t62Suggest').textContent = '建议行为：' + (tips[name] || '');
 }
@@ -4989,6 +5167,7 @@ function centerPickerCell(list, cell) {
 
 function openPicker(kind) {
   if (kind === 'time') {
+    renderT623Picker();
     openSheet('sheetT623');
     return;
   }
@@ -5037,6 +5216,7 @@ function confirmT63() {
   if (t63Ctx.kind === 'daily') {
     t62Draft.daily = v;
     document.getElementById('t62Goal').textContent = formatGoalDisplay(t62Draft.name, v, 'daily', t62Draft.exerciseType);
+    if (t62Draft.name === '吃药') renderT62Medicine();
   } else {
     t62Draft.week = v;
     document.getElementById('t62WeekGoal').textContent = '一周 ' + v + ' 天';
@@ -5076,16 +5256,21 @@ function saveT62() {
   if (name === '跑步') {
     currentExerciseType = t62Draft.exerciseType;
   }
+  if (name === '吃药') {
+    d._medEnabled = t62Draft.medEnabled;
+    d._medTimes = t62Draft.medTimes.slice();
+  }
   // 更新内存数据
   d.weeklyGoal = t62Draft.daily;
   d._weekDays  = t62Draft.week;
   updateChallengeDerivedFields(name);
   syncT1Card(name);
   syncGoalListRow(name);
+  syncChallengeEditRows(name);
   // 如果 T5 当前打开了同一挑战 → 重新打开刷新
   const openTitle = document.getElementById('t5Title').textContent;
   if (document.getElementById('sheetT5').classList.contains('show') &&
-      (openTitle === name || openTitle === getCardioTypeConfig().displayName)) {
+      (openTitle === name || isCardioChallengeTitle(openTitle))) {
     openChallenge(name);
   }
   closeSheet('sheetT62');
@@ -5197,13 +5382,27 @@ function updateChallengeDerivedFields(name) {
 
 function syncGoalListRow(name) {
   const rows = Array.from(document.querySelectorAll('.goal-list-row'));
-  const row = rows.find(item => {
+  const row = rows.find(item => item.dataset.challenge === name) || rows.find(item => {
     const label = item.querySelector('.gl-name');
     return label && label.textContent.trim() === name;
   });
   if (!row) return;
+  const labelEl = row.querySelector('.gl-name');
   const valueEl = row.querySelector('.gl-value');
+  if (labelEl) labelEl.textContent = getChallengeDisplayName(name);
   if (valueEl) valueEl.textContent = formatChallengeGoalText(name, CHALLENGE_DATA[name].weeklyGoal);
+}
+
+function getChallengeDisplayName(name) {
+  return name === '跑步' ? getCardioChallengeTitle() : name;
+}
+
+function syncChallengeEditRows(name) {
+  const rows = Array.from(document.querySelectorAll('.edit-row[data-challenge="' + name + '"]'));
+  rows.forEach(row => {
+    const labelEl = row.querySelector('.edit-name');
+    if (labelEl) labelEl.textContent = getChallengeDisplayName(name);
+  });
 }
 
 /** 同步 T1 卡的副标题 + 进度百分比 */
@@ -5211,9 +5410,11 @@ function syncT1Card(name) {
   const cardSelectorMap = { '走路':'.bg-walk', '睡眠':'.bg-sleep', '消耗':'.bg-burn', '喝水':'.bg-water', '站立':'.bg-stand', '跑步':'.bg-run', '吃药':'.bg-pill' };
   const sel = cardSelectorMap[name];
   if (!sel) return;
-  const card = document.querySelector('.challenge-card' + sel);
+  const card = document.querySelector('.challenge-card' + sel) || document.querySelector('.habit-card[data-challenge="' + name + '"]');
   if (!card) return;
   const data = CHALLENGE_DATA[name];
+  const nameEl = card.querySelector('.ch-name, .habit-name');
+  if (nameEl) nameEl.textContent = getChallengeDisplayName(name);
   const subtitle = card.querySelector('.ch-subtitle');
   if (subtitle) subtitle.textContent = data.subtitle || '';
   const fill = card.querySelector('.ch-fill');
