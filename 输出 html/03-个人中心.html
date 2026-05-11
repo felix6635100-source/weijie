@@ -1102,6 +1102,7 @@
       width: 36px;
       height: 36px;
       border-radius: 50%;
+      overflow: hidden;
       background: linear-gradient(135deg, var(--color-brand-secondary), var(--color-brand-accent));
       display: inline-flex;
       align-items: center;
@@ -2330,6 +2331,118 @@
       border: 2px solid transparent;
       transition: all 0.15s ease;
     }
+    /* 从相册选择 按钮（v2.6） */
+    .avatar-pick-from-album {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin: 0 16px 12px;
+      height: 40px;
+      border-radius: var(--radius-pill);
+      background: var(--color-primary-tint-08);
+      color: var(--color-brand-primary);
+      font-size: var(--font-sm);
+      font-weight: var(--weight-semi);
+      border: 1px dashed var(--color-brand-primary);
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .avatar-pick-from-album:active { transform: scale(0.98); }
+
+    /* 头像裁剪全屏覆盖层（v2.6 新增） */
+    .avatar-crop-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(20, 22, 25, 0.96);
+      z-index: 9999;
+      display: none;
+      flex-direction: column;
+      color: #fff;
+      border-radius: inherit;
+      overflow: hidden;
+    }
+    .avatar-crop-overlay.show { display: flex; }
+    .avatar-crop-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 52px;
+      padding: 0 16px;
+      flex-shrink: 0;
+    }
+    .avatar-crop-btn {
+      background: transparent;
+      border: none;
+      color: #fff;
+      font-size: 15px;
+      cursor: pointer;
+      font-family: inherit;
+      padding: 8px 4px;
+    }
+    .avatar-crop-btn.confirm {
+      color: var(--color-brand-accent);
+      font-weight: 600;
+    }
+    .avatar-crop-title {
+      font-size: var(--font-md);
+      font-weight: var(--weight-semi);
+    }
+    .avatar-crop-stage {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      touch-action: none;
+      user-select: none;
+    }
+    .avatar-crop-img {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      max-width: none;
+      transform: translate(calc(-50% + var(--tx, 0px)), calc(-50% + var(--ty, 0px))) scale(var(--zoom, 1));
+      transform-origin: center center;
+      pointer-events: none;
+      -webkit-user-drag: none;
+    }
+    /* 240px 圆形预览框白边 */
+    .avatar-crop-ring {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 240px;
+      height: 240px;
+      margin: -120px 0 0 -120px;
+      border: 2px solid #fff;
+      border-radius: 50%;
+      pointer-events: none;
+      box-sizing: border-box;
+    }
+    /* 圆外灰色遮罩 */
+    .avatar-crop-mask {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: radial-gradient(circle at center, transparent 119px, rgba(0,0,0,0.55) 121px);
+    }
+    .avatar-crop-zoom {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 24px 0;
+      color: rgba(255,255,255,0.8);
+    }
+    .avatar-crop-zoom input {
+      flex: 1;
+      accent-color: var(--color-brand-accent);
+    }
+    .avatar-crop-hint {
+      text-align: center;
+      font-size: var(--font-sm);
+      color: rgba(255,255,255,0.55);
+      padding: 8px 0 calc(16px + env(safe-area-inset-bottom));
+    }
+
     .avatar-grid-item.selected {
       background: linear-gradient(135deg, var(--color-brand-secondary), var(--color-brand-accent));
       border-color: var(--color-brand-primary);
@@ -3393,6 +3506,12 @@
       <div class="nav-item" data-page="P5.care">
         <span class="nav-id">P5·关心</span><span class="nav-name">关心设置（社交标签 / 动态发送 / 显示范围）</span><span class="nav-tag tag-page">二级页面</span>
       </div>
+      <div class="nav-item" data-page="P5.care.radius-out">
+        <span class="nav-id">P5·R↗</span><span class="nav-name">隐私 · 把我推荐给附近用户</span><span class="nav-tag tag-act">操作菜单</span>
+      </div>
+      <div class="nav-item" data-page="P5.care.radius-in">
+        <span class="nav-id">P5·R↙</span><span class="nav-name">隐私 · 把附近用户推荐给我</span><span class="nav-tag tag-act">操作菜单</span>
+      </div>
     </div>
 
     <div class="nav-section-label">消息中心</div>
@@ -3483,6 +3602,27 @@
       <div class="phone-stage" id="phoneStage">
         <!-- 由 JS 渲染 -->
       </div>
+      <!-- 头像裁剪全屏覆盖层（v2.6 新增）-->
+      <div class="avatar-crop-overlay" id="avatarCropOverlay">
+        <div class="avatar-crop-topbar">
+          <button class="avatar-crop-btn cancel" type="button" id="avatarCropCancel">取消</button>
+          <span class="avatar-crop-title">调整头像</span>
+          <button class="avatar-crop-btn confirm" type="button" id="avatarCropConfirm">完成</button>
+        </div>
+        <div class="avatar-crop-stage" id="avatarCropStage">
+          <img class="avatar-crop-img" id="avatarCropImg" alt="头像预览" draggable="false">
+          <div class="avatar-crop-ring"></div>
+          <div class="avatar-crop-mask"></div>
+        </div>
+        <div class="avatar-crop-zoom">
+          <span style="font-size:18px">−</span>
+          <input type="range" id="avatarCropZoom" min="100" max="400" value="100">
+          <span style="font-size:18px">+</span>
+        </div>
+        <div class="avatar-crop-hint">拖动图片调整位置 · 滑动条调整大小</div>
+      </div>
+      <!-- 隐藏的文件选择 input -->
+      <input type="file" id="avatarFileInput" accept="image/*" style="display:none">
     </div>
   </main>
 
@@ -3715,7 +3855,7 @@
               <div class="login-title">完善个人资料</div>
               <div class="login-subtitle">让 AIRing 更懂你 · 资料仅你可见</div>
               <div class="login-avatar-block">
-                <div class="login-avatar-circle" data-goto="P4.1">${profileState.avatar}</div>
+                <div class="login-avatar-circle" data-goto="P4.1">${renderAvatarHtml(profileState.avatar)}</div>
                 <button class="login-avatar-shuffle" type="button" data-goto="P4.1">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="10" r="3"/><path d="M5.5 19.5c1.5-3 4-4.5 6.5-4.5s5 1.5 6.5 4.5"/></svg>
                   选择头像
@@ -3818,7 +3958,7 @@
               <div class="profile-section">
                 <div class="profile-row" data-goto="P5.2">
                   <div class="profile-row-main"><div class="profile-row-label">头像</div></div>
-                  <div class="profile-avatar-display">${profileState.avatar}</div>
+                  <div class="profile-avatar-display">${renderAvatarHtml(profileState.avatar)}</div>
                   <span class="profile-row-arrow">›</span>
                 </div>
                 <div class="profile-row" data-goto="P5.3">
@@ -3910,6 +4050,14 @@
         </div>`;
     }
 
+    // v2.6：检测 avatar 是 emoji 还是 dataURL，分别渲染
+    function renderAvatarHtml(v) {
+      if (typeof v === 'string' && v.startsWith('data:')) {
+        return `<img src="${v}" alt="头像" style="width:100%;height:100%;border-radius:50%;object-fit:cover;display:block">`;
+      }
+      return v || '🦊';
+    }
+
     function renderAvatarOverlay(basePage, returnPage) {
       const emojis = ['🦊','🐱','🐶','🐼','🐰','🐯','🦁','🐻','🐨','🐮','🐷','🐸','🦉','🦄','🐢','🐙','🦋','🐝','🌸','⭐'];
       const grid = emojis.map(e=>`<div class="avatar-grid-item ${e===profileState.avatar?'selected':''}">${e}</div>`).join('');
@@ -3917,7 +4065,11 @@
         <div class="modal-overlay show">
           <div class="sheet-edit">
             <div class="sheet-edit-title">选择头像</div>
-            <div class="avatar-picker-tip">点击下方头像试试</div>
+            <div class="avatar-picker-tip">从相册选择，或点击下方头像试试</div>
+            <button class="avatar-pick-from-album" type="button" id="avatarPickBtn">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="11" r="2"/><path d="M21 17l-5-5-5 5"/><path d="M3 17l4-4 3 3"/></svg>
+              从相册选择
+            </button>
             <div class="avatar-grid">${grid}</div>
             <div class="sheet-edit-actions">
               <button class="sheet-edit-btn cancel" data-goto="${returnPage}">取消</button>
@@ -4053,6 +4205,42 @@
     }
 
     // === P5.care 关心设置（v2.5：把"社交标签 / 动态发送 / 显示范围"4 个 section 移到独立子页） ===
+    // === P5.care.radius-out / P5.care.radius-in 附近推荐半径操作菜单（v2.6 新增） ===
+    function renderRadiusSheet(field, title, desc) {
+      const options = [
+        { value: '关闭',    desc: '不推荐 · 完全不出现在"附近"圈中' },
+        { value: '1 公里',  desc: '仅 1 公里内 · 最严格的位置范围' },
+        { value: '3 公里',  desc: '步行范围 · 同社区 / 同园区' },
+        { value: '5 公里',  desc: '推荐 · 同城近邻 · 默认值' },
+        { value: '10 公里', desc: '同区域 · 适合大城市跨片区' }
+      ];
+      return pageP5Care() + `
+        <div class="modal-overlay show is-action">
+          <div class="action-sheet">
+            <div class="action-sheet-group">
+              <div class="action-sheet-extra">
+                <div class="action-sheet-extra-title">${title}</div>
+                <div class="action-sheet-extra-desc">${desc}</div>
+              </div>
+              ${options.map(opt => `
+              <button class="action-sheet-item ${profileState[field] === opt.value ? 'is-selected' : ''}" type="button" data-radius-field="${field}" data-radius-value="${opt.value}" data-goto="P5.care">
+                <span class="action-sheet-item-text">${opt.value}</span>
+                <span class="action-sheet-item-desc">${opt.desc}</span>
+              </button>`).join('')}
+            </div>
+            <div class="action-sheet-group">
+              <button class="action-sheet-item is-cancel" data-goto="P5.care">取消</button>
+            </div>
+          </div>
+        </div>`;
+    }
+    function pageP5CareRadiusOut() {
+      return renderRadiusSheet('radiusOut', '把我推荐给附近用户', '设置我能出现在多远范围的"附近"列表中');
+    }
+    function pageP5CareRadiusIn() {
+      return renderRadiusSheet('radiusIn', '把附近用户推荐给我', '设置关心 · 发现 Tab 给我推荐多远的人');
+    }
+
     function pageP5Care() {
       const socialTags = ['#步数挑战者','#早起伙伴','#饮水达人'];
       const habits = [
@@ -4190,6 +4378,33 @@
                     <div class="profile-row-sub">控制关心圈中谁能看到你的挑战完成状态</div>
                   </div>
                   <div class="profile-row-value">${profileState.shareAudience}</div>
+                  <span class="profile-row-arrow">›</span>
+                </div>
+              </div>
+
+              <!-- 隐私 · 附近推荐（v2.6 新增） -->
+              <div class="profile-section-title">隐私 · 附近推荐</div>
+              <div class="notice-bar">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="12"/><circle cx="12" cy="16" r="0.5" fill="currentColor"/></svg>
+                <span>仅控制"附近的人 / 推荐"圈的可见范围；位置精度最小 <strong>1 公里</strong>，永不暴露精确位置（遵循设计规范 §10）。</span>
+              </div>
+              <div class="profile-section">
+                <div class="profile-row" data-goto="P5.care.radius-out">
+                  <div class="profile-row-icon">📍</div>
+                  <div class="profile-row-main">
+                    <div class="profile-row-label">把我推荐给附近用户</div>
+                    <div class="profile-row-sub">设置后，戒指好友"附近"列表可能看到你</div>
+                  </div>
+                  <div class="profile-row-value">${profileState.radiusOut}</div>
+                  <span class="profile-row-arrow">›</span>
+                </div>
+                <div class="profile-row" data-goto="P5.care.radius-in">
+                  <div class="profile-row-icon">🧭</div>
+                  <div class="profile-row-main">
+                    <div class="profile-row-label">把附近用户推荐给我</div>
+                    <div class="profile-row-sub">设置后，关心 · 发现 Tab 会按此范围推荐</div>
+                  </div>
+                  <div class="profile-row-value">${profileState.radiusIn}</div>
                   <span class="profile-row-arrow">›</span>
                 </div>
               </div>
@@ -5082,8 +5297,10 @@
       'P5.3': pageP53,
       'P5.4': pageP54,
       'P5.5': pageP55,
-      'P5.care':  pageP5Care,
-      'P5.theme': pageP5Theme,
+      'P5.care':            pageP5Care,
+      'P5.care.radius-out': pageP5CareRadiusOut,
+      'P5.care.radius-in':  pageP5CareRadiusIn,
+      'P5.theme':           pageP5Theme,
       'P7':       pageP7,
       'P7.read':  pageP7Read,
       'P7.empty': pageP7Empty,
@@ -5124,7 +5341,9 @@
       height: '172',
       weight: '65.0',
       shareAudience: '仅亲友',
-      theme: '跟随系统'
+      theme: '跟随系统',
+      radiusOut: '5 公里',  // v2.6 · 把我推荐给附近用户的半径
+      radiusIn:  '5 公里'   // v2.6 · 把附近用户推荐给我的半径
     };
 
     function sanitizePhone(value) {
@@ -5530,6 +5749,12 @@
         navigateTo(target);
         return;
       }
+      // v2.6 · 隐私 · 附近推荐 radius 写回
+      if (trigger.dataset.radiusField) {
+        profileState[trigger.dataset.radiusField] = trigger.dataset.radiusValue;
+        navigateTo(target);
+        return;
+      }
       if (trigger.dataset.themePref) {
         profileState.theme = trigger.dataset.themePref;
         // 主题切换：浅色 / 深色直接切；跟随系统读 prefers-color-scheme
@@ -5569,6 +5794,143 @@
       if (!chip || chip.classList.contains('is-add') || chip.classList.contains('social')) return;
       chip.classList.toggle('selected');
       chip.classList.toggle('is-off');
+    });
+
+    /* ============================================================
+       v2.6 头像：从相册选择 + 圆形裁剪
+       ============================================================ */
+    const avatarCropState = { tx: 0, ty: 0, zoom: 1, returnPage: 'P5' };
+
+    function openAvatarCropper(imgDataUrl, returnPage) {
+      const ov = document.getElementById('avatarCropOverlay');
+      const img = document.getElementById('avatarCropImg');
+      const zoomInput = document.getElementById('avatarCropZoom');
+      img.src = imgDataUrl;
+      avatarCropState.tx = 0;
+      avatarCropState.ty = 0;
+      avatarCropState.zoom = 1;
+      avatarCropState.returnPage = returnPage || 'P5';
+      applyCropTransform();
+      zoomInput.value = 100;
+      ov.classList.add('show');
+    }
+
+    function applyCropTransform() {
+      const img = document.getElementById('avatarCropImg');
+      if (!img) return;
+      img.style.setProperty('--tx', avatarCropState.tx + 'px');
+      img.style.setProperty('--ty', avatarCropState.ty + 'px');
+      img.style.setProperty('--zoom', avatarCropState.zoom);
+    }
+
+    function closeAvatarCropper() {
+      const ov = document.getElementById('avatarCropOverlay');
+      if (ov) ov.classList.remove('show');
+    }
+
+    function finishAvatarCropper() {
+      const img = document.getElementById('avatarCropImg');
+      const stage = document.getElementById('avatarCropStage');
+      if (!img || !img.naturalWidth) { closeAvatarCropper(); return; }
+
+      // 计算裁剪：圆形预览框 240×240 居中在 stage 内
+      // 屏幕坐标的圆心 = stage 的中心；裁剪源 = 当前 img 在屏幕上对应的位置
+      const stageRect = stage.getBoundingClientRect();
+      const cx = stageRect.width / 2;
+      const cy = stageRect.height / 2;
+      const ringRadius = 120;
+
+      // 当前 img 渲染尺寸（含 zoom）
+      const renderW = img.naturalWidth * avatarCropState.zoom;
+      const renderH = img.naturalHeight * avatarCropState.zoom;
+      // img 中心在 stage 内的屏幕坐标
+      const imgCx = cx + avatarCropState.tx;
+      const imgCy = cy + avatarCropState.ty;
+      // 圆形左上角在 stage 内的坐标
+      const cropScreenX = cx - ringRadius;
+      const cropScreenY = cy - ringRadius;
+      // 把 stage 坐标映射到 img 原图坐标
+      // 原图坐标 = (屏幕坐标 - img 中心) / zoom + 原图中心
+      const srcX = (cropScreenX - imgCx) / avatarCropState.zoom + img.naturalWidth / 2;
+      const srcY = (cropScreenY - imgCy) / avatarCropState.zoom + img.naturalHeight / 2;
+      const srcSize = (ringRadius * 2) / avatarCropState.zoom;
+
+      // canvas 240×240，绘制裁剪源 + 圆形 clip
+      const out = document.createElement('canvas');
+      out.width = 240; out.height = 240;
+      const ctx = out.getContext('2d');
+      ctx.beginPath();
+      ctx.arc(120, 120, 120, 0, Math.PI * 2);
+      ctx.closePath();
+      ctx.clip();
+      try {
+        ctx.drawImage(img, srcX, srcY, srcSize, srcSize, 0, 0, 240, 240);
+      } catch (err) {
+        toast('裁剪失败，请重试'); return;
+      }
+      const dataUrl = out.toDataURL('image/jpeg', 0.85);
+      profileState.avatar = dataUrl;
+      closeAvatarCropper();
+      navigateTo(avatarCropState.returnPage);
+      toast('头像已更新');
+    }
+
+    // 拖动 + 缩放（stage 监听 pointer，应用到 img）
+    (function bindCropInteractions() {
+      const stage = document.getElementById('avatarCropStage');
+      const zoomInput = document.getElementById('avatarCropZoom');
+      if (!stage || !zoomInput) return;
+      let dragging = false, startX = 0, startY = 0, baseTx = 0, baseTy = 0;
+      stage.addEventListener('pointerdown', (e) => {
+        dragging = true;
+        startX = e.clientX; startY = e.clientY;
+        baseTx = avatarCropState.tx; baseTy = avatarCropState.ty;
+        try { stage.setPointerCapture(e.pointerId); } catch(_) {}
+      });
+      stage.addEventListener('pointermove', (e) => {
+        if (!dragging) return;
+        avatarCropState.tx = baseTx + (e.clientX - startX);
+        avatarCropState.ty = baseTy + (e.clientY - startY);
+        applyCropTransform();
+      });
+      const endDrag = () => { dragging = false; };
+      stage.addEventListener('pointerup', endDrag);
+      stage.addEventListener('pointercancel', endDrag);
+      stage.addEventListener('pointerleave', endDrag);
+
+      zoomInput.addEventListener('input', () => {
+        avatarCropState.zoom = parseFloat(zoomInput.value) / 100;
+        applyCropTransform();
+      });
+
+      document.getElementById('avatarCropCancel').addEventListener('click', closeAvatarCropper);
+      document.getElementById('avatarCropConfirm').addEventListener('click', finishAvatarCropper);
+
+      // 文件选择 → 读取 → 弹裁剪
+      const fileInput = document.getElementById('avatarFileInput');
+      if (fileInput) {
+        fileInput.addEventListener('change', (e) => {
+          const file = e.target.files && e.target.files[0];
+          if (!file) return;
+          const reader = new FileReader();
+          reader.onload = () => {
+            // 弹裁剪界面：返回页是当前 P5.2 / P4.1 都属于 P5/P4
+            // 这里简化：返回 'P5'（用户从 P5 → P5.2 头像选择 → 相册）
+            openAvatarCropper(reader.result, 'P5');
+          };
+          reader.readAsDataURL(file);
+          // 清空 value 以便再次选同一文件能触发 change
+          e.target.value = '';
+        });
+      }
+    })();
+
+    // 点击"从相册选择"按钮 → 触发隐藏 file input
+    document.addEventListener('click', (e) => {
+      const btn = e.target.closest('#avatarPickBtn');
+      if (!btn) return;
+      const input = document.getElementById('avatarFileInput');
+      if (input) input.click();
     });
 
     // 习惯开关
