@@ -74,6 +74,67 @@
   .state-btn .ic{font-size:14px;}
   .state-btn.is-active{background:var(--gradient-day); color:#fff;}
 
+  /* v2.4 P2：C5 关系视角切换按钮（沿用 .state-btn 视觉） */
+  .relation-btn{
+    padding:8px 6px; font-size:11px; border-radius:8px; border:none; cursor:pointer;
+    background:var(--color-bg-surface-muted); color:var(--color-text-secondary); font-weight:500;
+    display:flex; flex-direction:column; align-items:center; gap:2px; text-align:center; line-height:1.2;
+    font-family:var(--font-cjk);
+  }
+  .relation-btn .ic{font-size:14px;}
+  .relation-btn.is-active{background:linear-gradient(135deg,#FFA8C9 0%,#F25EFF 100%); color:#fff;}
+
+  /* v2.6 P2：C1.B 附近推荐 demo 切换按钮 */
+  .nearby-btn{
+    padding:8px 6px; font-size:11px; border-radius:8px; border:none; cursor:pointer;
+    background:var(--color-bg-surface-muted); color:var(--color-text-secondary); font-weight:500;
+    display:flex; flex-direction:column; align-items:center; gap:2px; text-align:center; line-height:1.2;
+    font-family:var(--font-cjk);
+  }
+  .nearby-btn .ic{font-size:14px;}
+  .nearby-btn.is-active{background:linear-gradient(135deg,#7BFCFF 0%,#0AD4FF 100%); color:#fff;}
+
+  /* v2.5：C5 三视角通过 [data-relation] 控制可见性
+     - stranger：隐藏 hero 大半 + 隐藏卡片，显示 stranger-cta（🚪 加为好友）
+     - friend：完整展示，隐藏"特别关心"标签
+     - vip：完整展示 + 显示"特别关心"标签 */
+
+  /* 兜底：c5 内的"特别关心"标签默认隐藏（friend / stranger 视角都不该显示）；vip 视角下显示 */
+  [data-page="c5"] .tag-care{display:none;}
+  [data-page="c5"][data-relation="vip"] .tag-care{display:inline-flex;align-items:center;}
+
+  /* 陌生人：隐藏 hero 大半 + 隐藏卡片列表 */
+  [data-page="c5"][data-relation="stranger"] .profile-hero .triple,
+  [data-page="c5"][data-relation="stranger"] .profile-hero .profile-tag-row,
+  [data-page="c5"][data-relation="stranger"] .profile-hero .note-btn,
+  [data-page="c5"][data-relation="stranger"] .section-head,
+  [data-page="c5"][data-relation="stranger"] .dyn-card,
+  [data-page="c5"][data-relation="stranger"] .dyn-time-hint,
+  [data-page="c5"][data-relation="stranger"] .topbar-set-btn{display:none;}
+  [data-page="c5"][data-relation="stranger"] .profile-meta::after{content:" · 你和 TA 还不是好友，仅显示基本信息";color:var(--color-text-tertiary);font-size:11px;display:block;margin-top:4px;}
+
+  /* 陌生人 CTA：🚪 加为好友 */
+  .stranger-cta{display:none;flex-direction:column;align-items:center;gap:12px;padding:32px 24px;margin:16px 16px 0;background:var(--color-bg-surface);border-radius:14px;box-shadow:var(--shadow-card,0 2px 8px rgba(15,23,42,0.06));}
+  .stranger-cta .icon{font-size:48px;}
+  .stranger-cta .title{font-size:15px;font-weight:600;color:var(--color-text-primary);}
+  .stranger-cta .sub{font-size:12px;color:var(--color-text-secondary);text-align:center;line-height:1.5;}
+  .stranger-cta .btn-follow{padding:10px 28px;border-radius:999px;background:var(--gradient-day);color:#fff;border:none;font-size:14px;font-weight:600;cursor:pointer;}
+  [data-page="c5"][data-relation="stranger"] .stranger-cta{display:flex;}
+
+  /* v2.5：follow-hint 已废弃（v2.4 P2 遗留），默认且永久隐藏 */
+  .follow-hint{display:none !important;}
+
+  /* v2.4 P2：C2 / C4 空态注入卡 */
+  .c2-empty-injected,.c4-empty-injected{display:none;flex-direction:column;align-items:center;gap:10px;padding:36px 24px;margin:16px;background:var(--color-bg-surface);border-radius:14px;box-shadow:var(--shadow-card,0 2px 8px rgba(15,23,42,0.06));}
+  .c2-empty-injected .icon,.c4-empty-injected .icon{font-size:48px;}
+  .c2-empty-injected .title,.c4-empty-injected .title{font-size:16px;font-weight:600;color:var(--color-text-primary);}
+  .c2-empty-injected .sub,.c4-empty-injected .sub{font-size:12px;color:var(--color-text-secondary);text-align:center;line-height:1.5;}
+  .c2-empty-injected .cta,.c4-empty-injected .cta{padding:10px 28px;border-radius:999px;background:var(--gradient-day);color:#fff;border:none;font-size:14px;font-weight:600;cursor:pointer;margin-top:6px;}
+  body.care-state-empty [data-page="c2"] .lb-list{display:none;}
+  body.care-state-empty [data-page="c2"] .c2-empty-injected{display:flex;}
+  body.care-state-empty [data-page="c4"] .notif-section{display:none;}
+  body.care-state-empty [data-page="c4"] .c4-empty-injected{display:flex;}
+
   /* 导航项 */
   .nav-list{display:flex; flex-direction:column; gap:1px;}
   .nav-item{
@@ -1307,11 +1368,17 @@
   .scroll{scroll-behavior:smooth;}
 
   /* ========== 特别关心 · C5.1 主页设置 ========== */
-  /* C5 顶栏右上角设置入口（与左侧 .back 对称的 40×40 命中区） */
+  /* v2.4：C5 顶栏右上角设置入口（与左侧 .back 对称的 40×40 命中区）
+     - 遵循《00-设计规范》§ 6.1 二级页面 "右：可选操作按钮（图标 / 文字）" 变体
+     - 通用别名 `.topbar-action`（推荐）；`.topbar-set-btn` 保留为向后兼容别名 */
+  .app-topbar--secondary .topbar-action,
   .app-topbar--secondary .topbar-set-btn{
     width:40px; height:40px; display:flex; align-items:center; justify-content:center;
     cursor:pointer; font-size:18px; color:var(--color-text-primary);
+    background:transparent; border:none; flex-shrink:0;
   }
+  .app-topbar--secondary .topbar-action:active,
+  .app-topbar--secondary .topbar-set-btn:active{opacity:0.6;}
   /* 特别关心 标签变体（与 .mini-btn.warn 同色域，不引入新色板） */
   .tag-mini.special{background:#FFE5DD; color:#D85A2E;}
   /* tag-care 默认隐藏；父容器加 .care-on 时显示。
@@ -1467,6 +1534,29 @@
       </button>
       <button class="state-btn" data-state="dark" style="grid-column:span 2;">
         <span class="ic">🌙</span><span>切换深色模式</span>
+      </button>
+    </div>
+
+    <div class="nav-section-label">C1.B 附近推荐（v2.6 · 单开关模拟）</div>
+    <div class="state-grid">
+      <button class="nearby-btn is-active" data-nearby="off" onclick="switchNearby('off', this)">
+        <span class="ic">🚫</span><span>未开启</span>
+      </button>
+      <button class="nearby-btn" data-nearby="on" onclick="switchNearby('on', this)">
+        <span class="ic">📍</span><span>已开启</span>
+      </button>
+    </div>
+
+    <div class="nav-section-label">C5 关系视角（v2.5 · 点击会跳到 C5 个人主页）</div>
+    <div class="state-grid">
+      <button class="relation-btn" data-relation="stranger" onclick="switchC5Relation('stranger', this)">
+        <span class="ic">🚪</span><span>陌生人</span>
+      </button>
+      <button class="relation-btn is-active" data-relation="friend" onclick="switchC5Relation('friend', this)">
+        <span class="ic">👥</span><span>好友</span>
+      </button>
+      <button class="relation-btn" data-relation="vip" style="grid-column:span 2;" onclick="switchC5Relation('vip', this)">
+        <span class="ic">🔔</span><span>好友 · 特别关心</span>
       </button>
     </div>
 
@@ -1652,9 +1742,9 @@
       <!-- ===== Sub-panel A · 好友动态 ===== -->
       <div class="subpanel active" data-panel="a">
 
-        <!-- 动态卡 1 -->
+        <!-- 动态卡 1 · 周妈妈（今日挑战 · 完成） -->
         <div class="dyn-time-hint">今早 06:30 · 今日挑战 · 完成</div>
-      <div class="dyn-card" data-uid="周妈妈">
+      <div class="dyn-card" data-uid="周妈妈" data-feed-type="daily" data-trigger="completed" data-time="2026-05-12T06:30">
           <div class="dyn-head">
             <div class="avatar has-photo" onclick="openUserProfile('周妈妈')">
               <img class="real-photo" src="https://i.pravatar.cc/150?img=32" alt="周妈妈">
@@ -1706,8 +1796,9 @@
           </div>
         </div>
 
-        <!-- 动态卡 2 -->
-        <div class="dyn-card" data-uid="阿戒">
+        <!-- 动态卡 2 · 阿戒（今日挑战 · 完成） -->
+        <div class="dyn-time-hint">刚刚 · 今日挑战 · 完成</div>
+        <div class="dyn-card" data-uid="阿戒" data-feed-type="daily" data-trigger="completed" data-time="2026-05-12T09:35">
           <div class="dyn-head">
             <div class="avatar has-photo" onclick="openUserProfile('阿戒')">
               <img class="real-photo" src="https://i.pravatar.cc/150?img=60" alt="阿戒">
@@ -1753,8 +1844,9 @@
           </div>
         </div>
 
-        <!-- 动态卡 3 -->
-        <div class="dyn-card" data-uid="林雨晴">
+        <!-- 动态卡 3 · 林雨晴（练级挑战 · 75% 里程碑） -->
+        <div class="dyn-time-hint">昨夜 · 练级挑战 · 75% 进度</div>
+        <div class="dyn-card" data-uid="林雨晴" data-feed-type="level" data-trigger="progress-75" data-time="2026-05-11T22:18">
           <div class="dyn-head">
             <div class="avatar has-photo" onclick="openUserProfile('林雨晴')">
               <img class="real-photo" src="https://i.pravatar.cc/150?img=47" alt="林雨晴">
@@ -1797,8 +1889,9 @@
           </div>
         </div>
 
-        <!-- 动态卡 4 · 表妹小可（通过邀请码加入的新好友） -->
-        <div class="dyn-card" data-uid="表妹小可">
+        <!-- 动态卡 4 · 表妹小可（练级挑战 · 加入；通过邀请码加入的新好友） -->
+        <div class="dyn-time-hint">昨天 19:42 · 练级挑战 · 加入</div>
+        <div class="dyn-card" data-uid="表妹小可" data-feed-type="level" data-trigger="joined" data-time="2026-05-11T19:42">
           <div class="dyn-head">
             <div class="avatar has-photo" onclick="openUserProfile('表妹小可')">
               <img class="real-photo" src="https://i.pravatar.cc/150?img=20" alt="表妹小可">
@@ -1843,13 +1936,30 @@
 
       </div>
 
-      <!-- ===== Sub-panel B · 发现（仅 1 种状态：已登录默认推荐 3 人） ===== -->
+      <!-- ===== Sub-panel B · 发现（v2.6：3 种状态 = 未开启 / 默认有推荐 / 空推荐） ===== -->
       <div class="subpanel" data-panel="b">
+
+        <!-- v2.6：未开启附近推荐 · 居中引导卡（默认隐藏，由 sidebar demo 按钮控制；正式态由 P5.care 开关联动） -->
+        <div class="nearby-off-card" id="nearbyOffCard" style="display:none;flex-direction:column;align-items:center;gap:14px;padding:40px 24px;margin:16px;background:var(--color-bg-surface);border-radius:16px;box-shadow:var(--shadow-card,0 2px 8px rgba(15,23,42,0.06));">
+          <div style="width:72px;height:72px;border-radius:50%;background:radial-gradient(circle,rgba(58,111,224,0.18) 0%,rgba(58,111,224,0.04) 70%);display:flex;align-items:center;justify-content:center;font-size:36px;">📍</div>
+          <div style="font-size:17px;font-weight:700;color:var(--color-text-primary);">查找身边同频的人</div>
+          <div style="font-size:13px;color:var(--color-text-secondary);text-align:center;line-height:1.6;">
+            开启后，App 会基于距离 + 共同挑战推荐<br>
+            身边同频的人给你<br>
+            <span style="color:var(--color-text-tertiary);font-size:12px;">TA 也能看到你的推荐卡 · 位置精度 ≥ 1 km，永不暴露精确位置</span>
+          </div>
+          <button style="margin-top:6px;padding:12px 36px;border-radius:999px;background:var(--gradient-day);color:#fff;border:none;font-size:15px;font-weight:600;cursor:pointer;box-shadow:0 4px 12px rgba(58,111,224,0.22);"
+                  onclick="switchNearby('on')">📍 立即开启</button>
+          <div style="font-size:11px;color:var(--color-text-tertiary);text-align:center;line-height:1.5;">你可以随时在「我的好友 · 关心设置」中关闭</div>
+        </div>
+
+        <!-- v2.6：已开启 · 有推荐流（默认显示） -->
+        <div class="nearby-on-list" id="nearbyOnList">
         <!-- § 7.9 蓝色通告栏（NoticeBar info 变体） -->
         <div class="notice-bar notice-bar--info">
           <div class="nb-icon">i</div>
           <div class="nb-content">可能同城推荐 · 不显示精确位置</div>
-          <button class="nb-action" onclick="toast('跳转 P5 个人设置 · 隐私')">隐私设置</button>
+          <button class="nb-action" onclick="window.location.href='03-个人中心.html?page=P5.care'">隐私设置</button>
         </div>
 
         <div class="section-head" style="padding:0 20px;">
@@ -1891,7 +2001,7 @@
             <div class="ch-text">正在完成「激活心肺循环」 · 已完成 72% · 此刻就在你附近</div>
           </div>
           <div class="rec-actions">
-            <button class="btn primary" onclick="recCardOut(this,'已申请关注，等待对方同意')">申请关注 <span class="xp">+10 XP</span></button>
+            <button class="btn primary" onclick="recCardOut(this,'已发送好友请求，等待对方同意')">加为好友 <span class="xp">+10 XP</span></button>
             <button class="btn ghost" onclick="recCardOut(this,'本周不再推荐 TA')">忽略</button>
           </div>
         </div>
@@ -1927,12 +2037,13 @@
             <div class="ch-text">本周已完成 4 次训练 · 跟你节奏接近</div>
           </div>
           <div class="rec-actions">
-            <button class="btn primary" onclick="recCardOut(this,'已申请关注，等待对方同意')">申请关注 <span class="xp">+10 XP</span></button>
+            <button class="btn primary" onclick="recCardOut(this,'已发送好友请求，等待对方同意')">加为好友 <span class="xp">+10 XP</span></button>
             <button class="btn ghost" onclick="recCardOut(this,'本周不再推荐 TA')">忽略</button>
           </div>
         </div>
 
         <div class="more-btn" id="moreRecBtn" onclick="loadMoreRec()">↓ 查看更多</div>
+        </div><!-- /.nearby-on-list（v2.6） -->
       </div>
 
       <!-- ===== Sub-panel C · 我的好友 ===== -->
@@ -1956,6 +2067,16 @@
             </div>
             <div class="row-arrow">›</div>
           </div>
+        </div>
+
+        <!-- 关心设置入口（v2.4：跳《03-个人中心》P5.care） -->
+        <div class="row-card care-settings-entry" onclick="window.location.href='03-个人中心.html?page=P5.care'" style="margin:0 16px 12px;display:flex;align-items:center;gap:12px;padding:14px 16px;background:#fff;border-radius:14px;box-shadow:var(--shadow-card,0 2px 8px rgba(15,23,42,0.06));cursor:pointer;">
+          <div class="row-icon" style="width:36px;height:36px;border-radius:50%;background:rgba(255,107,170,0.14);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">💞</div>
+          <div class="row-info" style="flex:1;min-width:0;">
+            <div class="row-title" style="font-size:15px;font-weight:600;color:var(--color-text-primary,#1A1A1A);">关心设置</div>
+            <div class="row-sub" style="font-size:12px;color:var(--color-text-secondary,#737580);margin-top:2px;">社交标签 / 动态发送 / 谁可以看到我的动态 / 附近推荐</div>
+          </div>
+          <div class="row-arrow" style="color:var(--color-text-tertiary,#A8AAB3);font-size:18px;">›</div>
         </div>
 
         <!-- 特别关心 分组（容器由 syncCare() 渲染；组内为空时整段隐藏） -->
@@ -2135,7 +2256,15 @@
       </div>
 
       <div class="disclaimer" style="text-align:center; margin-top:14px;">
-        关心积分由点赞、评论、关注、邀请等互动累计 · 每周一凌晨重置
+        关心积分由点赞、评论、加好友、邀请等互动累计 · 每周一凌晨重置
+      </div>
+
+      <!-- v2.4 P2：C2 无好友态（由 body.care-state-empty 控制显示） -->
+      <div class="c2-empty-injected">
+        <div class="icon">👋</div>
+        <div class="title">还没有好友</div>
+        <div class="sub">邀请家人和戒指好友<br>互相关心、互相点赞，挑战更有动力</div>
+        <button class="cta" onclick="goto('c3')">➕ 添加好友</button>
       </div>
     </div>
   </div>
@@ -2185,7 +2314,7 @@
       </div>
 
       <!-- Tips（底部 2 条） -->
-      <div class="tip-line">ⓘ 通过邀请码加入的亲友默认互相关心，无需再审批</div>
+      <div class="tip-line">ⓘ 通过邀请码 / 链接加入的对方默认互相成为好友，无需再审批</div>
       <div class="tip-line">ⓘ 每成功邀请一位 <b style="color:var(--pink);">+20 XP</b></div>
     </div>
     <!-- 底部悬浮搜索 dock：粘贴邀请码 → 添加好友 -->
@@ -2276,12 +2405,20 @@
           <div class="avatar has-photo"><img class="real-photo" src="https://i.pravatar.cc/150?img=8" alt="王医生"><span class="ring-mark">R</span></div>
           <div class="info">
             <div class="nm">王医生</div>
-            <div class="ms">AIR-9F3K2X · 已成为亲友</div>
+            <div class="ms">AIR-9F3K2X · 已成为好友</div>
           </div>
           <div class="acts">
             <button class="mini-btn primary" onclick="toast('👋 已打招呼')">打招呼</button>
           </div>
         </div>
+      </div>
+
+      <!-- v2.4 P2：C4 全空态（由 body.care-state-empty 控制显示） -->
+      <div class="c4-empty-injected">
+        <div class="icon">📭</div>
+        <div class="title">暂无好友通知</div>
+        <div class="sub">还没有人申请加你为好友<br>也没有你发出的待处理请求</div>
+        <button class="cta" onclick="goto('c3')">➕ 添加好友</button>
       </div>
     </div>
   </div>
@@ -2302,15 +2439,16 @@
     <div class="app-topbar--secondary">
       <div class="back" onclick="goto('c1')">‹</div>
       <div class="title" id="c5Title" style="padding-right:0;">阿戒 的主页</div>
-      <div class="topbar-set-btn" onclick="openCareSet()" title="主页设置">⚙️</div>
+      <button class="topbar-action topbar-set-btn" onclick="openCareSet()" title="主页设置" aria-label="主页设置">⚙️</button>
     </div>
     <div class="scroll page-content-2">
+      <!-- 头像卡（profile-hero）在最顶部 -->
       <div class="profile-hero">
         <div class="profile-row">
           <div class="profile-avatar"><img id="c5Avatar" class="real-photo" src="https://i.pravatar.cc/150?img=60" alt="阿戒"><span class="ring-mark">R</span></div>
           <div class="profile-info">
             <div class="profile-name" id="c5Name">阿戒 <span class="tag-mini special tag-care">特别关心</span></div>
-            <div class="profile-meta" id="c5Meta">同城 · 已关注 86 天 · 本名 戒小明</div>
+            <div class="profile-meta" id="c5Meta">同城 · 已成为好友 86 天 · 本名 戒小明</div>
           </div>
           <button class="note-btn" onclick="toast('打开备注编辑')">✏️ 备注</button>
         </div>
@@ -2327,6 +2465,15 @@
           <div class="it"><div class="vv">36</div><div class="lb">TA 给你点赞</div></div>
           <div class="it"><div class="vv">14</div><div class="lb">挑战卡片</div></div>
         </div>
+      </div>
+
+      <!-- v2.5：陌生人视角 CTA（仅 stranger 视角显示，位于头像卡下方）
+           follow-hint 已 v2.5 废弃（不再有"关注的好友"档） -->
+      <div class="stranger-cta">
+        <div class="icon">🚪</div>
+        <div class="title">你和 TA 还不是好友</div>
+        <div class="sub">加为好友后可看到 TA 公开的脱敏挑战卡片<br>邀请码加入会即时成为好友 · 同城推荐 / 昵称搜索需对方同意</div>
+        <button class="btn-follow" onclick="toast('已发送好友请求，等待对方同意')">✨ 加为好友 +10 XP</button>
       </div>
 
       <div class="section-head" style="padding:0 20px;">
@@ -2418,7 +2565,7 @@
     <div class="app-topbar--secondary">
       <div class="back" onclick="goto('c1')">‹</div>
       <div class="title" style="padding-right:0;">我的动态</div>
-      <div class="topbar-set-btn" onclick="goToCareProfilePage()" title="主页设置">⚙️</div>
+      <button class="topbar-action topbar-set-btn" onclick="window.location.href='03-个人中心.html?page=P5.care'" title="关心设置" aria-label="关心设置">⚙️</button>
     </div>
     <div class="scroll page-content-2">
       <div class="profile-hero">
@@ -3070,6 +3217,84 @@
     });
   });
 
+  /* v2.5: C5 关系视角切换（陌生人 / 好友 / 特别关心）
+     - 选择器用 .page[data-page="c5"] 限定（避开 sidebar 上同名 nav-item）
+     - 三态：stranger（互未加好友）/ friend（普通好友）/ vip（好友+特别关心标记）
+     - 注意：vip 与 friend 唯一差异 = "特别关心"标签是否显示 */
+  window.switchC5Relation = function(rel, btn){
+    // ① 切按钮 is-active
+    document.querySelectorAll('.side-nav .relation-btn').forEach(x=>x.classList.remove('is-active'));
+    if(btn) btn.classList.add('is-active');
+
+    // ② 取真正的 C5 page
+    const c5 = document.querySelector('.page[data-page="c5"]');
+    if(!c5) return;
+    c5.setAttribute('data-relation', rel);
+
+    // ③ 按视角控制元素显隐
+    const isStranger = rel === 'stranger';
+    const isVip      = rel === 'vip';
+    const strangerCta = c5.querySelector('.stranger-cta');
+    const followHint  = c5.querySelector('.follow-hint');  // v2.5：已废弃，所有视角都隐藏
+    const tagCares    = c5.querySelectorAll('.tag-care');
+    const triple      = c5.querySelector('.triple');
+    const tagRow      = c5.querySelector('.profile-tag-row');
+    const noteBtn     = c5.querySelector('.note-btn');
+    const sectionHead = c5.querySelector('.section-head');
+    const dynCards    = c5.querySelectorAll('.dyn-card');
+    const dynHints    = c5.querySelectorAll('.dyn-time-hint');
+    const topbarSet   = c5.querySelector('.topbar-action, .topbar-set-btn');
+
+    // 陌生人：仅显示 stranger-cta + 头像；好友 / 特别关心：完整展示
+    if(strangerCta) strangerCta.style.display = isStranger ? 'flex' : 'none';
+    if(followHint)  followHint.style.display  = 'none';  // v2.5 废弃
+    // 特别关心标签：仅 vip 视角显示
+    tagCares.forEach(e => e.style.display = isVip ? '' : 'none');
+    if(triple)      triple.style.display      = isStranger ? 'none' : '';
+    if(tagRow)      tagRow.style.display      = isStranger ? 'none' : '';
+    if(noteBtn)     noteBtn.style.display     = isStranger ? 'none' : '';
+    if(sectionHead) sectionHead.style.display = isStranger ? 'none' : '';
+    dynCards.forEach(e => e.style.display = isStranger ? 'none' : '');
+    dynHints.forEach(e => e.style.display = isStranger ? 'none' : '');
+    if(topbarSet)   topbarSet.style.display   = isStranger ? 'none' : '';
+
+    // ④ 跳 C5 page
+    goto('c5');
+  };
+
+  // v2.5 初始化默认 = 好友（vip 视角下"特别关心"标签默认显示，但本页面默认进入是好友视角）
+  (function initRelation(){
+    const c5 = document.querySelector('.page[data-page="c5"]');
+    if(c5 && !c5.getAttribute('data-relation')) c5.setAttribute('data-relation','friend');
+  })();
+
+  /* v2.6: C1.B 附近推荐 demo 切换（未开启 / 已开启）
+     - off：显示 nearby-off-card 引导卡，隐藏推荐流
+     - on：隐藏引导卡，显示推荐流（默认） */
+  window.switchNearby = function(mode, btn){
+    // 切按钮 is-active（btn 未传时按 mode 自动找侧边对应按钮）
+    document.querySelectorAll('.side-nav .nearby-btn').forEach(x=>x.classList.remove('is-active'));
+    const target = btn || document.querySelector('.side-nav .nearby-btn[data-nearby="'+mode+'"]');
+    if(target) target.classList.add('is-active');
+
+    const offCard = document.getElementById('nearbyOffCard');
+    const onList  = document.getElementById('nearbyOnList');
+    const isOff = mode === 'off';
+    if(offCard) offCard.style.display = isOff ? 'flex' : 'none';
+    if(onList)  onList.style.display  = isOff ? 'none' : '';
+
+    // 跳到 C1 · 发现 子 Tab
+    gotoSub('c1', 'b');
+    toast(isOff ? '附近推荐已关闭（默认 OFF）' : '附近推荐已开启');
+  };
+  // 初始化：默认 OFF（隐私优先）
+  (function initNearby(){
+    const offCard = document.getElementById('nearbyOffCard');
+    const onList  = document.getElementById('nearbyOnList');
+    if(offCard) offCard.style.display = 'flex';
+    if(onList)  onList.style.display  = 'none';
+  })();
+
   // 启动时快照原始 podium HTML，以便状态切换后能完整恢复
   const _origPodium = document.querySelector('.podium-row')?.innerHTML;
 
@@ -3078,6 +3303,8 @@
     // 始终从 c1 看效果
     if(s !== 'dark') goto('c1');
     const phone = document.getElementById('phone');
+    // v2.4 P2：通过 body class 联动 C2 / C4 的空态注入卡
+    document.body.classList.toggle('care-state-empty', s === 'empty');
 
     // 默认态：恢复全部
     document.querySelectorAll('.subpanel .dyn-card, .subpanel .rec-card, .subpanel .friend-row, .subpanel .row-cards, .subpanel .more-btn, .subpanel .notice-bar, .subpanel .incentive, .subpanel .section-head')
@@ -3194,7 +3421,7 @@
       block.innerHTML = `
         <div class="lr-icon">🔒</div>
         <div class="lr-title">请先登录</div>
-        <div class="lr-sub">关心圈仅对已登录用户开放<br>登录后即可与亲友互相关心、查看脱敏挑战卡片</div>
+        <div class="lr-sub">关心圈仅对已登录用户开放<br>登录后即可与好友互相关心、查看脱敏挑战卡片</div>
         <button class="lr-cta" onclick="window.location.href='03-个人中心.html?page=P1.1'">前往登录</button>
       `;
       const c1Scroll = document.querySelector('[data-page="c1"] .scroll');
@@ -3317,19 +3544,19 @@
   /* ===== 用户元数据：从任意头像点进 C5 时按这里渲染信息 =====
      special:true 表示该好友被设为"特别关心"（demo：仅阿戒预设为 true） */
   const USERS = {
-    '阿戒':   {meta:'同城 · 已关注 86 天 · 本名 戒小明',  special:true },
-    '周妈妈': {meta:'异地 · 已关注 102 天 · 本名 周慧兰', special:false},
-    '林雨晴': {meta:'同城 · 已关注 12 天',                special:false},
-    '苏小桔': {meta:'同城 · 已关注 28 天',                special:false},
-    '爸爸':   {meta:'异地 · 已关注 1095 天 · 本名 王国强', special:false},
-    '陈乐':   {meta:'同城 · 已关注 56 天',                special:false},
-    '王医生': {meta:'同城 · 已关注 18 天',                special:false},
-    '林叔叔': {meta:'异地 · 已关注 240 天 · 本名 林志远', special:false},
-    '高维维': {meta:'异地 · 已关注 22 天',                special:false},
-    '表妹小可': {meta:'同城 · 已关注 1 天 · 通过邀请码加入', special:false}
+    '阿戒':   {meta:'同城 · 已成为好友 86 天 · 本名 戒小明',  special:true },
+    '周妈妈': {meta:'异地 · 已成为好友 102 天 · 本名 周慧兰', special:false},
+    '林雨晴': {meta:'同城 · 已成为好友 12 天',                special:false},
+    '苏小桔': {meta:'同城 · 已成为好友 28 天',                special:false},
+    '爸爸':   {meta:'异地 · 已成为好友 1095 天 · 本名 王国强', special:false},
+    '陈乐':   {meta:'同城 · 已成为好友 56 天',                special:false},
+    '王医生': {meta:'同城 · 已成为好友 18 天',                special:false},
+    '林叔叔': {meta:'异地 · 已成为好友 240 天 · 本名 林志远', special:false},
+    '高维维': {meta:'异地 · 已成为好友 22 天',                special:false},
+    '表妹小可': {meta:'同城 · 已成为好友 1 天 · 通过邀请码加入', special:false}
   };
   function getUserData(name){
-    return USERS[name] || {meta:'同城 · 已关注 — · 关注', special:false};
+    return USERS[name] || {meta:'同城 · 已成为好友 — 天', special:false};
   }
   function renderProfileName(name, special){
     const nameEl = document.getElementById('c5Name');
@@ -3434,7 +3661,7 @@
   function doAddFriend(){
     const src = document.getElementById('confirmSrc').textContent;
     closeConfirm();
-    // 通过邀请链接 / 邀请码 / 自动识别加入的亲友 → 双方默认互相关心，无需对方同意
+    // v2.5：通过邀请链接 / 邀请码 / 自动识别加入的对方 → 双方默认互相成为好友，无需对方同意
     if(src.includes('邀请链接') || src.includes('邀请码') || src.includes('自动识别')){
       toast('✓ 已成为好友 · 可以互相关心啦');
     } else {
@@ -3561,7 +3788,7 @@
           <div class="ch-text">${r.activity.text}</div>
         </div>
         <div class="rec-actions">
-          <button class="btn primary" onclick="recCardOut(this,'已申请关注，等待对方同意')">申请关注 <span class="xp">+10 XP</span></button>
+          <button class="btn primary" onclick="recCardOut(this,'已发送好友请求，等待对方同意')">加为好友 <span class="xp">+10 XP</span></button>
           <button class="btn ghost" onclick="recCardOut(this,'本周不再推荐 TA')">忽略</button>
         </div>
       `;
@@ -3631,6 +3858,52 @@
       syncCare();
     }
   })();
+
+  /* ==========================================================
+     动态列表按 data-time 倒序排（v2.4 强一致性要求 · § 业务规则 · 列表排序）
+     - 适用：C1.A 好友动态、C5 个人主页、C-Me 我的动态
+     - 每张卡视为一个"单元"，其前面紧邻的 .dyn-time-hint 视为该卡的副文行，一同移动
+     - 不带 data-time 的卡片放最末（保底，避免漏渲染）
+     ========================================================== */
+  function sortDynListByTime(listEl){
+    if (!listEl) return;
+    const cards = Array.from(listEl.querySelectorAll(':scope > .dyn-card'));
+    if (cards.length <= 1) return;
+
+    // 把每张卡 + 其紧邻的上一个 .dyn-time-hint 视为一个单元
+    const units = cards.map(card => {
+      const hint = card.previousElementSibling && card.previousElementSibling.classList.contains('dyn-time-hint')
+        ? card.previousElementSibling
+        : null;
+      const t = card.getAttribute('data-time') || '';
+      // 没有 data-time 的卡 → 用空字符串排到最末（Number.NEGATIVE_INFINITY 等效）
+      const ts = t ? Date.parse(t) : Number.NEGATIVE_INFINITY;
+      return { hint, card, ts };
+    });
+
+    units.sort((a, b) => b.ts - a.ts);
+
+    // 用 fragment 一次性重新挂载，避免多次 reflow
+    const frag = document.createDocumentFragment();
+    units.forEach(u => {
+      if (u.hint) frag.appendChild(u.hint);
+      frag.appendChild(u.card);
+    });
+    listEl.appendChild(frag);
+  }
+
+  function sortAllDynLists(){
+    // C1.A 好友动态在 .subpanel[data-panel="a"] 容器里
+    document.querySelectorAll('.subpanel[data-panel="a"]').forEach(sortDynListByTime);
+    // C5 / C-Me 在各自 page 的 .scroll.page-content-2 里 — 但卡片是兄弟节点，直接定位父容器
+    document.querySelectorAll('[data-page="c5"] .scroll, [data-page="c-me"] .scroll').forEach(sortDynListByTime);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', sortAllDynLists);
+  } else {
+    sortAllDynLists();
+  }
 
   /* ==========================================================
      好友动态卡：点赞 + 评论 + ⋯ 菜单（与 01-今日模块.html 一致）
