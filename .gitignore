@@ -1,0 +1,72 @@
+# ===== 系统 / 编辑器 =====
+.DS_Store
+.fuse_hidden*
+*.swp
+*.swo
+Thumbs.db
+
+# ===== 缓存 / 临时 =====
+.npm-cache/
+.codex-video/
+node_modules/
+
+# ===== Claude Code 本地工作目录（含嵌套 git worktrees）=====
+.claude/
+
+# ===== Obsidian 工作区配置 =====
+.obsidian/
+
+# ===== 大文件 / 二进制 =====
+aipm.plugin
+tree-spirit-video/
+
+# ===== 根目录：只保留 README.md 与 .gitignore =====
+/index.html
+/design.md
+/发布.md
+/会议纪要.md
+/2026-05-22 会议纪要.md
+/项目待办事项.md
+/项目周报*.html
+/项目周报*.md
+/一期*.html
+/一期*.md
+/活动流程demo与运营对齐.md
+/ios 上架材料准备.md
+/唯戒*.md
+
+# ===== 根目录其他本地资料文件夹（与上传无关）=====
+/戒指管理后台/
+/身体恢复度分析/
+/今日挑战提示语/
+/新方式/
+/downloads/
+/docs/
+/项目资料/
+
+# ===== 「输出 html/」内：只保留 5 个模块 + 导航 + mock + 这 5 个模块依赖的资产 =====
+输出 html/历史存档/
+输出 html/icons/
+输出 html/tab图标/
+输出 html/勋章图标/
+输出 html/唯戒-icons-sprite.svg
+输出 html/唯戒-icons-index.json
+输出 html/唯戒-icons-data.js
+输出 html/唯戒-设计规范-tokens.css
+输出 html/唯戒-设计规范预览-v1.8.html
+输出 html/唯戒-提示语模板.md
+输出 html/xp成长规则说明.html
+输出 html/竞品恢复度算法简明对比.html
+输出 html/身体恢复度计算规则.html
+
+# ===== 旧版根目录残留（git 历史里的 D 状态）=====
+/care.html
+/levelup.html
+/profile.html
+/today.html
+/icons/
+/唯戒-icons-data.js
+/唯戒-icons-index.json
+/唯戒-icons-sprite.svg
+/唯戒-设计规范-tokens.css
+/唯戒-设计规范预览-v1.8.html
