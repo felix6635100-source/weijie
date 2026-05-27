@@ -20,8 +20,7 @@ node_modules/
 aipm.plugin
 tree-spirit-video/
 
-# ===== 根目录：只保留 README.md 与 .gitignore =====
-/index.html
+# ===== 根目录：只保留 README.md、.gitignore、index.html（GitHub Pages 入口）=====
 /design.md
 /发布.md
 /会议纪要.md
