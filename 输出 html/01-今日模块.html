@@ -1058,6 +1058,9 @@ body.is-dark-mode .ios-status-bar .iss-battery::after { background: #fff; }
   margin-top: 7px;
   line-height: 1.4;
   max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .habit-right {
   display: flex; flex-direction: row;
@@ -2713,6 +2716,287 @@ body.is-dark-mode .ios-status-bar .iss-battery::after { background: #fff; }
   font-size: 13px; font-weight: var(--weight-semi);
 }
 
+/* ==========================================================
+   XP 获得动画 · awardXp(originEl, amount, label)
+   - 主浮标：「+N XP」大金字 + 下挂深色小胶囊 = 合并 toast 反馈
+   - 火花：6 颗小点向四周散开
+   - 触发元素：轻微弹一下
+   ---------------------------------------------------------- */
+/* ==========================================================
+   进度条：0 → target 动画 + 满杯闪烁
+   ========================================================== */
+.habit-progress-fill {
+  transition: width 1.2s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+.habit-progress-fill.is-flash {
+  animation: progressFlash 0.8s ease-out;
+}
+@keyframes progressFlash {
+  0%   { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);   filter: brightness(1); }
+  35%  { box-shadow: 0 0 14px 5px rgba(255, 255, 255, 0.75); filter: brightness(1.4); }
+  70%  { box-shadow: 0 0 6px 2px rgba(255, 255, 255, 0.3);  filter: brightness(1.15); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);   filter: brightness(1); }
+}
+
+/* ==========================================================
+   挑战完成喝彩浮窗 · awardChallengeCompletion(name)
+   ========================================================== */
+/* 挑战完成喝彩浮窗 v2（参考 drink-xp-demo / GSAP 风格）
+   - 白色磨砂背景遮罩 + 居中圆角面板
+   - 徽章旋转入场，标题字符逐字滑入，38 颗彩屑爆炸 */
+.completion-modal {
+  position: absolute; inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 28px;
+  background: rgba(255, 255, 255, 0.82);
+  -webkit-backdrop-filter: blur(9px);
+  backdrop-filter: blur(9px);
+  pointer-events: none;
+  opacity: 0;
+  animation: completionOverlayFade 4.2s forwards;
+}
+@keyframes completionOverlayFade {
+  0%   { opacity: 0; }
+  6%   { opacity: 1; }
+  90%  { opacity: 1; }
+  100% { opacity: 0; }
+}
+.completion-panel {
+  position: relative;
+  width: 100%;
+  max-width: 280px;
+  padding: 26px 22px 22px;
+  border: 1px solid rgba(42, 199, 143, 0.25);
+  border-radius: 24px;
+  background: #FFFFFF;
+  text-align: center;
+  box-shadow: 0 24px 70px rgba(48, 75, 105, 0.18);
+  transform: translateY(24px) scale(0.96);
+  opacity: 0;
+  animation: completionPanelIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.16s forwards;
+}
+@keyframes completionPanelIn {
+  0%   { transform: translateY(24px) scale(0.96); opacity: 0; }
+  100% { transform: translateY(0)    scale(1);    opacity: 1; }
+}
+.completion-badge {
+  position: relative;
+  width: 96px; height: 96px;
+  margin: 0 auto 16px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #FFC64A 0%, #FFE690 58%, #FFFFFF 59%);
+  box-shadow: 0 18px 36px rgba(255, 198, 74, 0.3);
+  transform: scale(0) rotate(-28deg);
+  opacity: 0;
+  animation: completionBadgeIn 0.64s cubic-bezier(0.34, 1.56, 0.64, 1) 0.28s forwards;
+}
+@keyframes completionBadgeIn {
+  0%   { transform: scale(0) rotate(-28deg); opacity: 0; }
+  100% { transform: scale(1) rotate(0);      opacity: 1; }
+}
+.completion-badge svg { width: 48px; height: 48px; }
+.completion-title {
+  margin: 0 0 8px;
+  overflow: hidden;
+  font-size: 26px;
+  font-weight: 900;
+  line-height: 1.15;
+  letter-spacing: 0.3px;
+  color: #15202B;
+}
+.completion-title span {
+  display: inline-block;
+  transform: translateY(120%);
+  opacity: 0;
+  animation: completionCharIn 0.46s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+.completion-title span:nth-child(1) { animation-delay: 0.52s; }
+.completion-title span:nth-child(2) { animation-delay: 0.565s; }
+.completion-title span:nth-child(3) { animation-delay: 0.61s; }
+.completion-title span:nth-child(4) { animation-delay: 0.655s; }
+.completion-title span:nth-child(5) { animation-delay: 0.70s; }
+.completion-title span:nth-child(6) { animation-delay: 0.745s; }
+.completion-title span:nth-child(7) { animation-delay: 0.79s; }
+.completion-title span:nth-child(8) { animation-delay: 0.835s; }
+@keyframes completionCharIn {
+  0%   { transform: translateY(120%); opacity: 0; }
+  100% { transform: translateY(0);    opacity: 1; }
+}
+.completion-copy {
+  margin: 6px 0 0;
+  color: #627183;
+  font-weight: 600;
+  font-size: 13px;
+  line-height: 1.5;
+  opacity: 0;
+  animation: completionCopyIn 0.45s ease-out 1.0s forwards;
+}
+@keyframes completionCopyIn {
+  0%   { opacity: 0; transform: translateY(8px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+/* 38 颗彩屑：以面板中心为起点向外爆炸 */
+.completion-confetti {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 9px; height: 16px;
+  border-radius: 3px;
+  pointer-events: none;
+  transform: translate(-50%, -50%) scale(0);
+  opacity: 0;
+  animation: completionConfettiBurst 1.65s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes completionConfettiBurst {
+  0%   { transform: translate(-50%, -50%) translate(0, 0) rotate(0deg) scale(1); opacity: 1; }
+  100% { transform: translate(-50%, -50%) translate(var(--dx, 0), var(--dy, 0)) rotate(var(--rot, 0)) scale(0.7); opacity: 0; }
+}
+
+/* 进度条增长时在 tip 旁边浮起的金色 +N XP 飘字（数字 count-up） */
+.xp-float-inline {
+  position: fixed;
+  z-index: 9998;
+  pointer-events: none;
+  font-family: var(--font-sans);
+  font-size: 18px;
+  font-weight: 900;
+  letter-spacing: 0.4px;
+  background: linear-gradient(135deg, #FFF1B8 0%, #FFC53D 45%, #FFA31A 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 2px 8px rgba(255, 182, 11, 0.9));
+  white-space: nowrap;
+  transform: translate(-50%, 0) scale(0);
+  opacity: 0;
+  /* 入场 punch → 静态停留 0.7s → 缓慢上浮淡出，总时长 ~2.85s */
+  animation:
+    xpFloatPunch 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) forwards,
+    xpFloatDrift 1.55s cubic-bezier(0.16, 1, 0.3, 1) 1.30s forwards;
+}
+@keyframes xpFloatPunch {
+  0%   { transform: translate(-50%, -8px)  scale(0);    opacity: 0; }
+  55%  { transform: translate(-50%, -22px) scale(1.35); opacity: 1; }
+  100% { transform: translate(-50%, -26px) scale(1.0);  opacity: 1; }
+}
+@keyframes xpFloatDrift {
+  0%   { transform: translate(-50%, -26px) scale(1.0);  opacity: 1; }
+  100% { transform: translate(-50%, -26px) scale(0.96); opacity: 0; }
+}
+
+/* XP 提示 toast：白底金边小胶囊，附在进度条附近 */
+.xp-flyup {
+  position: fixed;
+  z-index: 9999;
+  pointer-events: none;
+  font-family: var(--font-sans);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px 8px 12px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #FFFFFF 0%, #FFF7DC 100%);
+  border: 1.5px solid rgba(255, 200, 80, 0.7);
+  box-shadow:
+    0 10px 26px rgba(0, 0, 0, 0.12),
+    0 0 22px rgba(255, 182, 11, 0.45);
+  white-space: nowrap;
+  transform: translate(-50%, 14px) scale(0.7);
+  opacity: 0;
+  /* 入场弹性 + 短暂悬停 + 上浮淡出 */
+  animation:
+    xpEntrance 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) forwards,
+    xpHover 1.2s ease-in-out 0.55s 1,
+    xpExit 0.5s ease-in 1.85s forwards;
+}
+@keyframes xpEntrance {
+  0%   { transform: translate(-50%, 14px)  scale(0.7); opacity: 0; }
+  60%  { transform: translate(-50%, -10px) scale(1.1); opacity: 1; }
+  100% { transform: translate(-50%, -8px)  scale(1.0); opacity: 1; }
+}
+@keyframes xpHover {
+  0%, 100% { transform: translate(-50%, -8px)  scale(1.0); }
+  50%      { transform: translate(-50%, -11px) scale(1.02); }
+}
+@keyframes xpExit {
+  0%   { transform: translate(-50%, -8px)  scale(1.0);  opacity: 1; }
+  100% { transform: translate(-50%, -30px) scale(0.95); opacity: 0; }
+}
+
+.xp-flyup .xp-action {
+  color: var(--color-text-primary);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+.xp-flyup .xp-dot {
+  width: 3px; height: 3px;
+  border-radius: 50%;
+  background: rgba(255, 182, 11, 0.7);
+  margin: 0 1px;
+}
+.xp-flyup .xp-amount {
+  font-size: 14px;
+  font-weight: 900;
+  letter-spacing: 0.4px;
+  background: linear-gradient(135deg, #FFE08A 0%, #FFB60B 60%, #FFA31A 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 0 5px rgba(255, 182, 11, 0.6));
+}
+@keyframes xpFlyUp {
+  0%   { transform: translate(-50%, 0)    scale(0.4); opacity: 0; }
+  12%  { transform: translate(-50%, -10px) scale(1.2);  opacity: 1; }
+  22%  { transform: translate(-50%, -22px) scale(1.0);  opacity: 1; }
+  60%  { transform: translate(-50%, -42px) scale(1.0);  opacity: 1; }
+  85%  { transform: translate(-50%, -72px) scale(0.95); opacity: 0.5; }
+  100% { transform: translate(-50%, -100px) scale(0.85); opacity: 0; }
+}
+/* 删除旧版 xpFlyUp 关键帧（被 xpEntrance/xpExit 替代） */
+@keyframes xpFlyUp {
+  0%   { transform: translate(-50%, 0)     scale(0.4); opacity: 0; }
+  100% { transform: translate(-50%, -100px) scale(0.85); opacity: 0; }
+}
+
+.xp-spark {
+  position: fixed;
+  z-index: 9998;
+  pointer-events: none;
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #FFF8D1 0%, #FFD24D 40%, #FFB60B 75%, rgba(255, 182, 11, 0) 100%);
+  filter: drop-shadow(0 0 6px rgba(255, 209, 102, 0.95));
+  transform: translate(-50%, -50%) scale(0);
+  opacity: 0;
+  /* 长抛物线 + 下落：第一段冲出，第二段重力下坠 */
+  animation: xpSpark 1.4s cubic-bezier(0.18, 0.72, 0.32, 1) forwards;
+}
+@keyframes xpSpark {
+  0%   { transform: translate(-50%, -50%) scale(0);
+         opacity: 0; }
+  10%  { transform: translate(calc(-50% + var(--dx, 0px) * 0.22), calc(-50% + var(--dy, 0px) * 0.22)) scale(1.35);
+         opacity: 1; }
+  45%  { transform: translate(calc(-50% + var(--dx, 0px) * 0.85), calc(-50% + var(--dy, 0px) * 0.85 - 4px)) scale(1.0);
+         opacity: 1; }
+  75%  { transform: translate(calc(-50% + var(--dx, 0px) * 1.05), calc(-50% + var(--dy, 0px) * 1.05 + 14px)) scale(0.7);
+         opacity: 0.65; }
+  100% { transform: translate(calc(-50% + var(--dx, 0px) * 1.15), calc(-50% + var(--dy, 0px) * 1.15 + 38px)) scale(0);
+         opacity: 0; }
+}
+@keyframes xpPulse {
+  0%   { transform: scale(1); }
+  35%  { transform: scale(1.16); }
+  60%  { transform: scale(0.96); }
+  100% { transform: scale(1); }
+}
+.xp-pulse { animation: xpPulse 0.42s cubic-bezier(0.2, 0.85, 0.38, 1.2); }
+/* like-btn 已有 :active scale(0.92)，pulse 时取消 active 干扰 */
+.like-btn.xp-pulse:active { transform: scale(1); }
+
 </style>
 </head>
 <body>
@@ -3286,10 +3570,10 @@ body.is-dark-mode .ios-status-bar .iss-battery::after { background: #fff; }
           <div class="habit-icon" style="background: var(--gradient-challenge-cyan); box-shadow: 0 5px 12px rgba(10, 212, 255, 0.22)">💧</div>
           <div class="habit-mid">
             <div class="habit-name">喝水</div>
-            <span class="habit-chip" style="background: rgba(123, 252, 255, 0.24); color: #0A9AD8; border: 1px solid rgba(10, 212, 255, 0.22)">🥤 2,000 毫升饮水目标</span>
+            <span class="habit-chip" style="background: rgba(123, 252, 255, 0.24); color: #0A9AD8; border: 1px solid rgba(10, 212, 255, 0.22)">🥤 2,000 ml 饮水目标</span>
           </div>
           <div class="habit-right">
-            <button class="habit-manual-btn" type="button" aria-label="手动记录喝水" onclick="event.stopPropagation();openSheet('sheetT71')">+</button>
+            <button class="habit-manual-btn" type="button" aria-label="手动记录喝水" onclick="event.stopPropagation();openT71()">+</button>
             <span class="habit-xp">+20 XP</span>
           </div>
         </div>
@@ -3396,7 +3680,7 @@ body.is-dark-mode .ios-status-bar .iss-battery::after { background: #fff; }
             <span class="habit-chip" style="background: rgba(127, 187, 255, 0.22); color: var(--color-brand-primary); border: 1px solid rgba(58, 111, 224, 0.20)">💊 今日服药计划</span>
           </div>
           <div class="habit-right">
-            <button class="habit-manual-btn" type="button" aria-label="手动记录服药" onclick="event.stopPropagation();toast('已记录今日服药')">+</button>
+            <button class="habit-manual-btn" type="button" aria-label="手动记录服药" onclick="event.stopPropagation();awardXp(this, 5, '已记录今日服药')">+</button>
             <span class="habit-xp earned">+20 XP</span>
           </div>
         </div>
@@ -3547,6 +3831,23 @@ body.is-dark-mode .ios-status-bar .iss-battery::after { background: #fff; }
         <div class="t3-content">
         <!-- 睡眠分期段（仅睡眠态） -->
         <div id="t3Sleep" style="display:none">
+          <div class="section-subtitle">昨晚睡眠时段</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px">
+            <div style="background:linear-gradient(135deg,#F4F1FF 0%,#FFFFFF 100%);border:1px solid rgba(113,79,247,0.12);border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:10px">
+              <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#C0B0FF 0%,#714FF7 100%);display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 3px 8px rgba(113,79,247,0.22)">🌙</div>
+              <div style="min-width:0">
+                <div style="font-size:10px;color:var(--text-tertiary);letter-spacing:0.3px">入睡时间</div>
+                <div style="font-size:18px;font-weight:700;color:var(--text);line-height:1.1;margin-top:2px">23:18</div>
+              </div>
+            </div>
+            <div style="background:linear-gradient(135deg,#FFF6E5 0%,#FFFFFF 100%);border:1px solid rgba(255,163,26,0.16);border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:10px">
+              <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#FFD27F 0%,#FFA31A 100%);display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 3px 8px rgba(255,163,26,0.22)">☀️</div>
+              <div style="min-width:0">
+                <div style="font-size:10px;color:var(--text-tertiary);letter-spacing:0.3px">醒来时间</div>
+                <div style="font-size:18px;font-weight:700;color:var(--text);line-height:1.1;margin-top:2px">06:51</div>
+              </div>
+            </div>
+          </div>
           <div class="section-subtitle">昨晚睡眠构成</div>
           <div class="viz-sleep" style="height:18px">
             <div class="seg-wake" style="width:8%"></div>
@@ -3963,6 +4264,24 @@ body.is-dark-mode .ios-status-bar .iss-battery::after { background: #fff; }
           </div>
         </div>
 
+        <!-- 喝水提醒（仅喝水态显示） -->
+        <div id="t62WaterBlock" style="display:none">
+          <div class="med-setting-card">
+            <div class="med-setting-head">
+              <div class="med-setting-main">
+                <div class="med-setting-title">喝水提醒</div>
+                <div class="med-setting-sub" id="t62WaterSub">开启后按设定频率提醒补水</div>
+              </div>
+              <div class="ios-switch" id="t62WaterToggle" onclick="toggleT62WaterReminder(this)"></div>
+            </div>
+            <div id="t62WaterFreqRow" style="display:none;margin-top:12px;padding:12px 14px;background:#fff;border:1px solid var(--border);border-radius:14px;align-items:center;gap:10px;cursor:pointer;box-shadow:0 3px 10px rgba(15,23,42,0.03)" onclick="openPicker('waterFreq')">
+              <span style="font-size:13px;color:var(--text-secondary);flex-shrink:0">提醒频率</span>
+              <span id="t62WaterFreqText" style="flex:1;font-size:15px;font-weight:700;color:#0A9AD8;text-align:right">每 2 小时一次</span>
+              <span style="color:var(--text-tertiary);font-size:16px">›</span>
+            </div>
+          </div>
+        </div>
+
         <!-- 周目标 -->
         <div class="form-row" onclick="openPicker('week')">
           <div class="form-label">周目标</div>
@@ -4043,18 +4362,12 @@ body.is-dark-mode .ios-status-bar .iss-battery::after { background: #fff; }
       </div>
       <div class="picker-body">
         <div class="picker-highlight"></div>
-        <div class="picker-list">
-          <div class="picker-cell">100 ml</div>
-          <div class="picker-cell">200 ml</div>
-          <div class="picker-cell is-selected">300 ml</div>
-          <div class="picker-cell">500 ml</div>
-          <div class="picker-cell">自定义</div>
-        </div>
+        <div class="picker-list" id="t71List"></div>
         <div class="picker-mask-top"></div>
         <div class="picker-mask-bottom"></div>
       </div>
       <div class="picker-footer">
-        <button class="btn btn-primary btn-block" onclick="closeSheet('sheetT71');toast('已记录 300 ml')">确认记录</button>
+        <button class="btn btn-primary btn-block" onclick="confirmWaterRecord(this)">确认记录</button>
       </div>
     </div>
   </div>
@@ -4104,7 +4417,7 @@ body.is-dark-mode .ios-status-bar .iss-battery::after { background: #fff; }
           <div class="action-title" id="t83Title">是否结束本次跑步？</div>
           <div class="action-sub">结束后本次锻炼数据将被记录</div>
         </div>
-        <button class="action-btn is-destructive" onclick="endRun()">结束锻炼</button>
+        <button class="action-btn is-destructive" onclick="endRun(this)">结束锻炼</button>
       </div>
       <div class="action-group">
         <button class="action-btn is-cancel" onclick="closeSheet('sheetT721')">取消</button>
@@ -4173,7 +4486,7 @@ body.is-dark-mode .ios-status-bar .iss-battery::after { background: #fff; }
       </div>
       <div class="comment-input-row">
         <input class="comment-input" maxlength="80" placeholder="说点什么…">
-        <button class="comment-send" onclick="toast('留言已发送')">发送</button>
+        <button class="comment-send" onclick="awardXp(this, 5, '留言已发送')">发送</button>
       </div>
     </div>
   </div>
@@ -4615,7 +4928,7 @@ const CHALLENGE_DATA = {
     emoji: '💧', pct: 55, grad: 'var(--gradient-challenge-cyan)',
     goalLabel: '今日饮水', cur: '1,100', goal: '/ 2,000 ml', goalLine: '目标线 · 2,000 ml',
     heroStats: [
-      { isAction: true, icon: '➕', text: '记录喝水', onclick: "openSheet('sheetT71')" },
+      { isAction: true, icon: '➕', text: '记录喝水', onclick: "openT71()" },
       { value: '5', unit: '次', label: '已记录次数' },
       { value: '17:30', unit: '', label: '建议补水时间' },
     ],
@@ -4645,7 +4958,7 @@ const CHALLENGE_DATA = {
     emoji: '💊', pct: 50, grad: 'var(--gradient-challenge-blue)',
     goalLabel: '今日服药', cur: '1 / 2', goal: '次', goalLine: '目标线 · 计划次数',
     heroStats: [
-      { isAction: true, icon: '➕', text: '记录吃药', onclick: "toast('已记录今日服药')" },
+      { isAction: true, icon: '➕', text: '记录吃药', onclick: "awardXp(this, 5, '已记录今日服药')" },
       { value: '0', unit: '次', label: '漏服次数' },
       { value: '7', unit: '天', label: '连续记录' },
     ],
@@ -5049,6 +5362,29 @@ function toggleT62MedReminder(el) {
   renderT62Medicine();
 }
 
+/* —— 喝水提醒：开关 + 频率（1-6 小时） —— */
+function renderT62Water() {
+  if (t62Draft.name !== '喝水') return;
+  const toggle  = document.getElementById('t62WaterToggle');
+  const sub     = document.getElementById('t62WaterSub');
+  const row     = document.getElementById('t62WaterFreqRow');
+  const txt     = document.getElementById('t62WaterFreqText');
+  if (!toggle || !sub || !row || !txt) return;
+  const on = !!t62Draft.waterReminderEnabled;
+  toggle.classList.toggle('is-on', on);
+  sub.textContent = on
+    ? `每 ${t62Draft.waterFreq} 小时提醒一次`
+    : '开启后按设定频率提醒补水';
+  row.style.display = on ? 'flex' : 'none';
+  txt.textContent = `每 ${t62Draft.waterFreq} 小时一次`;
+}
+
+function toggleT62WaterReminder(el) {
+  t62Draft.waterReminderEnabled = !t62Draft.waterReminderEnabled;
+  if (el) el.classList.toggle('is-on', t62Draft.waterReminderEnabled);
+  renderT62Water();
+}
+
 function openMedTimePicker(index) {
   if (t62Draft.name !== '吃药' || !t62Draft.medEnabled) return;
   const current = t62Draft.medTimes[index] || DEFAULT_MED_TIMES[index] || '08:00';
@@ -5102,6 +5438,9 @@ function openT62(name, current) {
   t62Draft.exerciseType = (name === '跑步') ? currentExerciseType : t62Draft.exerciseType;
   t62Draft.medEnabled = d._medEnabled !== false;
   t62Draft.medTimes = getMedicineTimesForCount(d.weeklyGoal, Array.isArray(d._medTimes) ? d._medTimes : []);
+  // 喝水提醒：默认关闭；上一次保存值优先（从 CHALLENGE_DATA._water* 暂存读回）
+  t62Draft.waterReminderEnabled = !!d._waterReminderEnabled;
+  t62Draft.waterFreq = d._waterFreq || 2;
   // 副文 + 显示
   document.getElementById('t62Sub').textContent = '正在编辑：' + name;
   document.getElementById('t62Goal').textContent = formatGoalDisplay(name, t62Draft.daily, 'daily', t62Draft.exerciseType);
@@ -5110,6 +5449,8 @@ function openT62(name, current) {
   document.getElementById('t62Type').textContent = t62Draft.exerciseType;
   document.getElementById('t62MedBlock').style.display = (name === '吃药') ? 'block' : 'none';
   if (name === '吃药') renderT62Medicine();
+  document.getElementById('t62WaterBlock').style.display = (name === '喝水') ? 'block' : 'none';
+  if (name === '喝水') renderT62Water();
   refreshT62Suggest();
   openSheet('sheetT62');
 }
@@ -5175,6 +5516,25 @@ function openPicker(kind) {
     openSheet('sheetT623');
     return;
   }
+  // 喝水提醒频率：独立分支（1-6 小时 · 步进 1）
+  if (kind === 'waterFreq') {
+    t63Ctx = { kind: 'waterFreq', name: t62Draft.name };
+    const cur = t62Draft.waterFreq || 2;
+    document.getElementById('t63Title').textContent = '修改提醒频率';
+    const list = document.getElementById('t63List');
+    const cells = [];
+    for (let v = 1; v <= 6; v++) {
+      const isSel = v === cur;
+      cells.push(`<div class="picker-cell${isSel ? ' is-selected' : ''}" data-val="${v}">每 ${v} 小时一次</div>`);
+    }
+    list.innerHTML = cells.join('');
+    openSheet('sheetT622');
+    setTimeout(() => {
+      const sel = list.querySelector('.is-selected');
+      if (sel) centerPickerCell(list, sel);
+    }, 50);
+    return;
+  }
   // kind = 'daily' | 'week'
   const name = t62Draft.name;
   t63Ctx = { kind, name };
@@ -5221,6 +5581,9 @@ function confirmT63() {
     t62Draft.daily = v;
     document.getElementById('t62Goal').textContent = formatGoalDisplay(t62Draft.name, v, 'daily', t62Draft.exerciseType);
     if (t62Draft.name === '吃药') renderT62Medicine();
+  } else if (t63Ctx.kind === 'waterFreq') {
+    t62Draft.waterFreq = v;
+    renderT62Water();
   } else {
     t62Draft.week = v;
     document.getElementById('t62WeekGoal').textContent = '一周 ' + v + ' 天';
@@ -5263,6 +5626,10 @@ function saveT62() {
   if (name === '吃药') {
     d._medEnabled = t62Draft.medEnabled;
     d._medTimes = t62Draft.medTimes.slice();
+  }
+  if (name === '喝水') {
+    d._waterReminderEnabled = !!t62Draft.waterReminderEnabled;
+    d._waterFreq = t62Draft.waterFreq || 2;
   }
   // 更新内存数据
   d.weeklyGoal = t62Draft.daily;
@@ -5377,7 +5744,8 @@ function updateChallengeDerivedFields(name) {
   d.goalLine = '目标值 ' + goalText;
   d.subtitle = updateChallengeSubtitle(name, daily);
   d.rule = updateChallengeRule(name, daily, week);
-  d.pct = Math.max(0, Math.min(100, Math.round((current / Math.max(daily, 1)) * 100)));
+  // pct 允许超过 100（用户可继续超额完成），fill 宽度在 syncT1Card 里再 cap
+  d.pct = Math.max(0, Math.round((current / Math.max(daily, 1)) * 100));
   if (Array.isArray(d.weekly)) {
     const reached = d.weekly.filter(v => v >= daily).length;
     d.reached = reached + ' / 7 天';
@@ -5409,7 +5777,7 @@ function syncChallengeEditRows(name) {
   });
 }
 
-/** 同步 T1 卡的副标题 + 进度百分比 */
+/** 同步 T1 卡的副标题 + 进度百分比（兼容旧版 .ch-* 和今日模块的 .habit-* DOM） */
 function syncT1Card(name) {
   const cardSelectorMap = { '走路':'.bg-walk', '睡眠':'.bg-sleep', '消耗':'.bg-burn', '喝水':'.bg-water', '站立':'.bg-stand', '跑步':'.bg-run', '吃药':'.bg-pill' };
   const sel = cardSelectorMap[name];
@@ -5421,12 +5789,36 @@ function syncT1Card(name) {
   if (nameEl) nameEl.textContent = getChallengeDisplayName(name);
   const subtitle = card.querySelector('.ch-subtitle');
   if (subtitle) subtitle.textContent = data.subtitle || '';
-  const fill = card.querySelector('.ch-fill');
-  const percentEl = card.querySelector('.ch-percent');
-  if (fill) fill.style.width = data.pct + '%';
+  // 兼容两套进度条 DOM
+  const fill = card.querySelector('.ch-fill, .habit-progress-fill');
+  const percentEl = card.querySelector('.ch-percent, .habit-percent');
+  if (fill) {
+    const target = Math.min(data.pct, 100); // 条只能加满 100%
+    fill.classList.remove('is-flash');
+    // 直接设新 width，CSS 1.2s 过渡平滑从当前值动画到 target（不再 reset 到 0）
+    fill.style.transition = ''; // 使用 CSS 类里的 1.2s 过渡
+    fill.style.width = target + '%';
+    // 满杯时落地后闪一下
+    if (data.pct >= 100) {
+      setTimeout(() => {
+        fill.classList.add('is-flash');
+        setTimeout(() => fill.classList.remove('is-flash'), 850);
+      }, 1250);
+    }
+  }
   if (percentEl) percentEl.textContent = data.pct + '%';
   const row3 = card.querySelector('.challenge-row3');
   if (row3) row3.innerHTML = buildChallengeCardSummary(name, getChallengeCurrentNumeric(name), data.weeklyGoal);
+  // 今日模块的描述文案在 .habit-desc 里
+  const desc = card.querySelector('.habit-desc');
+  if (desc) desc.innerHTML = buildChallengeCardSummary(name, getChallengeCurrentNumeric(name), data.weeklyGoal);
+  // habit-card 的 XP 标签：达 100% 切到 .earned 绿色 ✅ 样式
+  const habitXp = card.querySelector('.habit-xp');
+  if (habitXp) {
+    const xpValue = parseInt(card.dataset.xp || '0', 10) || parseInt((habitXp.textContent.match(/\d+/) || [0])[0], 10);
+    habitXp.textContent = '+' + xpValue + ' XP';
+    habitXp.classList.toggle('earned', data.pct >= 100);
+  }
   syncChallengeXP();
 }
 
@@ -5849,10 +6241,26 @@ function resumeRun() {
   document.getElementById('runStatus').textContent = currentExerciseType + '中';
   document.getElementById('runStatus').style.color = 'var(--color-peak-pink)';
 }
-function endRun() {
+function endRun(originBtn) {
+  // 先取动画起点（在弹层关闭前），再关闭弹层
+  let originRect = null;
+  if (originBtn && typeof originBtn.getBoundingClientRect === 'function') {
+    originRect = originBtn.getBoundingClientRect();
+  }
+  const label = '本次' + currentExerciseType + '已记录';
   closeSheet('sheetT721');
   closeRun();
-  toast('本次' + currentExerciseType + '已记录');
+  // 锻炼结束发 +30 XP 动画（按钮已被关闭，用临时锚点定位）
+  if (originRect) {
+    const anchor = document.createElement('div');
+    anchor.style.cssText = 'position:fixed;left:' + (originRect.left + originRect.width / 2) +
+      'px;top:' + (originRect.top + originRect.height / 2) + 'px;width:0;height:0;pointer-events:none;';
+    document.body.appendChild(anchor);
+    awardXp(anchor, 30, label);
+    setTimeout(() => anchor.remove(), 2000);
+  } else {
+    awardXp(null, 30, label);
+  }
 }
 
 /* ==========================================================
@@ -5867,6 +6275,317 @@ function toast(msg) {
     document.getElementById('toastOverlay').classList.remove('show');
   }, 1500);
 }
+
+/* ==========================================================
+   XP 获得动画 · 任何"用户主动操作"产生的 XP 收益都走这里
+   ----------------------------------------------------------
+   awardXp(originEl, amount, label?)
+   - originEl: 触发动画的元素（用来定位浮标 + 加 pulse 弹一下）
+   - amount  : XP 数字（正整数）
+   - label   : 可选小标签，如"点赞"/"评论"/"喝水"
+   ========================================================== */
+function awardXp(originEl, amount, label) {
+  if (!amount || amount <= 0) return;
+  let cx, cy;
+  if (originEl && typeof originEl.getBoundingClientRect === 'function') {
+    const rect = originEl.getBoundingClientRect();
+    cx = rect.left + rect.width / 2;
+    cy = rect.top + rect.height / 2;
+    // 触发元素轻微脉冲
+    originEl.classList.add('xp-pulse');
+    setTimeout(() => { originEl && originEl.classList && originEl.classList.remove('xp-pulse'); }, 460);
+  } else {
+    cx = window.innerWidth / 2;
+    cy = window.innerHeight / 2;
+  }
+  // 干净白色金边小 toast — 文案 · +N XP
+  const bubble = document.createElement('div');
+  bubble.className = 'xp-flyup';
+  bubble.innerHTML =
+    (label ? '<span class="xp-action">' + label + '</span><span class="xp-dot"></span>' : '') +
+    '<span class="xp-amount">+' + amount + ' XP</span>';
+  bubble.style.left = cx + 'px';
+  bubble.style.top  = cy + 'px';
+  document.body.appendChild(bubble);
+  // 总时长 ≈ 入场 0.55s + 悬停 1.2s + 退场 0.5s ≈ 2.35s
+  setTimeout(() => bubble.remove(), 2400);
+}
+
+/* 在进度条 fill 的 tip（右端）持续喷小金粒子，时长 duration ms */
+function emitSparklesFromTip(fillEl, duration) {
+  if (!fillEl) return;
+  const interval = 65;
+  const start = performance.now();
+  function tick() {
+    const elapsed = performance.now() - start;
+    if (elapsed > duration) return;
+    const rect = fillEl.getBoundingClientRect();
+    if (rect.width > 4) {
+      // tip 在 fill 的右端中线
+      const tipX = rect.right;
+      const tipY = rect.top + rect.height / 2;
+      // 每帧喷 1-2 颗
+      const count = 1 + (Math.random() < 0.4 ? 1 : 0);
+      for (let i = 0; i < count; i++) {
+        const angle = -Math.PI / 2 + (Math.random() - 0.5) * Math.PI * 0.85;
+        const dist  = 18 + Math.random() * 14;
+        const spark = document.createElement('div');
+        spark.className = 'xp-spark';
+        spark.style.left = tipX + 'px';
+        spark.style.top  = tipY + 'px';
+        spark.style.setProperty('--dx', (Math.cos(angle) * dist).toFixed(1) + 'px');
+        spark.style.setProperty('--dy', (Math.sin(angle) * dist).toFixed(1) + 'px');
+        const sizeScale = 0.55 + Math.random() * 0.55;
+        spark.style.width = (6 * sizeScale).toFixed(1) + 'px';
+        spark.style.height = (6 * sizeScale).toFixed(1) + 'px';
+        document.body.appendChild(spark);
+        setTimeout(() => spark.remove(), 1500);
+      }
+    }
+    setTimeout(tick, interval);
+  }
+  tick();
+}
+
+/* 在进度条 tip 附近浮起 "+N XP" 金色飘字，数字 0→target count-up */
+function showInlineXpFloat(tipX, tipY, amount) {
+  const float = document.createElement('div');
+  float.className = 'xp-float-inline';
+  float.textContent = '+0 XP';
+  float.style.left = tipX + 'px';
+  float.style.top  = (tipY - 14) + 'px'; // 起点高于进度条 14px
+  document.body.appendChild(float);
+  // 数字 count-up（500ms，ease-out cubic）
+  const start = performance.now();
+  const duration = 500;
+  function tick(now) {
+    const t = Math.min((now - start) / duration, 1);
+    const eased = 1 - Math.pow(1 - t, 3);
+    float.textContent = '+' + Math.round(eased * amount) + ' XP';
+    if (t < 1) {
+      setTimeout(() => tick(performance.now()), 30);
+    } else {
+      float.textContent = '+' + amount + ' XP';
+    }
+  }
+  tick(start);
+  // 总时长 ~2.85s（入场 0.55 + 停留 0.75 + 飘走 1.55）
+  setTimeout(() => float.remove(), 2950);
+}
+
+/* 记录类动作（喝水/吃药等）完整反馈编排：进度条增长 → tip 喷粒子 + 浮 +N XP → 弹小 toast */
+function recordWithProgressFeedback(card, label, xp) {
+  if (!card) return;
+  const fill = card.querySelector('.habit-progress-fill');
+  // 1. 进度条增长期间持续喷粒子（~1.1s，覆盖 1.2s CSS 过渡的主体）
+  if (fill) emitSparklesFromTip(fill, 1100);
+  // 2. 在进度条增长中段，在 tip 处浮 "+N XP" 飘字
+  if (fill) {
+    setTimeout(() => {
+      const rect = fill.getBoundingClientRect();
+      if (rect.width > 4) {
+        showInlineXpFloat(rect.right, rect.top + rect.height / 2, xp);
+      } else {
+        // 兜底：用进度条父元素的右上角附近
+        const bar = fill.parentElement;
+        if (bar) {
+          const br = bar.getBoundingClientRect();
+          showInlineXpFloat(br.right - 18, br.top + br.height / 2, xp);
+        }
+      }
+    }, 320);
+  }
+  // 3. 进度条接近停下时（~1.25s）在进度条正上方弹出小 toast
+  setTimeout(() => {
+    const bar = card.querySelector('.habit-progress-bar') ||
+                (fill && fill.parentElement);
+    if (!bar) return;
+    const rect = bar.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top - 4;
+    awardXp({ getBoundingClientRect: () => ({ left: cx, top: cy, width: 0, height: 0 }) }, xp, label);
+  }, 1250);
+}
+
+/* ==========================================================
+   T7.1 喝水快速记录：滚动选择 + 记录到 CHALLENGE_DATA + 联动 T1 卡
+   ----------------------------------------------------------
+   范围：100-2000 ml · 步进 50 · 默认 300
+   ========================================================== */
+let t71LastRecorded = 300;
+
+function openT71() {
+  const list = document.getElementById('t71List');
+  if (!list) return;
+  const def = t71LastRecorded || 300;
+  const cells = [];
+  for (let v = 100; v <= 2000; v += 50) {
+    const isSel = v === def;
+    cells.push(`<div class="picker-cell${isSel ? ' is-selected' : ''}" data-val="${v}">${v} ml</div>`);
+  }
+  list.innerHTML = cells.join('');
+  openSheet('sheetT71');
+  setTimeout(() => {
+    const sel = list.querySelector('.is-selected');
+    if (sel) centerPickerCell(list, sel);
+  }, 50);
+}
+
+function confirmWaterRecord(btn) {
+  const list = document.getElementById('t71List');
+  if (!list) { closeSheet('sheetT71'); return; }
+  // 取当前居中的 cell（与 confirmT63 同款）
+  const cells = Array.from(list.querySelectorAll('.picker-cell'));
+  if (!cells.length) { closeSheet('sheetT71'); return; }
+  const listRect = list.getBoundingClientRect();
+  const centerY = listRect.top + listRect.height / 2;
+  let nearest = cells[0], minDist = Infinity;
+  cells.forEach(c => {
+    const r = c.getBoundingClientRect();
+    const dist = Math.abs(r.top + r.height / 2 - centerY);
+    if (dist < minDist) { minDist = dist; nearest = c; }
+  });
+  const ml = parseInt(nearest.dataset.val, 10) || 300;
+  t71LastRecorded = ml;
+  // 累加到 喝水 当前进度（不再 cap，允许超出日目标）
+  const d = CHALLENGE_DATA['喝水'];
+  let crossedComplete = false;
+  if (d) {
+    const cur = parseFloat(String(d.cur || '0').replace(/,/g, '')) || 0;
+    const prevPctRaw = (cur / Math.max(d.weeklyGoal, 1)) * 100;
+    const next = cur + ml;
+    const nextPctRaw = (next / Math.max(d.weeklyGoal, 1)) * 100;
+    d.cur = next.toLocaleString('en-US');
+    if (Array.isArray(d.heroStats) && d.heroStats[1] && d.heroStats[1].label === '已记录次数') {
+      const times = parseInt(d.heroStats[1].value, 10) || 0;
+      d.heroStats[1].value = String(times + 1);
+    }
+    updateChallengeDerivedFields('喝水');
+    syncT1Card('喝水');
+    if (document.getElementById('sheetT5').classList.contains('show') &&
+        document.getElementById('t5Title').textContent === '喝水') {
+      openChallenge('喝水');
+    }
+    crossedComplete = prevPctRaw < 100 && nextPctRaw >= 100;
+  }
+  closeSheet('sheetT71');
+  // 等 picker 关闭后再编排进度条 + 粒子 + toast 的完整反馈
+  setTimeout(() => {
+    const card = document.querySelector('.habit-card[data-challenge="喝水"]');
+    recordWithProgressFeedback(card, '已记录喝水 ' + ml + ' ml', 2);
+  }, 220);
+  // 第一次跨过 100% 时弹喝彩（在 toast 之后）
+  if (crossedComplete) {
+    setTimeout(() => awardChallengeCompletion('喝水'), 1900);
+  }
+}
+
+/* —— 挑战完成喝彩浮窗（参考 drink-xp-demo · GSAP 风格）—— */
+const CHALLENGE_XP_VALUES = { '走路':30, '睡眠':40, '消耗':35, '喝水':20, '站立':25, '跑步':30, '吃药':20 };
+const CHALLENGE_COMPLETION_GOAL_TEXT = {
+  '走路': '10,000 步', '睡眠': '8 小时', '消耗': '500 kcal',
+  '喝水': '2,000 ml', '站立': '8 小时', '跑步': '5 km', '吃药': '今日计划',
+};
+const CONFETTI_COLORS = ['#28B8E8', '#2AC78F', '#FFC64A', '#FF6B6B', '#A7F04B', '#7F6CFF'];
+
+function awardChallengeCompletion(name) {
+  const d = CHALLENGE_DATA[name];
+  if (!d) return;
+  if (d._completionShown) return;
+  d._completionShown = true;
+  const xp = CHALLENGE_XP_VALUES[name] || 20;
+  const goalText = CHALLENGE_COMPLETION_GOAL_TEXT[name] || '目标';
+  // 标题：今日{挑战名}达标 (6-8 字)
+  const titleText = '今日' + name + '挑战达成';
+  const titleChars = titleText.split('').map(ch => '<span>' + ch + '</span>').join('');
+
+  const overlay = document.createElement('div');
+  overlay.className = 'completion-modal';
+  overlay.innerHTML =
+    '<div class="completion-panel">' +
+      '<div class="completion-badge">' +
+        '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true">' +
+          '<path d="M12 3.2c3.2 3.5 5.7 6.7 5.7 10.2a5.7 5.7 0 1 1-11.4 0c0-3.5 2.5-6.7 5.7-10.2Z" fill="#173245" opacity="0.94"/>' +
+          '<path d="m9 13.1 2.1 2.1 4.2-5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/>' +
+        '</svg>' +
+      '</div>' +
+      '<h2 class="completion-title">' + titleChars + '</h2>' +
+      '<p class="completion-copy">' + goalText + ' 达标，+' + xp + ' XP 已到账</p>' +
+    '</div>';
+
+  // 38 颗彩屑从面板中心爆炸，错落 10ms 触发
+  const panel = overlay.querySelector('.completion-panel');
+  for (let i = 0; i < 38; i++) {
+    const c = document.createElement('span');
+    c.className = 'completion-confetti';
+    c.style.background = CONFETTI_COLORS[i % CONFETTI_COLORS.length];
+    // 随机爆炸方向：x 左右 170px / y 上方 70-230px / 旋转 ±540°
+    const dx = (Math.random() - 0.5) * 340;
+    const dy = -70 - Math.random() * 160;
+    const rot = (Math.random() - 0.5) * 1080;
+    c.style.setProperty('--dx', dx.toFixed(1) + 'px');
+    c.style.setProperty('--dy', dy.toFixed(1) + 'px');
+    c.style.setProperty('--rot', rot.toFixed(1) + 'deg');
+    c.style.animationDelay = (0.28 + i * 0.01).toFixed(2) + 's';
+    panel.appendChild(c);
+  }
+
+  (document.getElementById('phone') || document.body).appendChild(overlay);
+  setTimeout(() => overlay.remove(), 4300);
+}
+
+/* 入场动画：所有 habit-card 进度条从 0 → 当前值（同步 XP earned 类），错落 90ms 触发 */
+function animateInitialProgress() {
+  const fills = document.querySelectorAll('.habit-card .habit-progress-fill');
+  fills.forEach((fill, i) => {
+    const target = fill.style.width || '0%';
+    if (!target || target === '0%') return;
+    // 同步 XP 标签 earned 状态（基于实际 fill width）
+    const card = fill.closest('.habit-card');
+    const xpEl = card && card.querySelector('.habit-xp');
+    if (xpEl) xpEl.classList.toggle('earned', parseFloat(target) >= 100);
+    // 归零再动画到 target
+    fill.style.transition = 'none';
+    fill.style.width = '0%';
+    void fill.offsetWidth;
+    setTimeout(() => {
+      fill.style.transition = ''; // 用 CSS 类里的 1.2s 过渡
+      fill.style.width = target;
+      // 满杯卡入场后闪一下
+      if (parseFloat(target) >= 100) {
+        setTimeout(() => {
+          fill.classList.add('is-flash');
+          setTimeout(() => fill.classList.remove('is-flash'), 850);
+        }, 1250);
+      }
+    }, 240 + i * 90);
+  });
+}
+/* 在 syncTodayHabitsFromMock 写完 MOCK 进度后再跑入场动画 */
+document.addEventListener('DOMContentLoaded', () => setTimeout(animateInitialProgress, 120));
+
+/* T71 picker 滚动时实时高亮中间一行 */
+document.addEventListener('DOMContentLoaded', () => {
+  const list = document.getElementById('t71List');
+  if (!list) return;
+  let raf = null;
+  list.addEventListener('scroll', () => {
+    if (raf) cancelAnimationFrame(raf);
+    raf = requestAnimationFrame(() => {
+      const cells = Array.from(list.querySelectorAll('.picker-cell'));
+      if (!cells.length) return;
+      const listRect = list.getBoundingClientRect();
+      const centerY = listRect.top + listRect.height / 2;
+      let nearest = cells[0], minDist = Infinity;
+      cells.forEach(c => {
+        const r = c.getBoundingClientRect();
+        const dist = Math.abs(r.top + r.height / 2 - centerY);
+        if (dist < minDist) { minDist = dist; nearest = c; }
+      });
+      cells.forEach(c => c.classList.toggle('is-selected', c === nearest));
+    });
+  });
+});
 
 /* ==========================================================
    挑战卡 ⋯ 菜单 / 自赞 / 自评
@@ -5939,6 +6658,8 @@ function quickLikeMyChallenge(btn) {
   } else {
     likeBtn.classList.add('is-liked');
     textEl.innerHTML = ['我'].concat(baseNames).map(_wrapNameLink).join('、') + ` 等${baseCount + 1}个赞`;
+    // 点赞才发 XP，取消不扣
+    awardXp(likeBtn, 2, '已点赞');
   }
 }
 
@@ -6028,6 +6749,8 @@ function sendInlineComment(sendBtn) {
   input.value = '';
   composer.classList.remove('show');
   delete composer.dataset.replyTo;
+  // 评论发出 → +5 XP 动画
+  awardXp(sendBtn, 5, '评论已发送');
 }
 
 // 点击菜单 / 输入条以外区域，关闭所有打开的菜单
