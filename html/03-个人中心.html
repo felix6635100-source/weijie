@@ -1302,7 +1302,7 @@
       gap: 10px;
     }
     .profile-row-share.is-on .profile-share-preview { display: flex; }
-    /* 练级挑战发送时机的可多选徽章（v2.5） */
+    /* 维度挑战发送时机的可多选徽章（v2.5） */
     .milestone-chip {
       display: inline-flex; align-items: center; gap: 3px;
       padding: 4px 10px;
@@ -4283,17 +4283,17 @@
                 ${habitRows}
               </div>
 
-              <!-- 练级挑战发送至好友动态 -->
-              <div class="profile-section-title">练级挑战发送至好友动态</div>
+              <!-- 维度挑战发送至好友动态 -->
+              <div class="profile-section-title">维度挑战发送至好友动态</div>
               <div class="profile-share-list">
                 <div class="profile-row-share is-on" data-level-share-toggle>
                   <div class="profile-row-share-head">
                     <div class="profile-row-icon">🏅</div>
                     <div class="profile-row-main">
-                      <div class="profile-row-label">自动发送练级挑战动态</div>
-                      <div class="profile-row-sub" style="font-size:var(--font-xs);color:var(--color-text-secondary);margin-top:2px;line-height:1.5">开启后，加入练级挑战后将根据进度自动发动态。</div>
+                      <div class="profile-row-label">自动发送维度挑战动态</div>
+                      <div class="profile-row-sub" style="font-size:var(--font-xs);color:var(--color-text-secondary);margin-top:2px;line-height:1.5">开启后，加入维度挑战后将根据进度自动发动态。</div>
                     </div>
-                    <button class="profile-toggle on" type="button" aria-label="自动发送练级挑战动态"></button>
+                    <button class="profile-toggle on" type="button" aria-label="自动发送维度挑战动态"></button>
                   </div>
                   <div class="profile-share-detail">
                     <div class="profile-share-line is-show" style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
@@ -4325,7 +4325,7 @@
                         </div>
                         <div class="profile-share-preview-percent">25%</div>
                       </div>
-                      <div class="profile-share-preview-desc">练级挑战 · 已完成 25% 里程碑 · 仅展示进度，不展示具体公里数与配速</div>
+                      <div class="profile-share-preview-desc">维度挑战 · 已完成 25% 里程碑 · 仅展示进度，不展示具体公里数与配速</div>
                     </div>
                   </div>
                 </div>
@@ -4748,7 +4748,7 @@
           </div>
         `,
         actions: `
-          <button class="msg-detail-btn is-primary" type="button" data-goto="T1.full">去练级看看</button>
+          <button class="msg-detail-btn is-primary" type="button" data-goto="T1.full">去维度看看</button>
           <button class="msg-detail-btn is-ghost" type="button" data-goto="P7">返回消息中心</button>
         `
       },
@@ -5947,7 +5947,7 @@
       if (row) row.classList.toggle('is-on', t.classList.contains('on'));
     });
 
-    // 练级挑战发送时机 chip 多选切换（v2.5）
+    // 维度挑战发送时机 chip 多选切换（v2.5）
     document.addEventListener('click', (e) => {
       const chip = e.target.closest('.milestone-chip');
       if (!chip) return;

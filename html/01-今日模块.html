@@ -3137,7 +3137,7 @@ body.is-dark-mode .ios-status-bar .iss-battery::after { background: #fff; }
   <div class="nav-section-label">底部弹层</div>
   <div class="nav-list">
     <div class="nav-item" data-target="sheet" data-sheet="sheetT2">
-      <span class="nav-id">T2</span><span class="nav-name">圆环来源详情</span><span class="nav-tag tag-sheet">底部弹层</span>
+      <span class="nav-id">T2</span><span class="nav-name">圆环规则详情</span><span class="nav-tag tag-sheet">底部弹层</span>
     </div>
     <div class="nav-item" data-target="metric" data-metric="HRV">
       <span class="nav-id">T3</span><span class="nav-name">身体指标详情</span><span class="nav-tag tag-sheet">底部弹层</span>
@@ -3180,29 +3180,29 @@ body.is-dark-mode .ios-status-bar .iss-battery::after { background: #fff; }
   <div class="nav-section-label">滚轮选择器</div>
   <div class="nav-list">
     <div class="nav-item" data-target="sheet" data-sheet="sheetT622">
-      <span class="nav-id">T6.3</span><span class="nav-name">数值滚轮</span><span class="nav-tag tag-pick">滚轮</span>
+      <span class="nav-id">T6.2.2</span><span class="nav-name">数值滚轮</span><span class="nav-tag tag-pick">滚轮</span>
     </div>
     <div class="nav-item" data-target="sheet" data-sheet="sheetT623">
-      <span class="nav-id">T6.4</span><span class="nav-name">时间选择器</span><span class="nav-tag tag-pick">滚轮</span>
+      <span class="nav-id">T6.2.3</span><span class="nav-name">时间选择器</span><span class="nav-tag tag-pick">滚轮</span>
     </div>
     <div class="nav-item" data-target="sheet" data-sheet="sheetT71">
-      <span class="nav-id">T7</span><span class="nav-name">喝水快速记录</span><span class="nav-tag tag-pick">滚轮</span>
+      <span class="nav-id">T7.1</span><span class="nav-name">喝水快速记录</span><span class="nav-tag tag-pick">滚轮</span>
     </div>
   </div>
 
   <div class="nav-section-label">全屏 / 操作菜单</div>
   <div class="nav-list">
     <div class="nav-item" data-target="run" data-mode="running">
-      <span class="nav-id">T8</span><span class="nav-name">跑步实时（跑步中）</span><span class="nav-tag tag-full">全屏</span>
+      <span class="nav-id">T7.2</span><span class="nav-name">跑步实时（跑步中）</span><span class="nav-tag tag-full">全屏</span>
     </div>
     <div class="nav-item" data-target="run" data-mode="paused">
-      <span class="nav-id">T8'</span><span class="nav-name">跑步实时（暂停）</span><span class="nav-tag tag-full">变体</span>
+      <span class="nav-id">T7.2'</span><span class="nav-name">跑步实时（暂停）</span><span class="nav-tag tag-full">变体</span>
     </div>
     <div class="nav-item" data-target="sheet" data-sheet="sheetT721">
-      <span class="nav-id">T8.3</span><span class="nav-name">结束二次确认</span><span class="nav-tag tag-act">操作菜单</span>
+      <span class="nav-id">T7.2.1</span><span class="nav-name">结束二次确认</span><span class="nav-tag tag-act">操作菜单</span>
     </div>
     <div class="nav-item" data-target="sheet" data-sheet="sheetT621">
-      <span class="nav-id">T8.4</span><span class="nav-name">锻炼类型选择</span><span class="nav-tag tag-act">操作菜单</span>
+      <span class="nav-id">T6.2.1</span><span class="nav-name">锻炼类型选择</span><span class="nav-tag tag-act">操作菜单</span>
     </div>
   </div>
 
@@ -4930,8 +4930,8 @@ function closeSheet(id) {
    - chartType: 'line' | 'bars' （近七天图表类型，按需求文档）
    ========================================================== */
 const METRIC_DATA = {
-  '心理压力':    { value: '正常',     unit: '',    status: '稳定', range: '正常范围：30-45',     foot: '可用健康指标表明你的身体处于良好平衡状态。继续保持轻松节奏和稳定作息，今天的状态会更顺。', weeklyInsight: '近七天压力水平稳定，整体处于"正常"区间，未见明显尖峰。', explain: '基于 HRV 与心率推算的压力指数，仅作日常参考。', chartType: 'line' },
-  '身体恢复度':  { value: '轻度疲劳', unit: '',    status: '注意', range: '建议：≥ 60%',          foot: '今日恢复度偏低（12% / 较高恢复度 60%）。建议低强度活动、充分睡眠，让身体回到自如训练区间。', weeklyInsight: '近七天恢复度有 2 天低于 60%，可能与训练强度连续偏高有关，建议穿插一天放松日。', explain: '由 HRV、睡眠得分、静息心率、运动强度共同得出。', chartType: 'line' },
+  '心理压力':    { value: '35',       unit: '分',  status: '正常', range: '正常范围：30-69',     foot: '可用健康指标表明你的身体处于良好平衡状态。继续保持轻松节奏和稳定作息，今天的状态会更顺。', weeklyInsight: '近七天压力水平稳定，整体处于"正常"区间，未见明显尖峰。', explain: '基于 HRV 与心率推算的压力指数，0-29 愉悦 / 30-69 正常 / 70-100 紧张，仅作日常参考。', chartType: 'line' },
+  '身体恢复度':  { value: '12',       unit: '%',   status: '轻度疲劳', range: '建议：≥ 60%',     foot: '今日恢复度偏低（12% / 较高恢复度 60%）。建议低强度活动、充分睡眠，让身体回到自如训练区间。', weeklyInsight: '近七天恢复度有 2 天低于 60%，可能与训练强度连续偏高有关，建议穿插一天放松日。', explain: '由 HRV、睡眠得分、静息心率、运动强度共同得出，0-24% 轻度疲劳 / 25-49% 逐渐恢复 / 50-79% 适合锻炼 / 80-100% 最佳状态。', chartType: 'line' },
   'HRV':         { value: '48',       unit: 'ms',  status: '良好', range: '正常范围：30-100ms',   foot: '当前 HRV 较昨日提升 5ms，神经系统恢复良好，可适当进行中等强度训练。', weeklyInsight: '近七天 HRV 呈稳步抬升趋势，说明整体恢复状态在改善。只要继续保持当前作息与训练节奏，这条曲线仍有继续上扬空间。', explain: 'HRV（心率变异性）指相邻心跳之间的时间差异，反映自主神经系统的状态。较高通常代表恢复良好。', chartType: 'line' },
   '步数':        { value: '8,520',    unit: '步',  status: '中度活跃', range: '建议：≥ 6,000 步/日', foot: '今天步数走势平稳，下午有 1 段连续走动；距离 10,000 步还差 1,480 步。', weeklyInsight: '近七天日均 8,562 步，达标 4 天。再连续达标 3 天可解锁周连击 +50 XP。', explain: '步数是最易获取的运动指标。世界卫生组织建议成年人每日 ≥ 6,000 步以维持心血管健康。', chartType: 'bars' },
   '昨晚睡眠':    { value: '7:33',     unit: 'h',   status: '良好', range: '建议：7-9h',          foot: '昨晚总睡 7h33m，深睡占比 30%、REM 周期完整，整体质量良好。', weeklyInsight: '近七天平均睡眠 7h22m，深睡占比稳定在 28-32%，节律规律。', explain: '高质量睡眠包括足量深睡和完整 REM 周期。', chartType: 'bars' },

@@ -10,7 +10,7 @@
 <script src="./mock-demo.js"></script>
 <style>
 /* ==========================================================
-   设计 Token —— 与 00-设计规范.md / 01-今日 / 04-练级 同源
+   设计 Token —— 与 00-设计规范.md / 01-今日 / 04-维度 同源
    收获模块以"金 + 紫粉"为主色，呼应 IP 形象 + 季节皮肤的视觉沉淀
    ========================================================== */
 :root {
@@ -355,20 +355,13 @@ button { font: inherit; color: inherit; background: transparent; border: 0; padd
 /* ==========================================================
    H1.A IP 形象主视觉
    ========================================================== */
+/* H1.A 主视觉：背景由 JS 按当前皮肤动态应用（applySkinToHero），下方颜色仅作为加载前的兜底 */
 .h-hero {
   margin: 0; padding: 96px 0 20px;
   position: relative; overflow: hidden;
   min-height: 460px;
-  background: #ddeed6 url('./等级人物/收获背景-IP森林.png') center top / cover no-repeat;
+  background: #ddeed6;
   transition: background 0.4s ease;
-}
-/* 季节皮肤切换在新版本中先停用，主视觉以 IP 森林背景图为主 */
-.h-hero.is-skin-default,
-.h-hero.is-skin-spring,
-.h-hero.is-skin-summer,
-.h-hero.is-skin-autumn,
-.h-hero.is-skin-winter {
-  background: #ddeed6 url('./等级人物/收获背景-IP森林.png') center top / cover no-repeat;
 }
 
 /* 季节装饰 */
@@ -2008,26 +2001,17 @@ button { font: inherit; color: inherit; background: transparent; border: 0; padd
         <span class="nav-id">H4</span><span class="nav-name">等级形象档案</span><span class="nav-tag tag-page">二级</span>
       </div>
       <div class="nav-item" data-target="action" data-action="goToMedals">
-        <span class="nav-id">H5</span><span class="nav-name">勋章墙（共用 04 练级模块）</span><span class="nav-tag tag-full">外跳</span>
+        <span class="nav-id">H5</span><span class="nav-name">勋章墙（共用 04 维度模块）</span><span class="nav-tag tag-full">外跳</span>
       </div>
     </div>
 
     <div class="nav-section-label">弹层 / 浮层</div>
     <div class="nav-list">
-      <div class="nav-item" data-target="sheet" data-sheet="milestoneSheet">
-        <span class="nav-id">H1.E</span><span class="nav-name">里程碑节点详情</span><span class="nav-tag tag-sheet">弹层</span>
-      </div>
       <div class="nav-item" data-target="action" data-action="showLevelup">
-        <span class="nav-id">H6</span><span class="nav-name">普通升级浮层</span><span class="nav-tag tag-modal">浮层</span>
+        <span class="nav-id">H6</span><span class="nav-name">普通升级弹窗</span><span class="nav-tag tag-modal">弹窗</span>
       </div>
       <div class="nav-item" data-target="action" data-action="showEvolve">
-        <span class="nav-id">H7</span><span class="nav-name">进化全屏弹层</span><span class="nav-tag tag-full">全屏</span>
-      </div>
-      <div class="nav-item" data-target="action" data-action="showXpToast">
-        <span class="nav-id">H8</span><span class="nav-name">XP 获取浮层</span><span class="nav-tag tag-modal">浮层</span>
-      </div>
-      <div class="nav-item" data-target="action" data-action="showEmpty">
-        <span class="nav-id">H9</span><span class="nav-name">未登录引导</span><span class="nav-tag tag-page">空态</span>
+        <span class="nav-id">H7</span><span class="nav-name">进化升级弹窗</span><span class="nav-tag tag-modal">弹窗</span>
       </div>
     </div>
 
@@ -2124,7 +2108,7 @@ button { font: inherit; color: inherit; background: transparent; border: 0; padd
 
         <!-- H1.B 等级里程碑（v1.1 Figma 调整：暂时合并到融合卡，区段已撤）-->
 
-        <!-- H1.C 我的资产 · 三入口（顺序：角色皮肤 / 头像框 / 勋章） -->
+        <!-- H1.C 我的资产 · 三入口（顺序：皮肤 / 头像框 / 勋章） -->
         <div class="h-section-head" id="hAssets">
           <div class="t">我的资产</div>
         </div>
@@ -2132,7 +2116,7 @@ button { font: inherit; color: inherit; background: transparent; border: 0; padd
           <div class="h-asset-card h-asset-title" onclick="openOverlay('titlesOv')">
             <div class="h-ac-redot"></div>
             <div class="h-ac-emoji">🏷️</div>
-            <div class="h-ac-title">角色皮肤</div>
+            <div class="h-ac-title">皮肤</div>
             <div class="h-ac-num" id="hTitleNum">1 / 5</div>
             <div class="h-ac-cta">更改 ›</div>
           </div>
@@ -2169,14 +2153,6 @@ button { font: inherit; color: inherit; background: transparent; border: 0; padd
           <div class="h-xp-foot">等级永久加成倍率 1.10 倍 · 完成更多挑战获得更多 XP</div>
         </div>
 
-      </div>
-
-      <!-- ===== H9 未登录引导 ===== -->
-      <div class="h-empty" id="hEmpty">
-        <div class="ico">🏆</div>
-        <div class="ttl">登录后开启你的收获之旅</div>
-        <div class="body">等级、勋章、皮肤、头像框<br>都将在这里等你。</div>
-        <div class="cta" onclick="window.location.href='03-个人中心.html?page=P1.1'">立即登录</div>
       </div>
 
       <!-- 底部 Tab Bar（SVG 图标，与 01 / 02 / 04 一致） -->
@@ -2323,62 +2299,15 @@ button { font: inherit; color: inherit; background: transparent; border: 0; padd
         </div>
       </div>
 
-      <!-- ===== H1.E 等级里程碑节点详情（底部弹层） ===== -->
-      <div class="modal-overlay is-sheet" id="milestoneSheet" onclick="if(event.target===this)closeSheet('milestoneSheet')">
-        <div class="bottom-sheet">
-          <div class="bs-handle"></div>
-          <div class="bs-close" onclick="closeSheet('milestoneSheet')">✕</div>
-          <div class="bs-status-bar is-current" id="bsStatus">📍 当前等级 · 再 660 XP 升下一级</div>
-          <div class="bs-lv-block">
-            <div class="bs-lv-num" id="bsLvNum">LV 12</div>
-            <div class="bs-lv-stage" id="bsLvStage">行动</div>
-          </div>
-          <div class="bs-rewards" id="bsRewards"></div>
-          <div class="bs-foot" id="bsFoot">L10 行动 · 从觉知走向行动，是练级的关键转折。</div>
-        </div>
-      </div>
-
-      <!-- ===== H6 普通升级浮层 / H8 XP 获取浮层 ===== -->
-      <div class="h-toast-cap is-levelup" id="toastLevelup">
-        <div class="h-tc-ico">LV<br>13</div>
-        <div class="h-tc-body">
-          <div class="h-tc-main">恭喜升级！</div>
-          <div class="h-tc-sub">新等级 · 行动</div>
-        </div>
-        <div class="h-tc-x" onclick="hideToast('toastLevelup')">✕</div>
-      </div>
-      <div class="h-toast-cap is-xp" id="toastXp">
-        <div class="h-tc-ico">⚡</div>
-        <div class="h-tc-body">
-          <div class="h-tc-main">+33 XP</div>
-          <div class="h-tc-sub">基础 +30 · 加成 +3</div>
-        </div>
-        <div class="h-tc-x" onclick="hideToast('toastXp')">›</div>
-      </div>
-
-      <!-- ===== H7 进化全屏弹层 ===== -->
-      <div class="h-evolve-overlay" id="evolveOv">
-        <div class="h-evolve-particles"></div>
-        <div class="he-eyebrow">阶段进化</div>
-        <div class="he-sub">你的身体在变化</div>
-        <div class="h-evolve-figure" id="hEvolveFigure">🧚</div>
-        <div class="h-evolve-stage" id="hEvolveStage">觉醒</div>
-        <div class="h-evolve-lvnum" id="hEvolveLv">LV 5</div>
-        <div class="h-evolve-rewards">
-          <div class="h-evolve-rew"><div class="e">🌸</div><div class="n">春季皮肤</div></div>
-          <div class="h-evolve-rew"><div class="e">🖼️</div><div class="n">春芽框</div></div>
-          <div class="h-evolve-rew"><div class="e">🏷️</div><div class="n">抽枝者</div></div>
-          <div class="h-evolve-rew"><div class="e">⚡</div><div class="n">XP × 1.05</div></div>
-        </div>
-        <div class="h-evolve-skin" id="hEvolveSkin">
-          <div class="ask">要立即切换到 春季皮肤 吗？</div>
-          <div class="chips">
-            <div class="chip is-active" data-skin="apply">立即切换</div>
-            <div class="chip" data-skin="keep">保持当前</div>
-          </div>
-        </div>
-        <div class="h-evolve-foot">
-          <button class="h-evolve-cta" onclick="closeEvolve()">继续</button>
+      <!-- ===== H6 普通升级弹窗 / H7 进化升级弹窗（居中成就弹窗，同款；H7 额外显示升级后形象 + 获得奖品，与 H4 同源）===== -->
+      <div class="modal-overlay is-toast" id="lvUpModal" onclick="if(event.target===this)closeLvUp()">
+        <div style="background:#fff;border-radius:24px;padding:26px 22px 20px;width:300px;margin:auto;text-align:center;box-shadow:0 24px 80px rgba(108,92,231,0.45)">
+          <div id="lvUpFigure" style="display:none;margin:0 auto 8px"><img id="lvUpImg" src="" alt="" style="width:140px;height:140px;object-fit:contain;display:block;margin:0 auto"></div>
+          <div id="lvUpBadge" style="font-size:22px;font-weight:900;color:#6c5ce7">LV 13</div>
+          <div id="lvUpTitle" style="font-size:18px;font-weight:800;color:#1f2330;margin-top:6px">恭喜升级！</div>
+          <div id="lvUpSub" style="font-size:12px;color:#6b7280;margin-top:4px">行动 · LV 13</div>
+          <div id="lvUpRewards" class="h-evolve-rewards" style="display:none;justify-content:center;gap:8px;margin-top:16px"></div>
+          <button onclick="closeLvUp()" style="margin-top:18px;width:100%;height:46px;border:none;border-radius:23px;background:linear-gradient(135deg,#6c5ce7,#a855f7,#ec4899);color:#fff;font-size:15px;font-weight:700">知道了</button>
         </div>
       </div>
 
@@ -2428,7 +2357,7 @@ function goToProfilePage() {
     : '03-个人中心.html?page=P5';
   window.location.href = target;
 }
-/* 勋章入口：直接跳到 04 练级模块的"我的勋章"页（共用同一勋章系统） */
+/* 勋章入口：直接跳到 04 维度模块的"我的勋章"页（共用同一勋章系统） */
 function goToMedals() {
   window.location.href = '04-练级模块.html?openMedals=1';
 }
@@ -2524,8 +2453,8 @@ function applyState(state) {
   const phone = document.getElementById('phone');
   phone.classList.remove('is-logged-out', 'is-newbie', 'is-l25');
   closeAllOverlays();
-  document.getElementById('milestoneSheet').classList.remove('show');
-  document.getElementById('evolveOv').classList.remove('show');
+  /* milestoneSheet 已移除 */
+  var _lv=document.getElementById('lvUpModal'); if(_lv) _lv.classList.remove('show');
 
   if (state === 'logged-out') {
     phone.classList.add('is-logged-out');
@@ -2561,6 +2490,7 @@ function applyState(state) {
   renderMilestones();
   renderXpList();
   renderSkinsPage();
+  applySkinToHero();   // 启动时按 currentSkin 应用 H1.A 背景
   renderFramesPage();
   renderArchive();
   renderMedalsWall();
@@ -2655,7 +2585,7 @@ function renderHero() {
   const fmt = (it, fb) => (it && typeof it.unlocked === 'number' && typeof it.total === 'number')
     ? `${it.unlocked} / ${it.total}` : fb;
   if (R) {
-    // hTitleNum = 角色皮肤（5 阶段）；当前总数固定 5。按 LV 推断已解锁
+    // hTitleNum = 皮肤（5 阶段）；当前总数固定 5。按 LV 推断已解锁
     const skinUnlocked = currentLv >= 25 ? 5 : currentLv >= 20 ? 4 : currentLv >= 15 ? 3 : currentLv >= 10 ? 2 : 1;
     document.getElementById('hTitleNum').textContent = `${skinUnlocked} / 5`;
     document.getElementById('hFrameNum').textContent = fmt(R.frames, '5 / 12');
@@ -2808,7 +2738,7 @@ function openMilestoneSheet(lv) {
   document.getElementById('bsFoot').textContent = {
     '雏形': 'L1 雏形 · 一切刚开始，让身体先慢下来。',
     '觉醒': 'L5 觉醒 · 你开始注意到自己的呼吸。',
-    '行动': 'L10 行动 · 从觉知走向行动，是练级的关键转折。',
+    '行动': 'L10 行动 · 从觉知走向行动，是维度的关键转折。',
     '平衡': 'L15 平衡 · 在节律中找到从容。',
     '共生': 'L20 共生 · 人物悬浮金光，与身体达成共生。',
     '圆满': 'L25 圆满 · 你已是身体的同行者。'
@@ -2830,7 +2760,7 @@ const XP_LOGS = [
 function renderXpList() {
   const list = document.getElementById('hXpList');
   if (currentLv === 1) {
-    list.innerHTML = `<div class="h-xp-empty"><div class="ico">🌱</div><div class="ttl">昨日暂无 XP 获取记录</div><div class="body">完成今日挑战开启你的练级</div></div>`;
+    list.innerHTML = `<div class="h-xp-empty"><div class="ico">🌱</div><div class="ttl">昨日暂无 XP 获取记录</div><div class="body">完成今日挑战开启你的维度</div></div>`;
     return;
   }
   const html = XP_LOGS.map(log => {
@@ -2857,20 +2787,37 @@ function renderXpList() {
 /* ==========================================================
    H2 我的皮肤 · 数据 + 渲染
    ========================================================== */
+// H2 我的皮肤 = 收获主页 H1.A 的背景主题；后台为每款皮肤配一张背景图（webp）。
+// 4 款季节 = 等级里程碑解锁；4 款主题 = 运营 / 限时活动解锁。
+const SKIN_DIR = './IP背景图/compressed/';
 const ALL_SKINS = [
-  { name: '萌芽 · 嫩绿小苗', stage: '萌芽', from: '来自等级里程碑 LV 1',  date: '2026-01-15', icon: '🌱', img: './树精灵/树精灵01.png', unlocked: true },
-  { name: '舒展 · 灿烂笑颜', stage: '舒展', from: '来自等级里程碑 LV 5',  date: '2026-02-20', icon: '😊', img: './树精灵/树精灵02.png', unlocked: true },
-  { name: '绽放 · 花朵相伴', stage: '绽放', from: '来自等级里程碑 LV 10', date: '2026-03-28', icon: '🌸', img: './树精灵/树精灵03.png', unlocked: true },
-  { name: '繁茂 · 花叶交织', stage: '繁茂', from: '达到 LV 15 解锁',          icon: '🌳', img: './树精灵/树精灵04.png', unlocked: false },
-  { name: '圆满 · 光晕环绕', stage: '圆满', from: '达到 LV 20 解锁',          icon: '✨', img: './树精灵/树精灵05.png', unlocked: false },
+  { name: '春 · 樱花初绽', stage: '春', from: '来自等级里程碑 LV 1',  date: '2026-01-15', icon: '🌸', bg: SKIN_DIR + '收获背景-IP森林-春-树种版.webp',   unlocked: true  },
+  { name: '夏 · 蝉鸣绿荫', stage: '夏', from: '来自等级里程碑 LV 5',  date: '2026-02-20', icon: '🌿', bg: SKIN_DIR + '收获背景-IP森林-夏-树种版.webp',   unlocked: true  },
+  { name: '秋 · 枫红漫野', stage: '秋', from: '来自等级里程碑 LV 10', date: '2026-03-28', icon: '🍁', bg: SKIN_DIR + '收获背景-IP森林-秋-树种版.webp',   unlocked: true  },
+  { name: '冬 · 雪松静谧', stage: '冬', from: '达到 LV 15 解锁',          icon: '❄️', bg: SKIN_DIR + '收获背景-IP森林-冬-树种版.webp',   unlocked: false },
+  { name: '草原 · 辽阔自在', stage: '主题', from: '运营主题 · 限时活动',  date: '2026-04-10', icon: '🌾', bg: SKIN_DIR + '收获背景-IP森林-草原-树种版.webp', unlocked: true  },
+  { name: '雪山 · 静谧攀登', stage: '主题', from: '运营主题 · 限时活动',                       icon: '🏔️', bg: SKIN_DIR + '收获背景-IP森林-雪山-树种版.webp', unlocked: false },
+  { name: '戈壁 · 风沙之约', stage: '主题', from: '运营主题 · 限时活动',                       icon: '🪨', bg: SKIN_DIR + '收获背景-IP森林-戈壁-树种版.webp', unlocked: false },
+  { name: '沙漠 · 金色绵延', stage: '主题', from: '运营主题 · 限时活动',                       icon: '🏜️', bg: SKIN_DIR + '收获背景-IP森林-沙漠-树种版.webp', unlocked: false },
 ];
-let currentSkin = '绽放 · 花朵相伴';
+let currentSkin = '春 · 樱花初绽';
+
+// 把当前皮肤的背景图应用到 H1.A 主视觉（兜底保留默认 IP 森林）
+function applySkinToHero() {
+  const cur = ALL_SKINS.find(s => s.name === currentSkin) || ALL_SKINS[0];
+  const hero = document.getElementById('hHero');
+  if (!hero || !cur) return;
+  if (cur.bg) {
+    hero.style.background = "#ddeed6 url('" + cur.bg + "') center top / cover no-repeat";
+  }
+}
 
 function renderSkinsPage() {
   const cur = ALL_SKINS.find(s => s.name === currentSkin) || ALL_SKINS[0];
+  // 当前皮肤大卡：用背景图缩略图（盖满圆角小方块）+ icon 兜底
   const imgEl = document.getElementById('hSkinCurImg');
   if (imgEl) {
-    if (cur.img) imgEl.innerHTML = `<img src="${cur.img}" alt="${cur.name}">`;
+    if (cur.bg) imgEl.innerHTML = `<img src="${cur.bg}" alt="${cur.name}" style="width:100%;height:100%;object-fit:cover;border-radius:14px;display:block">`;
     else imgEl.textContent = cur.icon;
   }
   const nameEl = document.getElementById('hSkinCurName'); if (nameEl) nameEl.textContent = cur.name;
@@ -2886,11 +2833,11 @@ function renderSkinsPage() {
   if (unlockedList) {
     unlockedList.innerHTML = unlocked.map(s => `
       <div class="h-skin-row">
-        <div class="h-sk-img">${s.img ? `<img src="${s.img}" alt="">` : s.icon}</div>
+        <div class="h-sk-img">${s.bg ? `<img src="${s.bg}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:12px;display:block">` : s.icon}</div>
         <div class="h-sk-body">
           <div class="h-sk-name">${s.name}</div>
           <div class="h-sk-from">${s.from}</div>
-          <div class="h-sk-date">${s.date} 解锁</div>
+          ${s.date ? `<div class="h-sk-date">${s.date} 解锁</div>` : ''}
         </div>
         <button class="h-sk-btn ${s.name === currentSkin ? 'is-using' : ''}" data-name="${s.name}">${s.name === currentSkin ? '使用中' : '使用'}</button>
       </div>
@@ -2901,6 +2848,7 @@ function renderSkinsPage() {
         if (name === currentSkin) return;
         currentSkin = name;
         renderSkinsPage();
+        applySkinToHero();           // ← 切皮肤即换 H1.A 背景
         toast('皮肤已切换');
       });
     });
@@ -2909,7 +2857,7 @@ function renderSkinsPage() {
   if (lockedList) {
     lockedList.innerHTML = locked.map(s => `
       <div class="h-skin-row is-locked">
-        <div class="h-sk-img">${s.icon}</div>
+        <div class="h-sk-img">${s.bg ? `<img src="${s.bg}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:12px;display:block;filter:grayscale(0.6);opacity:0.55">` : s.icon}</div>
         <div class="h-sk-body">
           <div class="h-sk-name">${s.name}</div>
           <div class="h-sk-from">${s.from}</div>
@@ -3131,33 +3079,58 @@ function openMedalDetail(id) {
   openOverlay('medalDetailOv');
 }
 /* ---------- H6 / H7 / H8 浮层 ---------- */
-function showLevelup() {
-  const t = document.getElementById('toastLevelup');
-  t.classList.add('show');
-  clearTimeout(t._timer);
-  t._timer = setTimeout(() => t.classList.remove('show'), 3500);
+// 奖品类型 → 中文分类标签
+function lvUpKindLabel(type) {
+  if (type === 'skin')  return '皮肤';
+  if (type === 'frame') return '头像框';
+  if (type === 'boost') return 'XP 加成';
+  return '奖励';
 }
-function showXpToast() {
-  const t = document.getElementById('toastXp');
-  t.classList.add('show');
-  clearTimeout(t._timer);
-  t._timer = setTimeout(() => t.classList.remove('show'), 2000);
-}
-function hideToast(id) { document.getElementById(id).classList.remove('show'); }
 
+// 统一居中升级弹窗：H6（仅祝贺）/ H7（+形象+奖品）共用
+function openLvUp(o) {
+  var fig = document.getElementById('lvUpFigure'), img = document.getElementById('lvUpImg');
+  if (o.figureImg) { img.src = o.figureImg; img.alt = o.title || ''; fig.style.display = 'block'; }
+  else { fig.style.display = 'none'; }
+  document.getElementById('lvUpBadge').textContent = o.badge || '';
+  document.getElementById('lvUpTitle').textContent = o.title || '';
+  document.getElementById('lvUpSub').textContent = o.sub || '';
+  var rew = document.getElementById('lvUpRewards');
+  if (o.rewards && o.rewards.length) {
+    // 白底弹窗里的奖品行：左侧分类小标 + 中央 emoji + 右侧奖品名（明确告诉用户获得了什么）
+    rew.style.display = 'flex';
+    rew.style.flexDirection = 'column';
+    rew.style.gap = '8px';
+    rew.style.marginTop = '14px';
+    rew.innerHTML = '<div style="font-size:12px;font-weight:700;color:#6c5ce7;text-align:left;margin-bottom:2px">🎁 本次获得奖品</div>' +
+      o.rewards.map(function(r) {
+        var kind = lvUpKindLabel(r.type);
+        return '<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:#f7f5ff;border:1px solid #ece8ff;border-radius:12px;text-align:left">' +
+                 '<span style="font-size:22px;line-height:1;flex-shrink:0">' + (r.emoji || '🎁') + '</span>' +
+                 '<div style="flex:1;min-width:0">' +
+                   '<div style="font-size:11px;font-weight:700;color:#a855f7;line-height:1.2">' + kind + '</div>' +
+                   '<div style="font-size:14px;font-weight:800;color:#1f2330;line-height:1.3;margin-top:2px">' + r.label + '</div>' +
+                 '</div>' +
+               '</div>';
+      }).join('');
+  } else { rew.style.display = 'none'; rew.innerHTML = ''; }
+  document.getElementById('lvUpModal').classList.add('show');
+}
+function closeLvUp() { document.getElementById('lvUpModal').classList.remove('show'); }
+function closeEvolve() { closeLvUp(); }       // 兼容旧调用
+function showXpToast() {}                       // H8 已移除，留空兼容
+function hideToast(id) { var e = document.getElementById(id); if (e) e.classList.remove('show'); }
+
+// H6 普通升级（非 5 整数倍）：以 LV 2 为示例 — 仅祝贺等级，不发形象/奖品
+function showLevelup() {
+  // 演示固定 LV2：非里程碑升级，仅祝贺，不解锁阶段奖品
+  openLvUp({ badge: 'LV 2', title: '恭喜升级至 LV 2', sub: 'LV 5 可解锁春季皮肤' });
+}
+// H7 进化升级（5 整数倍）：与 H6 同款居中弹窗 + 升级后形象 + 获得奖品（与 H4/STAGES 同源）
 function showEvolve() {
-  document.getElementById('evolveOv').classList.add('show');
+  var stg = stageOf(currentLv);
+  openLvUp({ figureImg: stg.img, badge: '', title: '恭喜进化至 LV ' + stg.range[0], sub: stg.name + '阶段 · 解锁全新形象与奖品', rewards: stg.rewards });
 }
-function closeEvolve() {
-  document.getElementById('evolveOv').classList.remove('show');
-  toast('🎉 进化完成 · 4 类奖励已入库');
-}
-document.querySelectorAll('#evolveOv .h-evolve-skin .chip').forEach(c => {
-  c.addEventListener('click', () => {
-    document.querySelectorAll('#evolveOv .h-evolve-skin .chip').forEach(x => x.classList.remove('is-active'));
-    c.classList.add('is-active');
-  });
-});
 
 /* ---------- H1.A 主视觉滑动切换季节皮肤 ---------- */
 let touchStartX = 0;
