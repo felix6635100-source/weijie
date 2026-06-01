@@ -33,16 +33,17 @@
 
 ```
 唯戒/                                  ← 容器（普通文件夹，非 git 仓库）
-├── 需求原型/        ← 本项目：weijie 仓库 + GitHub Pages 原型站
+├── APP需求原型/     ← 本项目：weijie 仓库 + GitHub Pages 原型站
 ├── APP前端工程/     ← Vue + Capacitor 移动端工程（独立）
-├── 后台前端工程/    ← weijie-ring-admin 管理后台（独立 git 仓库）
-└── tree-spirit-video/ ← 宣传片工程（Remotion）
+└── 后台前端工程/    ← weijie-ring-admin 管理后台（独立 git 仓库）
 ```
 
-本项目（`需求原型/`）内部结构：
+> 容器内还可能挂其它本地工程（如 `tree-spirit-video/` 宣传片工程），按需增加。
+
+本项目（`APP需求原型/`）内部结构：
 
 ```
-需求原型/
+APP需求原型/
 ├── README.md                         ← 本文档（冷启动入口）
 ├── index.html                        ← GitHub Pages 入口（重定向到 html/01-今日模块.html）
 │
