@@ -863,6 +863,81 @@ body.is-dark-mode .ios-status-bar .iss-battery::after { background: #fff; }
 .viz-sleep .seg-rem { background: var(--color-data-sleep); }
 .viz-sleep .seg-core { background: var(--color-brand-primary); }
 .viz-sleep .seg-deep { background: var(--color-brand-secondary); }
+
+/* ==========================================================
+   T3 睡眠 hypnogram 时间轴 + 2x2 阶段统计卡
+   ========================================================== */
+.sleep-hypnogram-card {
+  background: var(--color-bg-surface);
+  border-radius: 18px;
+  padding: 16px 14px 12px;
+  box-shadow: var(--shadow-card);
+  margin-bottom: 12px;
+}
+.sleep-hypnogram-card .hypno-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0 0 14px;
+}
+.sleep-hypnogram {
+  width: 100%;
+  height: 130px;
+  display: block;
+}
+.sleep-hypnogram-axis {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 6px;
+  padding: 0 4px;
+  font-size: 11px;
+  color: var(--text-tertiary);
+  font-feature-settings: "tnum" 1;
+}
+.sleep-stages-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.sleep-stage-card {
+  background: var(--color-bg-surface);
+  border-radius: 18px;
+  padding: 14px;
+  box-shadow: var(--shadow-card);
+}
+.sleep-stage-card .ssc-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.sleep-stage-card .ssc-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.sleep-stage-card .ssc-value {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1.15;
+  margin-bottom: 4px;
+  font-feature-settings: "tnum" 1;
+}
+.sleep-stage-card .ssc-value .ssc-unit {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  margin-left: 2px;
+}
+.sleep-stage-card .ssc-foot {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  font-weight: 500;
+}
 /* 心理压力区间 */
 .viz-stress {
   height: 28px; position: relative;
@@ -3848,39 +3923,85 @@ body.is-dark-mode .ios-status-bar .iss-battery::after { background: #fff; }
               </div>
             </div>
           </div>
-          <div class="section-subtitle">昨晚睡眠构成</div>
-          <div class="viz-sleep" style="height:18px">
-            <div class="seg-wake" style="width:8%"></div>
-            <div class="seg-rem" style="width:16%"></div>
-            <div class="seg-core" style="width:46%"></div>
-            <div class="seg-deep" style="width:30%"></div>
+          <!-- 昨晚睡眠构成 — hypnogram 时间轴 -->
+          <div class="sleep-hypnogram-card">
+            <div class="hypno-title">昨晚睡眠构成</div>
+            <svg class="sleep-hypnogram" viewBox="0 0 320 130" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <!-- 4 lane 背景虚线（清醒 / REM / 核心 / 深度） -->
+              <g stroke="#EFF2F8" stroke-dasharray="2 4" stroke-width="1">
+                <line x1="4" x2="316" y1="14"  y2="14"/>
+                <line x1="4" x2="316" y1="44"  y2="44"/>
+                <line x1="4" x2="316" y1="74"  y2="74"/>
+                <line x1="4" x2="316" y1="104" y2="104"/>
+              </g>
+              <!-- 阶段切换的细竖线 -->
+              <g stroke="#D2DBF1" stroke-width="1">
+                <line x1="10"    x2="10"    y1="14"  y2="74"/>
+                <line x1="34"    x2="34"    y1="74"  y2="104"/>
+                <line x1="65.6"  x2="65.6"  y1="104" y2="74"/>
+                <line x1="82.8"  x2="82.8"  y1="74"  y2="44"/>
+                <line x1="106.7" x2="106.7" y1="44"  y2="14"/>
+                <line x1="111"   x2="111"   y1="14"  y2="74"/>
+                <line x1="132.4" x2="132.4" y1="74"  y2="104"/>
+                <line x1="158.1" x2="158.1" y1="104" y2="74"/>
+                <line x1="179.5" x2="179.5" y1="74"  y2="44"/>
+                <line x1="205.2" x2="205.2" y1="44"  y2="74"/>
+                <line x1="226.6" x2="226.6" y1="74"  y2="14"/>
+                <line x1="230.9" x2="230.9" y1="14"  y2="44"/>
+                <line x1="261.7" x2="261.7" y1="44"  y2="74"/>
+                <line x1="287.5" x2="287.5" y1="74"  y2="14"/>
+                <line x1="294.3" x2="294.3" y1="14"  y2="44"/>
+              </g>
+              <!-- 阶段色块（rect 胶囊） -->
+              <rect x="4"     y="10.5"  width="6"    height="7" rx="3"   fill="#FF6B6B"/>
+              <rect x="10"    y="70.5"  width="24"   height="7" rx="3.5" fill="#4F7DF5"/>
+              <rect x="34"    y="100.5" width="31.6" height="7" rx="3.5" fill="#2849B3"/>
+              <rect x="65.6"  y="70.5"  width="17.2" height="7" rx="3.5" fill="#4F7DF5"/>
+              <rect x="82.8"  y="40.5"  width="23.9" height="7" rx="3.5" fill="#86B5FF"/>
+              <rect x="106.7" y="10.5"  width="4.3"  height="7" rx="3"   fill="#FF6B6B"/>
+              <rect x="111"   y="70.5"  width="21.4" height="7" rx="3.5" fill="#4F7DF5"/>
+              <rect x="132.4" y="100.5" width="25.7" height="7" rx="3.5" fill="#2849B3"/>
+              <rect x="158.1" y="70.5"  width="21.4" height="7" rx="3.5" fill="#4F7DF5"/>
+              <rect x="179.5" y="40.5"  width="25.7" height="7" rx="3.5" fill="#86B5FF"/>
+              <rect x="205.2" y="70.5"  width="21.4" height="7" rx="3.5" fill="#4F7DF5"/>
+              <rect x="226.6" y="10.5"  width="4.3"  height="7" rx="3"   fill="#FF6B6B"/>
+              <rect x="230.9" y="40.5"  width="30.8" height="7" rx="3.5" fill="#86B5FF"/>
+              <rect x="261.7" y="70.5"  width="25.8" height="7" rx="3.5" fill="#4F7DF5"/>
+              <rect x="287.5" y="10.5"  width="6.8"  height="7" rx="3"   fill="#FF6B6B"/>
+              <rect x="294.3" y="40.5"  width="17.7" height="7" rx="3.5" fill="#86B5FF"/>
+            </svg>
+            <div class="sleep-hypnogram-axis">
+              <span>00:00</span><span>02:00</span><span>04:00</span><span>06:00</span>
+            </div>
           </div>
-          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px">
-            <div style="text-align:center">
-              <div style="font-size:10px;color:var(--text-secondary)">醒</div>
-              <div style="font-size:14px;font-weight:600">36m</div>
-              <div style="font-size:10px;color:var(--text-tertiary)">8%</div>
+
+          <!-- 2x2 阶段统计卡 -->
+          <div class="sleep-stages-grid">
+            <div class="sleep-stage-card">
+              <div class="ssc-head"><span class="ssc-dot" style="background:#2849B3"></span><span>深度睡眠</span></div>
+              <div class="ssc-value">44<span class="ssc-unit">分钟</span></div>
+              <div class="ssc-foot">20% · 低</div>
             </div>
-            <div style="text-align:center">
-              <div style="font-size:10px;color:var(--text-secondary)">快速眼动</div>
-              <div style="font-size:14px;font-weight:600">1h12m</div>
-              <div style="font-size:10px;color:var(--text-tertiary)">16%</div>
+            <div class="sleep-stage-card">
+              <div class="ssc-head"><span class="ssc-dot" style="background:#4F7DF5"></span><span>核心睡眠</span></div>
+              <div class="ssc-value">4h45m</div>
+              <div class="ssc-foot">40% · 优秀</div>
             </div>
-            <div style="text-align:center">
-              <div style="font-size:10px;color:var(--text-secondary)">核心</div>
-              <div style="font-size:14px;font-weight:600">3h28m</div>
-              <div style="font-size:10px;color:var(--text-tertiary)">46%</div>
+            <div class="sleep-stage-card">
+              <div class="ssc-head"><span class="ssc-dot" style="background:#86B5FF"></span><span>快速眼动</span></div>
+              <div class="ssc-value">1h30m</div>
+              <div class="ssc-foot">30% · 低</div>
             </div>
-            <div style="text-align:center">
-              <div style="font-size:10px;color:var(--text-secondary)">深度</div>
-              <div style="font-size:14px;font-weight:600">2h17m</div>
-              <div style="font-size:10px;color:var(--text-tertiary)">30%</div>
+            <div class="sleep-stage-card">
+              <div class="ssc-head"><span class="ssc-dot" style="background:#FF6B6B"></span><span>清醒</span></div>
+              <div class="ssc-value">35<span class="ssc-unit">分钟</span></div>
+              <div class="ssc-foot">10% · 优秀</div>
             </div>
           </div>
         </div>
 
-        <!-- 当日趋势 -->
-        <div class="trend-card">
+        <!-- 当日趋势（睡眠态隐藏 — 昨夜固定值，没有当日趋势可言）-->
+        <div class="trend-card" id="t3TrendCard">
           <div class="trend-head">
             <div class="trend-title">今日趋势变化</div>
             <div class="trend-range" id="t3TrendRange">正常范围：30-100ms</div>
@@ -3900,8 +4021,8 @@ body.is-dark-mode .ios-status-bar .iss-battery::after { background: #fff; }
           </div>
         </div>
 
-        <!-- 统计 -->
-        <div class="stats-grid">
+        <!-- 统计（睡眠态隐藏）-->
+        <div class="stats-grid" id="t3StatsGrid">
           <div class="stat-cell">
             <div class="stat-label">最高值</div>
             <div class="stat-value">62 ms</div>
@@ -4864,6 +4985,10 @@ function openMetric(name) {
 
   // 仅睡眠态显示分期段
   document.getElementById('t3Sleep').style.display = (name === '昨晚睡眠') ? 'block' : 'none';
+  // 睡眠是夜间固定值 — 隐藏「今日趋势变化 + 最高/最低/平均/最近七天」4 卡
+  const isSleep = name === '昨晚睡眠';
+  document.getElementById('t3TrendCard').style.display = isSleep ? 'none' : '';
+  document.getElementById('t3StatsGrid').style.display = isSleep ? 'none' : '';
 
   // 仅恢复度态显示 ⓘ
   document.getElementById('t3HeroInfo').style.display = (name === '身体恢复度') ? 'inline-flex' : 'none';

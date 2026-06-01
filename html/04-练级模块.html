@@ -3655,7 +3655,8 @@ html.is-direct-medals #myMedalsOverlay .tab-bar { visibility: visible; }
           <div class="desc" id="medalDetailDesc">恭喜你累计完成 500 次高质量睡眠打卡，成功获得该勋章。</div>
           <div class="next" id="medalDetailNext">下一等级：累计完成 700 次高质量睡眠打卡</div>
         </div>
-        <div class="medal-detail-actions">
+        <!-- 本期不做：去佩戴 + 分享一下 两个按钮（保留 DOM 便于后续恢复，仅整块隐藏） -->
+        <div class="medal-detail-actions" style="display:none">
           <button class="btn ghost" id="medalWearBtn">去佩戴</button>
           <button class="btn primary" onclick="toast('勋章海报已生成')">分享一下</button>
         </div>
@@ -4715,6 +4716,35 @@ Object.assign(MEDAL_ICONS, {
   'metric-hrv': medalIconFile('hrv01.png'),
   'metric-spo2': medalIconFile('血氧01.png')
 });
+
+/* ==========================================================
+   v3.6 · 身体指标系列的"达标范围"映射表
+   ----------------------------------------------------------
+   8 个身体指标勋章系列每条勋章的 rule 文案（如"累计达标 3 天"）
+   渲染时自动拼成 "{指标名}{累计/连续/首次}达标（{范围}）{N 天}"
+   范围数值参考《01-今日模块.md v2.27》§ T1.C3 业务规则 § 1 阈值表，
+   口径：达标 = 落入 正常+良好+优秀 三档（即非"警示"区间）。
+   ========================================================== */
+const METRIC_RANGES = {
+  'metric-stress':   { label: '心理压力',   range: '0-69 分' },
+  'metric-recovery': { label: '身体恢复度', range: '25-100%' },
+  'metric-sleep':    { label: '睡眠',       range: '5h - 10h' },
+  'metric-steps':    { label: '步数',       range: '≥ 2,000 步' },
+  'metric-spo2':     { label: '血氧',       range: '≥ 90%' },
+  'metric-temp':     { label: '体温',       range: '36.0 - 37.5°C' },
+  'metric-hrv':      { label: 'HRV',       range: '≥ 20 ms' },
+  'metric-rhr':      { label: '静息心率',   range: '40 - 99 BPM' },
+};
+
+/* 把 "累计达标 3 天" / "连续达标 5 天" / "首次达标" 拼接成
+   "心理压力累计达标（0-69 分）3 天" / "心理压力连续达标（0-69 分）5 天" / "心理压力首次达标（0-69 分）"。
+   非 metric-* 系列（如新手引导 / 圆环 / 限时活动 / 今日挑战）原样返回。 */
+function formatMedalRule(seriesId, rule) {
+  if (!rule) return rule;
+  const m = METRIC_RANGES[seriesId];
+  if (!m) return rule;
+  return rule.replace(/^(累计达标|连续达标|首次达标)/, `${m.label}$1（${m.range}）`);
+}
 
 const MEDAL_TABS = [
   { id:'lifecycle', label:'成长历程' },
@@ -6864,7 +6894,8 @@ function openSeriesLevelDetail(seriesId, lvl){
   hex.innerHTML = `<img class="hex-img" src="${getMedalLevelIconSrc(series.iconKey, lv.level)}" alt="${adapted.name}">`;
   hex.style.background = '';
   document.getElementById('medalDetailLevel').textContent = '';
-  document.getElementById('medalDetailDesc').textContent = `获取条件：${adapted.condition}`;
+  /* v3.6 · 身体指标系列勋章的"获取条件"按 METRIC_RANGES 自动拼接指标名 + 达标范围 */
+  document.getElementById('medalDetailDesc').textContent = `获取条件：${formatMedalRule(seriesId, adapted.condition)}`;
   document.getElementById('medalDetailNext').textContent = '';
   document.getElementById('medalWearBtn').textContent = adapted.obtained ? '去佩戴' : '去挑战';
   document.getElementById('medalWearBtn').onclick = () => {
@@ -6882,7 +6913,7 @@ function openLimitedMedalDetail(id){
   hex.innerHTML = `<img class="hex-img" src="${getLimitedMedalIconSrc(medal)}" alt="${medal.name}">`;
   hex.style.background = '';
   document.getElementById('medalDetailLevel').textContent = '';
-  document.getElementById('medalDetailDesc').textContent = `获取条件：${medal.rule}`;
+  document.getElementById('medalDetailDesc').textContent = `获取条件：${formatMedalRule(medal.iconKey, medal.rule)}`;
   document.getElementById('medalDetailNext').textContent = '';
   document.getElementById('medalWearBtn').textContent = medal.obtained ? '去佩戴' : '去挑战';
   document.getElementById('medalWearBtn').onclick = () => {
@@ -6925,7 +6956,7 @@ function openMedalDetail(id){
   hex.style.filter = medal.obtained ? 'none' : 'grayscale(1)';
   hex.style.opacity = medal.obtained ? '1' : '0.42';
   document.getElementById('medalDetailLevel').textContent = '';
-  document.getElementById('medalDetailDesc').textContent = `获取条件：${medal.condition}`;
+  document.getElementById('medalDetailDesc').textContent = `获取条件：${formatMedalRule(medal.iconKey, medal.condition)}`;
   document.getElementById('medalDetailNext').textContent = '';
   document.getElementById('medalWearBtn').textContent = medal.obtained ? '去佩戴' : '去挑战';
   document.getElementById('medalWearBtn').onclick = () => {
