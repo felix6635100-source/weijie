@@ -782,8 +782,63 @@ body.is-dark-mode .ios-status-bar .iss-battery::after { background: #fff; }
   opacity: 0.55; filter: grayscale(0.5);
 }
 .metric-head {
-  display: flex; align-items: center; justify-content: space-between;
+  display: flex; align-items: center; gap: 6px;
   margin-bottom: 8px;
+}
+.metric-head .metric-icon { margin-right: auto; flex-shrink: 0; }
+
+/* T1 卡片上的手动测量按钮 — 线性 / 低调 */
+.metric-measure-btn {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--color-brand-primary);
+  display: inline-flex; align-items: center; justify-content: center;
+  border: 1px solid rgba(58, 111, 224, 0.32);
+  cursor: pointer; padding: 0;
+  transition: transform 0.15s, background 0.2s, border-color 0.2s, color 0.2s;
+  flex-shrink: 0;
+}
+.metric-measure-btn:active { transform: scale(0.9); }
+.metric-measure-btn:hover {
+  background: rgba(58, 111, 224, 0.08);
+  border-color: var(--color-brand-primary);
+}
+.metric-measure-btn svg { display: block; }
+.metric-measure-btn .icon-spin { display: none; }
+.metric-measure-btn.is-spinning {
+  background: transparent;
+  border-color: rgba(58, 111, 224, 0.65);
+}
+.metric-measure-btn.is-spinning .icon-play { display: none; }
+.metric-measure-btn.is-spinning .icon-spin {
+  display: block;
+  width: 14px; height: 14px;
+  border: 1.5px solid rgba(58, 111, 224, 0.22);
+  border-top-color: var(--color-brand-primary);
+  border-radius: 50%;
+  animation: cardSpinnerSpin 0.7s linear infinite;
+}
+@keyframes cardSpinnerSpin {
+  to { transform: rotate(360deg); }
+}
+
+/* 测量进行中：value/aux 变暗，foot 文案变品牌色 */
+.metric-card.is-measuring .metric-value-row { opacity: 0.35; transition: opacity 0.25s; }
+.metric-card.is-measuring .metric-aux { opacity: 0.35; }
+.metric-card.is-measuring .metric-foot {
+  color: var(--color-brand-primary);
+  font-weight: 700;
+  animation: cardFootPulse 1.2s ease-in-out infinite;
+}
+@keyframes cardFootPulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.55; }
+}
+/* 测量完成 value punch（复用 tmValuePunch 关键帧） */
+.metric-card .metric-value.is-fresh {
+  animation: tmValuePunch 0.65s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: inline-block;
 }
 .metric-icon {
   width: 32px; height: 32px; border-radius: 50%;
@@ -817,6 +872,28 @@ body.is-dark-mode .ios-status-bar .iss-battery::after { background: #fff; }
 .metric-unit {
   font-size: var(--font-xs); font-weight: var(--weight-semi);
   color: var(--text-tertiary);
+}
+/* 最近测量时间 — 单位后小灰字 */
+.metric-time {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  letter-spacing: 0.2px;
+  margin-left: auto;
+  align-self: flex-end;
+  padding-bottom: 3px;
+  white-space: nowrap;
+}
+.metric-time::before {
+  content: "·";
+  margin-right: 4px;
+  opacity: 0.55;
+}
+.metric-time.is-fresh {
+  color: var(--color-brand-primary);
+  animation: tmValuePunch 0.55s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: inline-block;
 }
 /* 名称行（部分卡用作完整名称，如"HRV 心率变异性"；部分卡用作辅助说明，如"23 ms · 14:33"） */
 .metric-name {
@@ -1755,6 +1832,91 @@ body.is-dark-mode .ios-status-bar .iss-battery::after { background: #fff; }
   color: rgba(255,255,255,0.92);
   font-size: var(--font-md);
   line-height: 1.6;
+}
+
+/* ===== T3 手动测量：按钮 + 测量状态 ===== */
+.t3-measure-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 14px;
+  padding: 9px 18px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.95);
+  color: var(--color-brand-primary);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.18);
+  transition: transform 0.15s, background 0.2s, color 0.2s;
+  border: 0;
+  white-space: nowrap;
+  align-self: flex-start;
+}
+.t3-measure-btn:active { transform: scale(0.96); }
+.t3-measure-btn .icon { font-size: 12px; line-height: 1; }
+.t3-measure-btn.is-done {
+  background: linear-gradient(135deg, #D9F7E2 0%, #9DE9B6 100%);
+  color: #157A3D;
+  box-shadow: 0 8px 22px rgba(57, 193, 108, 0.32);
+}
+.t3-measure-btn[hidden] { display: none !important; }
+
+.t3-measure-state {
+  display: none;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 4px 0 6px;
+}
+.t3-measure-icon {
+  font-size: 56px;
+  line-height: 1;
+  filter: drop-shadow(0 4px 14px rgba(0, 0, 0, 0.25));
+  animation: tmIconPulse 1.0s ease-in-out infinite;
+}
+@keyframes tmIconPulse {
+  0%, 100% { transform: scale(1);    opacity: 1; }
+  50%      { transform: scale(1.18); opacity: 0.75; }
+}
+.t3-measure-text {
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.95);
+  letter-spacing: 0.4px;
+}
+.t3-measure-bar {
+  width: 200px;
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.22);
+  overflow: hidden;
+}
+.t3-measure-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #FFFFFF, rgba(255, 255, 255, 0.65));
+  border-radius: inherit;
+  transition: width 0.2s linear;
+}
+
+/* 测量进行中：隐藏 value/status/foot，露出测量面板；按钮按 hidden 属性走 */
+.t3-hero.is-measuring .t3-hero-value-row,
+.t3-hero.is-measuring .t3-hero-status,
+.t3-hero.is-measuring .t3-hero-foot { display: none; }
+.t3-hero.is-measuring .t3-measure-state { display: flex; }
+
+/* 测量完成 — value 短暂"punch"动画 */
+@keyframes tmValuePunch {
+  0%   { transform: scale(0.6); opacity: 0; }
+  55%  { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(1);   opacity: 1; }
+}
+.t3-hero-value.is-fresh,
+.t3-hero-unit.is-fresh {
+  animation: tmValuePunch 0.65s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: inline-block;
 }
 
 /* ===== 各指标 Hero 主题色 ===== */
@@ -3072,6 +3234,389 @@ body.is-dark-mode .ios-status-bar .iss-battery::after { background: #fff; }
 /* like-btn 已有 :active scale(0.92)，pulse 时取消 active 干扰 */
 .like-btn.xp-pulse:active { transform: scale(1); }
 
+/* ==========================================================
+   新手引导 overlay（覆盖在 phone-frame 内顶层）
+   ========================================================== */
+.ob-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 50;
+  background: #FFFFFF;
+  overflow: hidden;
+  display: none;
+  opacity: 0;
+  transform: scale(1.02);
+}
+.ob-overlay.is-on {
+  display: block;
+  animation: obEnter 0.4s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+}
+.ob-overlay.is-exiting {
+  animation: obExit 0.4s ease-in forwards;
+}
+@keyframes obEnter {
+  0%   { opacity: 0; transform: scale(1.02); }
+  100% { opacity: 1; transform: scale(1.0); }
+}
+@keyframes obExit {
+  0%   { opacity: 1; transform: scale(1.0); }
+  100% { opacity: 0; transform: scale(0.97); }
+}
+.ob-viewport {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  overflow: hidden;
+}
+.ob-slides {
+  display: flex;
+  width: 600%;
+  height: 100%;
+  transition: transform 0.55s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+.ob-slide {
+  width: 16.6666%;
+  height: 100%;
+  flex-shrink: 0;
+  position: relative;
+  display: flex; flex-direction: column;
+  padding: 88px 28px 130px;
+}
+.ob-slide[data-theme="cyan"]   { background: linear-gradient(160deg, #E8F8FF 0%, #FAFDFF 60%, #FFFFFF 100%); }
+.ob-slide[data-theme="green"]  { background: linear-gradient(160deg, #ECFBF1 0%, #F8FFFB 60%, #FFFFFF 100%); }
+.ob-slide[data-theme="purple"] { background: linear-gradient(160deg, #F1EDFF 0%, #FAF7FF 60%, #FFFFFF 100%); }
+.ob-slide[data-theme="pink"]   { background: linear-gradient(160deg, #FFF0F6 0%, #FFF8FB 60%, #FFFFFF 100%); }
+.ob-slide[data-theme="gold"]   { background: linear-gradient(160deg, #FFF6DD 0%, #FFFBEE 60%, #FFFFFF 100%); }
+.ob-slide[data-theme="mint"]   { background: linear-gradient(160deg, #E6F9F2 0%, #F4FCF9 60%, #FFFFFF 100%); }
+
+.ob-blob {
+  position: absolute; border-radius: 50%; filter: blur(20px); opacity: 0.5; pointer-events: none;
+}
+.ob-slide[data-theme="cyan"]   .ob-blob.a { top: -40px;  left: -40px;  width: 200px; height: 200px; background: rgba(17, 211, 255, 0.45); }
+.ob-slide[data-theme="cyan"]   .ob-blob.b { top: 120px;  right: -50px; width: 160px; height: 160px; background: rgba(58, 111, 224, 0.35); }
+.ob-slide[data-theme="green"]  .ob-blob.a { top: -40px;  right: -40px; width: 200px; height: 200px; background: rgba(57, 193, 108, 0.40); }
+.ob-slide[data-theme="green"]  .ob-blob.b { top: 140px;  left: -40px;  width: 150px; height: 150px; background: rgba(255, 163, 26, 0.30); }
+.ob-slide[data-theme="purple"] .ob-blob.a { top: -30px;  left: -30px;  width: 200px; height: 200px; background: rgba(113, 79, 247, 0.45); }
+.ob-slide[data-theme="purple"] .ob-blob.b { top: 160px;  right: -50px; width: 170px; height: 170px; background: rgba(76, 92, 216, 0.35); }
+.ob-slide[data-theme="pink"]   .ob-blob.a { top: -40px;  right: -40px; width: 200px; height: 200px; background: rgba(255, 107, 170, 0.45); }
+.ob-slide[data-theme="pink"]   .ob-blob.b { top: 140px;  left: -50px;  width: 160px; height: 160px; background: rgba(242, 94, 255, 0.35); }
+.ob-slide[data-theme="gold"]   .ob-blob.a { top: -40px;  left: -40px;  width: 220px; height: 220px; background: rgba(255, 182, 11, 0.50); }
+.ob-slide[data-theme="gold"]   .ob-blob.b { top: 130px;  right: -40px; width: 160px; height: 160px; background: rgba(255, 107, 170, 0.30); }
+.ob-slide[data-theme="mint"]   .ob-blob.a { top: -30px;  right: -30px; width: 200px; height: 200px; background: rgba(38, 212, 154, 0.45); }
+.ob-slide[data-theme="mint"]   .ob-blob.b { top: 150px;  left: -40px;  width: 160px; height: 160px; background: rgba(17, 211, 255, 0.30); }
+
+.ob-hero {
+  position: relative; z-index: 2;
+  height: 360px;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 8px;
+}
+.ob-copy { position: relative; z-index: 2; text-align: center; padding: 0 4px; }
+.ob-title {
+  font-size: 26px; font-weight: 800; line-height: 1.25;
+  color: var(--color-text-primary);
+  margin: 0 0 14px; letter-spacing: 0.2px;
+}
+.ob-subtitle {
+  font-size: 14px; font-weight: 500; line-height: 1.6;
+  color: var(--color-text-secondary); margin: 0;
+}
+.ob-tags {
+  display: flex; flex-wrap: wrap; justify-content: center; gap: 6px;
+  margin-bottom: 12px;
+}
+.ob-tag {
+  font-size: 11px; font-weight: 600;
+  padding: 4px 9px; border-radius: 999px;
+  background: rgba(20, 22, 25, 0.05);
+  color: var(--color-text-primary);
+}
+.ob-slide[data-theme="cyan"]   .ob-tag { background: rgba(17, 211, 255, 0.14); color: #0A6BAA; }
+.ob-slide[data-theme="green"]  .ob-tag { background: rgba(57, 193, 108, 0.16); color: #157A3D; }
+.ob-slide[data-theme="purple"] .ob-tag { background: rgba(113, 79, 247, 0.14); color: #4C3FAF; }
+.ob-slide[data-theme="pink"]   .ob-tag { background: rgba(242, 94, 255, 0.14); color: #B33AA8; }
+.ob-slide[data-theme="gold"]   .ob-tag { background: rgba(255, 182, 11, 0.18); color: #8A5A00; }
+.ob-slide[data-theme="mint"]   .ob-tag { background: rgba(38, 212, 154, 0.16); color: #066E51; }
+
+/* Slide 1 · 身体指标气泡 */
+.ob-metric-cloud { position: relative; width: 280px; height: 320px; }
+.ob-metric-bubble {
+  position: absolute;
+  background: #fff; border-radius: 18px; padding: 10px 12px;
+  display: flex; align-items: center; gap: 8px;
+  box-shadow: 0 8px 24px rgba(17, 130, 200, 0.16), 0 2px 6px rgba(17, 130, 200, 0.08);
+  animation: obBubbleFloat 4.5s ease-in-out infinite;
+}
+.ob-metric-bubble .ob-mb-icon {
+  width: 30px; height: 30px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px; color: #fff;
+  background: linear-gradient(135deg, #B5EFFF, #11D3FF);
+}
+.ob-metric-bubble .ob-mb-text {
+  font-size: 12px; font-weight: 700;
+  color: var(--color-text-primary); white-space: nowrap;
+}
+.ob-metric-bubble:nth-child(1) { top: 0;    left: 30px;  animation-delay: 0s;   }
+.ob-metric-bubble:nth-child(2) { top: 30px; right: 0;    animation-delay: 0.3s; }
+.ob-metric-bubble:nth-child(3) { top: 90px; left: 0;     animation-delay: 0.6s; }
+.ob-metric-bubble:nth-child(4) { top: 120px;right: 30px; animation-delay: 0.9s; }
+.ob-metric-bubble:nth-child(5) { top: 180px;left: 40px;  animation-delay: 1.2s; }
+.ob-metric-bubble:nth-child(6) { top: 210px;right: 0;    animation-delay: 1.5s; }
+.ob-metric-bubble:nth-child(7) { top: 260px;left: 0;     animation-delay: 1.8s; }
+.ob-metric-bubble:nth-child(8) { top: 280px;right: 50px; animation-delay: 2.1s; }
+@keyframes obBubbleFloat {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-8px); }
+}
+
+/* Slide 2 · 挑战环 */
+.ob-challenge-ring { position: relative; width: 300px; height: 320px; }
+.ob-challenge-ring .ob-cr-center {
+  position: absolute; left: 50%; top: 50%;
+  transform: translate(-50%, -50%);
+  width: 110px; height: 110px; border-radius: 50%;
+  background: linear-gradient(135deg, #ABFFCC 0%, #0BFFCF 100%);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 56px;
+  box-shadow: 0 16px 40px rgba(11, 255, 207, 0.35);
+}
+.ob-challenge-ring .ob-cr-item {
+  position: absolute;
+  width: 56px; height: 56px; border-radius: 18px;
+  background: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px;
+  box-shadow: 0 8px 20px rgba(20, 22, 25, 0.10);
+  animation: obItemPulse 3.6s ease-in-out infinite;
+}
+.ob-challenge-ring .ob-cr-item:nth-child(2) { top: 0;    left: 50%; transform: translateX(-50%); animation: obItemPulseX 3.6s ease-in-out infinite; }
+.ob-challenge-ring .ob-cr-item:nth-child(3) { top: 30px; right: 18px; animation-delay: 0.3s; }
+.ob-challenge-ring .ob-cr-item:nth-child(4) { top: 50%; right: 0; transform: translateY(-50%); animation: obItemPulseY 3.6s ease-in-out infinite 0.6s; }
+.ob-challenge-ring .ob-cr-item:nth-child(5) { bottom: 30px; right: 18px; animation-delay: 0.9s; }
+.ob-challenge-ring .ob-cr-item:nth-child(6) { bottom: 30px; left: 18px; animation-delay: 1.2s; }
+.ob-challenge-ring .ob-cr-item:nth-child(7) { top: 50%; left: 0; transform: translateY(-50%); animation: obItemPulseY 3.6s ease-in-out infinite 1.5s; }
+.ob-challenge-ring .ob-cr-item:nth-child(8) { top: 30px; left: 18px; animation-delay: 1.8s; }
+@keyframes obItemPulse {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.08); }
+}
+@keyframes obItemPulseX {
+  0%, 100% { transform: translateX(-50%) scale(1); }
+  50%      { transform: translateX(-50%) scale(1.08); }
+}
+@keyframes obItemPulseY {
+  0%, 100% { transform: translateY(-50%) scale(1); }
+  50%      { transform: translateY(-50%) scale(1.08); }
+}
+
+/* Slide 3 · 团队 + 奖杯 */
+.ob-team-stack { position: relative; width: 300px; height: 320px; display: flex; align-items: center; justify-content: center; }
+.ob-team-stack .ob-ts-trophy {
+  font-size: 100px;
+  filter: drop-shadow(0 16px 40px rgba(255, 182, 11, 0.45));
+  animation: obTrophyBob 2.4s ease-in-out infinite;
+}
+@keyframes obTrophyBob {
+  0%, 100% { transform: translateY(0) rotate(-3deg); }
+  50%      { transform: translateY(-12px) rotate(3deg); }
+}
+.ob-team-stack .ob-ts-avatar {
+  position: absolute;
+  width: 70px; height: 70px; border-radius: 50%;
+  border: 4px solid #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 30px; font-weight: 700; color: #fff;
+  box-shadow: 0 10px 28px rgba(76, 92, 216, 0.28);
+}
+.ob-team-stack .ob-ts-avatar.a { left: 20px;  top: 90px;  background: linear-gradient(135deg, #FFC56F, #FF6BAA); }
+.ob-team-stack .ob-ts-avatar.b { right: 20px; top: 90px;  background: linear-gradient(135deg, #B5D2FF, #3A6FE0); }
+.ob-team-stack .ob-ts-avatar.c { left: 50%; transform: translateX(-50%); bottom: 60px; background: linear-gradient(135deg, #ABFFCC, #0BFFCF); color: #0F5A3A; }
+
+/* Slide 4 · 关心心跳 + 气泡 */
+.ob-care-stage { position: relative; width: 300px; height: 320px; }
+.ob-care-stage .ob-heart {
+  position: absolute; left: 50%; top: 50%;
+  transform: translate(-50%, -50%);
+  width: 130px; height: 130px; border-radius: 50%;
+  background: linear-gradient(135deg, #FFE0EE 0%, #FF6BAA 100%);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 64px;
+  box-shadow: 0 18px 50px rgba(255, 107, 170, 0.38);
+  animation: obHeartBeat 1.6s ease-in-out infinite;
+}
+@keyframes obHeartBeat {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); }
+  20%      { transform: translate(-50%, -50%) scale(1.12); }
+  40%      { transform: translate(-50%, -50%) scale(1.0); }
+  60%      { transform: translate(-50%, -50%) scale(1.08); }
+}
+.ob-care-stage .ob-ping {
+  position: absolute;
+  background: #fff; border-radius: 14px; padding: 7px 11px;
+  display: flex; align-items: center; gap: 6px;
+  font-size: 11px; font-weight: 700;
+  box-shadow: 0 8px 20px rgba(255, 107, 170, 0.20);
+}
+.ob-care-stage .ob-ping .ob-av {
+  width: 22px; height: 22px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; color: #fff; font-weight: 700;
+}
+.ob-care-stage .ob-ping.p1 { top: 20px;  left: 0;       animation: obPingFloat 3.4s ease-in-out infinite 0s;   }
+.ob-care-stage .ob-ping.p2 { top: 40px;  right: -10px;  animation: obPingFloat 3.4s ease-in-out infinite 0.5s; }
+.ob-care-stage .ob-ping.p3 { bottom: 50px; left: 10px;  animation: obPingFloat 3.4s ease-in-out infinite 1s;   }
+.ob-care-stage .ob-ping.p4 { bottom: 10px; right: 0;    animation: obPingFloat 3.4s ease-in-out infinite 1.5s; }
+.ob-care-stage .ob-ping.p1 .ob-av { background: linear-gradient(135deg, #FFC56F, #FF9C31); }
+.ob-care-stage .ob-ping.p2 .ob-av { background: linear-gradient(135deg, #B5D2FF, #3A6FE0); }
+.ob-care-stage .ob-ping.p3 .ob-av { background: linear-gradient(135deg, #ABFFCC, #0BFFCF); color: #0F5A3A; }
+.ob-care-stage .ob-ping.p4 .ob-av { background: linear-gradient(135deg, #C0B0FF, #714FF7); }
+@keyframes obPingFloat {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-8px); }
+}
+
+/* Slide 5 · 升级形象 + 徽章 */
+.ob-level-stage { position: relative; width: 300px; height: 320px; display: flex; align-items: center; justify-content: center; }
+.ob-level-stage .ob-char {
+  width: 180px; height: 240px;
+  border-radius: 90px 90px 32px 32px;
+  background: linear-gradient(180deg, #FFE5B0 0%, #FFC56F 50%, #FF9C31 100%);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 100px;
+  box-shadow: 0 20px 50px rgba(255, 156, 49, 0.36);
+  position: relative;
+}
+.ob-level-stage .ob-char::before {
+  content: "Lv.7";
+  position: absolute; bottom: 16px; left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-sans);
+  font-size: 12px; font-weight: 900; color: #fff;
+  background: rgba(0, 0, 0, 0.32);
+  padding: 4px 12px; border-radius: 999px;
+  letter-spacing: 0.4px;
+}
+.ob-level-stage .ob-frame-deco {
+  position: absolute; inset: -12px;
+  border-radius: 100px 100px 44px 44px;
+  border: 3px dashed rgba(255, 182, 11, 0.6);
+  pointer-events: none;
+  animation: obFrameSpin 14s linear infinite;
+}
+@keyframes obFrameSpin {
+  0%   { transform: rotate(0); }
+  100% { transform: rotate(360deg); }
+}
+.ob-level-stage .ob-badge {
+  position: absolute;
+  width: 44px; height: 44px; border-radius: 50%;
+  background: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+  box-shadow: 0 6px 16px rgba(20, 22, 25, 0.12);
+  animation: obBadgeBob 2.6s ease-in-out infinite;
+}
+.ob-level-stage .ob-badge.b1 { top: 0;    left: 10px;    animation-delay: 0s; }
+.ob-level-stage .ob-badge.b2 { top: 30px; right: 0;      animation-delay: 0.4s; }
+.ob-level-stage .ob-badge.b3 { bottom: 80px; right: -10px; animation-delay: 0.8s; }
+.ob-level-stage .ob-badge.b4 { bottom: 0;  left: 20px;   animation-delay: 1.2s; }
+@keyframes obBadgeBob {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-10px); }
+}
+
+/* Slide 6 · 铃铛提醒 */
+.ob-bell-stage { position: relative; width: 300px; height: 320px; display: flex; align-items: center; justify-content: center; }
+.ob-bell-stage .ob-bell {
+  width: 170px; height: 170px; border-radius: 50%;
+  background: linear-gradient(135deg, #C5F4E8 0%, #26D49A 100%);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 88px;
+  box-shadow: 0 22px 50px rgba(38, 212, 154, 0.40);
+  animation: obBellShake 2.4s ease-in-out infinite;
+}
+@keyframes obBellShake {
+  0%, 92%, 100% { transform: rotate(0); }
+  4%   { transform: rotate(-15deg); }
+  8%   { transform: rotate(15deg); }
+  12%  { transform: rotate(-10deg); }
+  16%  { transform: rotate(10deg); }
+  20%  { transform: rotate(-4deg); }
+  24%  { transform: rotate(0); }
+}
+.ob-bell-stage .ob-wave {
+  position: absolute;
+  border: 3px solid rgba(38, 212, 154, 0.45);
+  border-radius: 50%;
+  animation: obWaveExpand 2.4s ease-out infinite;
+}
+.ob-bell-stage .ob-wave.w1 { width: 200px; height: 200px; animation-delay: 0s; }
+.ob-bell-stage .ob-wave.w2 { width: 240px; height: 240px; animation-delay: 0.4s; }
+.ob-bell-stage .ob-wave.w3 { width: 280px; height: 280px; animation-delay: 0.8s; }
+@keyframes obWaveExpand {
+  0%   { transform: scale(0.7); opacity: 0.8; }
+  100% { transform: scale(1.2); opacity: 0; }
+}
+.ob-bell-stage .ob-reminder-card {
+  position: absolute;
+  background: #fff; border-radius: 14px;
+  padding: 8px 12px;
+  font-size: 11px; font-weight: 700;
+  color: var(--color-text-primary);
+  box-shadow: 0 10px 24px rgba(38, 212, 154, 0.22);
+  display: flex; align-items: center; gap: 6px;
+  animation: obCardPop 4s ease-in-out infinite;
+}
+.ob-bell-stage .ob-reminder-card.r1 { top: 30px; left: 0;     animation-delay: 0s; }
+.ob-bell-stage .ob-reminder-card.r2 { bottom: 50px; right: 0; animation-delay: 1s; }
+.ob-bell-stage .ob-reminder-card.r3 { bottom: 20px; left: 10px; animation-delay: 2s; }
+@keyframes obCardPop {
+  0%, 100% { transform: scale(1) translateY(0); opacity: 0.92; }
+  50%      { transform: scale(1.05) translateY(-4px); opacity: 1; }
+}
+
+/* 底部控制条 */
+.ob-controls {
+  position: absolute; left: 0; right: 0; bottom: 24px; z-index: 10;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 24px;
+}
+.ob-skip {
+  font-size: 13px; font-weight: 600;
+  color: var(--color-text-tertiary);
+  padding: 10px 4px;
+  background: transparent; border: 0; cursor: pointer;
+}
+.ob-skip:active { opacity: 0.6; }
+.ob-dots { display: flex; gap: 6px; align-items: center; }
+.ob-dot {
+  width: 6px; height: 6px; border-radius: 999px;
+  background: rgba(20, 22, 25, 0.18);
+  transition: all .35s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+.ob-dot.is-active { width: 22px; background: var(--color-brand-primary); }
+.ob-next {
+  min-width: 96px; height: 40px;
+  padding: 0 18px; border-radius: 999px;
+  background: var(--color-text-primary); color: #fff;
+  font-size: 13px; font-weight: 700;
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  box-shadow: 0 8px 22px rgba(20, 22, 25, 0.22);
+  transition: transform .15s; border: 0; cursor: pointer;
+}
+.ob-next:active { transform: scale(0.96); }
+.ob-next.is-final {
+  min-width: 140px;
+  background: linear-gradient(135deg, #4C5CD8 0%, #3A6FE0 100%);
+  box-shadow: 0 8px 22px rgba(76, 92, 216, 0.42);
+}
+#phone[data-ob-theme="cyan"]   .ob-dot.is-active { background: #11D3FF; }
+#phone[data-ob-theme="green"]  .ob-dot.is-active { background: #39C16C; }
+#phone[data-ob-theme="purple"] .ob-dot.is-active { background: #714FF7; }
+#phone[data-ob-theme="pink"]   .ob-dot.is-active { background: #FF6BAA; }
+#phone[data-ob-theme="gold"]   .ob-dot.is-active { background: #FFB60B; }
+#phone[data-ob-theme="mint"]   .ob-dot.is-active { background: #26D49A; }
+
 </style>
 </head>
 <body>
@@ -3112,6 +3657,9 @@ body.is-dark-mode .ios-status-bar .iss-battery::after { background: #fff; }
     </button>
     <button class="state-btn" data-state="dark-mode" style="grid-column:span 2">
       <span class="icon">🌙</span><span>切换深色模式</span>
+    </button>
+    <button class="state-btn" onclick="obShow(true)" style="grid-column:span 2">
+      <span class="icon">🚀</span><span>重看新手引导</span>
     </button>
   </div>
 
@@ -3358,6 +3906,10 @@ body.is-dark-mode .ios-status-bar .iss-battery::after { background: #fff; }
       <div class="metric-card" data-metric="心理压力" onclick="openMetric('心理压力')">
         <div class="metric-head">
           <div class="metric-icon">🧠</div>
+          <button class="metric-measure-btn" type="button" aria-label="手动测量" onclick="event.stopPropagation();measureCardMetric(this, '心理压力')">
+            <svg class="icon-play" viewBox="0 0 14 14" width="11" height="11" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3.5L11 7L5 10.5Z"/></svg>
+            <span class="icon-spin"></span>
+          </button>
         </div>
         <div class="metric-value-row">
           <div class="metric-value is-text">心理压力正常</div>
@@ -3387,10 +3939,15 @@ body.is-dark-mode .ios-status-bar .iss-battery::after { background: #fff; }
         <div class="metric-head">
           <div class="metric-icon">💜</div>
           <div class="metric-status is-normal">良好</div>
+          <button class="metric-measure-btn" type="button" aria-label="手动测量" onclick="event.stopPropagation();measureCardMetric(this, 'HRV')">
+            <svg class="icon-play" viewBox="0 0 14 14" width="11" height="11" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3.5L11 7L5 10.5Z"/></svg>
+            <span class="icon-spin"></span>
+          </button>
         </div>
         <div class="metric-value-row">
           <div class="metric-value">48</div>
           <div class="metric-unit">ms</div>
+          <div class="metric-time">14:33</div>
         </div>
         <div class="metric-name">HRV 心率变异性</div>
         <div class="metric-viz">
@@ -3454,10 +4011,15 @@ body.is-dark-mode .ios-status-bar .iss-battery::after { background: #fff; }
         <div class="metric-head">
           <div class="metric-icon">🫁</div>
           <div class="metric-status is-normal">优秀</div>
+          <button class="metric-measure-btn" type="button" aria-label="手动测量" onclick="event.stopPropagation();measureCardMetric(this, '血氧 SpO2')">
+            <svg class="icon-play" viewBox="0 0 14 14" width="11" height="11" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3.5L11 7L5 10.5Z"/></svg>
+            <span class="icon-spin"></span>
+          </button>
         </div>
         <div class="metric-value-row">
           <div class="metric-value">98</div>
           <div class="metric-unit">%</div>
+          <div class="metric-time">14:23</div>
         </div>
         <div class="metric-name">血氧 SpO2</div>
         <div class="metric-viz">
@@ -3473,10 +4035,15 @@ body.is-dark-mode .ios-status-bar .iss-battery::after { background: #fff; }
         <div class="metric-head">
           <div class="metric-icon">❤️</div>
           <div class="metric-status is-normal">良好</div>
+          <button class="metric-measure-btn" type="button" aria-label="手动测量" onclick="event.stopPropagation();measureCardMetric(this, '静息心率')">
+            <svg class="icon-play" viewBox="0 0 14 14" width="11" height="11" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3.5L11 7L5 10.5Z"/></svg>
+            <span class="icon-spin"></span>
+          </button>
         </div>
         <div class="metric-value-row">
           <div class="metric-value">72</div>
           <div class="metric-unit">BPM</div>
+          <div class="metric-time">14:33</div>
         </div>
         <div class="metric-name">静息心率</div>
         <div class="metric-viz">
@@ -3900,6 +4467,16 @@ body.is-dark-mode .ios-status-bar .iss-battery::after { background: #fff; }
             </div>
             <div class="t3-hero-status" id="t3HeroStatus">良好</div>
             <div class="t3-hero-foot" id="t3HeroFoot">当前 HRV 较昨日提升 5ms，神经系统恢复良好，可适当进行中等强度训练。</div>
+            <!-- 手动测量进行中（仅测量时显示）-->
+            <div class="t3-measure-state" id="t3MeasureState">
+              <div class="t3-measure-icon" id="t3MeasureIcon">❤️</div>
+              <div class="t3-measure-text" id="t3MeasureText">正在测量…</div>
+              <div class="t3-measure-bar"><div class="t3-measure-fill" id="t3MeasureFill"></div></div>
+            </div>
+            <!-- 手动测量入口（仅支持的指标显示）-->
+            <button class="t3-measure-btn" id="t3MeasureBtn" hidden onclick="startT3Measurement()">
+              <span class="icon">▶</span><span id="t3MeasureBtnText">手动测量</span>
+            </button>
           </div>
         </div>
         <!-- 主体卡片区（hero 之下，有内边距） -->
@@ -4619,6 +5196,146 @@ body.is-dark-mode .ios-status-bar .iss-battery::after { background: #fff; }
     <div class="toast" id="toastBox">提示</div>
   </div>
 
+  <!-- =========================================================
+       新手引导 overlay（首次进入自动弹；左侧 nav 有"重看"按钮）
+       ========================================================= -->
+  <div class="ob-overlay" id="obOverlay">
+    <div class="ob-viewport">
+      <div class="ob-slides" id="obSlides">
+
+        <!-- Slide 1 · 实时记录身体指标 -->
+        <section class="ob-slide" data-theme="cyan">
+          <div class="ob-blob a"></div><div class="ob-blob b"></div>
+          <div class="ob-hero">
+            <div class="ob-metric-cloud">
+              <div class="ob-metric-bubble"><div class="ob-mb-icon">🧠</div><div class="ob-mb-text">心理压力</div></div>
+              <div class="ob-metric-bubble"><div class="ob-mb-icon" style="background:linear-gradient(135deg,#FFD27F,#FFA31A)">⚡</div><div class="ob-mb-text">恢复度</div></div>
+              <div class="ob-metric-bubble"><div class="ob-mb-icon" style="background:linear-gradient(135deg,#C0B0FF,#714FF7)">🌙</div><div class="ob-mb-text">睡眠</div></div>
+              <div class="ob-metric-bubble"><div class="ob-mb-icon" style="background:linear-gradient(135deg,#FFC4DC,#FF6BAA)">🫁</div><div class="ob-mb-text">血氧</div></div>
+              <div class="ob-metric-bubble"><div class="ob-mb-icon" style="background:linear-gradient(135deg,#4EFF92,#26D49A)">🌡️</div><div class="ob-mb-text">体温</div></div>
+              <div class="ob-metric-bubble"><div class="ob-mb-icon" style="background:linear-gradient(135deg,#FF8A8A,#FF3D1B)">❤️</div><div class="ob-mb-text">心率</div></div>
+              <div class="ob-metric-bubble"><div class="ob-mb-icon" style="background:linear-gradient(135deg,#31FCFF,#08D2FF)">👟</div><div class="ob-mb-text">步数</div></div>
+              <div class="ob-metric-bubble"><div class="ob-mb-icon" style="background:linear-gradient(135deg,#B7A3FF,#4C5CD8)">💜</div><div class="ob-mb-text">HRV</div></div>
+            </div>
+          </div>
+          <div class="ob-copy">
+            <h1 class="ob-title">实时记录身体指标</h1>
+            <p class="ob-subtitle">戒指 24 小时贴身陪伴，<br>读懂身体的每一个信号</p>
+          </div>
+        </section>
+
+        <!-- Slide 2 · 每日挑战 -->
+        <section class="ob-slide" data-theme="green">
+          <div class="ob-blob a"></div><div class="ob-blob b"></div>
+          <div class="ob-hero">
+            <div class="ob-challenge-ring">
+              <div class="ob-cr-center">🎯</div>
+              <div class="ob-cr-item">👟</div>
+              <div class="ob-cr-item">🌙</div>
+              <div class="ob-cr-item">🏃</div>
+              <div class="ob-cr-item">💧</div>
+              <div class="ob-cr-item">🧍</div>
+              <div class="ob-cr-item">💊</div>
+              <div class="ob-cr-item">🔥</div>
+            </div>
+          </div>
+          <div class="ob-copy">
+            <div class="ob-tags">
+              <span class="ob-tag">走路</span><span class="ob-tag">睡眠</span><span class="ob-tag">心肺训练</span>
+              <span class="ob-tag">喝水</span><span class="ob-tag">站立</span><span class="ob-tag">吃药</span><span class="ob-tag">消耗</span>
+            </div>
+            <h1 class="ob-title">每日挑战，养成好习惯</h1>
+            <p class="ob-subtitle">7 项每日挑战陪你坚持，<br>让健康藏进每一天</p>
+          </div>
+        </section>
+
+        <!-- Slide 3 · 维度活动 -->
+        <section class="ob-slide" data-theme="purple">
+          <div class="ob-blob a"></div><div class="ob-blob b"></div>
+          <div class="ob-hero">
+            <div class="ob-team-stack">
+              <div class="ob-ts-trophy">🏆</div>
+              <div class="ob-ts-avatar a">A</div>
+              <div class="ob-ts-avatar b">B</div>
+              <div class="ob-ts-avatar c">C</div>
+            </div>
+          </div>
+          <div class="ob-copy">
+            <h1 class="ob-title">维度活动，并肩挑战</h1>
+            <p class="ob-subtitle">和朋友一起参加阶段挑战，<br>共同赢取专属奖励</p>
+          </div>
+        </section>
+
+        <!-- Slide 4 · 关心互动 -->
+        <section class="ob-slide" data-theme="pink">
+          <div class="ob-blob a"></div><div class="ob-blob b"></div>
+          <div class="ob-hero">
+            <div class="ob-care-stage">
+              <div class="ob-heart">💗</div>
+              <div class="ob-ping p1"><div class="ob-av">妈</div>👍 你今天棒</div>
+              <div class="ob-ping p2"><div class="ob-av">爸</div>💬 早点睡</div>
+              <div class="ob-ping p3"><div class="ob-av">小</div>🥇 又夺冠</div>
+              <div class="ob-ping p4"><div class="ob-av">L</div>❤️ 喜欢</div>
+            </div>
+          </div>
+          <div class="ob-copy">
+            <h1 class="ob-title">把进步分享给在乎的人</h1>
+            <p class="ob-subtitle">每日挑战与维度活动战绩同步关心圈，<br>赢得 TA 圈子里的排行榜首位</p>
+          </div>
+        </section>
+
+        <!-- Slide 5 · 收获等级 -->
+        <section class="ob-slide" data-theme="gold">
+          <div class="ob-blob a"></div><div class="ob-blob b"></div>
+          <div class="ob-hero">
+            <div class="ob-level-stage">
+              <div class="ob-frame-deco"></div>
+              <div class="ob-char">🦊</div>
+              <div class="ob-badge b1">⭐</div>
+              <div class="ob-badge b2">🥇</div>
+              <div class="ob-badge b3">🎖️</div>
+              <div class="ob-badge b4">👑</div>
+            </div>
+          </div>
+          <div class="ob-copy">
+            <h1 class="ob-title">升级形象，与众不同</h1>
+            <p class="ob-subtitle">完成挑战与互动赢取 XP 升级，<br>解锁专属皮肤与头像框</p>
+          </div>
+        </section>
+
+        <!-- Slide 6 · 及时提醒 -->
+        <section class="ob-slide" data-theme="mint">
+          <div class="ob-blob a"></div><div class="ob-blob b"></div>
+          <div class="ob-hero">
+            <div class="ob-bell-stage">
+              <div class="ob-wave w1"></div>
+              <div class="ob-wave w2"></div>
+              <div class="ob-wave w3"></div>
+              <div class="ob-bell">🔔</div>
+              <div class="ob-reminder-card r1">💧 该喝水了</div>
+              <div class="ob-reminder-card r2">🧍 起身一下</div>
+              <div class="ob-reminder-card r3">💊 服药时间</div>
+            </div>
+          </div>
+          <div class="ob-copy">
+            <h1 class="ob-title">适时提醒，不错过进步</h1>
+            <p class="ob-subtitle">到点温柔提醒陪你完成挑战，<br>一起赢取更健康的自己</p>
+          </div>
+        </section>
+
+      </div>
+    </div>
+
+    <div class="ob-controls">
+      <button class="ob-skip" id="obSkipBtn" onclick="obHide()">跳过</button>
+      <div class="ob-dots" id="obDots">
+        <span class="ob-dot is-active"></span><span class="ob-dot"></span><span class="ob-dot"></span>
+        <span class="ob-dot"></span><span class="ob-dot"></span><span class="ob-dot"></span>
+      </div>
+      <button class="ob-next" id="obNextBtn" onclick="obNext()">下一步 ›</button>
+    </div>
+  </div>
+
 </div>
 </main>
 
@@ -4967,6 +5684,125 @@ function renderT3Weekly(chartType) {
   }
 }
 
+/* ==========================================================
+   手动测量配置：支持的 5 个指标 + 模拟数据生成
+   ========================================================== */
+const MEASURABLE_METRICS = {
+  '静息心率':   { icon: '❤️', label: '正在测量心率…',         duration: 3500,
+                  genVal: () => String(Math.round(60 + Math.random() * 25)) },
+  '血氧 SpO2': { icon: '🫁', label: '正在测量血氧饱和度…',   duration: 4000,
+                  genVal: () => String(Math.round(95 + Math.random() * 4)) },
+  'HRV':        { icon: '💜', label: '正在测量心率变异性…',     duration: 5500,
+                  genVal: () => String(Math.round(35 + Math.random() * 30)) },
+  '心理压力':   { icon: '🧠', label: '正在测量心理压力…',       duration: 4500,
+                  genVal: () => String(Math.round(25 + Math.random() * 35)) },
+};
+
+/* 从 T1 卡片上的小按钮触发测量：完成后更新卡上数据 + 同步 METRIC_DATA */
+function measureCardMetric(btn, name) {
+  const cfg = MEASURABLE_METRICS[name];
+  if (!cfg) return;
+  const card = btn.closest('.metric-card');
+  if (!card || card.classList.contains('is-measuring')) return;
+  card.classList.add('is-measuring');
+  btn.classList.add('is-spinning');
+  // foot 文案临时显示"正在测量…"
+  const foot = card.querySelector('.metric-foot');
+  if (foot) {
+    if (foot.dataset.origText == null) foot.dataset.origText = foot.textContent;
+    foot.textContent = cfg.label;
+  }
+  setTimeout(() => {
+    const newVal = cfg.genVal();
+    if (METRIC_DATA[name]) METRIC_DATA[name].value = newVal;
+    // 更新卡上 value 显示（处理两种特殊情况：心理压力文字 / 普通数值）
+    const valueEl = card.querySelector('.metric-value');
+    if (valueEl) {
+      if (name === '心理压力') {
+        const score = parseInt(newVal, 10) || 0;
+        let txt = '心理压力正常';
+        if (score < 30) txt = '心理压力愉悦';
+        else if (score >= 70) txt = '心理压力紧张';
+        valueEl.textContent = txt;
+        const aux = card.querySelector('.metric-aux');
+        if (aux) aux.textContent = newVal + ' 分 · 刚刚';
+      } else {
+        valueEl.textContent = newVal;
+      }
+      // punch 动画
+      valueEl.classList.remove('is-fresh');
+      void valueEl.offsetWidth;
+      valueEl.classList.add('is-fresh');
+    }
+    // 更新最近测量时间为「刚刚」
+    const timeEl = card.querySelector('.metric-time');
+    if (timeEl) {
+      timeEl.textContent = '刚刚';
+      timeEl.classList.remove('is-fresh');
+      void timeEl.offsetWidth;
+      timeEl.classList.add('is-fresh');
+    }
+    // 退出测量态
+    card.classList.remove('is-measuring');
+    btn.classList.remove('is-spinning');
+    if (foot && foot.dataset.origText != null) {
+      foot.textContent = foot.dataset.origText;
+    }
+  }, cfg.duration);
+}
+
+function startT3Measurement() {
+  const name = document.getElementById('sheetT3').dataset.metric;
+  const cfg = MEASURABLE_METRICS[name];
+  if (!cfg) return;
+  const hero = document.querySelector('#sheetT3 .t3-hero');
+  const btn  = document.getElementById('t3MeasureBtn');
+  const btnText = document.getElementById('t3MeasureBtnText');
+  const fill = document.getElementById('t3MeasureFill');
+  const icon = document.getElementById('t3MeasureIcon');
+  const text = document.getElementById('t3MeasureText');
+  // 进入测量态
+  hero.classList.add('is-measuring');
+  btn.hidden = true;
+  btn.classList.remove('is-done');
+  icon.textContent = cfg.icon;
+  text.textContent = cfg.label;
+  fill.style.transition = 'none';
+  fill.style.width = '0%';
+  void fill.offsetWidth;
+  // 模拟进度（每 100ms 推进）
+  const step = Math.max(2, 100 / (cfg.duration / 100));
+  let pct = 0;
+  const tick = () => {
+    pct = Math.min(100, pct + step);
+    fill.style.transition = '';
+    fill.style.width = pct + '%';
+    if (pct < 100) setTimeout(tick, 100);
+  };
+  setTimeout(tick, 60);
+  // 测量完成 — 更新 hero value、播 punch 动画、按钮变"已完成"
+  setTimeout(() => {
+    const newVal = cfg.genVal();
+    if (METRIC_DATA[name]) METRIC_DATA[name].value = newVal;
+    const valEl  = document.getElementById('t3HeroValue');
+    const unitEl = document.getElementById('t3HeroUnit');
+    valEl.textContent = newVal;
+    valEl.classList.remove('is-fresh');
+    unitEl.classList.remove('is-fresh');
+    void valEl.offsetWidth;
+    valEl.classList.add('is-fresh');
+    unitEl.classList.add('is-fresh');
+    hero.classList.remove('is-measuring');
+    btn.hidden = false;
+    btn.classList.add('is-done');
+    btnText.textContent = '✓ 测量完成 · 刚刚';
+    setTimeout(() => {
+      btn.classList.remove('is-done');
+      btnText.textContent = '重新测量';
+    }, 3000);
+  }, cfg.duration + 200);
+}
+
 function openMetric(name) {
   const m = METRIC_DATA[name] || METRIC_DATA['HRV'];
   // 顶部 Header 标题（小字，居中）+ Hero 大标题（大字）
@@ -4992,6 +5828,22 @@ function openMetric(name) {
 
   // 仅恢复度态显示 ⓘ
   document.getElementById('t3HeroInfo').style.display = (name === '身体恢复度') ? 'inline-flex' : 'none';
+
+  // 手动测量按钮：仅 5 个支持指标显示，并重置测量状态
+  const hero = document.querySelector('#sheetT3 .t3-hero');
+  const measureBtn = document.getElementById('t3MeasureBtn');
+  const measureBtnText = document.getElementById('t3MeasureBtnText');
+  hero.classList.remove('is-measuring');
+  document.getElementById('t3MeasureFill').style.width = '0%';
+  document.getElementById('t3HeroValue').classList.remove('is-fresh');
+  document.getElementById('t3HeroUnit').classList.remove('is-fresh');
+  if (MEASURABLE_METRICS[name]) {
+    measureBtn.hidden = false;
+    measureBtn.classList.remove('is-done');
+    measureBtnText.textContent = '手动测量';
+  } else {
+    measureBtn.hidden = true;
+  }
 
   // 七天图表按指标类型渲染（折线 vs 柱状）
   renderT3Weekly(m.chartType || 'line');
@@ -6984,6 +7836,116 @@ setState(initialState);
   // 跨模块修改后实时同步
   if (window.MockUser && typeof window.MockUser.subscribe === 'function') {
     window.MockUser.subscribe(runAll);
+  }
+})();
+
+/* ==========================================================
+   新手引导 overlay 控制
+   ========================================================== */
+(function obSetup() {
+  const OB_STORAGE_KEY = 'weijie_onboarding_seen_v1';
+  const OB_TOTAL = 6;
+  const OB_THEMES = ['cyan','green','purple','pink','gold','mint'];
+  let obIdx = 0;
+
+  function obRender() {
+    const slides = document.getElementById('obSlides');
+    const phone  = document.getElementById('phone');
+    if (slides) slides.style.transform = 'translateX(' + (-obIdx * (100 / OB_TOTAL)) + '%)';
+    const dotsWrap = document.getElementById('obDots');
+    if (dotsWrap) Array.from(dotsWrap.children).forEach((d, di) => d.classList.toggle('is-active', di === obIdx));
+    if (phone) phone.dataset.obTheme = OB_THEMES[obIdx];
+    const isLast = obIdx === OB_TOTAL - 1;
+    const nextBtn = document.getElementById('obNextBtn');
+    const skipBtn = document.getElementById('obSkipBtn');
+    if (nextBtn) {
+      nextBtn.classList.toggle('is-final', isLast);
+      nextBtn.textContent = isLast ? '立即体验 →' : '下一步 ›';
+    }
+    if (skipBtn) skipBtn.style.visibility = isLast ? 'hidden' : 'visible';
+  }
+
+  function obGo(i) {
+    obIdx = Math.max(0, Math.min(OB_TOTAL - 1, i));
+    obRender();
+  }
+
+  window.obShow = function (resetSeen) {
+    if (resetSeen) {
+      try { localStorage.removeItem(OB_STORAGE_KEY); } catch (e) {}
+    }
+    obIdx = 0;
+    const overlay = document.getElementById('obOverlay');
+    if (!overlay) return;
+    // 在显示前先把 slides 过渡关掉，瞬时回到 idx 0
+    const slides = document.getElementById('obSlides');
+    if (slides) {
+      slides.style.transition = 'none';
+      obRender();
+      // 下一帧恢复过渡
+      setTimeout(() => { slides.style.transition = ''; }, 60);
+    } else {
+      obRender();
+    }
+    overlay.classList.remove('is-exiting');
+    overlay.classList.add('is-on');
+  };
+
+  window.obHide = function () {
+    const overlay = document.getElementById('obOverlay');
+    if (!overlay) return;
+    overlay.classList.add('is-exiting');
+    setTimeout(() => {
+      overlay.classList.remove('is-on');
+      overlay.classList.remove('is-exiting');
+    }, 400);
+    try { localStorage.setItem(OB_STORAGE_KEY, '1'); } catch (e) {}
+  };
+
+  window.obNext = function () {
+    if (obIdx === OB_TOTAL - 1) {
+      window.obHide();
+      return;
+    }
+    obGo(obIdx + 1);
+  };
+
+  // 手势滑动（移动端）
+  const viewport = document.querySelector('#obOverlay .ob-viewport');
+  if (viewport) {
+    let startX = null;
+    viewport.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, { passive: true });
+    viewport.addEventListener('touchend', e => {
+      if (startX == null) return;
+      const dx = (e.changedTouches[0].clientX) - startX;
+      if (Math.abs(dx) > 40) {
+        if (dx < 0) window.obNext(); else obGo(obIdx - 1);
+      }
+      startX = null;
+    });
+  }
+
+  // 键盘左右导航（仅 overlay 可见时）
+  document.addEventListener('keydown', e => {
+    const overlay = document.getElementById('obOverlay');
+    if (!overlay || !overlay.classList.contains('is-on')) return;
+    if (e.key === 'ArrowRight') window.obNext();
+    else if (e.key === 'ArrowLeft') obGo(obIdx - 1);
+    else if (e.key === 'Escape') window.obHide();
+  });
+
+  // 首次进入自动弹（localStorage 标记）
+  function obAutoShow() {
+    try {
+      if (!localStorage.getItem(OB_STORAGE_KEY)) {
+        setTimeout(() => window.obShow(false), 300);
+      }
+    } catch (e) {}
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', obAutoShow);
+  } else {
+    obAutoShow();
   }
 })();
 </script>

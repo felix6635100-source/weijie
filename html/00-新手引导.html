@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>唯戒 · 新手引导</title>
+<style>
+:root {
+  --color-brand-primary: #3A6FE0;
+  --color-brand-secondary: #4C5CD8;
+  --color-text-primary: #141619;
+  --color-text-secondary: #8A8DA4;
+  --color-text-tertiary: #9AA2B8;
+  --color-bg-page: #EAF3FF;
+  --color-bg-surface: #FFFFFF;
+  --color-border-subtle: #E6EDF4;
+  --font-sans-cjk: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --font-sans: Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+* , *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  background: #E5E9F2;
+  font-family: var(--font-sans-cjk), var(--font-sans);
+  color: var(--color-text-primary);
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+button { font: inherit; color: inherit; background: transparent; border: 0; padding: 0; cursor: pointer; }
+
+/* ===== 双栏布局 ===== */
+.layout { display: flex; min-height: 100vh; }
+.side-nav {
+  width: 280px; flex-shrink: 0;
+  background: #fff;
+  border-right: 1px solid var(--color-border-subtle);
+  padding: 24px 16px;
+  position: sticky; top: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+.nav-brand {
+  display: flex; align-items: center; gap: 10px;
+  padding: 0 8px 16px;
+  border-bottom: 1px solid var(--color-border-subtle);
+  margin-bottom: 16px;
+}
+.nav-logo {
+  width: 36px; height: 36px; border-radius: 9px;
+  background: linear-gradient(135deg, #4C5CD8 0%, #3A6FE0 100%);
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-weight: 700; font-size: 16px;
+}
+.nav-title { font-size: 15px; font-weight: 700; }
+.nav-version { font-size: 10px; color: var(--color-text-tertiary); }
+
+.nav-section-label {
+  font-size: 10px; font-weight: 700;
+  color: var(--color-text-tertiary);
+  letter-spacing: 0.08em; text-transform: uppercase;
+  padding: 12px 8px 6px;
+}
+.slide-nav {
+  display: flex; flex-direction: column; gap: 2px;
+}
+.slide-nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; border-radius: 10px;
+  font-size: 13px;
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: background .15s;
+}
+.slide-nav-item:hover { background: #F5F7FB; }
+.slide-nav-item.is-active {
+  background: rgba(58, 111, 224, 0.10);
+  color: var(--color-brand-primary);
+  font-weight: 600;
+}
+.slide-nav-item .sn-num {
+  width: 24px; height: 24px;
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  background: #F0F2F8;
+  font-family: var(--font-sans);
+  font-size: 11px; font-weight: 700;
+  color: var(--color-text-secondary);
+  flex-shrink: 0;
+}
+.slide-nav-item.is-active .sn-num {
+  background: var(--color-brand-primary);
+  color: #fff;
+}
+
+.nav-foot {
+  margin-top: 16px; padding: 12px 10px;
+  border-top: 1px solid var(--color-border-subtle);
+  font-size: 11px; color: var(--color-text-tertiary); line-height: 1.6;
+}
+
+/* ===== 手机外壳 ===== */
+.preview-area {
+  flex: 1; min-width: 0;
+  display: flex; align-items: flex-start; justify-content: center;
+  padding: 32px 16px 60px;
+}
+.phone-frame {
+  width: 375px; height: 812px;
+  border-radius: 44px;
+  position: relative; overflow: hidden;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.18), 0 0 0 8px #1c1f2b, 0 0 0 10px #2c3142;
+  background: #fff;
+}
+.notch {
+  position: absolute; top: 8px; left: 50%; transform: translateX(-50%);
+  width: 110px; height: 28px; background: #1c1f2b; border-radius: 16px; z-index: 8;
+}
+
+/* iOS status bar */
+.ios-status-bar {
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 44px; z-index: 7;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 22px;
+  font-family: var(--font-sans);
+  color: var(--color-text-primary);
+  user-select: none;
+}
+.ios-status-bar .iss-time { font-size: 17px; font-weight: 600; letter-spacing: -0.4px; }
+.ios-status-bar .iss-right { display: inline-flex; align-items: center; gap: 5px; }
+.ios-status-bar .iss-signal { display: inline-flex; align-items: flex-end; gap: 2px; height: 11px; }
+.ios-status-bar .iss-bar { width: 3px; background: currentColor; border-radius: 1px; }
+.ios-status-bar .iss-bar:nth-child(1) { height: 3px; }
+.ios-status-bar .iss-bar:nth-child(2) { height: 5px; }
+.ios-status-bar .iss-bar:nth-child(3) { height: 7px; }
+.ios-status-bar .iss-bar:nth-child(4) { height: 9px; }
+.ios-status-bar .iss-network { font-size: 15px; font-weight: 600; letter-spacing: -0.4px; }
+.ios-status-bar .iss-battery {
+  position: relative;
+  width: 26px; height: 13px;
+  background: var(--color-text-primary);
+  color: #fff;
+  border-radius: 3.5px;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.ios-status-bar .iss-battery::after {
+  content: ""; position: absolute;
+  right: -2.5px; top: 4px;
+  width: 1.5px; height: 5px;
+  background: var(--color-text-primary);
+  border-radius: 0 1px 1px 0;
+}
+.ios-status-bar .iss-battery-pct { font-size: 10px; font-weight: 700; line-height: 1; }
+
+/* ===== 引导主区 ===== */
+.ob-viewport {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  overflow: hidden;
+}
+.ob-slides {
+  display: flex;
+  width: 600%; /* 6 slides */
+  height: 100%;
+  transition: transform 0.55s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+.ob-slide {
+  width: 16.6666%; /* 1/6 */
+  height: 100%;
+  flex-shrink: 0;
+  position: relative;
+  display: flex; flex-direction: column;
+  padding: 88px 28px 130px;
+}
+
+/* 主题色 */
+.ob-slide[data-theme="cyan"]    { background: linear-gradient(160deg, #E8F8FF 0%, #FAFDFF 60%, #FFFFFF 100%); }
+.ob-slide[data-theme="green"]   { background: linear-gradient(160deg, #ECFBF1 0%, #F8FFFB 60%, #FFFFFF 100%); }
+.ob-slide[data-theme="purple"]  { background: linear-gradient(160deg, #F1EDFF 0%, #FAF7FF 60%, #FFFFFF 100%); }
+.ob-slide[data-theme="pink"]    { background: linear-gradient(160deg, #FFF0F6 0%, #FFF8FB 60%, #FFFFFF 100%); }
+.ob-slide[data-theme="gold"]    { background: linear-gradient(160deg, #FFF6DD 0%, #FFFBEE 60%, #FFFFFF 100%); }
+.ob-slide[data-theme="mint"]    { background: linear-gradient(160deg, #E6F9F2 0%, #F4FCF9 60%, #FFFFFF 100%); }
+
+/* 背景装饰圆 */
+.ob-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(20px);
+  opacity: 0.5;
+  pointer-events: none;
+}
+.ob-slide[data-theme="cyan"]   .ob-blob.a { top: -40px;  left: -40px;  width: 200px; height: 200px; background: rgba(17, 211, 255, 0.45); }
+.ob-slide[data-theme="cyan"]   .ob-blob.b { top: 120px;  right: -50px; width: 160px; height: 160px; background: rgba(58, 111, 224, 0.35); }
+.ob-slide[data-theme="green"]  .ob-blob.a { top: -40px;  right: -40px; width: 200px; height: 200px; background: rgba(57, 193, 108, 0.40); }
+.ob-slide[data-theme="green"]  .ob-blob.b { top: 140px;  left: -40px;  width: 150px; height: 150px; background: rgba(255, 163, 26, 0.30); }
+.ob-slide[data-theme="purple"] .ob-blob.a { top: -30px;  left: -30px;  width: 200px; height: 200px; background: rgba(113, 79, 247, 0.45); }
+.ob-slide[data-theme="purple"] .ob-blob.b { top: 160px;  right: -50px; width: 170px; height: 170px; background: rgba(76, 92, 216, 0.35); }
+.ob-slide[data-theme="pink"]   .ob-blob.a { top: -40px;  right: -40px; width: 200px; height: 200px; background: rgba(255, 107, 170, 0.45); }
+.ob-slide[data-theme="pink"]   .ob-blob.b { top: 140px;  left: -50px;  width: 160px; height: 160px; background: rgba(242, 94, 255, 0.35); }
+.ob-slide[data-theme="gold"]   .ob-blob.a { top: -40px;  left: -40px;  width: 220px; height: 220px; background: rgba(255, 182, 11, 0.50); }
+.ob-slide[data-theme="gold"]   .ob-blob.b { top: 130px;  right: -40px; width: 160px; height: 160px; background: rgba(255, 107, 170, 0.30); }
+.ob-slide[data-theme="mint"]   .ob-blob.a { top: -30px;  right: -30px; width: 200px; height: 200px; background: rgba(38, 212, 154, 0.45); }
+.ob-slide[data-theme="mint"]   .ob-blob.b { top: 150px;  left: -40px;  width: 160px; height: 160px; background: rgba(17, 211, 255, 0.30); }
+
+/* 插画区 */
+.ob-hero {
+  position: relative;
+  z-index: 2;
+  height: 360px;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 8px;
+}
+
+/* 文案区 */
+.ob-copy {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  padding: 0 4px;
+}
+.ob-title {
+  font-size: 26px;
+  font-weight: 800;
+  line-height: 1.25;
+  color: var(--color-text-primary);
+  margin: 0 0 14px;
+  letter-spacing: 0.2px;
+}
+.ob-subtitle {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.6;
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+.ob-tags {
+  display: flex; flex-wrap: wrap; justify-content: center; gap: 6px;
+  margin-bottom: 12px;
+}
+.ob-tag {
+  font-size: 11px; font-weight: 600;
+  padding: 4px 9px;
+  border-radius: 999px;
+  background: rgba(20, 22, 25, 0.05);
+  color: var(--color-text-primary);
+}
+.ob-slide[data-theme="cyan"]   .ob-tag { background: rgba(17, 211, 255, 0.14); color: #0A6BAA; }
+.ob-slide[data-theme="green"]  .ob-tag { background: rgba(57, 193, 108, 0.16); color: #157A3D; }
+.ob-slide[data-theme="purple"] .ob-tag { background: rgba(113, 79, 247, 0.14); color: #4C3FAF; }
+.ob-slide[data-theme="pink"]   .ob-tag { background: rgba(242, 94, 255, 0.14); color: #B33AA8; }
+.ob-slide[data-theme="gold"]   .ob-tag { background: rgba(255, 182, 11, 0.18); color: #8A5A00; }
+.ob-slide[data-theme="mint"]   .ob-tag { background: rgba(38, 212, 154, 0.16); color: #066E51; }
+
+/* ===== Slide 1: 8 身体指标气泡 ===== */
+.metric-cloud {
+  position: relative;
+  width: 280px; height: 320px;
+}
+.metric-bubble {
+  position: absolute;
+  background: #fff;
+  border-radius: 18px;
+  padding: 10px 12px;
+  display: flex; align-items: center; gap: 8px;
+  box-shadow: 0 8px 24px rgba(17, 130, 200, 0.16), 0 2px 6px rgba(17, 130, 200, 0.08);
+  animation: bubbleFloat 4.5s ease-in-out infinite;
+}
+.metric-bubble .mb-icon {
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px;
+  background: linear-gradient(135deg, #B5EFFF, #11D3FF);
+  color: #fff;
+}
+.metric-bubble .mb-text {
+  font-size: 12px; font-weight: 700;
+  color: var(--color-text-primary);
+  white-space: nowrap;
+}
+.metric-bubble:nth-child(1) { top: 0;    left: 30px;  animation-delay: 0s;   }
+.metric-bubble:nth-child(2) { top: 30px; right: 0;    animation-delay: 0.3s; }
+.metric-bubble:nth-child(3) { top: 90px; left: 0;     animation-delay: 0.6s; }
+.metric-bubble:nth-child(4) { top: 120px;right: 30px; animation-delay: 0.9s; }
+.metric-bubble:nth-child(5) { top: 180px;left: 40px;  animation-delay: 1.2s; }
+.metric-bubble:nth-child(6) { top: 210px;right: 0;    animation-delay: 1.5s; }
+.metric-bubble:nth-child(7) { top: 260px;left: 0;     animation-delay: 1.8s; }
+.metric-bubble:nth-child(8) { top: 280px;right: 50px; animation-delay: 2.1s; }
+@keyframes bubbleFloat {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-8px); }
+}
+
+/* ===== Slide 2: 挑战图标圈 ===== */
+.challenge-ring {
+  position: relative;
+  width: 300px; height: 320px;
+}
+.challenge-ring .cr-center {
+  position: absolute; left: 50%; top: 50%;
+  transform: translate(-50%, -50%);
+  width: 110px; height: 110px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ABFFCC 0%, #0BFFCF 100%);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 56px;
+  box-shadow: 0 16px 40px rgba(11, 255, 207, 0.35);
+}
+.challenge-ring .cr-item {
+  position: absolute;
+  width: 56px; height: 56px;
+  border-radius: 18px;
+  background: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px;
+  box-shadow: 0 8px 20px rgba(20, 22, 25, 0.10);
+  animation: itemPulse 3.6s ease-in-out infinite;
+}
+.challenge-ring .cr-item:nth-child(2) { top: 0;    left: 50%; transform: translateX(-50%); animation-delay: 0s; }
+.challenge-ring .cr-item:nth-child(3) { top: 30px; right: 18px; animation-delay: 0.3s; }
+.challenge-ring .cr-item:nth-child(4) { top: 50%; right: 0; transform: translateY(-50%); animation-delay: 0.6s; }
+.challenge-ring .cr-item:nth-child(5) { bottom: 30px; right: 18px; animation-delay: 0.9s; }
+.challenge-ring .cr-item:nth-child(6) { bottom: 30px; left: 18px; animation-delay: 1.2s; }
+.challenge-ring .cr-item:nth-child(7) { top: 50%; left: 0; transform: translateY(-50%); animation-delay: 1.5s; }
+.challenge-ring .cr-item:nth-child(8) { top: 30px; left: 18px; animation-delay: 1.8s; }
+@keyframes itemPulse {
+  0%, 100% { transform: scale(1) translate(var(--tx, 0), var(--ty, 0)); }
+  50%      { transform: scale(1.08) translate(var(--tx, 0), var(--ty, 0)); }
+}
+/* 单独修正第 4/7 的 transform（保留 translateY） */
+.challenge-ring .cr-item:nth-child(4),
+.challenge-ring .cr-item:nth-child(7) {
+  animation: itemPulseY 3.6s ease-in-out infinite;
+}
+.challenge-ring .cr-item:nth-child(2) {
+  animation: itemPulseX 3.6s ease-in-out infinite;
+}
+@keyframes itemPulseX {
+  0%, 100% { transform: translateX(-50%) scale(1); }
+  50%      { transform: translateX(-50%) scale(1.08); }
+}
+@keyframes itemPulseY {
+  0%, 100% { transform: translateY(-50%) scale(1); }
+  50%      { transform: translateY(-50%) scale(1.08); }
+}
+
+/* ===== Slide 3: 三人 + 奖杯 ===== */
+.team-stack {
+  position: relative;
+  width: 300px; height: 320px;
+  display: flex; align-items: center; justify-content: center;
+}
+.team-stack .ts-trophy {
+  font-size: 100px;
+  filter: drop-shadow(0 16px 40px rgba(255, 182, 11, 0.45));
+  animation: trophyBob 2.4s ease-in-out infinite;
+}
+@keyframes trophyBob {
+  0%, 100% { transform: translateY(0) rotate(-3deg); }
+  50%      { transform: translateY(-12px) rotate(3deg); }
+}
+.team-stack .ts-avatar {
+  position: absolute;
+  width: 70px; height: 70px;
+  border-radius: 50%;
+  border: 4px solid #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 30px;
+  font-weight: 700;
+  color: #fff;
+  box-shadow: 0 10px 28px rgba(76, 92, 216, 0.28);
+}
+.team-stack .ts-avatar.a { left: 20px;  top: 90px;  background: linear-gradient(135deg, #FFC56F, #FF6BAA); }
+.team-stack .ts-avatar.b { right: 20px; top: 90px;  background: linear-gradient(135deg, #B5D2FF, #3A6FE0); }
+.team-stack .ts-avatar.c { left: 50%; transform: translateX(-50%); bottom: 60px; background: linear-gradient(135deg, #ABFFCC, #0BFFCF); color: #0F5A3A; }
+
+/* ===== Slide 4: 心 + 关心信号 ===== */
+.care-stage {
+  position: relative;
+  width: 300px; height: 320px;
+}
+.care-stage .heart {
+  position: absolute; left: 50%; top: 50%;
+  transform: translate(-50%, -50%);
+  width: 130px; height: 130px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #FFE0EE 0%, #FF6BAA 100%);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 64px;
+  box-shadow: 0 18px 50px rgba(255, 107, 170, 0.38);
+  animation: heartBeat 1.6s ease-in-out infinite;
+}
+@keyframes heartBeat {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); }
+  20%      { transform: translate(-50%, -50%) scale(1.12); }
+  40%      { transform: translate(-50%, -50%) scale(1.0); }
+  60%      { transform: translate(-50%, -50%) scale(1.08); }
+}
+.care-stage .ping {
+  position: absolute;
+  background: #fff;
+  border-radius: 14px;
+  padding: 7px 11px;
+  display: flex; align-items: center; gap: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  box-shadow: 0 8px 20px rgba(255, 107, 170, 0.20);
+}
+.care-stage .ping .av {
+  width: 22px; height: 22px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; color: #fff; font-weight: 700;
+}
+.care-stage .ping.p1 { top: 20px;  left: 0;     animation: pingFloat 3.4s ease-in-out infinite 0s;   }
+.care-stage .ping.p2 { top: 40px;  right: -10px; animation: pingFloat 3.4s ease-in-out infinite 0.5s; }
+.care-stage .ping.p3 { bottom: 50px; left: 10px; animation: pingFloat 3.4s ease-in-out infinite 1s;   }
+.care-stage .ping.p4 { bottom: 10px; right: 0;   animation: pingFloat 3.4s ease-in-out infinite 1.5s; }
+.care-stage .ping.p1 .av { background: linear-gradient(135deg, #FFC56F, #FF9C31); }
+.care-stage .ping.p2 .av { background: linear-gradient(135deg, #B5D2FF, #3A6FE0); }
+.care-stage .ping.p3 .av { background: linear-gradient(135deg, #ABFFCC, #0BFFCF); color: #0F5A3A; }
+.care-stage .ping.p4 .av { background: linear-gradient(135deg, #C0B0FF, #714FF7); }
+@keyframes pingFloat {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-8px); }
+}
+
+/* ===== Slide 5: 升级人物 + 徽章 ===== */
+.level-stage {
+  position: relative;
+  width: 300px; height: 320px;
+  display: flex; align-items: center; justify-content: center;
+}
+.level-stage .char {
+  width: 180px; height: 240px;
+  border-radius: 90px 90px 32px 32px;
+  background: linear-gradient(180deg, #FFE5B0 0%, #FFC56F 50%, #FF9C31 100%);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 100px;
+  box-shadow: 0 20px 50px rgba(255, 156, 49, 0.36);
+  position: relative;
+}
+.level-stage .char::before {
+  content: "Lv.7";
+  position: absolute;
+  bottom: 16px; left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-sans);
+  font-size: 12px; font-weight: 900;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.32);
+  padding: 4px 12px;
+  border-radius: 999px;
+  letter-spacing: 0.4px;
+}
+.level-stage .frame-deco {
+  position: absolute;
+  inset: -12px;
+  border-radius: 100px 100px 44px 44px;
+  border: 3px dashed rgba(255, 182, 11, 0.6);
+  pointer-events: none;
+  animation: frameSpin 14s linear infinite;
+}
+@keyframes frameSpin {
+  0%   { transform: rotate(0); }
+  100% { transform: rotate(360deg); }
+}
+.level-stage .badge {
+  position: absolute;
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  background: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+  box-shadow: 0 6px 16px rgba(20, 22, 25, 0.12);
+  animation: badgeBob 2.6s ease-in-out infinite;
+}
+.level-stage .badge.b1 { top: 0;    left: 10px; animation-delay: 0s; }
+.level-stage .badge.b2 { top: 30px; right: 0;   animation-delay: 0.4s; }
+.level-stage .badge.b3 { bottom: 80px; right: -10px; animation-delay: 0.8s; }
+.level-stage .badge.b4 { bottom: 0;  left: 20px; animation-delay: 1.2s; }
+@keyframes badgeBob {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-10px); }
+}
+
+/* ===== Slide 6: 提醒铃铛 ===== */
+.bell-stage {
+  position: relative;
+  width: 300px; height: 320px;
+  display: flex; align-items: center; justify-content: center;
+}
+.bell-stage .bell {
+  width: 170px; height: 170px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #C5F4E8 0%, #26D49A 100%);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 88px;
+  box-shadow: 0 22px 50px rgba(38, 212, 154, 0.40);
+  animation: bellShake 2.4s ease-in-out infinite;
+}
+@keyframes bellShake {
+  0%, 92%, 100% { transform: rotate(0); }
+  4%   { transform: rotate(-15deg); }
+  8%   { transform: rotate(15deg); }
+  12%  { transform: rotate(-10deg); }
+  16%  { transform: rotate(10deg); }
+  20%  { transform: rotate(-4deg); }
+  24%  { transform: rotate(0); }
+}
+.bell-stage .wave {
+  position: absolute;
+  border: 3px solid rgba(38, 212, 154, 0.45);
+  border-radius: 50%;
+  animation: waveExpand 2.4s ease-out infinite;
+}
+.bell-stage .wave.w1 { width: 200px; height: 200px; animation-delay: 0s; }
+.bell-stage .wave.w2 { width: 240px; height: 240px; animation-delay: 0.4s; }
+.bell-stage .wave.w3 { width: 280px; height: 280px; animation-delay: 0.8s; }
+@keyframes waveExpand {
+  0%   { transform: scale(0.7); opacity: 0.8; }
+  100% { transform: scale(1.2); opacity: 0; }
+}
+.bell-stage .reminder-card {
+  position: absolute;
+  background: #fff;
+  border-radius: 14px;
+  padding: 8px 12px;
+  font-size: 11px; font-weight: 700;
+  color: var(--color-text-primary);
+  box-shadow: 0 10px 24px rgba(38, 212, 154, 0.22);
+  display: flex; align-items: center; gap: 6px;
+  animation: cardPop 4s ease-in-out infinite;
+}
+.bell-stage .reminder-card.r1 { top: 30px; left: 0; animation-delay: 0s; }
+.bell-stage .reminder-card.r2 { bottom: 50px; right: 0; animation-delay: 1s; }
+.bell-stage .reminder-card.r3 { bottom: 20px; left: 10px; animation-delay: 2s; }
+@keyframes cardPop {
+  0%, 100% { transform: scale(1) translateY(0); opacity: 0.92; }
+  50%      { transform: scale(1.05) translateY(-4px); opacity: 1; }
+}
+
+/* ===== 底部控制条 ===== */
+.ob-controls {
+  position: absolute;
+  left: 0; right: 0; bottom: 24px;
+  z-index: 10;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 24px;
+}
+.ob-skip {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-tertiary);
+  padding: 10px 4px;
+}
+.ob-skip:active { opacity: 0.6; }
+.ob-dots {
+  display: flex; gap: 6px;
+  align-items: center;
+}
+.ob-dot {
+  width: 6px; height: 6px;
+  border-radius: 999px;
+  background: rgba(20, 22, 25, 0.18);
+  transition: all .35s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+.ob-dot.is-active {
+  width: 22px;
+  background: var(--color-brand-primary);
+}
+.ob-next {
+  min-width: 96px;
+  height: 40px;
+  padding: 0 18px;
+  border-radius: 999px;
+  background: var(--color-text-primary);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  box-shadow: 0 8px 22px rgba(20, 22, 25, 0.22);
+  transition: transform .15s;
+}
+.ob-next:active { transform: scale(0.96); }
+.ob-next.is-final {
+  min-width: 140px;
+  background: linear-gradient(135deg, #4C5CD8 0%, #3A6FE0 100%);
+  box-shadow: 0 8px 22px rgba(76, 92, 216, 0.42);
+}
+
+/* 当 active slide 是某个主题时，下一步按钮使用对应色 */
+.phone-frame[data-active-theme="cyan"]   .ob-dot.is-active { background: #11D3FF; }
+.phone-frame[data-active-theme="green"]  .ob-dot.is-active { background: #39C16C; }
+.phone-frame[data-active-theme="purple"] .ob-dot.is-active { background: #714FF7; }
+.phone-frame[data-active-theme="pink"]   .ob-dot.is-active { background: #FF6BAA; }
+.phone-frame[data-active-theme="gold"]   .ob-dot.is-active { background: #FFB60B; }
+.phone-frame[data-active-theme="mint"]   .ob-dot.is-active { background: #26D49A; }
+</style>
+</head>
+<body>
+
+<div class="layout">
+
+  <!-- 左侧导航 -->
+  <aside class="side-nav">
+    <div class="nav-brand">
+      <div class="nav-logo">唯</div>
+      <div>
+        <div class="nav-title">唯戒 · 新手引导</div>
+        <div class="nav-version">6 屏 · v1.0</div>
+      </div>
+    </div>
+
+    <div class="nav-section-label">引导屏</div>
+    <div class="slide-nav" id="slideNav">
+      <div class="slide-nav-item is-active" data-go="0"><span class="sn-num">1</span><span>实时记录身体指标</span></div>
+      <div class="slide-nav-item" data-go="1"><span class="sn-num">2</span><span>每日挑战养习惯</span></div>
+      <div class="slide-nav-item" data-go="2"><span class="sn-num">3</span><span>维度活动赢奖励</span></div>
+      <div class="slide-nav-item" data-go="3"><span class="sn-num">4</span><span>关心互动夺榜首</span></div>
+      <div class="slide-nav-item" data-go="4"><span class="sn-num">5</span><span>收获等级与皮肤</span></div>
+      <div class="slide-nav-item" data-go="5"><span class="sn-num">6</span><span>适时温柔提醒</span></div>
+    </div>
+
+    <div class="nav-foot">
+      <strong>使用提示：</strong><br>
+      • 点击屏号直接跳转，或在右侧使用「下一步 / 跳过」<br>
+      • 最后一屏点「立即体验」跳到今日模块
+    </div>
+  </aside>
+
+  <!-- 右侧手机原型 -->
+  <main class="preview-area">
+    <div class="phone-frame" id="phone" data-active-theme="cyan">
+      <div class="notch"></div>
+      <div class="ios-status-bar">
+        <div class="iss-time">9:41</div>
+        <div class="iss-right">
+          <div class="iss-signal">
+            <span class="iss-bar"></span><span class="iss-bar"></span><span class="iss-bar"></span><span class="iss-bar"></span>
+          </div>
+          <div class="iss-network">5G</div>
+          <div class="iss-battery"><span class="iss-battery-pct">85</span></div>
+        </div>
+      </div>
+
+      <div class="ob-viewport">
+        <div class="ob-slides" id="slides">
+
+          <!-- ========= Slide 1 · 实时记录身体指标 ========= -->
+          <section class="ob-slide" data-theme="cyan">
+            <div class="ob-blob a"></div>
+            <div class="ob-blob b"></div>
+            <div class="ob-hero">
+              <div class="metric-cloud">
+                <div class="metric-bubble"><div class="mb-icon">🧠</div><div class="mb-text">心理压力</div></div>
+                <div class="metric-bubble"><div class="mb-icon" style="background:linear-gradient(135deg,#FFD27F,#FFA31A)">⚡</div><div class="mb-text">恢复度</div></div>
+                <div class="metric-bubble"><div class="mb-icon" style="background:linear-gradient(135deg,#C0B0FF,#714FF7)">🌙</div><div class="mb-text">睡眠</div></div>
+                <div class="metric-bubble"><div class="mb-icon" style="background:linear-gradient(135deg,#FFC4DC,#FF6BAA)">🫁</div><div class="mb-text">血氧</div></div>
+                <div class="metric-bubble"><div class="mb-icon" style="background:linear-gradient(135deg,#4EFF92,#26D49A)">🌡️</div><div class="mb-text">体温</div></div>
+                <div class="metric-bubble"><div class="mb-icon" style="background:linear-gradient(135deg,#FF8A8A,#FF3D1B)">❤️</div><div class="mb-text">心率</div></div>
+                <div class="metric-bubble"><div class="mb-icon" style="background:linear-gradient(135deg,#31FCFF,#08D2FF)">👟</div><div class="mb-text">步数</div></div>
+                <div class="metric-bubble"><div class="mb-icon" style="background:linear-gradient(135deg,#B7A3FF,#4C5CD8)">💜</div><div class="mb-text">HRV</div></div>
+              </div>
+            </div>
+            <div class="ob-copy">
+              <h1 class="ob-title">实时记录身体指标</h1>
+              <p class="ob-subtitle">戒指 24 小时贴身陪伴，<br>读懂身体的每一个信号</p>
+            </div>
+          </section>
+
+          <!-- ========= Slide 2 · 每日挑战 ========= -->
+          <section class="ob-slide" data-theme="green">
+            <div class="ob-blob a"></div>
+            <div class="ob-blob b"></div>
+            <div class="ob-hero">
+              <div class="challenge-ring">
+                <div class="cr-center">🎯</div>
+                <div class="cr-item">👟</div>
+                <div class="cr-item">🌙</div>
+                <div class="cr-item">🏃</div>
+                <div class="cr-item">💧</div>
+                <div class="cr-item">🧍</div>
+                <div class="cr-item">💊</div>
+                <div class="cr-item">🔥</div>
+              </div>
+            </div>
+            <div class="ob-copy">
+              <div class="ob-tags">
+                <span class="ob-tag">走路</span><span class="ob-tag">睡眠</span><span class="ob-tag">心肺训练</span>
+                <span class="ob-tag">喝水</span><span class="ob-tag">站立</span><span class="ob-tag">吃药</span><span class="ob-tag">消耗</span>
+              </div>
+              <h1 class="ob-title">每日挑战，养成好习惯</h1>
+              <p class="ob-subtitle">7 项每日挑战陪你坚持，<br>让健康藏进每一天</p>
+            </div>
+          </section>
+
+          <!-- ========= Slide 3 · 维度活动 ========= -->
+          <section class="ob-slide" data-theme="purple">
+            <div class="ob-blob a"></div>
+            <div class="ob-blob b"></div>
+            <div class="ob-hero">
+              <div class="team-stack">
+                <div class="ts-trophy">🏆</div>
+                <div class="ts-avatar a">A</div>
+                <div class="ts-avatar b">B</div>
+                <div class="ts-avatar c">C</div>
+              </div>
+            </div>
+            <div class="ob-copy">
+              <h1 class="ob-title">维度活动，并肩挑战</h1>
+              <p class="ob-subtitle">和朋友一起参加阶段挑战，<br>共同赢取专属奖励</p>
+            </div>
+          </section>
+
+          <!-- ========= Slide 4 · 关心互动 ========= -->
+          <section class="ob-slide" data-theme="pink">
+            <div class="ob-blob a"></div>
+            <div class="ob-blob b"></div>
+            <div class="ob-hero">
+              <div class="care-stage">
+                <div class="heart">💗</div>
+                <div class="ping p1"><div class="av">妈</div>👍 你今天棒</div>
+                <div class="ping p2"><div class="av">爸</div>💬 早点睡</div>
+                <div class="ping p3"><div class="av">小</div>🥇 又夺冠</div>
+                <div class="ping p4"><div class="av">L</div>❤️ 喜欢</div>
+              </div>
+            </div>
+            <div class="ob-copy">
+              <h1 class="ob-title">把进步分享给在乎的人</h1>
+              <p class="ob-subtitle">每日挑战与维度活动战绩同步关心圈，<br>赢得 TA 圈子里的排行榜首位</p>
+            </div>
+          </section>
+
+          <!-- ========= Slide 5 · 收获等级 ========= -->
+          <section class="ob-slide" data-theme="gold">
+            <div class="ob-blob a"></div>
+            <div class="ob-blob b"></div>
+            <div class="ob-hero">
+              <div class="level-stage">
+                <div class="frame-deco"></div>
+                <div class="char">🦊</div>
+                <div class="badge b1">⭐</div>
+                <div class="badge b2">🥇</div>
+                <div class="badge b3">🎖️</div>
+                <div class="badge b4">👑</div>
+              </div>
+            </div>
+            <div class="ob-copy">
+              <h1 class="ob-title">升级形象，与众不同</h1>
+              <p class="ob-subtitle">完成挑战与互动赢取 XP 升级，<br>解锁专属皮肤与头像框</p>
+            </div>
+          </section>
+
+          <!-- ========= Slide 6 · 及时提醒 ========= -->
+          <section class="ob-slide" data-theme="mint">
+            <div class="ob-blob a"></div>
+            <div class="ob-blob b"></div>
+            <div class="ob-hero">
+              <div class="bell-stage">
+                <div class="wave w1"></div>
+                <div class="wave w2"></div>
+                <div class="wave w3"></div>
+                <div class="bell">🔔</div>
+                <div class="reminder-card r1">💧 该喝水了</div>
+                <div class="reminder-card r2">🧍 起身一下</div>
+                <div class="reminder-card r3">💊 服药时间</div>
+              </div>
+            </div>
+            <div class="ob-copy">
+              <h1 class="ob-title">适时提醒，不错过进步</h1>
+              <p class="ob-subtitle">到点温柔提醒陪你完成挑战，<br>一起赢取更健康的自己</p>
+            </div>
+          </section>
+
+        </div>
+      </div>
+
+      <!-- 底部控制 -->
+      <div class="ob-controls">
+        <button class="ob-skip" id="skipBtn" onclick="skipToEnd()">跳过</button>
+        <div class="ob-dots" id="dots">
+          <span class="ob-dot is-active"></span>
+          <span class="ob-dot"></span>
+          <span class="ob-dot"></span>
+          <span class="ob-dot"></span>
+          <span class="ob-dot"></span>
+          <span class="ob-dot"></span>
+        </div>
+        <button class="ob-next" id="nextBtn" onclick="next()">下一步 ›</button>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<script>
+const slides = document.getElementById('slides');
+const dots = Array.from(document.getElementById('dots').children);
+const nextBtn = document.getElementById('nextBtn');
+const skipBtn = document.getElementById('skipBtn');
+const navItems = Array.from(document.querySelectorAll('.slide-nav-item'));
+const phone = document.getElementById('phone');
+const themes = ['cyan','green','purple','pink','gold','mint'];
+const TOTAL = 6;
+let idx = 0;
+
+function go(i) {
+  idx = Math.max(0, Math.min(TOTAL - 1, i));
+  // slide
+  slides.style.transform = 'translateX(' + (-idx * (100 / TOTAL)) + '%)';
+  // dots
+  dots.forEach((d, di) => d.classList.toggle('is-active', di === idx));
+  // 主题色
+  phone.dataset.activeTheme = themes[idx];
+  // 左导航高亮
+  navItems.forEach((it, ni) => it.classList.toggle('is-active', ni === idx));
+  // 按钮文案
+  const isLast = idx === TOTAL - 1;
+  nextBtn.classList.toggle('is-final', isLast);
+  nextBtn.textContent = isLast ? '立即体验 →' : '下一步 ›';
+  skipBtn.style.visibility = isLast ? 'hidden' : 'visible';
+}
+
+function next() {
+  if (idx === TOTAL - 1) {
+    // 跳到今日模块
+    window.location.href = './01-今日模块.html';
+    return;
+  }
+  go(idx + 1);
+}
+
+function skipToEnd() {
+  // 直接跳到今日模块
+  window.location.href = './01-今日模块.html';
+}
+
+navItems.forEach(item => {
+  item.addEventListener('click', () => go(parseInt(item.dataset.go, 10) || 0));
+});
+
+// 手势滑动（移动端）
+let startX = null;
+const viewport = document.querySelector('.ob-viewport');
+viewport.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, { passive: true });
+viewport.addEventListener('touchend', e => {
+  if (startX == null) return;
+  const dx = (e.changedTouches[0].clientX) - startX;
+  if (Math.abs(dx) > 40) {
+    if (dx < 0) next(); else go(idx - 1);
+  }
+  startX = null;
+});
+
+// 键盘左右键导航
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight') next();
+  else if (e.key === 'ArrowLeft') go(idx - 1);
+});
+
+// 初始
+go(0);
+</script>
+
+</body>
+</html>
