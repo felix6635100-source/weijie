@@ -4059,10 +4059,15 @@ body.is-dark-mode .ios-status-bar .iss-battery::after { background: #fff; }
         <div class="metric-head">
           <div class="metric-icon">🌡️</div>
           <div class="metric-status is-normal">良好</div>
+          <button class="metric-measure-btn" type="button" aria-label="手动测量" onclick="event.stopPropagation();measureCardMetric(this, '体温')">
+            <svg class="icon-play" viewBox="0 0 14 14" width="11" height="11" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3.5L11 7L5 10.5Z"/></svg>
+            <span class="icon-spin"></span>
+          </button>
         </div>
         <div class="metric-value-row">
           <div class="metric-value">36.5</div>
           <div class="metric-unit">°C</div>
+          <div class="metric-time">14:33</div>
         </div>
         <div class="metric-name">体温</div>
         <div class="metric-viz">
@@ -5696,6 +5701,8 @@ const MEASURABLE_METRICS = {
                   genVal: () => String(Math.round(35 + Math.random() * 30)) },
   '心理压力':   { icon: '🧠', label: '正在测量心理压力…',       duration: 4500,
                   genVal: () => String(Math.round(25 + Math.random() * 35)) },
+  '体温':       { icon: '🌡️', label: '正在测量体温…',           duration: 4000,
+                  genVal: () => (36.1 + Math.random() * 0.9).toFixed(1) },
 };
 
 /* 从 T1 卡片上的小按钮触发测量：完成后更新卡上数据 + 同步 METRIC_DATA */
