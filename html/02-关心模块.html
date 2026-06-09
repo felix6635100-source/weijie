@@ -8,7 +8,7 @@
 <!-- 共享 Mock 数据层（5 模块同源用户信息：阶段 1 / v1.0） -->
 <script src="./mock-shared.js"></script>
 <!-- 演示助手（左侧 nav 注入「演示捷径」按钮组 + 共享完成弹窗） -->
-<script src="./mock-demo.js"></script>
+<script src="./mock-demo.js?v=1780906061"></script>
 <style>
   :root{
     --color-brand-primary:#3A6FE0; --color-brand-secondary:#4C5CD8; --color-brand-accent:#1E8FFF;
@@ -4278,6 +4278,229 @@
   }
   if (window.MockUser && typeof window.MockUser.subscribe === 'function') {
     window.MockUser.subscribe(runAll);
+  }
+})();
+</script>
+
+<!-- =========================================================
+     新手教学（方案 B · Step 5） — 样机内 coachmark · 粉色主题
+     ========================================================= -->
+<style>
+.tour-bs-overlay {
+  position: absolute; inset: 0;
+  z-index: 200;
+  display: none;
+  pointer-events: none;
+  font-family: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --bs-accent: #FF6BAA;
+  --bs-accent-rgb: 255, 107, 170;
+  --bs-grad-from: #FF6BAA;
+  --bs-grad-to: #F25EFF;
+}
+.tour-bs-overlay.is-on { display: block; }
+.tour-bs-mask {
+  position: absolute;
+  border-radius: 14px;
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.55);
+  opacity: 0;
+  animation: bsFadeIn 0.35s 0.05s ease-out forwards;
+  transition: top 0.35s, left 0.35s, width 0.35s, height 0.35s;
+}
+.tour-bs-pulse {
+  position: absolute;
+  border-radius: 14px;
+  border: 2px solid var(--bs-accent);
+  opacity: 0;
+  animation: bsFadeIn 0.35s 0.05s ease-out forwards, bsPulse 1.6s 0.4s ease-out infinite;
+}
+@keyframes bsFadeIn { to { opacity: 1; } }
+@keyframes bsPulse {
+  0%   { box-shadow: 0 0 0 0 rgba(var(--bs-accent-rgb), 0.55); }
+  60%  { box-shadow: 0 0 0 14px rgba(var(--bs-accent-rgb), 0); }
+  100% { box-shadow: 0 0 0 0 rgba(var(--bs-accent-rgb), 0); }
+}
+.tour-bs-tooltip {
+  position: absolute;
+  width: 268px;
+  background: #FFFFFF;
+  border-radius: 18px;
+  padding: 14px 16px;
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.32);
+  pointer-events: auto;
+  opacity: 0;
+  transform: translateY(8px) scale(0.96);
+  animation: bsTipIn 0.45s 0.15s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+@keyframes bsTipIn { to { opacity: 1; transform: translateY(0) scale(1); } }
+.tour-bs-tooltip::before {
+  content: "";
+  position: absolute;
+  top: -7px; left: var(--arrow-x, 50%);
+  width: 14px; height: 14px;
+  background: #fff;
+  border-radius: 3px;
+  transform: translateX(-50%) rotate(45deg);
+}
+.tour-bs-step {
+  display: inline-block;
+  font-size: 10px; font-weight: 700;
+  color: var(--bs-accent);
+  background: rgba(var(--bs-accent-rgb), 0.12);
+  padding: 3px 9px; border-radius: 999px;
+  margin-bottom: 9px; letter-spacing: 0.4px;
+}
+.tour-bs-title {
+  font-size: 15px; font-weight: 800;
+  color: #141619;
+  margin-bottom: 6px;
+}
+.tour-bs-body {
+  font-size: 12px; font-weight: 500;
+  color: #5B6B93;
+  line-height: 1.55;
+  margin-bottom: 12px;
+}
+.tour-bs-body strong { color: #141619; font-weight: 700; }
+.tour-bs-actions {
+  display: flex; justify-content: space-between; align-items: center;
+  gap: 10px;
+}
+.tour-bs-skip {
+  font-size: 12px; font-weight: 600;
+  color: #8A8DA4;
+  background: transparent; border: 0; cursor: pointer;
+  padding: 6px 4px;
+}
+.tour-bs-next {
+  flex: 1; height: 34px; border: 0; cursor: pointer;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--bs-grad-from), var(--bs-grad-to));
+  color: #FFFFFF;
+  font-size: 12.5px; font-weight: 700;
+  letter-spacing: 0.3px;
+  box-shadow: 0 6px 14px rgba(var(--bs-accent-rgb), 0.35);
+}
+.tour-bs-next:active { transform: scale(0.97); }
+</style>
+<div class="tour-bs-overlay" id="tourBs">
+  <div class="tour-bs-mask" id="tourBsMask"></div>
+  <div class="tour-bs-pulse" id="tourBsPulse"></div>
+  <div class="tour-bs-tooltip" id="tourBsTooltip">
+    <div class="tour-bs-step">第 5 / 6 步</div>
+    <div class="tour-bs-title">争夺好友排行榜</div>
+    <div class="tour-bs-body">在「<strong>关心</strong>」里和好友一起<strong>互相打 call</strong>，看谁能<strong>夺取排行榜首位</strong>。进入<strong>前 3</strong> 的人，还能赢取<strong>额外 XP 奖励</strong>。</div>
+    <div class="tour-bs-actions">
+      <button class="tour-bs-skip" onclick="tourBootstrapSkip()">跳过教学</button>
+      <button class="tour-bs-next" onclick="tourBootstrapNext()">前往收获 →</button>
+    </div>
+  </div>
+</div>
+<script>
+(function tourBs() {
+  const TOUR_KEY = 'weijie_tour_resume';
+  const TOUR_SEEN_KEY = 'weijie_tour_seen_v1';
+  const PAGE_STEP = 5;
+  const NEXT_STEP = 6;
+  const NEXT_URL = './05-%E6%94%B6%E8%8E%B7%E6%A8%A1%E5%9D%97.html';
+  const FALLBACK_TARGET = { top: 120, left: 14, width: 347, height: 240 };  // 好友排行榜区域兜底
+
+  function check() {
+    try {
+      const raw = localStorage.getItem(TOUR_KEY);
+      if (!raw) return;
+      const state = JSON.parse(raw);
+      if (!state || !state.active || state.step !== PAGE_STEP) return;
+      setTimeout(setup, 600);
+    } catch (e) {}
+  }
+  // 测量 .podium-card（今日 TOP 3）几何，相对样机内坐标
+  function measurePodiumRect() {
+    const phone = document.getElementById('phone');
+    const card  = phone && phone.querySelector('.podium-card');
+    if (!phone || !card) return null;
+    const pr = phone.getBoundingClientRect();
+    const cr = card.getBoundingClientRect();
+    const top    = Math.max(60, cr.top - pr.top - 6);
+    const bottom = cr.bottom - pr.top + 6;
+    // phone 内宽固定 375，左右各留 8px
+    return { top, left: 8, width: 359, height: Math.max(80, bottom - top) };
+  }
+  function computePodiumTarget() {
+    const phone = document.getElementById('phone');
+    const card  = phone && phone.querySelector('.podium-card');
+    if (!phone || !card) return null;
+    // 把卡顶部滚到 y≈100，给镂空 + 下方 tooltip 留位置
+    const scroller = phone.querySelector('.scroll, .scroll-area') || phone;
+    const pr = phone.getBoundingClientRect();
+    const cr = card.getBoundingClientRect();
+    const currentY = cr.top - pr.top;
+    const targetY = 100;
+    const delta = currentY - targetY;
+    if (scroller && Math.abs(delta) > 4) {
+      scroller.scrollTop = Math.max(0, scroller.scrollTop + delta);
+    }
+    return measurePodiumRect();
+  }
+  function applyTarget(target) {
+    const mask = document.getElementById('tourBsMask');
+    const pulse = document.getElementById('tourBsPulse');
+    [mask, pulse].forEach(el => {
+      el.style.top = target.top + 'px';
+      el.style.left = target.left + 'px';
+      el.style.width = target.width + 'px';
+      el.style.height = target.height + 'px';
+    });
+    const tip = document.getElementById('tourBsTooltip');
+    const tipH = 200, tipW = 268, margin = 18;
+    let tipTop = target.top + target.height + margin;
+    if (tipTop + tipH > 720) tipTop = target.top - tipH - margin;
+    if (tipTop < 60) tipTop = 60;
+    const tipLeft = Math.max(12, Math.min(375 - tipW - 12, target.left + target.width / 2 - tipW / 2));
+    tip.style.top = tipTop + 'px';
+    tip.style.left = tipLeft + 'px';
+    tip.style.setProperty('--arrow-x', (target.left + target.width / 2 - tipLeft) + 'px');
+  }
+  function setup() {
+    const phone = document.getElementById('phone');
+    const overlay = document.getElementById('tourBs');
+    if (!phone || !overlay) return;
+    if (overlay.parentElement !== phone) phone.appendChild(overlay);
+    const target = computePodiumTarget() || FALLBACK_TARGET;
+    applyTarget(target);
+    overlay.classList.add('is-on');
+    // 300ms 后重测一次，吃掉异步重渲（mock 订阅、头像懒加载等）造成的位移
+    setTimeout(() => {
+      const t2 = computePodiumTarget();
+      if (t2) applyTarget(t2);
+    }, 300);
+    // 滚动时跟随重定位
+    const scroller = phone.querySelector('.scroll, .scroll-area');
+    if (scroller && !scroller.__tourBsBound) {
+      scroller.addEventListener('scroll', () => {
+        if (!overlay.classList.contains('is-on')) return;
+        const r = measurePodiumRect();
+        if (r) applyTarget(r);
+      }, { passive: true });
+      scroller.__tourBsBound = true;
+    }
+  }
+  window.tourBootstrapNext = function () {
+    try {
+      localStorage.setItem(TOUR_KEY, JSON.stringify({ active: true, step: NEXT_STEP, ts: Date.now() }));
+    } catch (e) {}
+    window.location.href = NEXT_URL;
+  };
+  window.tourBootstrapSkip = function () {
+    try {
+      localStorage.removeItem(TOUR_KEY);
+      localStorage.setItem(TOUR_SEEN_KEY, '1');
+    } catch (e) {}
+    document.getElementById('tourBs').classList.remove('is-on');
+  };
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', check);
+  } else {
+    check();
   }
 })();
 </script>

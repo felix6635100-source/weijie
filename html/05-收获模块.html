@@ -7,7 +7,7 @@
 <!-- 共享 Mock 数据层（5 模块同源用户信息：阶段 1 / v1.0） -->
 <script src="./mock-shared.js"></script>
 <!-- 演示助手（左侧 nav 注入「演示捷径」按钮组 + 共享完成弹窗） -->
-<script src="./mock-demo.js"></script>
+<script src="./mock-demo.js?v=1780906061"></script>
 <style>
 /* ==========================================================
    设计 Token —— 与 00-设计规范.md / 01-今日 / 04-维度 同源
@@ -3245,6 +3245,232 @@ applyState('default');
       } catch (e) { console.warn('[mock-rerender 05]', e); }
     }, 150);
   });
+})();
+</script>
+
+<!-- =========================================================
+     新手教学（方案 B · Step 6 · 最终步）— 样机内 coachmark · 金色主题
+     ========================================================= -->
+<style>
+.tour-bs-overlay {
+  position: absolute; inset: 0;
+  z-index: 200;
+  display: none;
+  pointer-events: none;
+  font-family: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --bs-accent: #FFB60B;
+  --bs-accent-rgb: 255, 182, 11;
+  --bs-accent-text: #B07206;
+  --bs-grad-from: #FFB60B;
+  --bs-grad-to: #FFA31A;
+}
+.tour-bs-overlay.is-on { display: block; }
+.tour-bs-mask {
+  position: absolute;
+  border-radius: 14px;
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.55);
+  opacity: 0;
+  animation: bsFadeIn 0.35s 0.05s ease-out forwards;
+  transition: top 0.35s, left 0.35s, width 0.35s, height 0.35s;
+}
+.tour-bs-pulse {
+  position: absolute;
+  border-radius: 14px;
+  border: 2px solid var(--bs-accent);
+  opacity: 0;
+  animation: bsFadeIn 0.35s 0.05s ease-out forwards, bsPulse 1.6s 0.4s ease-out infinite;
+}
+@keyframes bsFadeIn { to { opacity: 1; } }
+@keyframes bsPulse {
+  0%   { box-shadow: 0 0 0 0 rgba(var(--bs-accent-rgb), 0.55); }
+  60%  { box-shadow: 0 0 0 14px rgba(var(--bs-accent-rgb), 0); }
+  100% { box-shadow: 0 0 0 0 rgba(var(--bs-accent-rgb), 0); }
+}
+.tour-bs-tooltip {
+  position: absolute;
+  width: 268px;
+  background: #FFFFFF;
+  border-radius: 18px;
+  padding: 14px 16px;
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.32);
+  pointer-events: auto;
+  opacity: 0;
+  transform: translateY(8px) scale(0.96);
+  animation: bsTipIn 0.45s 0.15s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+@keyframes bsTipIn { to { opacity: 1; transform: translateY(0) scale(1); } }
+.tour-bs-tooltip::before {
+  content: "";
+  position: absolute;
+  top: -7px; left: var(--arrow-x, 50%);
+  width: 14px; height: 14px;
+  background: #fff;
+  border-radius: 3px;
+  transform: translateX(-50%) rotate(45deg);
+}
+.tour-bs-step {
+  display: inline-block;
+  font-size: 10px; font-weight: 700;
+  color: var(--bs-accent-text, var(--bs-accent));
+  background: rgba(var(--bs-accent-rgb), 0.16);
+  padding: 3px 9px; border-radius: 999px;
+  margin-bottom: 9px; letter-spacing: 0.4px;
+}
+.tour-bs-title {
+  font-size: 15px; font-weight: 800;
+  color: #141619;
+  margin-bottom: 6px;
+}
+.tour-bs-body {
+  font-size: 12px; font-weight: 500;
+  color: #5B6B93;
+  line-height: 1.55;
+  margin-bottom: 12px;
+}
+.tour-bs-body strong { color: #141619; font-weight: 700; }
+.tour-bs-actions {
+  display: flex; justify-content: flex-end; align-items: center;
+}
+.tour-bs-next {
+  height: 34px; padding: 0 20px; border: 0; cursor: pointer;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--bs-grad-from), var(--bs-grad-to));
+  color: #FFFFFF;
+  font-size: 12.5px; font-weight: 700;
+  letter-spacing: 0.3px;
+  box-shadow: 0 6px 14px rgba(var(--bs-accent-rgb), 0.45);
+}
+.tour-bs-next:active { transform: scale(0.97); }
+</style>
+<div class="tour-bs-overlay" id="tourBs">
+  <div class="tour-bs-mask" id="tourBsMask"></div>
+  <div class="tour-bs-pulse" id="tourBsPulse"></div>
+  <div class="tour-bs-tooltip" id="tourBsTooltip">
+    <div class="tour-bs-step">第 6 / 6 步 · 完成</div>
+    <div class="tour-bs-title">您的成长收获</div>
+    <div class="tour-bs-body">这里能看到基于 <strong>XP</strong> 的<strong>等级成长情况</strong>，以及收获的<strong>皮肤</strong>、<strong>头像框</strong>、<strong>勋章</strong>。您的每一个<strong>记录</strong>和<strong>挑战</strong>都会留下印记。</div>
+    <div class="tour-bs-actions">
+      <button class="tour-bs-next" onclick="tourBootstrapNext()">完成引导 →</button>
+    </div>
+  </div>
+</div>
+<script>
+(function tourBs() {
+  const TOUR_KEY = 'weijie_tour_resume';
+  const TOUR_SEEN_KEY = 'weijie_tour_seen_v1';
+  const PAGE_STEP = 6;
+  const HOME_URL = './01-%E4%BB%8A%E6%97%A5%E6%A8%A1%E5%9D%97.html';
+  const FALLBACK_TARGET = { top: 130, left: 14, width: 347, height: 320 };  // 等级卡 + 资产区域兜底
+
+  function check() {
+    try {
+      const raw = localStorage.getItem(TOUR_KEY);
+      if (!raw) return;
+      const state = JSON.parse(raw);
+      if (!state || !state.active || state.step !== PAGE_STEP) return;
+      setTimeout(setup, 600);
+    } catch (e) {}
+  }
+  // 测量"等级卡 (.h-fusion-card) + 我的资产标题 (#hAssets) + 资产卡行 (.h-assets-row)"在样机内的合并矩形
+  function measureLevelAssetsRect() {
+    const phone = document.getElementById('phone');
+    const lvl   = phone && phone.querySelector('.h-fusion-card');
+    const head  = phone && phone.querySelector('#hAssets');
+    const row   = phone && phone.querySelector('.h-assets-row');
+    if (!phone || !lvl || !row) return null;
+    const pr = phone.getBoundingClientRect();
+    const lr = lvl.getBoundingClientRect();
+    const rr = row.getBoundingClientRect();
+    const hdr = head ? head.getBoundingClientRect() : lr;
+    const top    = Math.max(60, lr.top - pr.top - 6);
+    const bottom = rr.bottom - pr.top + 6;
+    // 用样机内宽固定（375 - 8*2）
+    return { top, left: 8, width: 359, height: Math.max(120, bottom - top) };
+  }
+  function computeLevelAssetsTarget() {
+    const phone = document.getElementById('phone');
+    const lvl   = phone && phone.querySelector('.h-fusion-card');
+    if (!phone || !lvl) return null;
+    // 把等级卡顶部滚到 y≈90（紧贴顶栏下沿），下方留出 600+ px 给资产卡 + tooltip
+    const scroller = phone.querySelector('.scroll-area, .scroll') || phone;
+    const pr = phone.getBoundingClientRect();
+    const lr = lvl.getBoundingClientRect();
+    const currentY = lr.top - pr.top;
+    const targetY = 90;
+    const delta = currentY - targetY;
+    if (scroller && Math.abs(delta) > 4) {
+      scroller.scrollTop = Math.max(0, scroller.scrollTop + delta);
+    }
+    return measureLevelAssetsRect();
+  }
+  function applyTarget(target) {
+    const mask = document.getElementById('tourBsMask');
+    const pulse = document.getElementById('tourBsPulse');
+    [mask, pulse].forEach(el => {
+      el.style.top = target.top + 'px';
+      el.style.left = target.left + 'px';
+      el.style.width = target.width + 'px';
+      el.style.height = target.height + 'px';
+    });
+    // tooltip 放在"资产行下方"。若可视区不够（mask 高于 ~420px），就把 tooltip 嵌入 mask 内部 —
+    // 锚定到等级卡底部 + 18px，浮在资产行上方，仍在镂空亮区内
+    const tip = document.getElementById('tourBsTooltip');
+    const tipW = 268, margin = 18;
+    const tipH = tip.offsetHeight || 200;
+    const phone = document.getElementById('phone');
+    const lvl   = phone && phone.querySelector('.h-fusion-card');
+    let tipTop;
+    if (target.height + tipH + margin * 2 > 720 - target.top && lvl) {
+      // 放不下：tooltip 放在等级卡正下方，浮在镂空内部、压在资产行之上
+      const pr = phone.getBoundingClientRect();
+      const lr = lvl.getBoundingClientRect();
+      const lvlBotInPhone = lr.bottom - pr.top;
+      tipTop = lvlBotInPhone + margin;
+    } else {
+      tipTop = target.top + target.height + margin;
+    }
+    if (tipTop + tipH > 730) tipTop = Math.max(60, 730 - tipH);
+    const tipLeft = Math.max(12, Math.min(375 - tipW - 12, target.left + target.width / 2 - tipW / 2));
+    tip.style.top = tipTop + 'px';
+    tip.style.left = tipLeft + 'px';
+    tip.style.setProperty('--arrow-x', (target.left + target.width / 2 - tipLeft) + 'px');
+  }
+  function setup() {
+    const phone = document.getElementById('phone');
+    const overlay = document.getElementById('tourBs');
+    if (!phone || !overlay) return;
+    if (overlay.parentElement !== phone) phone.appendChild(overlay);
+    const target = computeLevelAssetsTarget() || FALLBACK_TARGET;
+    applyTarget(target);
+    overlay.classList.add('is-on');
+    // 300ms 后重测一次，吃掉异步重渲（IP 形象加载、mock 订阅）造成的位移
+    setTimeout(() => {
+      const t2 = computeLevelAssetsTarget();
+      if (t2) applyTarget(t2);
+    }, 300);
+    // 滚动时跟随重定位
+    const scroller = phone.querySelector('.scroll-area, .scroll');
+    if (scroller && !scroller.__tourBsBound) {
+      scroller.addEventListener('scroll', () => {
+        if (!overlay.classList.contains('is-on')) return;
+        const r = measureLevelAssetsRect();
+        if (r) applyTarget(r);
+      }, { passive: true });
+      scroller.__tourBsBound = true;
+    }
+  }
+  window.tourBootstrapNext = function () {
+    try {
+      localStorage.removeItem(TOUR_KEY);
+      localStorage.setItem(TOUR_SEEN_KEY, '1');
+    } catch (e) {}
+    window.location.href = HOME_URL;
+  };
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', check);
+  } else {
+    check();
+  }
 })();
 </script>
 </body>

@@ -209,3 +209,144 @@
     init();
   }
 })();
+
+
+/* ============================================================
+ * XP 说明弹窗 · 所有模块共用（点 XP 标签即弹）
+ * 涵盖：01 今日 · 02 关心 · 03 个人中心 · 04 维度 · 05 收获
+ * ============================================================ */
+(function () {
+  // ---------- 1. 注入样式 ----------
+  var style = document.createElement('style');
+  style.textContent = [
+    '.xp-info-mask{position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:99998;opacity:0;pointer-events:none;transition:opacity 0.22s ease;display:flex;align-items:center;justify-content:center;padding:24px}',
+    '.xp-info-mask.show{opacity:1;pointer-events:auto}',
+    '.xp-info-card{background:#fff;border-radius:22px;padding:28px 22px 22px;width:340px;max-width:90vw;max-height:88vh;overflow-y:auto;box-shadow:0 24px 80px rgba(108,92,231,0.32);transform:scale(0.92);transition:transform 0.26s cubic-bezier(0.34,1.56,0.64,1);position:relative}',
+    '.xp-info-mask.show .xp-info-card{transform:scale(1)}',
+    '.xp-info-close{position:absolute;top:10px;right:14px;width:30px;height:30px;border-radius:50%;background:#f3f4f6;color:#6b7280;border:none;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center}',
+    '.xp-info-icon{width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#FFC940,#FF8A1A);display:flex;align-items:center;justify-content:center;font-size:34px;margin:0 auto 12px;box-shadow:0 8px 22px rgba(255,138,26,0.38);color:#fff}',
+    '.xp-info-title{font-size:20px;font-weight:800;text-align:center;color:#1F2330;margin-bottom:6px;letter-spacing:0.5px}',
+    '.xp-info-sub{font-size:13px;color:#6b7280;text-align:center;line-height:1.6;margin-bottom:18px}',
+    '.xp-info-section{margin-bottom:14px;background:#FAFAFB;border-radius:14px;padding:14px 14px 10px}',
+    '.xp-info-h{font-size:13px;font-weight:700;color:#6C5CE7;margin-bottom:8px;display:flex;align-items:center;gap:6px}',
+    '.xp-info-list{font-size:12.5px;color:#1F2330;line-height:1.7;padding-left:0;list-style:none;margin:0}',
+    '.xp-info-list li{padding:3px 0;padding-left:14px;position:relative}',
+    '.xp-info-list li::before{content:"";position:absolute;left:0;top:12px;width:5px;height:5px;border-radius:50%;background:#FFA31A}',
+    '.xp-info-list li b{color:#6C5CE7;font-weight:700}',
+    '.xp-info-btn{width:100%;margin-top:6px;padding:13px;background:linear-gradient(135deg,#6C5CE7,#A855F7,#EC4899);color:#fff;font-weight:700;font-size:15px;border:none;border-radius:999px;cursor:pointer;box-shadow:0 6px 20px rgba(108,92,231,0.3)}',
+    '.xp-info-btn:active{transform:scale(0.97)}',
+    '[data-xp-info-hooked]{cursor:pointer}'
+  ].join('');
+  document.head.appendChild(style);
+
+  // ---------- 2. 注入弹窗 DOM ----------
+  var mask = document.createElement('div');
+  mask.className = 'xp-info-mask';
+  mask.id = 'xpInfoMask';
+  mask.innerHTML = [
+    '<div class="xp-info-card" onclick="event.stopPropagation()">',
+    '  <button class="xp-info-close" onclick="window.closeXpInfo()">✕</button>',
+    '  <div class="xp-info-icon">⚡</div>',
+    '  <div class="xp-info-title">XP · 经验值</div>',
+    '  <div class="xp-info-sub">完成行为获得"经验值"，累积升级；等级越高，专属皮肤、头像框、永久加成倍率也越多。</div>',
+    '  <div class="xp-info-section">',
+    '    <div class="xp-info-h">💎 怎么获得 XP？</div>',
+    '    <ul class="xp-info-list">',
+    '      <li>完成今日挑战：每张 <b>+20 ~ +40 XP</b></li>',
+    '      <li>给好友点赞：<b>+3 XP/次</b>（每日上限 60）</li>',
+    '      <li>给好友留言：<b>+5 XP/次</b>（每日上限 30）</li>',
+    '      <li>加入维度挑战：<b>+10 XP</b>；完赛 <b>+50 ~ +200 XP</b></li>',
+    '      <li>邀请好友：<b>+5 XP/次</b>（每日上限 50）</li>',
+    '      <li>每日开 App 签到：<b>+5 XP</b>（每日 1 次）</li>',
+    '      <li>阅读教程文章：<b>+5 XP/篇</b>（每日 1 篇）</li>',
+    '    </ul>',
+    '  </div>',
+    '  <div class="xp-info-section">',
+    '    <div class="xp-info-h">🎯 XP 用来做什么？</div>',
+    '    <ul class="xp-info-list">',
+    '      <li>累积升级，共 <b>25 个等级</b></li>',
+    '      <li>每升 5 级触发<b>形象进化</b>，解锁皮肤 / 头像框 / 永久 XP 加成</li>',
+    '      <li>满足条件颁发<b>勋章</b>与<b>连击</b>成就</li>',
+    '      <li>登上<b>好友 XP 排行榜</b></li>',
+    '    </ul>',
+    '  </div>',
+    '  <button class="xp-info-btn" onclick="window.closeXpInfo()">知道了</button>',
+    '</div>'
+  ].join('');
+  mask.addEventListener('click', function (e) {
+    if (e.target === mask) window.closeXpInfo();
+  });
+  document.body.appendChild(mask);
+
+  // ---------- 3. 暴露开关 API ----------
+  window.openXpInfo = function () {
+    document.getElementById('xpInfoMask').classList.add('show');
+  };
+  window.closeXpInfo = function () {
+    document.getElementById('xpInfoMask').classList.remove('show');
+  };
+
+  // ---------- 4. 自动绑定所有 XP 标签 ----------
+  /* 选择器覆盖 5 个模块里所有"XP 标签/胶囊"元素的 class（来自扫描结果）；
+     收获模块的列表是 JS 动态注入，故通过 setInterval 周期补绑。 */
+  var SELECTORS = [
+    '.habit-xp',         // 01 今日 - 挑战卡 XP 标签
+    '.xp-amount',        // 01 今日
+    '.xp-action',        // 01 今日
+    '.xp-badge',         // 04 维度 - 通用 XP 胶囊
+    '.j-xp',             // 04 维度 - 已加入卡 XP
+    '.mc-xp',            // 04 维度 - 月度卡 XP
+    '.lc-pill-xp',       // 04 维度 - 奖品 XP 倍率
+    '.podium-xp',        // 02 关心 - 颁奖台 XP
+    '.podium-xp-lbl',    // 02 关心 - 颁奖台 XP 标签
+    '.my-rank-xp',       // 02 关心 - 我的排名 XP
+    '.ch-xp',            // 03 个人中心 - 消息行内 XP
+    '.h-total-pill',     // 05 收获 - 昨日 XP 总数
+    '.h-xp-main'         // 05 收获 - XP 明细每行数值
+  ].join(',');
+
+  function bindEl(el) {
+    if (!el || el.getAttribute('data-xp-info-hooked')) return;
+    el.setAttribute('data-xp-info-hooked', '1');
+    el.addEventListener('click', function (e) {
+      e.stopPropagation();
+      window.openXpInfo();
+    });
+  }
+
+  /* 判断一段短文本是否"看起来就是 XP 标签"
+     例：+30 XP / +10 XP/次 / XP × 1.10 / 累计 1840 XP / +50 ~ +200 XP */
+  function isXpLabelText(text) {
+    if (!text) return false;
+    text = String(text).trim();
+    if (text.length === 0 || text.length > 40) return false;
+    if (!/XP/i.test(text)) return false;
+    // 含数字 + XP；或 XP × N；或包含"经验"
+    return /[+\d][\d,.\s]*XP\b/i.test(text)
+        || /XP\s*[×x*]\s*\d/i.test(text)
+        || /\bXP\b/.test(text) && /\d/.test(text);
+  }
+
+  function bindAll() {
+    // 1. 白名单 class
+    document.querySelectorAll(SELECTORS).forEach(bindEl);
+    // 2. 文本兜底：扫描叶子元素，文本像 XP 标签的也绑定（覆盖未列入白名单的所有 XP 元素）
+    var TAGS = 'span,div,b,em,i,strong,p,small,label';
+    document.querySelectorAll(TAGS).forEach(function (el) {
+      if (el.getAttribute('data-xp-info-hooked')) return;
+      if (el.children.length > 0) return;  // 只处理叶子节点
+      if (isXpLabelText(el.textContent)) bindEl(el);
+    });
+  }
+
+  function start() {
+    bindAll();
+    console.log('[XP-info] 已绑定 XP 标签弹窗（点任何 XP 标签可看说明）');
+    setInterval(bindAll, 1500);  // 周期补绑：覆盖收获/维度等动态注入的列表
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', start);
+  } else {
+    start();
+  }
+})();
