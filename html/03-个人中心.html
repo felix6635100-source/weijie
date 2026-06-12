@@ -2604,6 +2604,229 @@
     }
 
     /* ============================================================
+       P8 手势控制拍照（原型 demo · v3.1 新增）
+       取景画面为纯 CSS 布景（书架 + 墙面 + 书桌），不调用真实相机
+       ============================================================ */
+    .gc-flash-btn { color: var(--color-brand-primary); }
+    .gc-flash-btn svg { width: 24px; height: 24px; }
+    .gc-flash-btn.is-off { color: var(--color-text-tertiary); }
+
+    .gc-viewfinder {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      background: #101216;
+      min-height: 0;
+    }
+
+    /* —— 模拟取景：外层负责对焦（blur→清晰），内层负责前后镜头镜像 —— */
+    .gc-scene {
+      position: absolute; inset: 0;
+      filter: blur(14px);
+      transform: scale(1.08);
+      transition: filter 0.9s ease, transform 0.9s ease;
+    }
+    .gc-scene.is-live { filter: blur(0); transform: scale(1); }
+    .gc-scene-inner {
+      position: absolute; inset: 0;
+      background: linear-gradient(180deg, #EFEDF4 0%, #F2F0F6 56%, #EDECF1 100%);
+      transition: transform 0.35s ease;
+    }
+    .gc-scene.is-mirrored .gc-scene-inner { transform: scaleX(-1); }
+
+    /* 顶部吊柜：柜内阴影 + 物品 + 木质层板 */
+    .gc-shelf {
+      position: absolute; top: 0; left: 0; right: 0; height: 27%;
+      background: linear-gradient(180deg, #57504A 0%, #6B5F53 70%, #756657 100%);
+    }
+    .gc-shelf-items {
+      position: absolute; left: 0; right: 0; bottom: 16px; height: 72%;
+      display: flex; align-items: flex-end; gap: 10px; padding: 0 18px;
+    }
+    .gc-shelf-items span { display: block; border-radius: 3px 3px 0 0; flex-shrink: 0; }
+    .gc-b1 { width: 13px; height: 62%; background: #7D5A50; }
+    .gc-b2 { width: 11px; height: 70%; background: #94655A; }
+    .gc-b3 { width: 15px; height: 54%; background: #5E6B7A; }
+    .gc-bottle {
+      width: 24px; height: 78%; position: relative;
+      background: linear-gradient(180deg, #FAF8F4, #E7E2D8);
+      border-radius: 10px 10px 3px 3px !important;
+    }
+    .gc-bottle::before {
+      content: ''; position: absolute; top: -8px; left: 50%;
+      width: 10px; height: 10px; margin-left: -5px;
+      border-radius: 3px; background: #D8D2C6;
+    }
+    .gc-b4 { width: 10px; height: 66%; background: #8C4242; }
+    .gc-b5 { width: 14px; height: 50%; background: #66786A; }
+    .gc-box { width: 42px; height: 38%; background: #B9AA92; border-radius: 4px 4px 0 0 !important; margin-left: auto; }
+    .gc-shelf-plank {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 16px;
+      background: linear-gradient(180deg, #C9A371, #A97F4F);
+      box-shadow: 0 12px 26px rgba(48, 38, 26, 0.32);
+    }
+
+    /* 墙面物件：电源适配器 + 插线板（4 孔） */
+    .gc-adapter {
+      position: absolute; left: 17%; bottom: 51%;
+      width: 28px; height: 32px; border-radius: 6px;
+      background: #FBFBFD; box-shadow: inset 0 0 0 1px rgba(130, 135, 150, 0.25);
+    }
+    .gc-plug {
+      position: absolute; left: 6%; bottom: 25%;
+      width: 36px; height: 110px; border-radius: 9px;
+      background: #FAFAFC; box-shadow: inset 0 0 0 1px rgba(130, 135, 150, 0.28), 0 6px 14px rgba(60, 65, 80, 0.14);
+    }
+    .gc-plug::before {
+      content: ''; position: absolute; left: 50%; top: 13px;
+      width: 9px; height: 9px; margin-left: -4.5px; border-radius: 50%;
+      background: #262A33;
+      box-shadow: 0 26px 0 #262A33, 0 52px 0 #262A33, 0 78px 0 #262A33;
+    }
+
+    /* 书桌台面与桌上物件：平板支架 + 耳机耳罩 + 水杯 */
+    .gc-desk {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 22%;
+      background: linear-gradient(180deg, #FDFDFE, #EEEFF2);
+      border-top: 1px solid rgba(120, 120, 135, 0.18);
+    }
+    .gc-stand {
+      position: absolute; left: 46%; bottom: 5%;
+      width: 104px; height: 92px; border-radius: 12px;
+      background: linear-gradient(165deg, #A7ADB5, #82888F);
+      box-shadow: 0 10px 18px rgba(50, 55, 70, 0.18);
+    }
+    .gc-stand::after {
+      content: ''; position: absolute; left: 50%; bottom: 8px;
+      width: 46px; height: 12px; margin-left: -23px; border-radius: 6px;
+      background: rgba(40, 44, 52, 0.35);
+    }
+    .gc-pod {
+      position: absolute; width: 52px; height: 52px; border-radius: 50%;
+      background: #D9C5B2;
+      box-shadow: inset 0 0 0 14px #CEB8A3, 0 8px 14px rgba(60, 50, 40, 0.2);
+    }
+    .gc-pod-l { left: 36%; bottom: 4%; }
+    .gc-pod-r { left: 56%; bottom: 3.2%; }
+    .gc-cup {
+      position: absolute; left: 28%; bottom: 2.6%;
+      width: 26px; height: 38px; border-radius: 6px 6px 8px 8px;
+      background: linear-gradient(180deg, #8FC98F, #5FA463);
+    }
+    .gc-vignette {
+      position: absolute; inset: 0; pointer-events: none;
+      background: radial-gradient(120% 90% at 50% 42%, transparent 60%, rgba(10, 12, 18, 0.18) 100%);
+    }
+
+    /* 手势说明条 */
+    .gc-tip {
+      position: absolute; top: 0; left: 0; right: 0; z-index: 5;
+      display: flex; align-items: center; gap: 10px;
+      padding: 14px 16px;
+      background: rgba(18, 20, 26, 0.5);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      color: #fff; font-size: 15px; line-height: 1.4;
+    }
+    .gc-tip-q {
+      width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0;
+      border: 1.6px solid #fff;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 600;
+    }
+
+    /* 3·2·1 倒计时大数字 */
+    .gc-count {
+      position: absolute; inset: 0; z-index: 6;
+      display: none; align-items: center; justify-content: center;
+      color: #fff; font-size: 124px; font-weight: 600;
+      text-shadow: 0 6px 30px rgba(0, 0, 0, 0.35);
+      pointer-events: none;
+    }
+    .gc-count.is-on { display: flex; }
+    .gc-count .num { animation: gcCountPop 0.9s ease both; }
+    @keyframes gcCountPop {
+      0%   { transform: scale(1.55); opacity: 0; }
+      28%  { transform: scale(1); opacity: 1; }
+      80%  { opacity: 1; }
+      100% { transform: scale(0.94); opacity: 0.25; }
+    }
+
+    /* 快门白屏闪光 */
+    .gc-flashfx { position: absolute; inset: 0; z-index: 7; background: #fff; opacity: 0; pointer-events: none; }
+    .gc-flashfx.is-on { animation: gcFlashFx 0.3s ease; }
+    @keyframes gcFlashFx { 0% { opacity: 0.95; } 100% { opacity: 0; } }
+
+    /* demo 用「模拟摇动戒指」按钮（真实 App 中为戒指 IMU 手势触发） */
+    .gc-shake-pill {
+      position: absolute; left: 50%; bottom: 18px; z-index: 6;
+      transform: translateX(-50%);
+      border: none; cursor: pointer; font-family: inherit;
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 10px 18px; border-radius: var(--radius-pill);
+      background: rgba(18, 20, 26, 0.55);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      color: #fff; font-size: 13px; font-weight: 600;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.22);
+      transition: opacity 0.25s ease, background 0.25s ease;
+    }
+    .gc-shake-pill:active { transform: translateX(-50%) scale(0.96); }
+    .gc-shake-pill.is-detected { background: var(--gradient-brand); }
+    .gc-shake-pill.is-hidden { opacity: 0; pointer-events: none; }
+
+    /* 底部控制条：相册缩略图 + 快门 + 切换镜头 */
+    .gc-controls { position: relative; height: 108px; flex-shrink: 0; background: #F6F7F9; }
+    body.is-dark-mode .gc-controls { background: #14161B; }
+    .gc-shutter {
+      position: absolute; left: 50%; top: 50%;
+      transform: translate(-50%, -50%);
+      width: 74px; height: 74px; border-radius: 50%;
+      border: none; cursor: pointer;
+      background: #4D63DD;
+      box-shadow: 0 0 0 4px #F6F7F9, 0 0 0 6.5px #4D63DD;
+      transition: transform 0.12s ease;
+    }
+    .gc-shutter:active { transform: translate(-50%, -50%) scale(0.92); }
+    body.is-dark-mode .gc-shutter { box-shadow: 0 0 0 4px #14161B, 0 0 0 6.5px #4D63DD; }
+    .gc-flip {
+      position: absolute; right: 26px; top: 50%;
+      transform: translateY(-50%);
+      width: 54px; height: 54px; border-radius: 50%;
+      border: none; cursor: pointer;
+      background: #E9EAEE; color: #1C1F26;
+      display: inline-flex; align-items: center; justify-content: center;
+    }
+    .gc-flip svg { width: 26px; height: 26px; }
+    .gc-flip:active { transform: translateY(-50%) scale(0.94); }
+    body.is-dark-mode .gc-flip { background: #23262E; color: #fff; }
+    .gc-thumb {
+      position: absolute; left: 26px; top: 50%;
+      transform: translateY(-50%);
+      width: 50px; height: 50px; border-radius: 10px;
+      overflow: hidden; display: none;
+      border: 2px solid #fff;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+    }
+    .gc-thumb.is-on { display: block; animation: gcThumbIn 0.35s cubic-bezier(0.2, 1.2, 0.3, 1); }
+    @keyframes gcThumbIn {
+      0%   { transform: translateY(-50%) scale(0.4); opacity: 0; }
+      100% { transform: translateY(-50%) scale(1); opacity: 1; }
+    }
+    .gc-thumb-mini {
+      position: absolute; inset: 0;
+      background: linear-gradient(180deg, #6B5F53 0%, #A97F4F 24%, #EFEDF4 25%, #F2F0F6 74%, #ECEDF1 75%, #F5F6F8 100%);
+    }
+    .gc-thumb-badge {
+      position: absolute; right: 2px; bottom: 2px;
+      min-width: 16px; height: 16px; padding: 0 4px;
+      border-radius: 8px;
+      background: rgba(18, 20, 26, 0.72);
+      color: #fff; font-size: 10px; font-weight: 700;
+      display: inline-flex; align-items: center; justify-content: center;
+    }
+
+    /* ============================================================
        P6 连接戒指页
        ============================================================ */
     .connect-page {
@@ -3571,6 +3794,16 @@
       </div>
     </div>
 
+    <div class="nav-section-label">手势拍照</div>
+    <div class="nav-list">
+      <div class="nav-item" data-page="P8">
+        <span class="nav-id">P8</span><span class="nav-name">手势控制拍照 · 取景页</span><span class="nav-tag tag-page">二级页面</span>
+      </div>
+      <div class="nav-item" data-page="P8.shake">
+        <span class="nav-id">P8 ②</span><span class="nav-name">摇动戒指 → 3·2·1 倒计时拍照</span><span class="nav-tag tag-sub">自动演示</span>
+      </div>
+    </div>
+
     <div class="nav-section-label">轻提示</div>
     <div class="nav-list">
       <div class="nav-item" data-page="P-LOGIN-DONE">
@@ -3587,7 +3820,8 @@
       ② P6.2 → 点「连接」→ 戒指已连接<br>
       ③ T1 ② → 点「点击登录」<br>
       ④ P1.1 → P2 → P3 → P4 → 登录成功<br>
-      ⑤ T1 ③ → 点头像 → P5
+      ⑤ T1 ③ → 点头像 → P5<br>
+      ⑥ P5 → 「手势拍照」→ 允许相机 → 摇动戒指倒计时
     </div>
   </aside>
 
@@ -3946,6 +4180,14 @@
                       <span class="profile-device-status">已连接</span>
                       · AR-8F2C-1D40 · 电量 82%
                     </div>
+                  </div>
+                  <span class="profile-row-arrow">›</span>
+                </div>
+                <div class="profile-row" data-goto="P8">
+                  <div class="profile-row-icon">📸</div>
+                  <div class="profile-row-main">
+                    <div class="profile-row-label">手势拍照</div>
+                    <div class="profile-row-sub">摇一摇戒指，遥控手机拍照</div>
                   </div>
                   <span class="profile-row-arrow">›</span>
                 </div>
@@ -5071,6 +5313,194 @@
         </div>`;
     }
 
+    // === P8 手势控制拍照（v3.1 新增 · 原型 demo，不调用真实相机） ===
+    // 入口：P5 「我的设备 → 手势拍照」
+    // 流程：进入 → iOS 相机权限弹窗（模拟「调取系统相机」，每次刷新后首次进入弹出）
+    //       → 取景对焦 → 摇动戒指（demo 按钮模拟，真实 App 为戒指 IMU 摇晃手势）
+    //       → 3·2·1 倒计时 → 快门闪光 → 左下角相册缩略图
+    // 此外：快门键直接拍照；闪光灯 自动/打开/关闭 三态；切换前后镜头（镜像模拟）
+    const gcState = {
+      granted: false,    // 本次会话是否已授予相机权限
+      flash: 'auto',     // auto → on → off 循环
+      mirrored: false,   // 前置/后置镜头（镜像模拟）
+      photos: 0,         // 已拍张数（驱动左下角缩略图与角标）
+      session: 0,        // 渲染世代号：离开页面后作废未完成的定时器
+      shooting: false    // 倒计时进行中，屏蔽重复触发
+    };
+
+    function gcFlashIcon(mode) {
+      const bolt = '<path d="M13.4 2.2 5.6 13h4.5l-1.5 8.8L16.4 11h-4.5l1.5-8.8z" fill="currentColor"/>';
+      if (mode === 'auto') return `<svg viewBox="0 0 24 24">${bolt}<text x="16.4" y="9.4" font-size="9" font-weight="800" fill="currentColor">A</text></svg>`;
+      if (mode === 'on')   return `<svg viewBox="0 0 24 24">${bolt}</svg>`;
+      return `<svg viewBox="0 0 24 24">${bolt}<line x1="4.5" y1="3.5" x2="19.5" y2="20.5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>`;
+    }
+
+    function pageP8() {
+      const permission = gcState.granted ? '' : `
+        <div class="modal-overlay show is-center" id="gcPermission">
+          <div class="ios-alert">
+            <div class="ios-alert-header">
+              <div class="ios-alert-title">“AIRing”想访问您的相机</div>
+              <div class="ios-alert-message">用于手势控制拍照。摇晃佩戴戒指的手即可遥控拍摄，照片将保存到手机相册。</div>
+            </div>
+            <div class="ios-alert-actions">
+              <button class="ios-alert-action" type="button" data-gc="deny">不允许</button>
+              <button class="ios-alert-action" type="button" data-gc="grant" style="font-weight:600">允许</button>
+            </div>
+          </div>
+        </div>`;
+      return `
+        ${statusBar()}
+        <div class="app-topbar">
+          <button class="app-topbar-back" type="button" data-goto="P5" aria-label="返回">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+          <div class="app-topbar-center"><div class="app-topbar-title">手势控制拍照</div></div>
+          <button class="app-topbar-action gc-flash-btn ${gcState.flash === 'off' ? 'is-off' : ''}" type="button" id="gcFlashBtn" data-gc="flash" aria-label="闪光灯">${gcFlashIcon(gcState.flash)}</button>
+        </div>
+        <div class="gc-viewfinder">
+          <div class="gc-scene ${gcState.granted ? 'is-live' : ''} ${gcState.mirrored ? 'is-mirrored' : ''}" id="gcScene">
+            <div class="gc-scene-inner">
+              <div class="gc-shelf">
+                <div class="gc-shelf-items">
+                  <span class="gc-b1"></span><span class="gc-b2"></span><span class="gc-b3"></span>
+                  <span class="gc-bottle"></span>
+                  <span class="gc-b4"></span><span class="gc-b5"></span><span class="gc-box"></span>
+                </div>
+                <div class="gc-shelf-plank"></div>
+              </div>
+              <div class="gc-adapter"></div>
+              <div class="gc-plug"></div>
+              <div class="gc-desk"></div>
+              <div class="gc-stand"></div>
+              <span class="gc-pod gc-pod-l"></span><span class="gc-pod gc-pod-r"></span>
+              <div class="gc-cup"></div>
+              <div class="gc-vignette"></div>
+            </div>
+          </div>
+          <div class="gc-tip">
+            <span class="gc-tip-q">?</span>
+            <span>手势说明：使用佩戴设备的手快速摇晃几下。</span>
+          </div>
+          <div class="gc-count" id="gcCount"></div>
+          <div class="gc-flashfx" id="gcFlashFx"></div>
+          <button class="gc-shake-pill" type="button" id="gcShakePill" data-gc="shake">💍 模拟摇动戒指</button>
+        </div>
+        <div class="gc-controls">
+          <div class="gc-thumb ${gcState.photos > 0 ? 'is-on' : ''}" id="gcThumb">
+            <div class="gc-thumb-mini"></div>
+            <span class="gc-thumb-badge" id="gcThumbBadge">${gcState.photos}</span>
+          </div>
+          <button class="gc-shutter" type="button" data-gc="capture" aria-label="拍照"></button>
+          <button class="gc-flip" type="button" data-gc="flip" aria-label="切换前后镜头">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 0 1-14.2 5"/><path d="M4 12a8 8 0 0 1 14.2-5"/><polyline points="18.5 3.5 18.2 7 14.8 6.6"/><polyline points="5.5 20.5 5.8 17 9.2 17.4"/></svg>
+          </button>
+        </div>
+        ${permission}`;
+    }
+
+    // P8.shake 自动演示变体：跳过权限弹窗，进入后自动「摇晃 → 倒计时 → 拍照」
+    function pageP8AutoDemo() { gcState.granted = true; return pageP8(); }
+
+    function bindGestureCamera(autoDemo) {
+      const session = ++gcState.session;
+      gcState.shooting = false;
+      const alive = () => session === gcState.session;
+      const $ = (sel) => stage.querySelector(sel);
+
+      const scene = $('#gcScene');
+      const pill = $('#gcShakePill');
+
+      // 已授权（含再次进入）：模拟相机启动对焦
+      if (gcState.granted && scene) {
+        scene.classList.remove('is-live');
+        setTimeout(() => { if (alive()) scene.classList.add('is-live'); }, 120);
+      }
+
+      // 权限弹窗：允许 → 启动相机；不允许 → 返回 P5
+      const grantBtn = $('[data-gc="grant"]');
+      const denyBtn = $('[data-gc="deny"]');
+      if (grantBtn) grantBtn.addEventListener('click', () => {
+        gcState.granted = true;
+        const ov = $('#gcPermission');
+        if (ov) { ov.classList.remove('show'); setTimeout(() => ov.remove(), 240); }
+        setTimeout(() => { if (alive() && scene) scene.classList.add('is-live'); }, 200);
+      });
+      if (denyBtn) denyBtn.addEventListener('click', () => {
+        toast('未获得相机权限，无法使用手势拍照');
+        navigateTo('P5');
+      });
+
+      // 快门：白屏闪光 + 左下缩略图 + toast
+      function capture() {
+        if (!alive()) return;
+        const fx = $('#gcFlashFx');
+        if (fx) { fx.classList.remove('is-on'); void fx.offsetWidth; fx.classList.add('is-on'); }
+        gcState.photos += 1;
+        const badge = $('#gcThumbBadge');
+        if (badge) badge.textContent = gcState.photos;
+        const thumb = $('#gcThumb');
+        if (thumb) { thumb.classList.remove('is-on'); void thumb.offsetWidth; thumb.classList.add('is-on'); }
+        toast('📸 拍照成功，已保存到手机相册');
+      }
+
+      // 摇动戒指 → 识别提示 → 3·2·1 倒计时 → 快门
+      function shakeCountdown() {
+        if (!alive() || gcState.shooting) return;
+        gcState.shooting = true;
+        if (pill) { pill.classList.add('is-detected'); pill.innerHTML = '✓ 检测到戒指摇晃手势'; }
+        const count = $('#gcCount');
+        let n = 3;
+        const tick = () => {
+          if (!alive() || !count) return;
+          if (n === 2 && pill) pill.classList.add('is-hidden');
+          if (n > 0) {
+            count.classList.add('is-on');
+            count.innerHTML = `<span class="num">${n}</span>`;
+            n -= 1;
+            setTimeout(tick, 900);
+          } else {
+            count.classList.remove('is-on');
+            count.innerHTML = '';
+            capture();
+            gcState.shooting = false;
+            setTimeout(() => {
+              if (!alive() || !pill) return;
+              pill.classList.remove('is-detected', 'is-hidden');
+              pill.innerHTML = '💍 模拟摇动戒指';
+            }, 700);
+          }
+        };
+        setTimeout(tick, 650);
+      }
+
+      if (pill) pill.addEventListener('click', shakeCountdown);
+      const shutter = $('[data-gc="capture"]');
+      if (shutter) shutter.addEventListener('click', () => { if (!gcState.shooting) capture(); });
+
+      // 切换前后镜头（镜像模拟）
+      const flip = $('[data-gc="flip"]');
+      if (flip) flip.addEventListener('click', () => {
+        gcState.mirrored = !gcState.mirrored;
+        if (scene) scene.classList.toggle('is-mirrored', gcState.mirrored);
+        toast(gcState.mirrored ? '已切换到前置镜头' : '已切换到后置镜头');
+      });
+
+      // 闪光灯三态循环：自动 → 打开 → 关闭
+      const flashBtn = $('#gcFlashBtn');
+      if (flashBtn) flashBtn.addEventListener('click', () => {
+        gcState.flash = gcState.flash === 'auto' ? 'on' : (gcState.flash === 'on' ? 'off' : 'auto');
+        flashBtn.innerHTML = gcFlashIcon(gcState.flash);
+        flashBtn.classList.toggle('is-off', gcState.flash === 'off');
+        toast('闪光灯：' + ({ auto: '自动', on: '打开', off: '关闭' })[gcState.flash]);
+      });
+
+      // 自动演示：对焦完成后自动触发一次摇晃手势
+      if (autoDemo) {
+        setTimeout(() => { if (alive()) shakeCountdown(); }, 1600);
+      }
+    }
+
     // === P-LOGIN-DONE 全屏轻提示（叠加在 P4 完善资料完成时） ===
     function pageLoginDone() {
       return pageP4() + `
@@ -5269,6 +5699,8 @@
       'P6.2': pageP62Searching,
       'P6.2.found': pageP62Found,
       'P6.3': pageP63,
+      'P8':       pageP8,
+      'P8.shake': pageP8AutoDemo,
       'P-LOGIN-DONE':   pageLoginDone,
       'P-CONNECT-DONE': pageConnectDone
     };
@@ -5431,6 +5863,9 @@
       } else if (key === 'P6.2') {
         // 搜索中：2.4 秒后模拟搜到 1 枚戒指，自动切到已发现态
         toastTimer = setTimeout(() => navigateTo('P6.2.found'), 2400);
+      } else if (key === 'P8' || key === 'P8.shake') {
+        // 手势控制拍照：绑定快门 / 摇晃 / 闪光灯 / 切换镜头等 demo 交互
+        bindGestureCamera(key === 'P8.shake');
       } else if (key === 'P2') {
         // 验证码页：绑定 6 位输入 + 自动校验
         bindCodeInput();

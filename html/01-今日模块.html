@@ -6,6 +6,8 @@
 <title>唯戒 · 今日模块</title>
 <!-- 共享 Mock 数据层（5 模块同源用户信息：阶段 1 / v1.0） -->
 <script src="./mock-shared.js"></script>
+<!-- 多语言 loader（zh-CN / en / ja / vi / th；当前 Phase 1 试点：zh + en） -->
+<script src="./i18n-loader.js"></script>
 <!-- 演示助手（左侧 nav 注入「演示捷径」按钮组 + 共享完成弹窗） -->
 <script src="./mock-demo.js?v=1780906061"></script>
 <style>
@@ -804,6 +806,409 @@ body.is-dark-mode .ios-status-bar .iss-battery::after { background: #fff; }
   display: grid; grid-template-columns: repeat(2, 1fr);
   gap: var(--space-md); margin-bottom: var(--space-xl);
 }
+
+/* ===== 生理周期卡（粉色主题） ===== */
+.metric-card[data-metric="生理周期"] { --ms-pink: #F25EFF; --ms-bg: #FFF1F8; }
+.metric-card[data-metric="生理周期"] .metric-icon {
+  background: linear-gradient(135deg, #FFB4D8, #F25EFF);
+  color: #fff;
+}
+.ms-empty-cta {
+  margin-top: 8px;
+  padding: 8px 14px;
+  background: #FFE6F2;
+  color: #C83D9C;
+  border-radius: 999px;
+  font-size: 12px; font-weight: 700;
+  text-align: center;
+  cursor: pointer;
+}
+.ms-empty-cta:active { opacity: 0.7; }
+/* === 卡片通用头部：🌸 + 名称同行（日期在下），右侧状态块 === */
+.ms-head {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: 12px;
+}
+.ms-head-left {
+  display: flex; align-items: center; gap: 8px;
+  flex: 1; min-width: 0;
+}
+.ms-head-meta { min-width: 0; }
+.ms-title {
+  font-size: 17px; font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+.ms-date {
+  font-size: 10px; color: var(--text-tertiary);
+  margin-top: 3px;
+  line-height: 1.35;
+  white-space: nowrap;
+}
+.ms-head-right {
+  text-align: right;
+  flex-shrink: 0;
+}
+.ms-right-dash {
+  font-size: 20px; font-weight: 800;
+  color: #F25EFF;
+  line-height: 1.2;
+}
+.ms-right-sub {
+  font-size: 11px; color: var(--text-tertiary);
+  margin-top: 2px;
+}
+.ms-phase-label {
+  font-size: 12px; color: var(--text-primary);
+  font-weight: 700;
+}
+.ms-phase-line {
+  font-size: 11px; color: var(--text-secondary);
+  margin-top: 1px;
+  white-space: nowrap;
+}
+.ms-phase-line .num {
+  font-size: 24px; font-weight: 900;
+  color: #F25EFF;
+  margin: 0 2px;
+  line-height: 1;
+  vertical-align: -2px;
+}
+#msCard[data-phase="ovulation"] .ms-phase-line .num { color: #A78BFA; }
+#msCard[data-phase="countdown"] .ms-phase-line .num { color: #FF4F95; }
+.ms-phase-total { display: none; } /* 右下角"共N天/周期共N天"行已去掉，保留 ID 以兼容代码 */
+/* 空态主体 */
+.ms-nodata {
+  text-align: center;
+  font-size: 13px; color: var(--text-tertiary);
+  padding: 14px 0 4px;
+}
+.ms-nodata .face { font-size: 15px; margin-right: 4px; }
+/* === 阶段柱状图：柱数 = 当前阶段天数，今天高亮 + 顶部 cap + 轴标"今天" === */
+.ms-bar-chart {
+  display: flex;
+  gap: 6px;
+  margin-top: 12px;
+  height: 44px;
+}
+.ms-bar {
+  flex: 1;
+  border-radius: 8px;
+  background: #F0F2F7;
+  position: relative;
+}
+/* 每根柱按当日 phase 着色（与日历一致）：生理期粉 / 预测浅粉 / 排卵期紫 / 排卵日蓝 / 普通灰 */
+.ms-bar { background: #F0F2F7; }
+.ms-bar.is-period { background: #FF4F95; }
+.ms-bar.is-predicted { background: #FFB4D8; }
+.ms-bar.is-ovu-phase { background: #A78BFA; }
+.ms-bar.is-ovu-day { background: #50C8FF; }
+/* 今天柱：在原色基础上叠 cap + 微亮 */
+.ms-bar.is-today { box-shadow: inset 0 0 0 2px rgba(255,255,255,0.6), 0 0 0 2px rgba(0,0,0,0.08); }
+.ms-bar.is-today::before { background: rgba(0, 0, 0, 0.25); }
+/* 今天柱顶部深色 cap（参考薄荷健康） */
+.ms-bar.is-today::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 6px;
+  border-radius: 8px 8px 0 0;
+  background: rgba(0, 0, 0, 0.22);
+}
+.ms-bar-axis {
+  display: flex;
+  gap: 6px;
+  margin-top: 5px;
+}
+.ms-bar-axis span {
+  flex: 1;
+  font-size: 10px;
+  color: var(--text-tertiary);
+  text-align: center;
+  white-space: nowrap;
+}
+.ms-bar-axis span.is-today {
+  font-weight: 800;
+}
+.ms-bar-axis span.is-today { color: #E62E92; }
+
+/* ===== 生理周期设置面板 ===== */
+.ms-welcome-body { padding: 8px 22px 16px; }
+.ms-welcome-title {
+  font-size: 24px; font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 18px;
+  line-height: 1.3;
+}
+.ms-feature-row {
+  display: flex; align-items: flex-start; gap: 14px;
+  padding: 12px 0;
+}
+.ms-feature-icon {
+  width: 48px; height: 48px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #FFB4D8, #F25EFF);
+  color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+.ms-feature-text { flex: 1; min-width: 0; }
+.ms-feature-name {
+  font-size: 15px; font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+.ms-feature-desc {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  line-height: 1.55;
+}
+
+.ms-settings-body { padding: 8px 18px 16px; }
+.ms-settings-title {
+  font-size: 22px; font-weight: 800;
+  margin-bottom: 18px;
+}
+.ms-form-row {
+  display: flex; flex-direction: column;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+}
+.ms-form-row:active { opacity: 0.7; }
+.ms-form-hint {
+  font-size: 12px; color: var(--text-tertiary);
+  margin-bottom: 6px;
+}
+.ms-form-body {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px;
+}
+.ms-form-label {
+  font-size: 16px; font-weight: 700;
+  color: var(--text-primary);
+}
+.ms-form-value {
+  font-size: 14px; color: var(--ms-pink, #F25EFF);
+  font-weight: 600;
+}
+.ms-form-value.is-empty { color: var(--text-tertiary); font-weight: 500; }
+.ms-form-value::after { content: ' ›'; }
+
+/* ===== 详情日历（4 色 + 月份切换 + 按钮区） ===== */
+.ms-detail-banner {
+  background: linear-gradient(135deg, #FF5494 0%, #FF7AB0 100%);
+  color: #fff;
+  padding: 20px 20px 28px;
+  position: relative;
+  margin: -16px -16px 0;
+}
+.ms-detail-back {
+  position: absolute; top: 38px; left: 26px;
+  width: 32px; height: 32px;
+  background: rgba(255,255,255,0.18);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; color: #fff;
+  cursor: pointer; border: 0;
+}
+.ms-detail-title {
+  text-align: center;
+  font-size: 17px; font-weight: 700;
+  margin-bottom: 12px;
+}
+.ms-detail-month {
+  display: flex; align-items: center; justify-content: center; gap: 22px;
+}
+.ms-detail-month button {
+  background: transparent; border: 0; color: #fff;
+  font-size: 18px; cursor: pointer; padding: 4px 8px;
+}
+.ms-detail-month .label {
+  font-size: 18px; font-weight: 700;
+  letter-spacing: 0.5px;
+}
+.ms-detail-body { padding: 0 16px 18px; }
+.ms-detail-info-card {
+  background: #fff;
+  border-radius: 14px;
+  margin-top: -10px;
+  padding: 12px 14px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  display: flex; align-items: center; gap: 10px;
+  font-size: 14px; font-weight: 600;
+  color: var(--text-primary);
+  position: relative;
+  z-index: 2;
+}
+.ms-detail-info-icon {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: #FFE0EC;
+  color: #F25EFF;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+.ms-calendar-card {
+  background: #fff;
+  border-radius: 14px;
+  margin-top: 12px;
+  padding: 12px 10px 14px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+.ms-calendar {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px 2px;
+}
+.ms-cal-head {
+  text-align: center;
+  font-size: 12px; font-weight: 700;
+  color: #F25EFF;
+  padding: 6px 0;
+}
+.ms-cal-cell {
+  aspect-ratio: 1;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 50%;
+  font-size: 14px; font-weight: 600;
+  color: var(--text-primary);
+  position: relative;
+}
+.ms-cal-cell.is-other-month { color: var(--text-tertiary); opacity: 0.4; }
+/* 生理期：亮粉实心 */
+.ms-cal-cell.is-period {
+  background: #FF4F95; color: #fff; font-weight: 800;
+}
+/* 预测生理期：浅粉实心 */
+.ms-cal-cell.is-predicted {
+  background: #FFB4D8; color: #fff; font-weight: 700;
+}
+/* 排卵期：紫色实心 */
+.ms-cal-cell.is-ovulation-phase {
+  background: #A78BFA; color: #fff; font-weight: 700;
+}
+/* 排卵日：单天蓝色实心 */
+.ms-cal-cell.is-ovulation-day {
+  background: #50C8FF; color: #fff; font-weight: 800;
+}
+/* 今天：白底 + 当前 phase 描边 */
+.ms-cal-cell.is-today {
+  background: #fff;
+  color: #FF4F95;
+  border: 2.5px solid #FF4F95;
+  font-weight: 900;
+}
+.ms-cal-cell.is-today.is-predicted { color: #C83D9C; border-color: #FFB4D8; }
+.ms-cal-cell.is-today.is-ovulation-phase { color: #6F42C1; border-color: #A78BFA; }
+.ms-cal-cell.is-today.is-ovulation-day { color: #007ACC; border-color: #50C8FF; }
+
+.ms-legend {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 14px;
+  margin-top: 14px;
+  font-size: 13px; color: var(--text-secondary);
+}
+.ms-legend .item { display: flex; align-items: center; gap: 6px; }
+.ms-legend .dot {
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.ms-legend .dot.is-predicted { background: #FFB4D8; }
+.ms-legend .dot.is-period { background: #FF4F95; }
+.ms-legend .dot.is-ovulation-day { background: #50C8FF; }
+.ms-legend .dot.is-ovulation-phase { background: #A78BFA; }
+
+.ms-detail-actions {
+  background: #fff;
+  border-radius: 14px;
+  margin-top: 14px;
+  overflow: hidden;
+}
+.ms-detail-action-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px 16px;
+  cursor: pointer;
+  border-bottom: 1px solid var(--border);
+}
+.ms-detail-action-row:last-child { border-bottom: 0; }
+.ms-detail-action-row:active { background: #FAFAFC; }
+.ms-detail-action-icon {
+  width: 32px; height: 32px;
+  border-radius: 9px;
+  background: linear-gradient(135deg, #FF5494, #FF8AB8);
+  color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+.ms-detail-action-row .name {
+  flex: 1;
+  font-size: 15px; font-weight: 600;
+  color: var(--text-primary);
+}
+.ms-detail-action-row .arrow {
+  color: var(--text-tertiary);
+  font-size: 16px;
+}
+
+/* ===== 生理期提醒（MS4） ===== */
+.ms-remind-body { padding: 4px 18px 18px; }
+.ms-remind-hint {
+  font-size: 13px; color: var(--text-tertiary);
+  margin: 10px 0 16px;
+  line-height: 1.5;
+}
+.ms-remind-card {
+  background: var(--color-bg-surface-muted, #F6F7FA);
+  border-radius: 18px;
+  padding: 4px 16px;
+  margin-bottom: 14px;
+}
+.ms-remind-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px 0;
+}
+.ms-remind-row.is-master { padding: 16px 0; }
+.ms-remind-divider {
+  height: 1px;
+  background: var(--border, #E5E8EF);
+}
+.ms-remind-icon {
+  width: 38px; height: 38px;
+  border-radius: 11px;
+  background: linear-gradient(135deg, #FFD1E3, #FF8AB8);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+.ms-remind-meta { flex: 1; min-width: 0; }
+.ms-remind-meta .name {
+  font-size: 15px; font-weight: 700;
+  color: var(--text-primary);
+}
+.ms-remind-meta .desc {
+  font-size: 12px; color: var(--text-tertiary);
+  margin-top: 3px;
+  line-height: 1.45;
+}
+/* 提醒时间卡（独立卡，整卡可点） */
+.ms-remind-time {
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px 16px;
+  cursor: pointer;
+}
+.ms-remind-time:active { opacity: 0.75; }
+.ms-remind-time-value {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 16px; font-weight: 600;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+.ms-remind-time-value .arrow { color: var(--text-tertiary); }
 .metric-card {
   background: var(--card); border-radius: var(--radius-lg);
   padding: var(--space-md); box-shadow: var(--shadow-card);
@@ -4302,6 +4707,9 @@ body.is-dark-mode .ios-status-bar .iss-battery::after { background: #fff; }
     <button class="state-btn" onclick="tourStart(true)" style="grid-column:span 2">
       <span class="icon">🎯</span><span>方案 B · 4 步互动教学</span>
     </button>
+    <button class="state-btn" onclick="resetMenstrual()" style="grid-column:span 2">
+      <span class="icon">🌸</span><span>重置生理周期数据</span>
+    </button>
   </div>
 
   <div class="nav-section-label">说明弹窗</div>
@@ -4434,10 +4842,10 @@ body.is-dark-mode .ios-status-bar .iss-battery::after { background: #fff; }
   <!-- 顶部导航：[标题][戒指状态] | [🔔 消息中心][👤 个人设置]（v1.9 起，原 🌙 已下沉至 P5 · 外观） -->
   <div class="app-topbar">
     <div class="topbar-left">
-      <div class="topbar-title">今日</div>
+      <div class="topbar-title" data-i18n="nav.today">今日</div>
       <div class="ring-tag is-connected" id="ringTag" data-mock-ring-status onclick="onRingTagClick()">
         <span class="dot"></span>
-        <span id="ringTagText" data-mock="ring.status">已连接</span>
+        <span id="ringTagText" data-mock="ring.status" data-i18n="ringStatus.connected">已连接</span>
         <span class="battery" id="ringBattery">
           <span class="battery-icon" id="ringBatteryIcon" data-mock-battery-icon style="--battery-pct: 85%;"><span class="battery-fill"></span></span>
           <span id="ringPct" data-mock="ring.battery">85%</span>
@@ -4445,6 +4853,16 @@ body.is-dark-mode .ios-status-bar .iss-battery::after { background: #fff; }
       </div>
     </div>
     <div class="topbar-right">
+      <!-- 🌐 多语言切换（Phase 1：zh / en；后续补 ja / vi / th） -->
+      <div class="lang-switch" style="position:relative">
+        <button class="icon-btn lang-btn" onclick="toggleLangMenu(event)" title="Language / 语言" style="font-size:16px;font-weight:700">
+          <span id="langCurrentLabel">中</span>
+        </button>
+        <div id="langMenu" class="lang-menu" style="display:none;position:absolute;top:42px;right:0;background:#fff;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,0.12);padding:6px;min-width:120px;z-index:50">
+          <div class="lang-item" data-lang="zh-CN" onclick="pickLang('zh-CN')" style="padding:8px 12px;border-radius:8px;cursor:pointer;font-size:13px;display:flex;justify-content:space-between;align-items:center;gap:8px"><span>中文</span><span class="lang-tag" style="font-size:11px;color:#9CA3AF">zh</span></div>
+          <div class="lang-item" data-lang="en" onclick="pickLang('en')" style="padding:8px 12px;border-radius:8px;cursor:pointer;font-size:13px;display:flex;justify-content:space-between;align-items:center;gap:8px"><span>English</span><span class="lang-tag" style="font-size:11px;color:#9CA3AF">en</span></div>
+        </div>
+      </div>
       <button class="icon-btn msg-btn" onclick="onMsgCenterClick()" title="消息中心" style="position:relative">
         <svg viewBox="0 0 48 48" width="22" height="22" aria-hidden="true" style="display:block"><path fill="currentColor" d="M7,38 L7.00004975,37.9645627 C5.30387842,37.7219693 4,36.2632532 4,34.5 L4,32.6568542 C4,31.5959883 4.42142736,30.5785726 5.17157288,29.8284271 L7,28 L7,21 C7,11.6111593 14.6111593,4 24,4 C33.3888407,4 41,11.6111593 41,21 L41,28 L42.8284271,29.8284271 C43.5785726,30.5785726 44,31.5959883 44,32.6568542 L44,34.5 C44,36.2629068 42.6966339,37.7213961 41.0009499,37.9644196 L41,38 L30.9290789,38.0002251 C30.4437524,41.3924095 27.5263939,44 24,44 C20.4736061,44 17.5562476,41.3924095 17.0709211,38.0002251 L7,38 Z M27.8737446,38.0009238 L20.125,38 L20.1799062,38.189716 C20.6864262,39.8178673 22.2051622,41 24,41 C25.794488,41 27.3129817,39.8183281 27.8197974,38.1906681 L27.8737446,38.0009238 Z M24,7 C16.3724998,7 10.1696731,13.0997524 10.003422,20.687355 L10,21 L10,29.0769553 C10,29.1830419 9.95785726,29.2847834 9.88284271,29.359798 L7.29289322,31.9497475 L7.29289322,31.9497475 C7.1366129,32.1060278 7.03740171,32.3087092 7.00867243,32.5254103 L7,32.6568542 L7,34.5 C7,34.7178229 7.14158244,34.9070074 7.33767609,34.9738837 L7.4247998,34.9947837 L7.466,35 L40.533,35 L40.5753422,34.9947633 C40.7851759,34.9646902 40.9529292,34.7989963 40.9915889,34.5913076 L41,34.5 L41,32.6568542 C41,32.4358405 40.9268355,32.2223702 40.7939194,32.0488247 L40.7071068,31.9497475 L38.1171573,29.359798 C38.0421427,29.2847834 38,29.1830419 38,29.0769553 L38,21 C38,13.2680135 31.7319865,7 24,7 Z"/></svg>
         <span class="msg-unread-badge" id="msgUnreadBadge" data-mock-unread-badge style="position:absolute;top:2px;right:2px;min-width:16px;height:16px;padding:0 4px;border-radius:999px;background:var(--color-semantic-danger,#FF7851);color:#fff;font-size:10px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;line-height:1;border:1.5px solid #fff;">12</span>
@@ -4529,19 +4947,19 @@ body.is-dark-mode .ios-status-bar .iss-battery::after { background: #fff; }
       <div class="rings-summary" id="ringsSummary">状态满满，继续加油！</div>
       <div class="rings-legend">
         <div class="ring-legend-item ring-1">
-          <div class="ring-legend-label">习惯</div>
+          <div class="ring-legend-label" data-i18n="rings3.habit.label">习惯</div>
           <div class="ring-legend-value">85%</div>
-          <div class="ring-legend-desc">持之以恒</div>
+          <div class="ring-legend-desc" data-i18n="rings3.habit.subtitle">持之以恒</div>
         </div>
         <div class="ring-legend-item ring-2">
-          <div class="ring-legend-label">关心</div>
+          <div class="ring-legend-label" data-i18n="rings3.care.label">关心</div>
           <div class="ring-legend-value">80%</div>
-          <div class="ring-legend-desc">心意相通</div>
+          <div class="ring-legend-desc" data-i18n="rings3.care.subtitle">心意相通</div>
         </div>
         <div class="ring-legend-item ring-3">
-          <div class="ring-legend-label">成长</div>
+          <div class="ring-legend-label" data-i18n="rings3.growth.label">成长</div>
           <div class="ring-legend-value">60%</div>
-          <div class="ring-legend-desc">成长跃迁</div>
+          <div class="ring-legend-desc" data-i18n="rings3.growth.subtitle">成长跃迁</div>
         </div>
       </div>
     </section>
@@ -4550,8 +4968,8 @@ body.is-dark-mode .ios-status-bar .iss-battery::after { background: #fff; }
          C3 身体指标 8 卡
          ========================================================= -->
     <div class="section-head" id="metricsSection">
-      <div class="section-title">身体</div>
-      <div class="section-edit" onclick="openSheet('sheetT4')">编辑</div>
+      <div class="section-title" data-i18n="section.body">身体</div>
+      <div class="section-edit" data-i18n="common.edit" onclick="openSheet('sheetT4')">编辑</div>
     </div>
     <div class="metrics-grid" id="metricsGrid">
 
@@ -4731,14 +5149,49 @@ body.is-dark-mode .ios-status-bar .iss-battery::after { background: #fff; }
         <div class="metric-foot">正常范围 36.1-37.2°C</div>
       </div>
 
+      <!-- 9 生理周期（女性专属，跨列占满；空态 + 已设置态由 JS 切换） -->
+      <div class="metric-card" data-metric="生理周期" id="msCard" data-phase="" style="grid-column: 1 / -1; cursor: pointer" onclick="openMenstrualEntry()">
+        <!-- 通用头部：🌸 + 名称同一行（日期在名称下），右侧状态块 -->
+        <div class="ms-head">
+          <div class="ms-head-left">
+            <div class="metric-icon">🌸</div>
+            <div class="ms-head-meta">
+              <div class="ms-title">生理周期</div>
+              <div class="ms-date" id="msHeadDate">2026年06月12日，周五，15:46</div>
+            </div>
+          </div>
+          <!-- 空态右块：-- / 暂无数据 -->
+          <div class="ms-head-right" id="msRightEmpty">
+            <div class="ms-right-dash">--</div>
+            <div class="ms-right-sub">暂无数据</div>
+          </div>
+          <!-- 配置态右块：周期内 = 阶段名/预计N天结束/共N天；周期外 = 距下次经期/还有N天/周期共N天 -->
+          <div class="ms-head-right" id="msRightConfig" style="display:none">
+            <div class="ms-phase-label" id="msPhaseLabel">生理期</div>
+            <div class="ms-phase-line" id="msPhaseLine">预计 <span class="num" id="msPhaseDays">5</span> 天结束</div>
+            <div class="ms-phase-total" id="msPhaseTotal">共5天</div>
+          </div>
+        </div>
+        <!-- 空态主体 -->
+        <div class="ms-body-empty" id="msBodyEmpty">
+          <div class="ms-nodata"><span class="face">😶</span> 无数据</div>
+          <div class="ms-empty-cta">点击设置生理期</div>
+        </div>
+        <!-- 配置态主体：按当前阶段天数出柱（今天高亮 + 标注） -->
+        <div class="ms-body-config" id="msBodyConfig" style="display:none">
+          <div class="ms-bar-chart" id="msBarChart"></div>
+          <div class="ms-bar-axis" id="msBarAxis"></div>
+        </div>
+      </div>
+
     </div>
 
     <!-- =========================================================
          C4 今日挑战 7 卡
          ========================================================= -->
     <div class="section-head" id="challengesSection">
-      <div class="section-title">🎯 今日挑战</div>
-      <div class="section-edit" onclick="openSheet('sheetT6')">编辑</div>
+      <div class="section-title"><span aria-hidden="true">🎯</span> <span data-i18n="section.challenges">今日挑战</span></div>
+      <div class="section-edit" data-i18n="common.edit" onclick="openSheet('sheetT6')">编辑</div>
     </div>
 
     <!-- 未登录引导卡 -->
@@ -4758,7 +5211,7 @@ body.is-dark-mode .ios-status-bar .iss-battery::after { background: #fff; }
         <div class="habit-head">
           <div class="habit-icon" style="background: var(--gradient-challenge-green); box-shadow: 0 5px 12px rgba(11, 255, 207, 0.22)">👟</div>
           <div class="habit-mid">
-            <div class="habit-name">走路</div>
+            <div class="habit-name" data-i18n="habit.walk.name">走路</div>
             <span class="habit-chip" style="background: rgba(171, 255, 204, 0.22); color: #159B75; border: 1px solid rgba(11, 255, 207, 0.22)">🚶 10,000 步目标</span>
           </div>
           <div class="habit-right">
@@ -4769,7 +5222,7 @@ body.is-dark-mode .ios-status-bar .iss-battery::after { background: #fff; }
           <div class="habit-progress-bar"><div class="habit-progress-fill" style="width: 85%; background: var(--gradient-challenge-green)"></div></div>
           <div class="habit-percent" style="color: #159B75">85%</div>
         </div>
-        <div class="habit-desc">已完成 <b style="color: #22C55E">8,520</b> / 10,000 步，还差约 1,480 步。继续保持中低强度步行，可以进一步改善循环和日常活动消耗。</div>
+        <div class="habit-desc">已完成 <b style="color: #22C55E">8,520</b> / 10,000 步，还差约 1,480 步。继续保持中低强度步行，让身体更有活力，是日常健康的简单积累。</div>
         <div class="habit-social-actions" onclick="event.stopPropagation()">
           <div class="habit-social-lines">
             <div class="habit-social-line like">
@@ -4797,7 +5250,7 @@ body.is-dark-mode .ios-status-bar .iss-battery::after { background: #fff; }
         <div class="habit-head">
           <div class="habit-icon" style="background: var(--gradient-challenge-purple); box-shadow: 0 5px 12px rgba(113, 79, 247, 0.22)">🌙</div>
           <div class="habit-mid">
-            <div class="habit-name">睡眠</div>
+            <div class="habit-name" data-i18n="habit.sleep.name">睡眠</div>
             <span class="habit-chip" style="background: rgba(192, 176, 255, 0.24); color: var(--color-brand-secondary); border: 1px solid rgba(113, 79, 247, 0.20)">💤 8 小时睡眠目标</span>
           </div>
           <div class="habit-right">
@@ -4808,7 +5261,7 @@ body.is-dark-mode .ios-status-bar .iss-battery::after { background: #fff; }
           <div class="habit-progress-bar"><div class="habit-progress-fill" style="width: 94%; background: var(--gradient-challenge-purple)"></div></div>
           <div class="habit-percent" style="color: var(--color-brand-secondary)">94%</div>
         </div>
-        <div class="habit-desc">昨夜已睡 <b style="color: #6366F1">7h33m</b> / 8 小时，完成度很高。再把入睡时间再提前一点，深睡与恢复质量会更稳定。</div>
+        <div class="habit-desc">昨夜已睡 <b style="color: #6366F1">7h33m</b> / 8 小时，完成度很高。再把入睡时间稍微提前一点，整夜的睡眠质量和精力恢复都会更稳定。</div>
         <div class="habit-social-actions" onclick="event.stopPropagation()">
           <div class="habit-social-lines">
             <div class="habit-social-line like">
@@ -4833,7 +5286,7 @@ body.is-dark-mode .ios-status-bar .iss-battery::after { background: #fff; }
         <div class="habit-head">
           <div class="habit-icon" style="background: var(--gradient-challenge-orange); box-shadow: 0 5px 12px rgba(255, 106, 10, 0.22)">🔥</div>
           <div class="habit-mid">
-            <div class="habit-name">消耗</div>
+            <div class="habit-name" data-i18n="habit.burn.name">消耗</div>
             <span class="habit-chip" style="background: rgba(255, 182, 106, 0.24); color: #D96200; border: 1px solid rgba(255, 106, 10, 0.22)">⚡ 500 kcal 日消耗</span>
           </div>
           <div class="habit-right">
@@ -4844,7 +5297,7 @@ body.is-dark-mode .ios-status-bar .iss-battery::after { background: #fff; }
           <div class="habit-progress-bar"><div class="habit-progress-fill" style="width: 77%; background: var(--gradient-challenge-orange)"></div></div>
           <div class="habit-percent" style="color: #D96200">77%</div>
         </div>
-        <div class="habit-desc">已消耗 <b style="color: #F97316">385</b> / 500 kcal。再补一段轻有氧或晚间散步，就能把今天的活跃消耗补齐。</div>
+        <div class="habit-desc">已消耗 <b style="color: #F97316">385</b> / 500 kcal。再补一段轻松散步或慢节奏运动，就能轻松达成今天的活动目标。</div>
         <div class="habit-social-actions" onclick="event.stopPropagation()">
           <div class="habit-social-lines">
             <div class="habit-social-line like">
@@ -4869,7 +5322,7 @@ body.is-dark-mode .ios-status-bar .iss-battery::after { background: #fff; }
         <div class="habit-head">
           <div class="habit-icon" style="background: var(--gradient-challenge-cyan); box-shadow: 0 5px 12px rgba(10, 212, 255, 0.22)">💧</div>
           <div class="habit-mid">
-            <div class="habit-name">喝水</div>
+            <div class="habit-name" data-i18n="habit.water.name">喝水</div>
             <span class="habit-chip" style="background: rgba(123, 252, 255, 0.24); color: #0A9AD8; border: 1px solid rgba(10, 212, 255, 0.22)">🥤 2,000 ml 饮水目标</span>
           </div>
           <div class="habit-right">
@@ -4881,7 +5334,7 @@ body.is-dark-mode .ios-status-bar .iss-battery::after { background: #fff; }
           <div class="habit-progress-bar"><div class="habit-progress-fill" style="width: 62%; background: var(--gradient-challenge-cyan)"></div></div>
           <div class="habit-percent" style="color: #0A9AD8">62%</div>
         </div>
-        <div class="habit-desc">今天已喝 <b style="color: #06B6D4">1,250</b> / 2,000 毫升，建议在傍晚前补足剩余 750 毫升，避免临睡前一次性大量饮水影响夜间睡眠。</div>
+        <div class="habit-desc">今天已喝 <b style="color: #06B6D4">1,250</b> / 2,000 毫升，建议傍晚前补足剩余 750 毫升，睡前少量饮水即可，以免影响睡眠。</div>
         <div class="habit-social-actions" onclick="event.stopPropagation()">
           <div class="habit-social-lines">
             <div class="habit-social-line like">
@@ -4903,7 +5356,7 @@ body.is-dark-mode .ios-status-bar .iss-battery::after { background: #fff; }
         <div class="habit-head">
           <div class="habit-icon" style="background: var(--gradient-challenge-purple); box-shadow: 0 5px 12px rgba(113, 79, 247, 0.22)">🧍</div>
           <div class="habit-mid">
-            <div class="habit-name">站立</div>
+            <div class="habit-name" data-i18n="habit.stand.name">站立</div>
             <span class="habit-chip" style="background: rgba(192, 176, 255, 0.24); color: var(--color-brand-secondary); border: 1px solid rgba(113, 79, 247, 0.20)">🪑 每小时起身一次</span>
           </div>
           <div class="habit-right">
@@ -4915,7 +5368,7 @@ body.is-dark-mode .ios-status-bar .iss-battery::after { background: #fff; }
           <div class="habit-progress-bar"><div class="habit-progress-fill" style="width: 75%; background: var(--gradient-challenge-purple)"></div></div>
           <div class="habit-percent" style="color: var(--color-brand-secondary)">75%</div>
         </div>
-        <div class="habit-desc">已完成 <b style="color: #A855F7">6</b> / 8 小时站立目标。继续打断久坐，有助于减轻腰背压力，并改善下肢循环状态。</div>
+        <div class="habit-desc">已完成 <b style="color: #A855F7">6</b> / 8 小时站立目标。每完成一次起身，都能活动一下身体，缓解久坐带来的腰背僵硬感。</div>
         <div class="habit-social-actions" onclick="event.stopPropagation()">
           <div class="habit-social-lines">
             <div class="habit-social-line like">
@@ -4940,7 +5393,7 @@ body.is-dark-mode .ios-status-bar .iss-battery::after { background: #fff; }
         <div class="habit-head">
           <div class="habit-icon" style="background: linear-gradient(135deg, #FFA8C9 0%, #F25EFF 100%); box-shadow: 0 5px 12px rgba(242, 94, 255, 0.22)">🏃</div>
           <div class="habit-mid">
-            <div class="habit-name">跑步</div>
+            <div class="habit-name" data-i18n="habit.run.name">跑步</div>
             <span class="habit-chip" style="background: rgba(255, 168, 201, 0.26); color: #D83DA8; border: 1px solid rgba(242, 94, 255, 0.20)">🏃 5 公里训练计划</span>
           </div>
           <div class="habit-right">
@@ -4952,7 +5405,7 @@ body.is-dark-mode .ios-status-bar .iss-battery::after { background: #fff; }
           <div class="habit-progress-bar"><div class="habit-progress-fill" style="width: 50%; background: linear-gradient(135deg, #FFA8C9 0%, #F25EFF 100%)"></div></div>
           <div class="habit-percent" style="color: var(--color-peak-pink)">50%</div>
         </div>
-        <div class="habit-desc">目前已跑 <b style="color: #EC4899">2.5</b> / 5 公里，刚好完成一半。若今晚状态不错，可以补一组轻松跑把训练闭环做完。</div>
+        <div class="habit-desc">目前已跑 <b style="color: #EC4899">2.5</b> / 5 公里，刚好完成一半。若今晚状态不错，可以加一段轻松跑，让身体更有活力。</div>
         <div class="habit-social-actions" onclick="event.stopPropagation()">
           <div class="habit-social-lines">
             <div class="habit-social-line like">
@@ -4977,7 +5430,7 @@ body.is-dark-mode .ios-status-bar .iss-battery::after { background: #fff; }
         <div class="habit-head">
           <div class="habit-icon" style="background: linear-gradient(135deg, #7FBBFF 0%, #3A6FE0 100%); box-shadow: 0 5px 12px rgba(58, 111, 224, 0.22)">💊</div>
           <div class="habit-mid">
-            <div class="habit-name">吃药</div>
+            <div class="habit-name" data-i18n="habit.medicine.name">吃药</div>
             <span class="habit-chip" style="background: rgba(127, 187, 255, 0.22); color: var(--color-brand-primary); border: 1px solid rgba(58, 111, 224, 0.20)">💊 今日服药计划</span>
           </div>
           <div class="habit-right">
@@ -4989,7 +5442,7 @@ body.is-dark-mode .ios-status-bar .iss-battery::after { background: #fff; }
           <div class="habit-progress-bar"><div class="habit-progress-fill" style="width: 100%; background: linear-gradient(135deg, #7FBBFF 0%, #3A6FE0 100%)"></div></div>
           <div class="habit-percent" style="color: var(--color-brand-primary)">100%</div>
         </div>
-        <div class="habit-desc">今天的用药任务已全部完成，<b style="color: #3B82F6">1 / 1 次</b> 准时达成。规律服药有助于维持身体状态的稳定基线。</div>
+        <div class="habit-desc">今天的用药任务已全部完成，<b style="color: #3B82F6">1 / 1 次</b> 准时达成。按时记录每日健康习惯，帮你更安心地管理每天的健康节奏。</div>
         <div class="habit-social-actions" onclick="event.stopPropagation()">
           <div class="habit-social-lines">
             <div class="habit-social-line like">
@@ -5024,19 +5477,19 @@ body.is-dark-mode .ios-status-bar .iss-battery::after { background: #fff; }
   <nav class="tab-bar">
     <div class="tab-item is-active">
       <div class="tab-icon"><svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"> <path d="M3.19489 17.9858C3.51823 17.9144 3.80564 18.141 3.87697 18.4643C4.00536 19.0463 3.63917 19.6388 3.0572 19.7672L1.04136 20.2119C0.580311 20.3134 0.124353 20.0217 0.0226419 19.5606C-0.0790364 19.0996 0.212071 18.6441 0.672991 18.5421L3.19489 17.9858Z" fill="currentColor"/> <path d="M29.2763 12.2321C29.7372 12.1309 30.1931 12.4215 30.2948 12.8824C30.3964 13.3433 30.1053 13.7998 29.6446 13.9019L27.1406 14.4543C26.8241 14.5241 26.5145 14.3143 26.4446 13.9978C26.3158 13.4136 26.6568 12.8099 27.241 12.6811L29.2763 12.2321Z" fill="currentColor"/> <path d="M25.3899 5.7081C25.7385 5.38977 26.2792 5.41324 26.5978 5.76165C26.9163 6.1101 26.8915 6.651 26.5433 6.96972L24.7306 8.62604C24.3946 8.9331 23.8704 8.89213 23.557 8.56204C23.2345 8.22241 23.2322 7.67986 23.5779 7.36391L25.3899 5.7081Z" fill="currentColor"/> <path d="M0.496521 11.4637C0.638977 11.0135 1.11934 10.7637 1.56954 10.906L3.82928 11.621C4.2787 11.7632 4.50434 12.2616 4.35003 12.707C4.20199 13.1343 3.74626 13.3876 3.31508 13.2512L1.05404 12.5358C0.604085 12.3933 0.35449 11.9138 0.496521 11.4637Z" fill="currentColor"/> <path d="M18.7798 2.70314C18.9224 2.25318 19.4027 2.00309 19.8528 2.14542C20.3028 2.28783 20.5525 2.76835 20.4105 3.21843L19.842 5.01399C19.7016 5.4572 19.2143 5.68376 18.7724 5.53948C18.336 5.39702 18.0732 4.93534 18.2117 4.49772L18.7798 2.70314Z" fill="currentColor"/> <path d="M5.18965 4.94016C5.53815 4.62151 6.079 4.64628 6.39773 4.99467L7.81767 6.54748C8.13627 6.89589 8.07893 7.44343 7.72129 7.75162C7.37938 8.04626 6.86177 8.03486 6.55716 7.70181L5.1361 6.14803C4.81768 5.79953 4.84134 5.25882 5.18965 4.94016Z" fill="currentColor"/> <path d="M12.3104 1.24319C12.7714 1.14149 13.2278 1.4325 13.3299 1.89333L13.8502 4.25179C13.9427 4.67121 13.6449 5.04496 13.2255 5.13749C12.7403 5.24454 12.251 4.94026 12.1439 4.45499L11.6601 2.2617C11.5588 1.80086 11.8497 1.34508 12.3104 1.24319Z" fill="currentColor"/> <path d="M24.9475 25.8066C26.1274 25.8069 26.9284 26.9184 27.3684 27.3057C27.7771 27.6659 28.2512 28.9139 27.3684 28.9141C26.5819 28.9141 25.9159 27.4151 24.9475 27.415C23.9792 27.415 23.4647 28.914 22.0422 28.9141C20.6196 28.9141 20.0902 27.415 19.137 27.415C18.1839 27.4152 17.3513 28.9141 16.2317 28.9141C15.112 28.914 14.2947 27.4141 13.3264 27.4141C12.3584 27.4145 11.8286 28.9131 10.4211 28.9131C9.01363 28.9129 8.34819 27.4141 7.51587 27.4141C6.68353 27.4141 5.7512 28.1758 5.25122 28.1758C4.94879 28.1757 4.4755 28.0222 5.09497 27.3047C5.62953 26.6857 6.53238 25.8066 7.51587 25.8066C8.49974 25.8068 9.34705 27.3057 10.4211 27.3057C11.4952 27.3057 12.1615 25.8067 13.3264 25.8066C14.4914 25.8066 15.0516 27.3057 16.2317 27.3057C17.4118 27.3057 17.9716 25.8067 19.137 25.8066C20.3024 25.8066 20.9531 27.3057 22.0422 27.3057C23.1312 27.3054 23.7675 25.8066 24.9475 25.8066ZM15.2395 6C21.0385 6 25.7395 10.701 25.7395 16.5C25.7395 18.2572 25.3039 19.9113 24.5403 21.3662C24.6692 21.3275 24.8044 21.3057 24.9475 21.3057C26.1278 21.3057 26.9284 22.4198 27.3684 22.8057C27.7766 23.1658 27.9428 23.8053 27.3684 23.8057C26.5819 23.8057 25.9157 22.636 24.9475 22.6357C23.9793 22.6357 23.4645 24.1354 22.0422 24.1357C20.6197 24.1357 20.0901 22.6359 19.137 22.6357C18.1838 22.6357 17.3513 24.1355 16.2317 24.1357C15.112 24.1357 14.2946 22.6359 13.3264 22.6357C12.3582 22.6357 11.8287 24.1357 10.4211 24.1357C9.01364 24.1357 8.34812 22.636 7.51587 22.6357C6.68353 22.6357 5.39744 23.8056 5.09497 23.8057C4.79258 23.8057 4.47612 23.5243 5.09497 22.8057C5.37031 22.4869 5.74358 22.0985 6.17505 21.7969C5.26393 20.2417 4.7395 18.4326 4.7395 16.5C4.7395 10.701 9.44051 6 15.2395 6ZM18.2395 18C17.4111 18 16.7395 18.8954 16.7395 20C16.7395 20.5596 16.9129 21.0647 17.1907 21.4277C17.4611 21.1631 17.8312 21 18.2395 21C18.6475 21 19.0169 21.1634 19.2874 21.4277C19.5654 21.0647 19.7395 20.5598 19.7395 20C19.7395 18.8954 19.0679 18 18.2395 18ZM12.6321 12.917C11.7438 13.0307 11.1564 13.4097 10.7903 13.7881C10.6107 13.9738 10.4891 14.1544 10.4104 14.293C10.371 14.3623 10.3427 14.4223 10.3225 14.4678C10.3126 14.4901 10.3041 14.5092 10.2981 14.5244C10.2951 14.5321 10.2914 14.5402 10.2893 14.5459C10.2883 14.5484 10.2871 14.5506 10.2864 14.5527V14.5557L10.2844 14.5596C10.1754 14.8722 10.3409 15.2149 10.6536 15.3242C10.9272 15.4197 11.2234 15.3049 11.3665 15.0654L11.4133 14.9658L11.4153 14.9629L11.4163 14.96L11.4182 14.9551C11.424 14.942 11.4361 14.9179 11.4543 14.8857C11.4914 14.8205 11.555 14.7249 11.6536 14.623C11.8439 14.4263 12.1853 14.1831 12.7844 14.1064C13.3838 14.0298 13.7753 14.1797 14.009 14.3223C14.1301 14.3961 14.2156 14.4726 14.2678 14.5264C14.2936 14.5529 14.3117 14.5729 14.3206 14.584L14.3245 14.5898L14.3274 14.5928L14.3987 14.6777C14.5975 14.8734 14.9129 14.9095 15.1536 14.748C15.4286 14.5634 15.5022 14.1902 15.3176 13.915L15.3167 13.9141L15.3157 13.9121L15.3137 13.9102C15.3124 13.9082 15.3115 13.9057 15.3098 13.9033C15.3064 13.8984 15.301 13.8924 15.2961 13.8857C15.2864 13.8724 15.2735 13.8553 15.2581 13.8359C15.2271 13.7971 15.1845 13.7465 15.1292 13.6895C15.0181 13.5751 14.8547 13.4314 14.634 13.2969C14.1844 13.0228 13.5205 12.8033 12.6321 12.917ZM20.6477 11.6592C19.7595 11.7728 19.1721 12.1519 18.8059 12.5303C18.6262 12.716 18.5037 12.8966 18.425 13.0352C18.3857 13.1045 18.3574 13.1645 18.3372 13.21C18.3272 13.2323 18.3188 13.2514 18.3127 13.2666C18.3097 13.2743 18.307 13.2824 18.3049 13.2881C18.304 13.2906 18.3028 13.2928 18.302 13.2949L18.301 13.2979L18.3 13.2998V13.3018C18.1909 13.6145 18.3555 13.9571 18.6682 14.0664C18.9419 14.1621 19.238 14.0472 19.3811 13.8076L19.429 13.708L19.4309 13.7021L19.4329 13.6973C19.4387 13.6843 19.4517 13.6602 19.47 13.6279C19.507 13.5627 19.5698 13.467 19.6682 13.3652C19.8585 13.1685 20.1999 12.9254 20.7991 12.8486C21.3984 12.772 21.7909 12.9219 22.0247 13.0645C22.1454 13.1382 22.2303 13.2148 22.2825 13.2686C22.3082 13.2951 22.3263 13.315 22.3352 13.3262L22.3391 13.332L22.342 13.335L22.4133 13.4199C22.6121 13.6157 22.9275 13.6517 23.1682 13.4902C23.4434 13.3056 23.5178 12.9324 23.3333 12.6572L23.3313 12.6562L23.3293 12.6523C23.328 12.6504 23.3261 12.6479 23.3245 12.6455C23.321 12.6406 23.3156 12.6346 23.3108 12.6279C23.3011 12.6146 23.2891 12.5974 23.2737 12.5781C23.2427 12.5393 23.2002 12.4887 23.1448 12.4316C23.0337 12.3173 22.8693 12.1736 22.6487 12.0391C22.1991 11.7651 21.5358 11.5457 20.6477 11.6592Z" fill="currentColor"/> </svg></div>
-      <div class="tab-label">今日</div>
+      <div class="tab-label" data-i18n="nav.today">今日</div>
     </div>
     <div class="tab-item" onclick="goToModulePage('04-练级模块.html')">
       <div class="tab-icon"><svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"> <path d="M26.167 10.0984C26.193 9.75368 26.0947 9.41499 25.8924 9.14523C25.5947 8.74659 24.7276 7.71853 23.1263 6.78338C21.1059 5.59946 18.7011 5 15.9754 5C13.2498 5 10.8507 5.59946 8.84191 6.78338C7.2493 7.72153 6.39085 8.75259 6.09603 9.15123C5.89659 9.42098 5.80121 9.75668 5.82722 10.0954V10.1074L7.11056 23.1035C7.15392 23.5891 7.44296 24.0177 7.86785 24.2245C7.94589 24.2635 8.10486 24.3534 8.28985 24.4553C9.65412 25.2166 12.8451 27 16.0217 27C19.1896 27 22.3488 25.2196 23.6957 24.4613C23.8836 24.3564 24.0454 24.2635 24.1235 24.2245C24.5484 24.0177 24.8374 23.5891 24.8808 23.1035L26.1641 10.1223L26.167 10.0984ZM22.8488 22.4831C22.8026 22.5101 22.7534 22.5371 22.7014 22.567C21.4932 23.2474 18.6606 24.845 16.0217 24.845C13.3712 24.845 10.5039 23.2444 9.27836 22.558C9.22923 22.5311 9.18587 22.5071 9.14252 22.4831L7.93144 10.2362C8.23493 9.88256 8.85637 9.25913 9.86801 8.66267C11.5589 7.66458 13.614 7.16104 15.9725 7.16104C18.334 7.16104 20.3949 7.66758 22.1002 8.66567C23.1205 9.26213 23.7506 9.88856 24.0599 10.2452L22.8488 22.4831ZM3.28945 15.4935C3.0611 15.4935 2.92237 15.7572 3.04665 15.955L4.39358 18.1281C4.45428 18.227 4.45428 18.3529 4.39358 18.4518L3.04665 20.6248C2.92237 20.8256 3.0611 21.0864 3.28945 21.0864H6.33015L5.77808 15.4905H3.28945V15.4935ZM27.6064 18.4518C27.5457 18.3529 27.5457 18.227 27.6064 18.1281L28.9533 15.955C29.0776 15.7542 28.9389 15.4935 28.7106 15.4935H26.2132L25.6612 21.0894H28.7106C28.9389 21.0894 29.0776 20.8256 28.9533 20.6278L27.6064 18.4518Z" fill="currentColor"/> <path d="M13.0128 12.1785H10.9317L10.3536 19.0362H15.1314L15.7095 16.8782H12.6457L13.0128 12.1785ZM18.6433 15.4275L17.7733 12.1785H15.7095L17.1952 19.0362H19.1578L22.2158 12.1785H19.9931L18.6433 15.4275Z" fill="currentColor"/> </svg></div>
-      <div class="tab-label">维度</div>
+      <div class="tab-label" data-i18n="nav.level">维度</div>
     </div>
     <div class="tab-item" onclick="goToModulePage('02-关心模块.html')">
       <div class="tab-icon"><svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"> <path d="M25.4549 10.6114C25.179 9.58161 24.5845 8.66513 23.8304 7.91158C23.8302 7.91133 23.8298 7.9112 23.8295 7.9112C23.8291 7.9112 23.8288 7.91106 23.8285 7.91081C22.6502 6.7325 21.0653 6.05021 19.3995 6.00413C17.9779 5.96481 16.5896 6.39136 15.4413 7.20799C15.1027 7.44878 14.6401 7.44873 14.3016 7.20784C13.1538 6.39104 11.766 5.96396 10.3447 6.00238C8.67894 6.04742 7.09366 6.72842 5.91428 7.90558C4.7349 9.08273 4.05091 10.6667 4.00273 12.3323C3.95455 13.998 4.54583 15.6188 5.65519 16.8622L14.2943 25.5136C14.6129 25.8326 15.1298 25.8324 15.4482 25.5133L17.5307 23.4259C17.8492 23.1066 17.8479 22.5893 17.5277 22.2716L17.1427 21.8895C16.8238 21.5731 16.309 21.5743 15.9916 21.8923L15.4482 22.4367C15.1298 22.7558 14.6129 22.7558 14.2945 22.4368L7.24194 15.3733C6.52072 14.5426 6.14122 13.4695 6.17994 12.3701C6.21866 11.2707 6.67273 10.2269 7.45061 9.44904C8.23608 8.66357 9.29242 8.20857 10.4028 8.17745C11.5132 8.14632 12.5934 8.54143 13.4216 9.28167L14.3292 10.0949C14.639 10.3724 15.108 10.3722 15.4175 10.0944L16.3245 9.28058C17.1521 8.54099 18.2313 8.14614 19.3408 8.17706C20.4503 8.20798 21.5059 8.66232 22.2911 9.44687C22.8484 10.0039 23.2317 10.705 23.4356 11.4661C23.5003 11.7074 25.6839 11.4661 25.4549 10.6114Z" fill="currentColor"/> <g clip-path="url(#clip0_166_22)"> <path d="M22.455 12.5685C19.2948 12.5685 16.7329 15.1303 16.7329 18.2906C16.7329 21.4508 19.2948 24.0127 22.455 24.0127C25.6152 24.0127 28.1771 21.4508 28.1771 18.2906C28.1771 15.1303 25.6152 12.5685 22.455 12.5685ZM19.3985 16.6281C19.3985 16.206 19.7406 15.8639 20.1626 15.8639C20.5847 15.8639 20.9268 16.206 20.9268 16.6281C20.9268 17.0501 20.5847 17.3922 20.1626 17.3922C19.7406 17.3922 19.3985 17.0502 19.3985 16.6281ZM22.4374 21.0695C21.3759 21.0695 20.5064 20.247 20.4318 19.2043C21.7853 19.1822 23.3834 19.2131 24.443 19.2043C24.3685 20.2469 23.499 21.0695 22.4374 21.0695ZM24.7475 17.3922C24.3254 17.3922 23.9833 17.0502 23.9833 16.6281C23.9833 16.206 24.3254 15.8639 24.7475 15.8639C25.1696 15.8639 25.5115 16.206 25.5115 16.6281C25.5115 17.0501 25.1696 17.3922 24.7475 17.3922Z" fill="currentColor"/> </g> <defs> <clipPath id="clip0_166_22"> <rect width="13.0418" height="13.0418" fill="white" transform="translate(15.9583 11.7074)"/> </clipPath> </defs> </svg></div>
-      <div class="tab-label">关心</div>
+      <div class="tab-label" data-i18n="nav.care">关心</div>
     </div>
     <div class="tab-item" onclick="window.location.href='05-收获模块.html'">
       <div class="tab-icon"><svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"> <path d="M19.9939 5.22891C20.1111 4.99451 20.3455 4.87731 20.5799 4.99451C20.6971 4.99451 20.8143 5.11171 20.8143 5.22891L21.6346 7.8073C21.6346 7.9245 21.7518 8.0417 21.869 8.0417L24.213 9.21369C24.4474 9.33089 24.5646 9.56529 24.4474 9.79969C24.4474 9.91689 24.3302 9.91689 24.213 10.0341L21.869 11.2061C21.7518 11.2061 21.6346 11.3233 21.6346 11.4405L20.8143 14.0189C20.6971 14.2533 20.4627 14.3705 20.2283 14.2533C20.1111 14.2533 19.9939 14.1361 19.9939 14.0189L19.1735 11.4405C19.1735 11.3233 19.0563 11.2061 18.9391 11.2061L16.5951 10.0341C16.3607 9.91689 16.2435 9.68249 16.3607 9.44809C16.3607 9.33089 16.4779 9.33089 16.5951 9.21369L18.9391 8.0417C19.0563 8.0417 19.1735 7.9245 19.1735 7.8073L19.9939 5.22891ZM25.971 2.65052C25.971 2.53333 26.0882 2.53333 26.0882 2.53333C26.0882 2.53333 26.2054 2.53333 26.2054 2.65052L26.7914 4.40852C26.7914 4.40852 26.7914 4.52571 26.9086 4.52571L28.5494 5.22891C28.6666 5.22891 28.6666 5.34611 28.6666 5.46331L28.5494 5.58051L26.9086 6.28371L26.7914 6.40091L26.2054 8.1589C26.2054 8.2761 26.0882 8.2761 26.0882 8.2761C26.0882 8.2761 25.971 8.2761 25.971 8.1589L25.385 6.40091C25.385 6.40091 25.385 6.28371 25.2678 6.28371L23.627 5.58051C23.5098 5.58051 23.5098 5.46331 23.5098 5.34611L23.627 5.22891L25.2678 4.52571L25.385 4.40852L25.971 2.65052Z" fill="currentColor"/> <path d="M15.4612 14.1172C15.4612 14 15.5784 14 15.5784 14C15.5784 14 15.6956 14 15.6956 14.1172L16.2816 15.8752C16.2816 15.8752 16.2816 15.9924 16.3988 15.9924L18.0396 16.6956C18.1568 16.6956 18.1568 16.8128 18.1568 16.93L18.0396 17.0472L16.3988 17.7504L16.2816 17.8676L15.6956 19.6256C15.6956 19.7428 15.5784 19.7428 15.5784 19.7428C15.5784 19.7428 15.4612 19.7428 15.4612 19.6256L14.8752 17.8676C14.8752 17.8676 14.8752 17.7504 14.758 17.7504L13.1172 17.0472C13 17.0472 13 16.93 13 16.8128L13.1172 16.6956L14.758 15.9924L14.8752 15.8752L15.4612 14.1172Z" fill="currentColor"/> <path d="M16.3607 27.614H9.32877C8.74277 27.614 8.27397 28.0828 8.27397 28.6688C8.27397 29.2548 8.74277 29.7236 9.32877 29.7236H16.3607C16.9467 29.7236 17.4155 29.2548 17.4155 28.6688C17.4155 28.0828 16.9467 27.614 16.3607 27.614ZM17.4155 21.5197L17.1811 21.6369C16.0091 22.3401 15.8919 23.512 15.7747 23.9808V24.098H9.91476V23.9808C9.91476 23.512 9.68037 22.2229 8.50837 21.4025C6.28158 19.8789 4.99239 17.4177 4.99239 14.7221V14.3705C5.34399 10.0341 8.85997 6.75253 13.0791 6.75253C13.8995 6.75253 14.7199 6.86973 15.5403 7.10413L17.7671 5.81494C16.3607 5.11174 14.7199 4.64294 13.0791 4.64294C7.57078 4.64294 3 9.09652 3 14.7221C3 18.1209 4.64079 21.1681 7.45358 23.0432L7.57078 23.1604C7.80517 23.3948 7.92237 23.7464 7.92237 24.098V24.5668C7.92237 25.5044 8.62557 26.2076 9.56317 26.2076H16.2435C17.1811 26.2076 17.8843 25.5044 17.8843 24.5668V24.098C17.8843 23.8636 18.0015 23.6292 18.2359 23.512C21.1659 21.7541 23.1583 18.5897 23.2755 15.1909L21.0487 16.4801C20.4627 18.4725 19.1735 20.3477 17.4155 21.5197Z" fill="currentColor"/> </svg></div>
-      <div class="tab-label">收获</div>
+      <div class="tab-label" data-i18n="nav.harvest">收获</div>
     </div>
   </nav>
 
@@ -5344,6 +5797,188 @@ body.is-dark-mode .ios-status-bar .iss-battery::after { background: #fff; }
   </div>
 
   <!-- =========================================================
+       生理周期 — 欢迎引导 + 设置面板 + 详情日历
+       ========================================================= -->
+  <!-- MS1 欢迎引导 -->
+  <div class="modal-overlay" id="msWelcome" onclick="if(event.target===this)closeSheet('msWelcome')">
+    <div class="bottom-sheet" style="max-height:88%">
+      <div class="sheet-header" style="padding:14px 18px 8px">
+        <button class="sheet-close" onclick="closeSheet('msWelcome')" style="font-size:18px">←</button>
+        <span style="width:32px"></span>
+      </div>
+      <div class="sheet-body ms-welcome-body">
+        <div class="ms-welcome-title">欢迎使用<br>生理周期</div>
+        <div class="ms-feature-row">
+          <div class="ms-feature-icon">🌷</div>
+          <div class="ms-feature-text">
+            <div class="ms-feature-name">预测生理期和排卵</div>
+            <div class="ms-feature-desc">设置生理周期后，App 会预测下次生理期和排卵期。</div>
+          </div>
+        </div>
+        <div class="ms-feature-row">
+          <div class="ms-feature-icon">⏰</div>
+          <div class="ms-feature-text">
+            <div class="ms-feature-name">生理期时间线</div>
+            <div class="ms-feature-desc">该信息以时间线的形式呈现，便于查看和理解。</div>
+          </div>
+        </div>
+        <div class="ms-feature-row">
+          <div class="ms-feature-icon">📱</div>
+          <div class="ms-feature-text">
+            <div class="ms-feature-name">在 App 中查看与编辑</div>
+            <div class="ms-feature-desc">可在 App 内修改和查看生理期记录与预测。</div>
+          </div>
+        </div>
+      </div>
+      <div class="sheet-footer">
+        <button class="btn btn-primary btn-block" onclick="openMsSettings()">开始</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MS2 设置面板（3 项表单） -->
+  <div class="modal-overlay" id="msSettings" onclick="if(event.target===this)closeSheet('msSettings')">
+    <div class="bottom-sheet" style="max-height:88%">
+      <div class="sheet-header" style="padding:14px 18px 8px">
+        <button class="sheet-close" onclick="closeSheet('msSettings')" style="font-size:18px">←</button>
+        <span style="width:32px"></span>
+      </div>
+      <div class="sheet-body ms-settings-body">
+        <div class="ms-settings-title">生理周期设置</div>
+        <div class="ms-form-row" onclick="openMsPicker('period')">
+          <div class="ms-form-hint">您的生理期通常持续几天？</div>
+          <div class="ms-form-body">
+            <div class="ms-form-label">生理期天数</div>
+            <div class="ms-form-value is-empty" id="msFormPeriod">请选择</div>
+          </div>
+        </div>
+        <div class="ms-form-row" onclick="openMsPicker('cycle')">
+          <div class="ms-form-hint">您的生理期间隔是多少天？</div>
+          <div class="ms-form-body">
+            <div class="ms-form-label">周期天数</div>
+            <div class="ms-form-value is-empty" id="msFormCycle">请选择</div>
+          </div>
+        </div>
+        <div class="ms-form-row" onclick="openMsPicker('date')">
+          <div class="ms-form-hint">您上次生理期是什么时候开始的？</div>
+          <div class="ms-form-body">
+            <div class="ms-form-label">上次生理期开始日期</div>
+            <div class="ms-form-value is-empty" id="msFormDate">请选择</div>
+          </div>
+        </div>
+      </div>
+      <div class="sheet-footer">
+        <button class="btn btn-primary btn-block" id="msSaveBtn" onclick="saveMsSettings()" disabled style="opacity:0.5">完成</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MS3 详情日历 -->
+  <div class="modal-overlay" id="msDetail" onclick="if(event.target===this)closeSheet('msDetail')">
+    <div class="bottom-sheet" style="max-height:92%;padding-top:0">
+      <div class="ms-detail-banner">
+        <button class="ms-detail-back" onclick="closeSheet('msDetail')">‹</button>
+        <div class="ms-detail-title">生理周期</div>
+        <div class="ms-detail-month">
+          <button onclick="msShiftMonth(-1)">‹</button>
+          <div class="label" id="msMonthLabel">2026 6月</div>
+          <button onclick="msShiftMonth(1)">›</button>
+        </div>
+      </div>
+      <div class="sheet-body ms-detail-body" style="overflow-y:auto">
+        <div class="ms-detail-info-card">
+          <div class="ms-detail-info-icon">🔊</div>
+          <div id="msDetailInfo">生理期预计 5 天结束</div>
+        </div>
+        <div class="ms-calendar-card">
+          <div class="ms-calendar" id="msCalendarHead">
+            <div class="ms-cal-head">一</div><div class="ms-cal-head">二</div><div class="ms-cal-head">三</div><div class="ms-cal-head">四</div><div class="ms-cal-head">五</div><div class="ms-cal-head">六</div><div class="ms-cal-head">日</div>
+          </div>
+          <div class="ms-calendar" id="msCalendarGrid"></div>
+          <div class="ms-legend">
+            <div class="item"><span class="dot is-predicted"></span>预测生理期</div>
+            <div class="item"><span class="dot is-period"></span>生理期</div>
+            <div class="item"><span class="dot is-ovulation-day"></span>排卵日</div>
+            <div class="item"><span class="dot is-ovulation-phase"></span>排卵期</div>
+          </div>
+        </div>
+        <div class="ms-detail-actions">
+          <div class="ms-detail-action-row" onclick="openMsReminders()">
+            <div class="ms-detail-action-icon">🔔</div>
+            <div class="name">通知提醒</div>
+            <div class="arrow">›</div>
+          </div>
+          <div class="ms-detail-action-row" onclick="closeSheet('msDetail');openMsSettings()">
+            <div class="ms-detail-action-icon" style="background:linear-gradient(135deg,#FF7AB0,#FF4F95)">⚙</div>
+            <div class="name">生理周期设置</div>
+            <div class="arrow">›</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MS4 生理期提醒（通知开关 + 提醒时间） -->
+  <div class="modal-overlay" id="msReminders" onclick="if(event.target===this)closeSheet('msReminders')">
+    <div class="bottom-sheet" style="max-height:92%">
+      <div class="sheet-header" style="padding:14px 18px 8px">
+        <button class="sheet-close" onclick="closeSheet('msReminders')" style="font-size:18px">←</button>
+        <span style="width:32px"></span>
+      </div>
+      <div class="sheet-body ms-remind-body">
+        <div class="ms-settings-title">生理期提醒</div>
+        <div class="ms-remind-hint">开启后，App 将在对应时间发出提醒。</div>
+        <div class="ms-remind-card">
+          <div class="ms-remind-row is-master">
+            <div class="ms-remind-meta"><div class="name">全部启用</div></div>
+            <div class="ios-switch" id="msRemindAll" onclick="toggleMsRemind('all', this)"></div>
+          </div>
+          <div class="ms-remind-divider"></div>
+          <div class="ms-remind-row">
+            <div class="ms-remind-icon">💧</div>
+            <div class="ms-remind-meta">
+              <div class="name">生理期提醒</div>
+              <div class="desc">经期开始前一天提醒您。</div>
+            </div>
+            <div class="ios-switch" id="msRemindPeriod" onclick="toggleMsRemind('period', this)"></div>
+          </div>
+          <div class="ms-remind-row">
+            <div class="ms-remind-icon">📅</div>
+            <div class="ms-remind-meta">
+              <div class="name">排卵提醒</div>
+              <div class="desc">排卵期开始前一天提醒您。</div>
+            </div>
+            <div class="ios-switch" id="msRemindOvuPhase" onclick="toggleMsRemind('ovuPhase', this)"></div>
+          </div>
+          <div class="ms-remind-row">
+            <div class="ms-remind-icon">⏰</div>
+            <div class="ms-remind-meta">
+              <div class="name">排卵日提醒</div>
+              <div class="desc">排卵高峰开始前一天提醒您。</div>
+            </div>
+            <div class="ios-switch" id="msRemindOvuDay" onclick="toggleMsRemind('ovuDay', this)"></div>
+          </div>
+          <div class="ms-remind-row">
+            <div class="ms-remind-icon">🔔</div>
+            <div class="ms-remind-meta">
+              <div class="name">排卵结束提醒</div>
+              <div class="desc">排卵期结束时会提醒您。</div>
+            </div>
+            <div class="ios-switch" id="msRemindOvuEnd" onclick="toggleMsRemind('ovuEnd', this)"></div>
+          </div>
+        </div>
+        <div class="ms-remind-card ms-remind-time" onclick="openMsPicker('remindTime')">
+          <div class="ms-remind-meta">
+            <div class="name">提醒时间</div>
+            <div class="desc">通知将在指定时间发送。</div>
+          </div>
+          <div class="ms-remind-time-value"><span id="msRemindTimeText">10:00</span><span class="arrow">›</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================
        T4 — 编辑身体指标面板
        ========================================================= -->
   <div class="modal-overlay" id="sheetT4" onclick="if(event.target===this)closeSheet('sheetT4')">
@@ -5367,6 +6002,7 @@ body.is-dark-mode .ios-status-bar .iss-battery::after { background: #fff; }
           <div class="edit-row" data-metric="血氧 SpO2"><span class="drag-handle">≡</span><span class="edit-emoji">🫁</span><span class="edit-name">血氧 SpO2</span><button class="edit-action minus" onclick="hideMetric(this)">−</button></div>
           <div class="edit-row" data-metric="静息心率"><span class="drag-handle">≡</span><span class="edit-emoji">❤️</span><span class="edit-name">静息心率</span><button class="edit-action minus" onclick="hideMetric(this)">−</button></div>
           <div class="edit-row" data-metric="体温"><span class="drag-handle">≡</span><span class="edit-emoji">🌡️</span><span class="edit-name">体温</span><button class="edit-action minus" onclick="hideMetric(this)">−</button></div>
+          <div class="edit-row" data-metric="生理周期"><span class="drag-handle">≡</span><span class="edit-emoji">🌸</span><span class="edit-name">生理周期</span><button class="edit-action minus" onclick="hideMetric(this)">−</button></div>
         </div>
         <div class="edit-section-head">其他</div>
         <div class="edit-list" id="t4Hidden">
@@ -6264,6 +6900,521 @@ function goToModulePage(fileName) {
   window.location.href = fileName;
 }
 
+/* ==========================================================
+   🌸 生理周期：数据 / 阶段计算 / 卡片渲染 / 详情日历
+   ==========================================================
+   localStorage 持久化字段：
+     weijie_menstrual = { enabled, periodDays, cycleDays, lastStartISO }
+   阶段（按 cycleDay = (today - lastStart) % cycleDays + 1）：
+     ≤ periodDays               → 经期
+     periodDays+1 .. ovuStart-1 → 卵泡期
+     ovuStart..ovuEnd            → 排卵期 (默认 day 12-16，5 天，含排卵日 day 14)
+     其余                        → 黄体期
+*/
+const MS_KEY = 'weijie_menstrual';
+let MS_DATA = (function () {
+  try {
+    const raw = localStorage.getItem(MS_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch (e) {}
+  return { enabled: false, periodDays: 5, cycleDays: 28, lastStartISO: null };
+})();
+let _msDraft = null;       // 设置流程暂存
+let _msDetailMonth = null; // 详情页当前展示月（Date 的 1 号）
+
+/* 重置生理周期数据：清空 localStorage + 内存数据 + 关闭可能正在打开的相关模态 + 重渲卡 + toast。
+   左侧导航的"重置生理周期数据"按钮调这里，方便演示从空态重新走一遍。 */
+function resetMenstrual() {
+  try { localStorage.removeItem(MS_KEY); } catch (e) {}
+  MS_DATA = { enabled: false, periodDays: 5, cycleDays: 28, lastStartISO: null };
+  _msDraft = null;
+  ['msWelcome', 'msSettings', 'msDetail', 'msReminders', 'sheetT622'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el && el.classList.contains('show')) el.classList.remove('show');
+  });
+  // 重置设置面板的占位文案（如果之前填过）
+  ['msFormPeriod', 'msFormCycle', 'msFormDate'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.textContent = '请选择'; el.classList.add('is-empty'); }
+  });
+  if (typeof refreshMsSaveBtn === 'function') refreshMsSaveBtn();
+  renderMsCard();
+  if (typeof toast === 'function') toast('生理周期数据已清空，可重新设置');
+}
+
+function msToISO(d) {
+  const pad = n => (n < 10 ? '0' + n : '' + n);
+  return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+}
+function msFromISO(s) {
+  if (!s) return null;
+  const [y, m, d] = s.split('-').map(Number);
+  return new Date(y, m - 1, d);
+}
+function msDiffDays(a, b) {
+  const ms = new Date(a.getFullYear(), a.getMonth(), a.getDate()).getTime()
+           - new Date(b.getFullYear(), b.getMonth(), b.getDate()).getTime();
+  return Math.round(ms / 86400000);
+}
+function msFormatDateZH(d) {
+  const dow = ['日','一','二','三','四','五','六'][d.getDay()];
+  const pad = n => (n < 10 ? '0' + n : '' + n);
+  return d.getFullYear() + '年' + pad(d.getMonth() + 1) + '月' + pad(d.getDate()) + '日，周' + dow;
+}
+function msNowTimeStr() {
+  const d = new Date(2026, 5, 12, 15, 46); // 演示固定"现在"避免随时间漂移
+  const pad = n => (n < 10 ? '0' + n : '' + n);
+  return pad(d.getHours()) + ':' + pad(d.getMinutes());
+}
+function msToday() { return new Date(2026, 5, 12); } // 演示用固定"今天"
+
+/* 给定一个日期 + MS_DATA，返回该日属于哪种 phase */
+function msPhaseOfDate(date) {
+  if (!MS_DATA.enabled || !MS_DATA.lastStartISO) return null;
+  const last = msFromISO(MS_DATA.lastStartISO);
+  const diff = msDiffDays(date, last);
+  if (diff < 0) return null;
+  const cd = MS_DATA.cycleDays;
+  const pd = MS_DATA.periodDays;
+  const cycleIdx = Math.floor(diff / cd);          // 第几个周期（0 = 用户填的那一次）
+  const cycleDay = (diff % cd) + 1;                // 1..cd
+  // 排卵期：下次月经前 14 天为排卵日，前后各取 ±2 天
+  const ovuDay = cd - 14 + 1; // 在本周期内的位置（基于 28-day 标准）
+  const ovuStart = Math.max(pd + 1, ovuDay - 2);
+  const ovuEnd   = Math.min(cd, ovuDay + 2);
+  if (cycleDay <= pd) {
+    return cycleIdx === 0 ? 'period' : 'predicted'; // 用户填的那次是实测，之后预测
+  }
+  if (cycleDay === ovuDay) return 'ovulationDay';
+  if (cycleDay >= ovuStart && cycleDay <= ovuEnd) return 'ovulationPhase';
+  return null; // 卵泡期 / 黄体期不着色
+}
+
+/* 计算今日所在 phase + 距下次经期天数 */
+function msTodayInfo() {
+  if (!MS_DATA.enabled || !MS_DATA.lastStartISO) return null;
+  const today = msToday();
+  const last = msFromISO(MS_DATA.lastStartISO);
+  const diff = msDiffDays(today, last);
+  const cd = MS_DATA.cycleDays;
+  const pd = MS_DATA.periodDays;
+  const cycleDay = ((diff % cd) + cd) % cd + 1; // 始终落在 1..cd
+  const daysToNext = cd - cycleDay + 1;
+  let label, days, foot;
+  const phase = msPhaseOfDate(today);
+  if (phase === 'period' || phase === 'predicted') {
+    label = '生理期';
+    days  = pd - cycleDay + 1;
+    foot  = '预计天结束';
+  } else if (phase === 'ovulationDay') {
+    label = '排卵日'; days = daysToNext; foot = '天后下次经期';
+  } else if (phase === 'ovulationPhase') {
+    label = '排卵期'; days = daysToNext; foot = '天后下次经期';
+  } else {
+    // 不在任何确定周期内：不命名（不用"安全期"这类避孕暗示词），只给倒计时
+    label = ''; days = daysToNext; foot = '天后下次经期';
+  }
+  return { label, days, foot, phase, cycleDay, daysToNext };
+}
+
+/* —— 卡片入口：点击主体；空态 → 欢迎引导；已设置态 → 详情 —— */
+function openMenstrualEntry() {
+  if (!MS_DATA.enabled || !MS_DATA.lastStartISO) {
+    openSheet('msWelcome');
+  } else {
+    _msDetailMonth = new Date(msToday().getFullYear(), msToday().getMonth(), 1);
+    renderMsDetail();
+    openSheet('msDetail');
+  }
+}
+
+function openMsSettings() {
+  closeSheet('msWelcome');
+  _msDraft = Object.assign({}, MS_DATA);
+  // 渲染当前暂存值
+  document.getElementById('msFormPeriod').textContent = _msDraft.periodDays && _msDraft.lastStartISO ? (_msDraft.periodDays + ' 天') : '请选择';
+  document.getElementById('msFormPeriod').classList.toggle('is-empty', !(_msDraft.periodDays && _msDraft.lastStartISO));
+  document.getElementById('msFormCycle').textContent = _msDraft.cycleDays && _msDraft.lastStartISO ? (_msDraft.cycleDays + ' 天') : '请选择';
+  document.getElementById('msFormCycle').classList.toggle('is-empty', !(_msDraft.cycleDays && _msDraft.lastStartISO));
+  if (_msDraft.lastStartISO) {
+    const d = msFromISO(_msDraft.lastStartISO);
+    const pad = n => (n < 10 ? '0' + n : '' + n);
+    document.getElementById('msFormDate').textContent = d.getFullYear() + '年' + pad(d.getMonth() + 1) + '月' + pad(d.getDate()) + '日';
+    document.getElementById('msFormDate').classList.remove('is-empty');
+  } else {
+    document.getElementById('msFormDate').textContent = '请选择';
+    document.getElementById('msFormDate').classList.add('is-empty');
+  }
+  refreshMsSaveBtn();
+  openSheet('msSettings');
+}
+
+function refreshMsSaveBtn() {
+  const ok = _msDraft && _msDraft.periodDays && _msDraft.cycleDays && _msDraft.lastStartISO;
+  const btn = document.getElementById('msSaveBtn');
+  btn.disabled = !ok;
+  btn.style.opacity = ok ? '1' : '0.5';
+}
+
+/* 复用 T63 picker（滚轮）做 3 种数据的选择 */
+function openMsPicker(kind) {
+  const list = document.getElementById('t63List');
+  if (!list) return;
+  // 用 t63Ctx 暂存当前 kind（hack 复用）
+  window._msPickerKind = kind;
+  let cells = [];
+  if (kind === 'period') {
+    for (let v = 2; v <= 10; v++) {
+      const sel = v === (_msDraft.periodDays || 5);
+      cells.push(`<div class="picker-cell${sel ? ' is-selected' : ''}" data-val="${v}">${v} 天</div>`);
+    }
+    document.getElementById('t63Title').textContent = '生理期天数';
+  } else if (kind === 'cycle') {
+    for (let v = 21; v <= 35; v++) {
+      const sel = v === (_msDraft.cycleDays || 28);
+      cells.push(`<div class="picker-cell${sel ? ' is-selected' : ''}" data-val="${v}">${v} 天</div>`);
+    }
+    document.getElementById('t63Title').textContent = '周期天数';
+  } else if (kind === 'date') {
+    // 过去 60 天内选
+    const today = msToday();
+    for (let i = 60; i >= 0; i--) {
+      const d = new Date(today.getFullYear(), today.getMonth(), today.getDate() - i);
+      const iso = msToISO(d);
+      const sel = iso === (_msDraft.lastStartISO || msToISO(today));
+      const pad = n => (n < 10 ? '0' + n : '' + n);
+      const label = d.getFullYear() + '年' + pad(d.getMonth() + 1) + '月' + pad(d.getDate()) + '日';
+      cells.push(`<div class="picker-cell${sel ? ' is-selected' : ''}" data-val="${iso}">${label}</div>`);
+    }
+    document.getElementById('t63Title').textContent = '上次生理期开始日期';
+  } else if (kind === 'remindTime') {
+    // 提醒时间：00:00 - 23:30，每 30 分钟一档
+    const cur = msEnsureReminders().time || '10:00';
+    const pad = n => (n < 10 ? '0' + n : '' + n);
+    for (let h = 0; h < 24; h++) {
+      for (const m of [0, 30]) {
+        const t = pad(h) + ':' + pad(m);
+        cells.push(`<div class="picker-cell${t === cur ? ' is-selected' : ''}" data-val="${t}">${t}</div>`);
+      }
+    }
+    document.getElementById('t63Title').textContent = '提醒时间';
+  }
+  list.innerHTML = cells.join('');
+  // 隐藏档位提示（这是借用 picker）
+  const tipEl = document.getElementById('t63TierTip');
+  if (tipEl) tipEl.style.display = 'none';
+  const sheet = document.getElementById('t63PickerSheet');
+  if (sheet) sheet.classList.remove('has-tier-tip');
+  // 改 confirm 行为：临时拦截 confirmT63 把值写回 _msDraft
+  window._msPickerActive = true;
+  openSheet('sheetT622');
+  setTimeout(() => {
+    const sel = list.querySelector('.is-selected');
+    if (sel) centerPickerCell(list, sel);
+  }, 50);
+}
+
+/* 包装 confirmT63 — 在 ms picker 流程里走我们自己的写回 */
+const _origConfirmT63 = window.confirmT63;
+window.confirmT63 = function () {
+  if (!window._msPickerActive) return _origConfirmT63.apply(this, arguments);
+  const list = document.getElementById('t63List');
+  const cells = Array.from(list.querySelectorAll('.picker-cell'));
+  const listRect = list.getBoundingClientRect();
+  const centerY = listRect.top + listRect.height / 2;
+  let nearest = cells[0], minDist = Infinity;
+  cells.forEach(c => {
+    const r = c.getBoundingClientRect();
+    const dist = Math.abs(r.top + r.height / 2 - centerY);
+    if (dist < minDist) { minDist = dist; nearest = c; }
+  });
+  const val = nearest.dataset.val;
+  const kind = window._msPickerKind;
+  if (kind === 'period') {
+    _msDraft.periodDays = parseInt(val, 10);
+    document.getElementById('msFormPeriod').textContent = val + ' 天';
+    document.getElementById('msFormPeriod').classList.remove('is-empty');
+  } else if (kind === 'cycle') {
+    _msDraft.cycleDays = parseInt(val, 10);
+    document.getElementById('msFormCycle').textContent = val + ' 天';
+    document.getElementById('msFormCycle').classList.remove('is-empty');
+  } else if (kind === 'date') {
+    _msDraft.lastStartISO = val;
+    const d = msFromISO(val);
+    const pad = n => (n < 10 ? '0' + n : '' + n);
+    document.getElementById('msFormDate').textContent = d.getFullYear() + '年' + pad(d.getMonth() + 1) + '月' + pad(d.getDate()) + '日';
+    document.getElementById('msFormDate').classList.remove('is-empty');
+  } else if (kind === 'remindTime') {
+    msEnsureReminders().time = val;
+    msPersist();
+    renderMsReminders();
+    window._msPickerActive = false;
+    closeSheet('sheetT622');
+    return; // 提醒时间和设置表单无关，不刷新保存按钮
+  }
+  window._msPickerActive = false;
+  closeSheet('sheetT622');
+  refreshMsSaveBtn();
+};
+
+function msPersist() {
+  try { localStorage.setItem(MS_KEY, JSON.stringify(MS_DATA)); } catch (e) {}
+}
+
+function saveMsSettings() {
+  if (!_msDraft || !_msDraft.periodDays || !_msDraft.cycleDays || !_msDraft.lastStartISO) return;
+  // merge 保留 reminders 等附加字段
+  MS_DATA = Object.assign({}, MS_DATA, {
+    enabled: true,
+    periodDays: _msDraft.periodDays,
+    cycleDays: _msDraft.cycleDays,
+    lastStartISO: _msDraft.lastStartISO,
+  });
+  msPersist();
+  closeSheet('msSettings');
+  renderMsCard();
+  toast('生理周期设置已保存');
+}
+
+/* —— MS4 生理期提醒：4 项开关 + 全部启用 + 提醒时间 —— */
+function msDefaultReminders() {
+  return { period: false, ovuPhase: false, ovuDay: false, ovuEnd: false, time: '10:00' };
+}
+function msEnsureReminders() {
+  if (!MS_DATA.reminders) MS_DATA.reminders = msDefaultReminders();
+  return MS_DATA.reminders;
+}
+
+function openMsReminders() {
+  msEnsureReminders();
+  renderMsReminders();
+  openSheet('msReminders');
+}
+
+function renderMsReminders() {
+  const r = msEnsureReminders();
+  const map = { period: 'msRemindPeriod', ovuPhase: 'msRemindOvuPhase', ovuDay: 'msRemindOvuDay', ovuEnd: 'msRemindOvuEnd' };
+  Object.keys(map).forEach(k => {
+    const el = document.getElementById(map[k]);
+    if (el) el.classList.toggle('is-on', !!r[k]);
+  });
+  const allOn = r.period && r.ovuPhase && r.ovuDay && r.ovuEnd;
+  const allEl = document.getElementById('msRemindAll');
+  if (allEl) allEl.classList.toggle('is-on', allOn);
+  const timeEl = document.getElementById('msRemindTimeText');
+  if (timeEl) timeEl.textContent = r.time || '10:00';
+}
+
+function toggleMsRemind(key, el) {
+  const r = msEnsureReminders();
+  if (key === 'all') {
+    // 已全开 → 全关；否则 → 全开
+    const next = !(r.period && r.ovuPhase && r.ovuDay && r.ovuEnd);
+    r.period = r.ovuPhase = r.ovuDay = r.ovuEnd = next;
+  } else {
+    r[key] = !r[key];
+  }
+  msPersist();
+  renderMsReminders();
+}
+
+/* 当前阶段在本周期内的天数区间（cycleDay 形式，含两端）
+   只认两个"确定周期"：生理期 / 排卵期（含排卵日）。
+   其余日子返回 null —— 卡片改走"距下次经期"倒计时模式，不再使用"安全期"叫法。 */
+function msCurrentPhaseRange(cycleDay) {
+  const pd = MS_DATA.periodDays;
+  const cd = MS_DATA.cycleDays;
+  const ovuDay = cd - 13;                       // 排卵日 = 下次经期前 14 天
+  const ovuStart = Math.max(pd + 1, ovuDay - 2);
+  const ovuEnd   = Math.min(cd, ovuDay + 2);
+  if (cycleDay <= pd)                            return { name: '生理期', key: 'period',    start: 1,        end: pd };
+  if (cycleDay >= ovuStart && cycleDay <= ovuEnd) return { name: '排卵期', key: 'ovulation', start: ovuStart, end: ovuEnd };
+  return null;
+}
+
+/* —— 卡片渲染：空态 vs 已设置态（柱数 = 当前阶段天数，今天高亮） —— */
+function renderMsCard() {
+  const card = document.getElementById('msCard');
+  if (!card) return;
+  const today = msToday();
+  // 头部日期两个状态共用
+  document.getElementById('msHeadDate').textContent = msFormatDateZH(today) + '，' + msNowTimeStr();
+
+  const rightEmpty  = document.getElementById('msRightEmpty');
+  const rightConfig = document.getElementById('msRightConfig');
+  const bodyEmpty   = document.getElementById('msBodyEmpty');
+  const bodyConfig  = document.getElementById('msBodyConfig');
+  if (!MS_DATA.enabled || !MS_DATA.lastStartISO) {
+    card.dataset.phase = '';
+    rightEmpty.style.display = '';
+    rightConfig.style.display = 'none';
+    bodyEmpty.style.display = '';
+    bodyConfig.style.display = 'none';
+    return;
+  }
+  rightEmpty.style.display = 'none';
+  rightConfig.style.display = '';
+  bodyEmpty.style.display = 'none';
+  bodyConfig.style.display = '';
+
+  const info  = msTodayInfo();
+  const range = msCurrentPhaseRange(info.cycleDay);
+  const cd = MS_DATA.cycleDays;
+
+  // —— 右块：处于确定周期 → 阶段名/预计N天结束/共N天；否则 → 距下次经期/还有N天/周期共N天 ——
+  if (range) {
+    const phaseLen  = range.end - range.start + 1;
+    const remaining = range.end - info.cycleDay + 1;
+    card.dataset.phase = range.key;
+    document.getElementById('msPhaseLabel').textContent = range.name;
+    document.getElementById('msPhaseLine').innerHTML =
+      '预计 <span class="num" id="msPhaseDays">' + remaining + '</span> 天结束';
+    document.getElementById('msPhaseTotal').textContent = '共' + phaseLen + '天';
+  } else {
+    card.dataset.phase = 'countdown';
+    document.getElementById('msPhaseLabel').textContent = '距下次经期';
+    document.getElementById('msPhaseLine').innerHTML =
+      '还有 <span class="num" id="msPhaseDays">' + info.daysToNext + '</span> 天';
+    document.getElementById('msPhaseTotal').textContent = '周期共' + cd + '天';
+  }
+
+  // —— 柱状图：固定 7 根 = 本周周一到周天，每根按当日 phase 着色（与日历同色） ——
+  const todayDow = (today.getDay() + 6) % 7; // 0=周一 ... 6=周日
+  const monday = new Date(today.getFullYear(), today.getMonth(), today.getDate() - todayDow);
+  const dowLabels = ['一', '二', '三', '四', '五', '六', '日'];
+  const phaseClassMap = {
+    period:         'is-period',
+    predicted:      'is-predicted',
+    ovulationPhase: 'is-ovu-phase',
+    ovulationDay:   'is-ovu-day',
+  };
+  const bars = document.getElementById('msBarChart');
+  const axis = document.getElementById('msBarAxis');
+  bars.innerHTML = '';
+  axis.innerHTML = '';
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate() + i);
+    const isToday = msDiffDays(d, today) === 0;
+    const phase = msPhaseOfDate(d);
+    const bar = document.createElement('div');
+    bar.className = 'ms-bar';
+    if (phase && phaseClassMap[phase]) bar.classList.add(phaseClassMap[phase]);
+    if (isToday) bar.classList.add('is-today');
+    bars.appendChild(bar);
+    const span = document.createElement('span');
+    if (isToday) { span.textContent = '今天'; span.classList.add('is-today'); }
+    else         { span.textContent = dowLabels[i]; }
+    axis.appendChild(span);
+  }
+}
+
+/* —— 详情日历渲染 —— */
+function renderMsDetail() {
+  if (!_msDetailMonth) return;
+  const m = _msDetailMonth;
+  document.getElementById('msMonthLabel').textContent = m.getFullYear() + ' ' + (m.getMonth() + 1) + '月';
+  const grid = document.getElementById('msCalendarGrid');
+  grid.innerHTML = '';
+  // 月首是周几（0=周一 ... 6=周日，把 JS 默认的 0=日 平移过去）
+  const firstDow = (m.getDay() + 6) % 7;
+  // 前面补上个月尾天
+  const prevLast = new Date(m.getFullYear(), m.getMonth(), 0).getDate();
+  for (let i = firstDow - 1; i >= 0; i--) {
+    const c = document.createElement('div');
+    c.className = 'ms-cal-cell is-other-month';
+    c.textContent = prevLast - i;
+    grid.appendChild(c);
+  }
+  // 本月日
+  const daysInMonth = new Date(m.getFullYear(), m.getMonth() + 1, 0).getDate();
+  const today = msToday();
+  for (let day = 1; day <= daysInMonth; day++) {
+    const d = new Date(m.getFullYear(), m.getMonth(), day);
+    const c = document.createElement('div');
+    c.className = 'ms-cal-cell';
+    c.textContent = day;
+    const phase = msPhaseOfDate(d);
+    if (phase) c.classList.add({
+      period: 'is-period',
+      predicted: 'is-predicted',
+      ovulationDay: 'is-ovulation-day',
+      ovulationPhase: 'is-ovulation-phase'
+    }[phase]);
+    if (msDiffDays(d, today) === 0) c.classList.add('is-today');
+    grid.appendChild(c);
+  }
+  // 后补下月头几天，填满 6 行
+  const totalCells = firstDow + daysInMonth;
+  const trailing = (Math.ceil(totalCells / 7) * 7) - totalCells;
+  for (let i = 1; i <= trailing; i++) {
+    const c = document.createElement('div');
+    c.className = 'ms-cal-cell is-other-month';
+    c.textContent = i;
+    grid.appendChild(c);
+  }
+  // 顶部信息条
+  const info = msTodayInfo();
+  if (info) {
+    let txt = '';
+    if (info.label === '生理期') txt = '生理期预计 ' + Math.max(0, info.days) + ' 天结束';
+    else if (info.label === '排卵期') txt = '排卵期，' + info.days + ' 天后下次经期';
+    else if (info.label === '排卵日') txt = '今日是排卵日';
+    else txt = '距离下次经期还有 ' + info.days + ' 天';
+    document.getElementById('msDetailInfo').textContent = txt;
+  }
+}
+
+function msShiftMonth(delta) {
+  if (!_msDetailMonth) return;
+  _msDetailMonth = new Date(_msDetailMonth.getFullYear(), _msDetailMonth.getMonth() + delta, 1);
+  renderMsDetail();
+}
+
+// 启动：根据 MS_DATA 渲染卡片
+document.addEventListener('DOMContentLoaded', renderMsCard);
+
+/* ==========================================================
+   🌐 语言切换器（Phase 1：zh-CN / en）
+   ----------------------------------------------------------
+   依赖 i18n-loader.js 注入的 window.setLang / window.I18N
+   ========================================================== */
+function toggleLangMenu(e) {
+  if (e) e.stopPropagation();
+  const menu = document.getElementById('langMenu');
+  if (!menu) return;
+  menu.style.display = (menu.style.display === 'none' || !menu.style.display) ? 'block' : 'none';
+  // 点击空白关闭
+  setTimeout(() => {
+    if (menu.style.display === 'block' && !window.__langMenuBound) {
+      window.__langMenuBound = true;
+      document.addEventListener('click', function close(ev) {
+        if (!ev.target.closest('.lang-switch')) {
+          menu.style.display = 'none';
+          document.removeEventListener('click', close);
+          window.__langMenuBound = false;
+        }
+      });
+    }
+  }, 0);
+}
+
+async function pickLang(lang) {
+  if (typeof window.setLang !== 'function') return;
+  // 等 setLang 落地（fetch + 应用 dict + 触发 listeners）后再关菜单 + 更新标签
+  // 标签更新交由 onLangChange listener 触发，避免"按钮已显示 EN 但内容还是中文"的不一致
+  const menu = document.getElementById('langMenu');
+  if (menu) menu.style.display = 'none';
+  await window.setLang(lang);
+}
+
+// loader 启动后同步当前语言到按钮
+if (typeof window.onLangChange === 'function') {
+  window.onLangChange(function (lang) {
+    const label = document.getElementById('langCurrentLabel');
+    if (label) label.textContent = ({ 'zh-CN': '中', 'en': 'EN', 'ja': '日', 'vi': 'VI', 'th': 'TH' })[lang] || lang;
+  });
+}
+
 function goToProfilePage() {
   const phone = document.getElementById('phone');
   const target = phone.classList.contains('is-logged-out')
@@ -6735,7 +7886,7 @@ const CHALLENGE_DATA = {
     streak: 2,
     weekly: [8, 9, 6, 5, 6, 0, 0],
     weeklyGoal: 8,
-    summary: '工作时段坐得偏久。每小时起身可降低下肢血栓风险，再坚持 3 个小时即达成今日。',
+    summary: '工作时段坐得偏久。每小时起身能活动身体、缓解久坐僵硬，再坚持 3 个小时即达成今日。',
   },
   '吃药': {
     emoji: '💊', pct: 50, grad: 'var(--gradient-challenge-blue)',
@@ -6750,7 +7901,7 @@ const CHALLENGE_DATA = {
     streak: 7,
     weekly: [2, 2, 2, 1, 1, 0, 0],
     weeklyGoal: 2,
-    summary: '本周连续服药表现良好，规律服药能稳定血药浓度。',
+    summary: '本周连续记录用药表现良好，按时打卡能帮你更安心地管理健康节奏。',
   },
   '跑步': {
     emoji: '🏃', pct: 53, grad: 'var(--gradient-challenge-pink)',
@@ -6766,7 +7917,7 @@ const CHALLENGE_DATA = {
     streak: 1,
     weekly: [5, 0, 6, 0, 3.2, 0, 0],
     weeklyGoal: 6,
-    summary: '保持心率在 138-152 bpm 区间，可刺激线粒体增殖，让 VO2 Max 从 46.8 向 80 突破。',
+    summary: '保持心率在 138-152 bpm 区间，有助于提升心肺耐力，让身体更有活力。',
   },
 };
 
@@ -6789,7 +7940,7 @@ const CARDIO_TYPE_CONFIG = {
       { value: `6'18"`, unit: '/km', label: '配速' },
       { value: '111', unit: '千卡', label: '消耗' },
     ],
-    summary: '保持心率在 138-152 bpm 区间，可刺激线粒体增殖，更利于稳定提升耐力。',
+    summary: '保持心率在 138-152 bpm 区间，有助于提升心肺耐力，让骑行更轻松持久。',
   },
   '骑单车': {
     emoji: '🚴',
@@ -7253,43 +8404,43 @@ function formatGoalDisplay(name, value, kind, exerciseType = currentExerciseType
    阈值是闭区间 max（≤ max 命中此档） */
 const GOAL_TIER_TIPS = {
   '走路': [
-    { max: 5000,     tip: '5000 步以下为低活动量，建议增加户外步行让心率提升。' },
-    { max: 8000,     tip: '6000-8000 步为健康下限，坚持 1 个月可显著改善心肺耐力。' },
-    { max: 12000,    tip: '10000 步约 5 公里，坚持 3 个月可降低慢病风险约 20%。' },
-    { max: Infinity, tip: '12000+ 步已达主动健身水平，建议穿插快步走刺激燃脂区间。' },
+    { max: 5000,     tip: '5000 步以下为低活动量，建议增加户外步行让身体动起来。' },
+    { max: 8000,     tip: '6000-8000 步为健康下限，坚持 1 个月可明显感受到心肺耐力提升。' },
+    { max: 12000,    tip: '10000 步约 5 公里，坚持 3 个月能让日常活力与心肺健康都更上一层。' },
+    { max: Infinity, tip: '12000+ 步已达主动健身水平，可穿插快步走让身体更有活力。' },
   ],
   '睡眠': [
-    { max: 6.5,      tip: '6 小时为最低维持线，长期不足会增加心血管风险。' },
+    { max: 6.5,      tip: '6 小时为最低维持线，长期不足会让白天精力和情绪明显下降。' },
     { max: 7.5,      tip: '7 小时为基础修复线，适合工作日早起场景。' },
     { max: 8.5,      tip: '8 小时为黄金睡眠，深度睡眠占比最稳定，第二天精力最足。' },
-    { max: Infinity, tip: '9 小时为恢复期推荐，适合高强度训练后或大病初愈。' },
+    { max: Infinity, tip: '9 小时为恢复期推荐，适合高强度训练后或身体疲劳明显时。' },
   ],
   '消耗': [
-    { max: 300,      tip: '每日多消耗 250 kcal 约慢跑 30 分钟，可维持当前体重。' },
-    { max: 500,      tip: '科学证明每日多消耗 500 kcal，坚持 1 个月可减 3~4 斤脂肪。' },
-    { max: 750,      tip: '每日多消耗 750 kcal，1 个月可减约 6 斤，适合有减脂目标人群。' },
-    { max: Infinity, tip: '每日 1000+ kcal 已达运动员训练量，注意补充蛋白质防止肌肉流失。' },
+    { max: 300,      tip: '每日多消耗 250 kcal 约慢跑 30 分钟，能维持稳定的身体状态。' },
+    { max: 500,      tip: '每日多消耗 500 kcal，坚持 1 个月能感受到身体更轻盈、活力更足。' },
+    { max: 750,      tip: '每日多消耗 750 kcal，适合想让身体节奏更紧致的人。' },
+    { max: Infinity, tip: '每日 1000+ kcal 已达运动员训练量，注意搭配充足的能量补给。' },
   ],
   '喝水': [
-    { max: 1500,     tip: '1500 ml 仅满足基础代谢，可能造成口渴或便秘。' },
-    { max: 2000,     tip: '2000 ml 为 WHO 推荐量（约 8 杯），保持泌尿系统健康。' },
-    { max: 2500,     tip: '2500 ml 适合运动多人群，加速代谢、改善皮肤状态。' },
-    { max: Infinity, tip: '3000+ ml 适合高强度运动者，建议分多次小口摄入避免水中毒。' },
+    { max: 1500,     tip: '1500 ml 仅满足基础需要，长期偏少可能让身体水分平衡受影响。' },
+    { max: 2000,     tip: '2000 ml 为 WHO 推荐量（约 8 杯），让身体保持良好状态。' },
+    { max: 2500,     tip: '2500 ml 适合运动较多人群，让身体更轻盈、皮肤状态更好。' },
+    { max: Infinity, tip: '3000+ ml 适合高强度运动者，建议分多次小口摄入，不要短时间内大量饮水。' },
   ],
   '站立': [
-    { max: 7,        tip: '6-7 小时起身，初步打断久坐，可降低 30% 下肢血栓风险。' },
-    { max: 9,        tip: '8-9 小时（推荐）每小时一次，显著降低腰背与颈椎压力。' },
-    { max: 12,       tip: '10-12 小时起身，能持续提升新陈代谢与下肢循环效率。' },
-    { max: Infinity, tip: '13+ 小时基本覆盖整个清醒时段，对腰背颈椎与久坐代谢风险都是顶级保护。' },
+    { max: 7,        tip: '6-7 小时起身，初步打断久坐，让身体保持基本的活动节奏。' },
+    { max: 9,        tip: '8-9 小时（推荐）每小时一次，能明显缓解久坐带来的腰背僵硬感。' },
+    { max: 12,       tip: '10-12 小时起身，能持续保持身体活力，让一整天都不容易犯困。' },
+    { max: Infinity, tip: '13+ 小时基本覆盖整个清醒时段，让身体一整天都保持活力与轻盈状态。' },
   ],
   // 心肺锻炼按"等效有氧时长（分钟）"统一计算档位。
   // 跑步/骑单车/爬楼梯 三种形式共用同一套档位文案——目标本质就是"花多少分钟做心肺训练"，
   // 用户在 picker 选 km/层只是便于记录习惯单位，背后都换算到分钟匹配档位。
   '跑步': [
-    { max: 20,       tip: '约 15 分钟以内为入门级心肺锻炼，能激活心血管循环、唤醒久坐肌群。' },
+    { max: 20,       tip: '约 15 分钟以内为入门级心肺锻炼，能唤醒身体活力、缓解久坐僵硬。' },
     { max: 40,       tip: '约 30 分钟中等强度有氧（心率 138-152 bpm），是 WHO 推荐的健身甜点时长。' },
-    { max: 70,       tip: '约 60 分钟有氧锻炼，已进入中长时段，可显著提升 VO2 max 与脂肪代谢效率。' },
-    { max: Infinity, tip: '约 90 分钟以上为长程训练，注意补充碳水与电解质，避免心率长时间过高。' },
+    { max: 70,       tip: '约 60 分钟有氧锻炼，能显著提升心肺耐力，让日常更有精神。' },
+    { max: Infinity, tip: '约 90 分钟以上为长程训练，注意搭配碳水与水分补给，循序渐进更安全。' },
   ],
   // 吃药次数由医嘱决定（一天几次是医生开的，不是用户自主设的健身目标），
   // 不在这里给档位"建议"，避免误导。getGoalTierTip 命中不到 → 返回空 → tier tip 区段自动隐藏。
@@ -7600,13 +8751,13 @@ function buildChallengeCardSummary(name, current, goal) {
   const remainingText = formatChallengeGoalText(name, remaining);
   const cardio = getCardioTypeConfig();
   const map = {
-    '走路': `已走 <strong>${currentText}</strong>/${goalText}，距离 <strong>${remainingText}</strong>。每天 <strong>8,000 步以上</strong> 可显著降低心血管疾病风险。`,
+    '走路': `已走 <strong>${currentText}</strong>/${goalText}，距离 <strong>${remainingText}</strong>。每天 <strong>8,000 步以上</strong> 能让身体更有活力，是日常健康的简单积累。`,
     '睡眠': `昨晚已睡 <strong>${currentText}</strong>/${goalText}。规律睡眠有助于恢复精力并稳定第二天状态。`,
     '消耗': `已消耗 <strong>${currentText}</strong>/${goalText}，再完成 <strong>${remainingText}</strong> 可继续提升活跃消耗。`,
     '喝水': `已饮 <strong>${currentText}</strong>/${goalText}，距目标还差 <strong>${remainingText}</strong>。下次提醒 <strong>15:00</strong>。`,
-    '站立': `已完成 <strong>${currentText}</strong>/${goalText}，还差 <strong>${remainingText}</strong>。每小时起身可降低久坐带来的身体负担。`,
-    '跑步': `已完成 <strong>${currentText}</strong>/${goalText} 的${cardio.displayName}。保持心率在 <strong>138-152 bpm</strong> 区间，更利于稳定提升耐力。`,
-    '吃药': `今天已完成 <strong>${currentText}</strong>/${goalText}。规律服药能稳定血药浓度，减少漏服带来的波动。`,
+    '站立': `已完成 <strong>${currentText}</strong>/${goalText}，还差 <strong>${remainingText}</strong>。每小时起身能让身体保持轻盈、缓解久坐僵硬。`,
+    '跑步': `已完成 <strong>${currentText}</strong>/${goalText} 的${cardio.displayName}。保持心率在 <strong>138-152 bpm</strong> 区间，有助于提升心肺耐力。`,
+    '吃药': `今天已完成 <strong>${currentText}</strong>/${goalText}。按时记录每日健康习惯，帮你更安心地管理每天的健康节奏。`,
   };
   return map[name] || `已完成 <strong>${currentText}</strong>/${goalText}。`;
 }
@@ -7815,26 +8966,29 @@ function renderT2() {
   // 情绪弧：起点 → 中段（升银）→ 临门一脚（升金）→ 满级
   const ringsSummaryEl = document.getElementById('ringsSummary');
   if (ringsSummaryEl) {
+    const _t = (k) => (typeof window.t === 'function' ? window.t(k) : k);
     let summary;
     if (N === 0) {
-      summary = '未显示任何圆环';
+      summary = _t('rings3.summary.empty');
     } else if (achievedCount === 0) {
-      // 起点：N=1 用「圆环」，N>=2 用「第一环」
-      summary = N === 1 ? '今日的圆环交给你' : '今日的第一环交给你';
+      summary = N === 1 ? _t('rings3.summary.startSingle') : _t('rings3.summary.startMulti');
     } else if (achievedCount === N) {
-      // 满级：量词词组随 N 变化
-      summary = N === 1 ? '圆环全亮，今日满级'
-              : N === 2 ? '双环全亮，今日满级'
-              :          '三环全亮，今日满级';
+      summary = N === 1 ? _t('rings3.summary.fullSingle')
+              : N === 2 ? _t('rings3.summary.fullDouble')
+              :          _t('rings3.summary.fullTriple');
     } else if (N - achievedCount === 1) {
-      // 临门一脚升金（N=2 的 1/2 或 N=3 的 2/3）
-      summary = '离金牌只差最后一环';
+      summary = _t('rings3.summary.almostGold');
     } else {
-      // 仅剩 N=3 的 1/3 中间档：下一步升银
-      summary = '再添一环就能升银';
+      summary = _t('rings3.summary.midSilver');
     }
     ringsSummaryEl.textContent = summary;
   }
+}
+// 语言切换时三环氛围语跟着重渲（因为它是 JS 动态生成的，不能靠 data-i18n 自动 rerender）
+if (typeof window.onLangChange === 'function') {
+  window.onLangChange(function () {
+    if (typeof renderT2 === 'function') renderT2();
+  });
 }
 
 function toggleRingSwitch(el) {

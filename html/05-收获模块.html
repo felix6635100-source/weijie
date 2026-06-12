@@ -1518,6 +1518,17 @@ button { font: inherit; color: inherit; background: transparent; border: 0; padd
   -webkit-overflow-scrolling: touch;
 }
 .h-mw-tabs::-webkit-scrollbar { display: none; }
+/* Tab 下方副文 */
+.h-mw-cat-sub { padding: 0 4px 12px; font-size: 12px; color: var(--text2); line-height: 1.5; }
+/* 勋章墙·分组卡（成长历程下的 5 个小类） */
+.h-medal-group { padding: 0; margin: 0 0 18px; }
+.h-mg-head { padding: 0 4px 10px; }
+.h-mg-title { font-size: 15px; font-weight: 800; color: var(--text); line-height: 1.3; display: flex; align-items: baseline; gap: 8px; }
+.h-mg-count { font-size: 12px; color: var(--text2); font-weight: 600; }
+.h-mg-sub { font-size: 11.5px; color: var(--text2); margin-top: 3px; line-height: 1.4; }
+.h-mg-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 0; }
+.h-mg-empty { padding: 28px 16px; text-align: center; color: var(--text3); font-size: 12px; background: #FAFAFB; border-radius: 12px; }
+
 .h-mw-tab {
   flex-shrink: 0;
   padding: 6px 14px; border-radius: 999px;
@@ -2090,9 +2101,9 @@ button { font: inherit; color: inherit; background: transparent; border: 0; padd
                 <div class="h-id-name" id="hUserName">林野</div>
                 <!-- 最近解锁的 3 枚勋章（mini 头像） -->
                 <div class="h-id-medals" onclick="goToMedals()">
-                  <span class="h-id-mini"><img src="./勋章新图标/成长历程/睡眠05.png" alt="睡眠节律大师"></span>
-                  <span class="h-id-mini"><img src="./勋章新图标/成长历程/心理压力04.png" alt="心境平衡者"></span>
-                  <span class="h-id-mini"><img src="./勋章新图标/成长历程/hrv04.png" alt="HRV 强韧者"></span>
+                  <span class="h-id-mini"><img src="./勋章新图标/成长历程/身体指标/睡眠05.png" alt="睡眠节律大师"></span>
+                  <span class="h-id-mini"><img src="./勋章新图标/成长历程/身体指标/心理压力04.png" alt="心境平衡者"></span>
+                  <span class="h-id-mini"><img src="./勋章新图标/成长历程/身体指标/hrv04.png" alt="HRV 强韧者"></span>
                 </div>
                 <div class="h-id-bar"><div class="fill" id="hProgressFill" style="width:73%"></div></div>
                 <div class="h-id-meta">
@@ -2254,11 +2265,8 @@ button { font: inherit; color: inherit; background: transparent; border: 0; padd
           </div>
           <div class="h-mw-progress"><div class="fill" style="width:21.8%"></div></div>
           <div class="h-mw-tabs" id="hMwTabs">
-            <div class="h-mw-tab is-active" data-cat="all">全部</div>
-            <div class="h-mw-tab" data-cat="daily">日常</div>
-            <div class="h-mw-tab" data-cat="event">活动</div>
-            <div class="h-mw-tab" data-cat="limited">限定</div>
-            <div class="h-mw-tab" data-cat="hidden">隐藏</div>
+            <div class="h-mw-tab is-active" data-cat="growth">成长历程</div>
+            <div class="h-mw-tab" data-cat="event">限时挑战</div>
           </div>
           <div class="h-mw-grid" id="hMwGrid"></div>
         </div>
@@ -2275,7 +2283,7 @@ button { font: inherit; color: inherit; background: transparent; border: 0; padd
           <div class="h-md-status is-done" id="hMdStatus">✓ 已解锁 · 2026-04-22</div>
           <div class="h-md-hero">
             <div class="h-mh-img" id="hMhImg">
-              <img src="勋章新图标/成长历程/步数03.png" alt="">
+              <img src="勋章新图标/成长历程/身体指标/步数03.png" alt="">
             </div>
             <div class="h-mh-mat" id="hMhMat">银 · L3</div>
           </div>
@@ -2956,82 +2964,207 @@ function renderArchive() {
 /* ---------- H5 勋章墙 ---------- */
 const MEDALS = [
   // 新手引导 · 戒指连接
-  { id:'connect-1', name:'戒指初连者', cat:'daily', series:'新手引导 · 戒指连接', cond:'完成 1 天有效佩戴', mat:'铁 · L1', img:'勋章新图标/成长历程/连接戒指01.png', unlocked:true, date:'2026-01-15' },
-  { id:'connect-2', name:'佩戴启程者', cat:'daily', series:'新手引导 · 戒指连接', cond:'完成 3 天有效佩戴', mat:'铜 · L2', img:'勋章新图标/成长历程/连接戒指02.png', unlocked:true, date:'2026-01-18' },
-  { id:'connect-3', name:'数据掌握者', cat:'daily', series:'新手引导 · 戒指连接', cond:'完成 7 天有效佩戴', mat:'银 · L3', img:'勋章新图标/成长历程/连接戒指03.png', unlocked:true, date:'2026-01-22' },
-  { id:'connect-4', name:'唯戒进阶者', cat:'daily', series:'新手引导 · 戒指连接', cond:'完成 30 天有效佩戴', mat:'金 · L4', img:'勋章新图标/成长历程/连接戒指04.png', unlocked:true, date:'2026-02-15' },
-  { id:'connect-5', name:'唯戒老手', cat:'daily', series:'新手引导 · 戒指连接', cond:'完成 90 天有效佩戴', mat:'钻石 · L5', img:'勋章新图标/成长历程/连接戒指05.png', unlocked:false, cond_unlock:'再连续佩戴 22 天' },
+  { id:'connect-1', name:'戒指初连者', cat:'daily', series:'新手引导 · 戒指连接', cond:'完成 1 天有效佩戴', mat:'铁 · L1', img:'勋章新图标/成长历程/新手引导/连接戒指01.png', unlocked:true, date:'2026-01-15' },
+  { id:'connect-2', name:'佩戴启程者', cat:'daily', series:'新手引导 · 戒指连接', cond:'完成 3 天有效佩戴', mat:'铜 · L2', img:'勋章新图标/成长历程/新手引导/连接戒指02.png', unlocked:true, date:'2026-01-18' },
+  { id:'connect-3', name:'数据掌握者', cat:'daily', series:'新手引导 · 戒指连接', cond:'完成 7 天有效佩戴', mat:'银 · L3', img:'勋章新图标/成长历程/新手引导/连接戒指03.png', unlocked:true, date:'2026-01-22' },
+  { id:'connect-4', name:'唯戒进阶者', cat:'daily', series:'新手引导 · 戒指连接', cond:'完成 30 天有效佩戴', mat:'金 · L4', img:'勋章新图标/成长历程/新手引导/连接戒指04.png', unlocked:true, date:'2026-02-15' },
+  { id:'connect-5', name:'唯戒老手', cat:'daily', series:'新手引导 · 戒指连接', cond:'完成 90 天有效佩戴', mat:'钻石 · L5', img:'勋章新图标/成长历程/新手引导/连接戒指05.png', unlocked:false, cond_unlock:'再连续佩戴 22 天' },
   // 步数
-  { id:'step-1', name:'步数起行者', cat:'daily', series:'身体指标 · 步数', cond:'累计达标 3 天', mat:'铁 · L1', img:'勋章新图标/成长历程/步数01.png', unlocked:true, date:'2026-02-22' },
-  { id:'step-2', name:'步数达标者', cat:'daily', series:'身体指标 · 步数', cond:'累计达标 7 天', mat:'铜 · L2', img:'勋章新图标/成长历程/步数02.png', unlocked:true, date:'2026-03-08' },
-  { id:'step-3', name:'步行连胜者', cat:'daily', series:'身体指标 · 步数', cond:'连续达标 7 天', mat:'银 · L3', img:'勋章新图标/成长历程/步数03.png', unlocked:true, date:'2026-04-22' },
-  { id:'step-4', name:'步数领航者', cat:'daily', series:'身体指标 · 步数', cond:'累计达标 21 天', mat:'金 · L4', img:'勋章新图标/成长历程/步数04.png', unlocked:false, cond_unlock:'再累计达标 4 天' },
-  { id:'step-5', name:'步行王者', cat:'daily', series:'身体指标 · 步数', cond:'连续达标 30 天', mat:'钻石 · L5', img:'勋章新图标/成长历程/步数05.png', unlocked:false, cond_unlock:'连续达标 30 天' },
+  { id:'step-1', name:'步数起行者', cat:'daily', series:'身体指标 · 步数', cond:'累计达标 3 天', mat:'铁 · L1', img:'勋章新图标/成长历程/身体指标/步数01.png', unlocked:true, date:'2026-02-22' },
+  { id:'step-2', name:'步数达标者', cat:'daily', series:'身体指标 · 步数', cond:'累计达标 7 天', mat:'铜 · L2', img:'勋章新图标/成长历程/身体指标/步数02.png', unlocked:true, date:'2026-03-08' },
+  { id:'step-3', name:'步行连胜者', cat:'daily', series:'身体指标 · 步数', cond:'连续达标 7 天', mat:'银 · L3', img:'勋章新图标/成长历程/身体指标/步数03.png', unlocked:true, date:'2026-04-22' },
+  { id:'step-4', name:'步数领航者', cat:'daily', series:'身体指标 · 步数', cond:'累计达标 21 天', mat:'金 · L4', img:'勋章新图标/成长历程/身体指标/步数04.png', unlocked:false, cond_unlock:'再累计达标 4 天' },
+  { id:'step-5', name:'步行王者', cat:'daily', series:'身体指标 · 步数', cond:'连续达标 30 天', mat:'钻石 · L5', img:'勋章新图标/成长历程/身体指标/步数05.png', unlocked:false, cond_unlock:'连续达标 30 天' },
   // 睡眠
-  { id:'sleep-1', name:'一夜好眠', cat:'daily', series:'身体指标 · 睡眠', cond:'首次达标', mat:'铁 · L1', img:'勋章新图标/成长历程/睡眠01.png', unlocked:true, date:'2026-01-20' },
-  { id:'sleep-2', name:'深睡旅人', cat:'daily', series:'身体指标 · 睡眠', cond:'连续达标 3 天', mat:'铜 · L2', img:'勋章新图标/成长历程/睡眠02.png', unlocked:true, date:'2026-01-26' },
-  { id:'sleep-3', name:'睡眠稳定者', cat:'daily', series:'身体指标 · 睡眠', cond:'累计达标 10 天', mat:'银 · L3', img:'勋章新图标/成长历程/睡眠03.png', unlocked:true, date:'2026-02-28' },
-  { id:'sleep-4', name:'作息修复者', cat:'daily', series:'身体指标 · 睡眠', cond:'连续达标 7 天', mat:'金 · L4', img:'勋章新图标/成长历程/睡眠04.png', unlocked:true, date:'2026-03-15' },
-  { id:'sleep-5', name:'睡眠节律大师', cat:'daily', series:'身体指标 · 睡眠', cond:'累计达标 30 天', mat:'钻石 · L5', img:'勋章新图标/成长历程/睡眠05.png', unlocked:true, date:'2026-04-18' },
+  { id:'sleep-1', name:'一夜好眠', cat:'daily', series:'身体指标 · 睡眠', cond:'首次达标', mat:'铁 · L1', img:'勋章新图标/成长历程/身体指标/睡眠01.png', unlocked:true, date:'2026-01-20' },
+  { id:'sleep-2', name:'深睡旅人', cat:'daily', series:'身体指标 · 睡眠', cond:'连续达标 3 天', mat:'铜 · L2', img:'勋章新图标/成长历程/身体指标/睡眠02.png', unlocked:true, date:'2026-01-26' },
+  { id:'sleep-3', name:'睡眠稳定者', cat:'daily', series:'身体指标 · 睡眠', cond:'累计达标 10 天', mat:'银 · L3', img:'勋章新图标/成长历程/身体指标/睡眠03.png', unlocked:true, date:'2026-02-28' },
+  { id:'sleep-4', name:'作息修复者', cat:'daily', series:'身体指标 · 睡眠', cond:'连续达标 7 天', mat:'金 · L4', img:'勋章新图标/成长历程/身体指标/睡眠04.png', unlocked:true, date:'2026-03-15' },
+  { id:'sleep-5', name:'睡眠节律大师', cat:'daily', series:'身体指标 · 睡眠', cond:'累计达标 30 天', mat:'钻石 · L5', img:'勋章新图标/成长历程/身体指标/睡眠05.png', unlocked:true, date:'2026-04-18' },
   // HRV
-  { id:'hrv-1', name:'HRV 起势者', cat:'daily', series:'身体指标 · HRV', cond:'累计达标 3 天', mat:'铁 · L1', img:'勋章新图标/成长历程/hrv01.png', unlocked:true, date:'2026-02-12' },
-  { id:'hrv-2', name:'HRV 提升者', cat:'daily', series:'身体指标 · HRV', cond:'累计达标 7 天', mat:'铜 · L2', img:'勋章新图标/成长历程/hrv02.png', unlocked:true, date:'2026-03-01' },
-  { id:'hrv-3', name:'HRV 稳定者', cat:'daily', series:'身体指标 · HRV', cond:'连续达标 7 天', mat:'银 · L3', img:'勋章新图标/成长历程/hrv03.png', unlocked:false, cond_unlock:'连续达标 7 天' },
-  { id:'hrv-4', name:'HRV 强韧者', cat:'daily', series:'身体指标 · HRV', cond:'累计达标 21 天', mat:'金 · L4', img:'勋章新图标/成长历程/hrv04.png', unlocked:false, cond_unlock:'累计达标 21 天' },
-  { id:'hrv-5', name:'HRV 恢复大师', cat:'daily', series:'身体指标 · HRV', cond:'连续达标 30 天', mat:'钻石 · L5', img:'勋章新图标/成长历程/hrv05.png', unlocked:false, cond_unlock:'连续达标 30 天' },
+  { id:'hrv-1', name:'HRV 起势者', cat:'daily', series:'身体指标 · HRV', cond:'累计达标 3 天', mat:'铁 · L1', img:'勋章新图标/成长历程/身体指标/hrv01.png', unlocked:true, date:'2026-02-12' },
+  { id:'hrv-2', name:'HRV 提升者', cat:'daily', series:'身体指标 · HRV', cond:'累计达标 7 天', mat:'铜 · L2', img:'勋章新图标/成长历程/身体指标/hrv02.png', unlocked:true, date:'2026-03-01' },
+  { id:'hrv-3', name:'HRV 稳定者', cat:'daily', series:'身体指标 · HRV', cond:'连续达标 7 天', mat:'银 · L3', img:'勋章新图标/成长历程/身体指标/hrv03.png', unlocked:false, cond_unlock:'连续达标 7 天' },
+  { id:'hrv-4', name:'HRV 强韧者', cat:'daily', series:'身体指标 · HRV', cond:'累计达标 21 天', mat:'金 · L4', img:'勋章新图标/成长历程/身体指标/hrv04.png', unlocked:false, cond_unlock:'累计达标 21 天' },
+  { id:'hrv-5', name:'HRV 恢复大师', cat:'daily', series:'身体指标 · HRV', cond:'连续达标 30 天', mat:'钻石 · L5', img:'勋章新图标/成长历程/身体指标/hrv05.png', unlocked:false, cond_unlock:'连续达标 30 天' },
   // 心理压力
-  { id:'stress-1', name:'低压起步', cat:'daily', series:'身体指标 · 心理压力', cond:'累计达标 3 天', mat:'铁 · L1', img:'勋章新图标/成长历程/心理压力01.png', unlocked:true, date:'2026-02-08' },
-  { id:'stress-2', name:'低压稳态', cat:'daily', series:'身体指标 · 心理压力', cond:'累计达标 7 天', mat:'铜 · L2', img:'勋章新图标/成长历程/心理压力02.png', unlocked:true, date:'2026-02-25' },
-  { id:'stress-3', name:'低压连胜', cat:'daily', series:'身体指标 · 心理压力', cond:'连续达标 5 天', mat:'银 · L3', img:'勋章新图标/成长历程/心理压力03.png', unlocked:true, date:'2026-03-20' },
-  { id:'stress-4', name:'心境平衡者', cat:'daily', series:'身体指标 · 心理压力', cond:'累计达标 21 天', mat:'金 · L4', img:'勋章新图标/成长历程/心理压力04.png', unlocked:true, date:'2026-04-10' },
-  { id:'stress-5', name:'稳定心境大师', cat:'daily', series:'身体指标 · 心理压力', cond:'连续达标 30 天', mat:'钻石 · L5', img:'勋章新图标/成长历程/心理压力05.png', unlocked:false, cond_unlock:'连续达标 30 天' },
+  { id:'stress-1', name:'低压起步', cat:'daily', series:'身体指标 · 心理压力', cond:'累计达标 3 天', mat:'铁 · L1', img:'勋章新图标/成长历程/身体指标/心理压力01.png', unlocked:true, date:'2026-02-08' },
+  { id:'stress-2', name:'低压稳态', cat:'daily', series:'身体指标 · 心理压力', cond:'累计达标 7 天', mat:'铜 · L2', img:'勋章新图标/成长历程/身体指标/心理压力02.png', unlocked:true, date:'2026-02-25' },
+  { id:'stress-3', name:'低压连胜', cat:'daily', series:'身体指标 · 心理压力', cond:'连续达标 5 天', mat:'银 · L3', img:'勋章新图标/成长历程/身体指标/心理压力03.png', unlocked:true, date:'2026-03-20' },
+  { id:'stress-4', name:'心境平衡者', cat:'daily', series:'身体指标 · 心理压力', cond:'累计达标 21 天', mat:'金 · L4', img:'勋章新图标/成长历程/身体指标/心理压力04.png', unlocked:true, date:'2026-04-10' },
+  { id:'stress-5', name:'稳定心境大师', cat:'daily', series:'身体指标 · 心理压力', cond:'连续达标 30 天', mat:'钻石 · L5', img:'勋章新图标/成长历程/身体指标/心理压力05.png', unlocked:false, cond_unlock:'连续达标 30 天' },
   // 身体恢复度
-  { id:'rec-1', name:'恢复启动', cat:'daily', series:'身体指标 · 身体恢复度', cond:'累计达标 3 天', mat:'铁 · L1', img:'勋章新图标/成长历程/身体恢复度01.png', unlocked:true, date:'2026-02-10' },
-  { id:'rec-2', name:'恢复上线', cat:'daily', series:'身体指标 · 身体恢复度', cond:'连续达标 5 天', mat:'铜 · L2', img:'勋章新图标/成长历程/身体恢复度02.png', unlocked:true, date:'2026-02-28' },
-  { id:'rec-3', name:'恢复进阶', cat:'daily', series:'身体指标 · 身体恢复度', cond:'累计达标 10 天', mat:'银 · L3', img:'勋章新图标/成长历程/身体恢复度03.png', unlocked:false, cond_unlock:'再累计达标 3 天' },
-  { id:'rec-4', name:'恢复稳定者', cat:'daily', series:'身体指标 · 身体恢复度', cond:'连续达标 10 天', mat:'金 · L4', img:'勋章新图标/成长历程/身体恢复度04.png', unlocked:false, cond_unlock:'连续达标 10 天' },
-  { id:'rec-5', name:'恢复掌控者', cat:'daily', series:'身体指标 · 身体恢复度', cond:'累计达标 30 天', mat:'钻石 · L5', img:'勋章新图标/成长历程/身体恢复度05.png', unlocked:false, cond_unlock:'累计达标 30 天' },
+  { id:'rec-1', name:'恢复启动', cat:'daily', series:'身体指标 · 身体恢复度', cond:'累计达标 3 天', mat:'铁 · L1', img:'勋章新图标/成长历程/身体指标/身体恢复度01.png', unlocked:true, date:'2026-02-10' },
+  { id:'rec-2', name:'恢复上线', cat:'daily', series:'身体指标 · 身体恢复度', cond:'连续达标 5 天', mat:'铜 · L2', img:'勋章新图标/成长历程/身体指标/身体恢复度02.png', unlocked:true, date:'2026-02-28' },
+  { id:'rec-3', name:'恢复进阶', cat:'daily', series:'身体指标 · 身体恢复度', cond:'累计达标 10 天', mat:'银 · L3', img:'勋章新图标/成长历程/身体指标/身体恢复度03.png', unlocked:false, cond_unlock:'再累计达标 3 天' },
+  { id:'rec-4', name:'恢复稳定者', cat:'daily', series:'身体指标 · 身体恢复度', cond:'连续达标 10 天', mat:'金 · L4', img:'勋章新图标/成长历程/身体指标/身体恢复度04.png', unlocked:false, cond_unlock:'连续达标 10 天' },
+  { id:'rec-5', name:'恢复掌控者', cat:'daily', series:'身体指标 · 身体恢复度', cond:'累计达标 30 天', mat:'钻石 · L5', img:'勋章新图标/成长历程/身体指标/身体恢复度05.png', unlocked:false, cond_unlock:'累计达标 30 天' },
   // 血氧
-  { id:'spo-1', name:'血氧初稳者', cat:'daily', series:'身体指标 · 血氧', cond:'累计达标 3 天', mat:'铁 · L1', img:'勋章新图标/成长历程/血氧01.png', unlocked:true, date:'2026-02-15' },
-  { id:'spo-2', name:'血氧守护者', cat:'daily', series:'身体指标 · 血氧', cond:'累计达标 7 天', mat:'铜 · L2', img:'勋章新图标/成长历程/血氧02.png', unlocked:true, date:'2026-03-02' },
-  { id:'spo-3', name:'血氧连胜者', cat:'daily', series:'身体指标 · 血氧', cond:'连续达标 7 天', mat:'银 · L3', img:'勋章新图标/成长历程/血氧03.png', unlocked:false, cond_unlock:'连续达标 7 天' },
+  { id:'spo-1', name:'血氧初稳者', cat:'daily', series:'身体指标 · 血氧', cond:'累计达标 3 天', mat:'铁 · L1', img:'勋章新图标/成长历程/身体指标/血氧01.png', unlocked:true, date:'2026-02-15' },
+  { id:'spo-2', name:'血氧守护者', cat:'daily', series:'身体指标 · 血氧', cond:'累计达标 7 天', mat:'铜 · L2', img:'勋章新图标/成长历程/身体指标/血氧02.png', unlocked:true, date:'2026-03-02' },
+  { id:'spo-3', name:'血氧连胜者', cat:'daily', series:'身体指标 · 血氧', cond:'连续达标 7 天', mat:'银 · L3', img:'勋章新图标/成长历程/身体指标/血氧03.png', unlocked:false, cond_unlock:'连续达标 7 天' },
   // 三环 · 金牌
-  { id:'gold-1', name:'金牌首得', cat:'daily', series:'三环累计 · 金牌', cond:'累计获得 1 枚金牌', mat:'铁 · L1', img:'勋章新图标/成长历程/金牌01.png', unlocked:true, date:'2026-01-25' },
-  { id:'gold-2', name:'金牌7连藏', cat:'daily', series:'三环累计 · 金牌', cond:'累计获得 7 枚金牌', mat:'铜 · L2', img:'勋章新图标/成长历程/金牌02.png', unlocked:true, date:'2026-02-20' },
-  { id:'gold-3', name:'金牌进阶者', cat:'daily', series:'三环累计 · 金牌', cond:'累计获得 30 枚金牌', mat:'银 · L3', img:'勋章新图标/成长历程/金牌03.png', unlocked:false, cond_unlock:'再获得 18 枚金牌' },
-  { id:'gold-4', name:'金牌王者', cat:'daily', series:'三环累计 · 金牌', cond:'累计获得 90 枚金牌', mat:'金 · L4', img:'勋章新图标/成长历程/金牌04.png', unlocked:false, cond_unlock:'累计获得 90 枚金牌' },
+  { id:'gold-1', name:'金牌首得', cat:'daily', series:'三环累计 · 金牌', cond:'累计获得 1 枚金牌', mat:'铁 · L1', img:'勋章新图标/成长历程/三环成绩/金牌01.png', unlocked:true, date:'2026-01-25' },
+  { id:'gold-2', name:'金牌7连藏', cat:'daily', series:'三环累计 · 金牌', cond:'累计获得 7 枚金牌', mat:'铜 · L2', img:'勋章新图标/成长历程/三环成绩/金牌02.png', unlocked:true, date:'2026-02-20' },
+  { id:'gold-3', name:'金牌进阶者', cat:'daily', series:'三环累计 · 金牌', cond:'累计获得 30 枚金牌', mat:'银 · L3', img:'勋章新图标/成长历程/三环成绩/金牌03.png', unlocked:false, cond_unlock:'再获得 18 枚金牌' },
+  { id:'gold-4', name:'金牌王者', cat:'daily', series:'三环累计 · 金牌', cond:'累计获得 90 枚金牌', mat:'金 · L4', img:'勋章新图标/成长历程/三环成绩/金牌04.png', unlocked:false, cond_unlock:'累计获得 90 枚金牌' },
   // 三环 · 银牌
-  { id:'silver-1', name:'银牌首得', cat:'daily', series:'三环累计 · 银牌', cond:'累计获得 1 枚银牌', mat:'铁 · L1', img:'勋章新图标/成长历程/银牌01.png', unlocked:true, date:'2026-01-22' },
-  { id:'silver-2', name:'银牌7连藏', cat:'daily', series:'三环累计 · 银牌', cond:'累计获得 7 枚银牌', mat:'铜 · L2', img:'勋章新图标/成长历程/银牌02.png', unlocked:true, date:'2026-02-12' },
-  { id:'silver-3', name:'银牌进阶者', cat:'daily', series:'三环累计 · 银牌', cond:'累计获得 30 枚银牌', mat:'银 · L3', img:'勋章新图标/成长历程/银牌03.png', unlocked:false, cond_unlock:'再获得 8 枚银牌' },
+  { id:'silver-1', name:'银牌首得', cat:'daily', series:'三环累计 · 银牌', cond:'累计获得 1 枚银牌', mat:'铁 · L1', img:'勋章新图标/成长历程/三环成绩/银牌01.png', unlocked:true, date:'2026-01-22' },
+  { id:'silver-2', name:'银牌7连藏', cat:'daily', series:'三环累计 · 银牌', cond:'累计获得 7 枚银牌', mat:'铜 · L2', img:'勋章新图标/成长历程/三环成绩/银牌02.png', unlocked:true, date:'2026-02-12' },
+  { id:'silver-3', name:'银牌进阶者', cat:'daily', series:'三环累计 · 银牌', cond:'累计获得 30 枚银牌', mat:'银 · L3', img:'勋章新图标/成长历程/三环成绩/银牌03.png', unlocked:false, cond_unlock:'再获得 8 枚银牌' },
   // 三环 · 铜牌
-  { id:'bronze-1', name:'铜牌首得', cat:'daily', series:'三环累计 · 铜牌', cond:'累计获得 1 枚铜牌', mat:'铁 · L1', img:'勋章新图标/成长历程/铜牌01.png', unlocked:true, date:'2026-01-18' },
-  { id:'bronze-2', name:'铜牌7连藏', cat:'daily', series:'三环累计 · 铜牌', cond:'累计获得 7 枚铜牌', mat:'铜 · L2', img:'勋章新图标/成长历程/铜牌02.png', unlocked:true, date:'2026-02-05' },
-  { id:'bronze-3', name:'铜牌收藏家', cat:'daily', series:'三环累计 · 铜牌', cond:'累计获得 30 枚铜牌', mat:'银 · L3', img:'勋章新图标/成长历程/铜牌03.png', unlocked:false, cond_unlock:'再获得 12 枚铜牌' },
+  { id:'bronze-1', name:'铜牌首得', cat:'daily', series:'三环累计 · 铜牌', cond:'累计获得 1 枚铜牌', mat:'铁 · L1', img:'勋章新图标/成长历程/三环成绩/铜牌01.png', unlocked:true, date:'2026-01-18' },
+  { id:'bronze-2', name:'铜牌7连藏', cat:'daily', series:'三环累计 · 铜牌', cond:'累计获得 7 枚铜牌', mat:'铜 · L2', img:'勋章新图标/成长历程/三环成绩/铜牌02.png', unlocked:true, date:'2026-02-05' },
+  { id:'bronze-3', name:'铜牌收藏家', cat:'daily', series:'三环累计 · 铜牌', cond:'累计获得 30 枚铜牌', mat:'银 · L3', img:'勋章新图标/成长历程/三环成绩/铜牌03.png', unlocked:false, cond_unlock:'再获得 12 枚铜牌' },
   // 限时活动
   { id:'spring-water', name:'春日补水使者', cat:'limited', series:'2026 春日活动', cond:'参加 2026 春日补水挑战', mat:'多彩 · 限定', img:'勋章新图标/限时挑战/春日补水.png', unlocked:true, date:'2026-04-15' },
   { id:'spring-mara', name:'春日马拉松完赛者', cat:'limited', series:'2026 春日活动', cond:'参加 2026 春日马拉松', mat:'多彩 · 限定', img:'勋章新图标/限时挑战/春日马拉松.png', unlocked:true, date:'2026-04-30' },
-  { id:'summer-sleep', name:'夏夜睡眠修复', cat:'event', series:'2026 夏季活动', cond:'参加 2026 夏夜睡眠修复挑战', mat:'多彩 · 月度', img:'勋章新图标/限时挑战/夏夜睡眠修复.png', unlocked:false, cond_unlock:'2026 年 6 月开启' }
+  { id:'summer-sleep', name:'夏夜睡眠修复', cat:'event', series:'2026 夏季活动', cond:'参加 2026 夏夜睡眠修复挑战', mat:'多彩 · 月度', img:'勋章新图标/限时挑战/夏夜睡眠修复.png', unlocked:false, cond_unlock:'2026 年 6 月开启' },
+  // ===== 按勋章规则补全 =====
+  { id:'spo2-4', name:'血氧稳定者', cat:'daily', series:'身体指标 · 血氧', cond:'累计达标 21 天', mat:'金 · L4', img:'勋章新图标/成长历程/身体指标/血氧04.png', unlocked:false, cond_unlock:'达成条件即可解锁' },
+  { id:'spo2-5', name:'血氧恒守大师', cat:'daily', series:'身体指标 · 血氧', cond:'连续达标 30 天', mat:'钻石 · L5', img:'勋章新图标/成长历程/身体指标/血氧05.png', unlocked:false, cond_unlock:'达成条件即可解锁' },
+  { id:'temp-1', name:'体温感知者', cat:'daily', series:'身体指标 · 体温', cond:'累计达标 3 天', mat:'铁 · L1', img:'勋章新图标/成长历程/身体指标/体温01.png', unlocked:false, cond_unlock:'达成条件即可解锁' },
+  { id:'temp-2', name:'体温平衡者', cat:'daily', series:'身体指标 · 体温', cond:'累计达标 7 天', mat:'铜 · L2', img:'勋章新图标/成长历程/身体指标/体温02.png', unlocked:false, cond_unlock:'达成条件即可解锁' },
+  { id:'temp-3', name:'体温稳行者', cat:'daily', series:'身体指标 · 体温', cond:'连续达标 7 天', mat:'银 · L3', img:'勋章新图标/成长历程/身体指标/体温03.png', unlocked:false, cond_unlock:'达成条件即可解锁' },
+  { id:'temp-4', name:'体温守恒者', cat:'daily', series:'身体指标 · 体温', cond:'累计达标 21 天', mat:'金 · L4', img:'勋章新图标/成长历程/身体指标/体温04.png', unlocked:false, cond_unlock:'达成条件即可解锁' },
+  { id:'temp-5', name:'体温稳定大师', cat:'daily', series:'身体指标 · 体温', cond:'连续达标 30 天', mat:'钻石 · L5', img:'勋章新图标/成长历程/身体指标/体温05.png', unlocked:false, cond_unlock:'达成条件即可解锁' },
+  { id:'rhr-1', name:'静息初稳者', cat:'daily', series:'身体指标 · 静息心率', cond:'累计达标 3 天', mat:'铁 · L1', img:'勋章新图标/成长历程/身体指标/静息心率01.png', unlocked:false, cond_unlock:'达成条件即可解锁' },
+  { id:'rhr-2', name:'静息平衡者', cat:'daily', series:'身体指标 · 静息心率', cond:'累计达标 7 天', mat:'铜 · L2', img:'勋章新图标/成长历程/身体指标/静息心率02.png', unlocked:false, cond_unlock:'达成条件即可解锁' },
+  { id:'rhr-3', name:'静息稳定者', cat:'daily', series:'身体指标 · 静息心率', cond:'连续达标 7 天', mat:'银 · L3', img:'勋章新图标/成长历程/身体指标/静息心率03.png', unlocked:false, cond_unlock:'达成条件即可解锁' },
+  { id:'rhr-4', name:'静息守恒者', cat:'daily', series:'身体指标 · 静息心率', cond:'累计达标 21 天', mat:'金 · L4', img:'勋章新图标/成长历程/身体指标/静息心率04.png', unlocked:false, cond_unlock:'达成条件即可解锁' },
+  { id:'rhr-5', name:'静息心率大师', cat:'daily', series:'身体指标 · 静息心率', cond:'连续达标 30 天', mat:'钻石 · L5', img:'勋章新图标/成长历程/身体指标/静息心率05.png', unlocked:false, cond_unlock:'达成条件即可解锁' },
+  { id:'daily-step-1', name:'步数挑战家', cat:'daily', series:'今日挑战 · 步数', cond:'累计完成 3 次', mat:'铁 · L1', img:'勋章新图标/成长历程/今日挑战/步数挑战01.png', unlocked:false, cond_unlock:'达成条件即可解锁' },
+  { id:'daily-step-2', name:'步数进阶者', cat:'daily', series:'今日挑战 · 步数', cond:'累计完成 7 次', mat:'铜 · L2', img:'勋章新图标/成长历程/今日挑战/步数挑战02.png', unlocked:false, cond_unlock:'达成条件即可解锁' },
+  { id:'daily-step-3', name:'步数连胜者', cat:'daily', series:'今日挑战 · 步数', cond:'累计完成 15 次', mat:'银 · L3', img:'勋章新图标/成长历程/今日挑战/步数挑战03.png', unlocked:false, cond_unlock:'达成条件即可解锁' },
+  { id:'daily-step-4', name:'步数领跑者', cat:'daily', series:'今日挑战 · 步数', cond:'累计完成 30 次', mat:'金 · L4', img:'勋章新图标/成长历程/今日挑战/步数挑战04.png', unlocked:false, cond_unlock:'达成条件即可解锁' },
+  { id:'daily-step-5', name:'步数王者', cat:'daily', series:'今日挑战 · 步数', cond:'累计完成 60 次', mat:'钻石 · L5', img:'勋章新图标/成长历程/今日挑战/步数挑战05.png', unlocked:false, cond_unlock:'达成条件即可解锁' },
+  { id:'daily-water-1', name:'饮水起步者', cat:'daily', series:'今日挑战 · 喝水', cond:'累计完成 3 次', mat:'铁 · L1', img:'勋章新图标/成长历程/今日挑战/喝水挑战01.png', unlocked:false, cond_unlock:'达成条件即可解锁' },
+  { id:'daily-water-2', name:'饮水打卡王', cat:'daily', series:'今日挑战 · 喝水', cond:'累计完成 7 次', mat:'铜 · L2', img:'勋章新图标/成长历程/今日挑战/喝水挑战02.png', unlocked:false, cond_unlock:'达成条件即可解锁' },
+  { id:'daily-water-3', name:'饮水稳定者', cat:'daily', series:'今日挑战 · 喝水', cond:'累计完成 15 次', mat:'银 · L3', img:'勋章新图标/成长历程/今日挑战/喝水挑战03.png', unlocked:false, cond_unlock:'达成条件即可解锁' },
+  { id:'daily-water-4', name:'饮水守护者', cat:'daily', series:'今日挑战 · 喝水', cond:'累计完成 30 次', mat:'金 · L4', img:'勋章新图标/成长历程/今日挑战/喝水挑战04.png', unlocked:false, cond_unlock:'达成条件即可解锁' },
+  { id:'daily-water-5', name:'饮水大师', cat:'daily', series:'今日挑战 · 喝水', cond:'累计完成 60 次', mat:'钻石 · L5', img:'勋章新图标/成长历程/今日挑战/喝水挑战05.png', unlocked:false, cond_unlock:'达成条件即可解锁' },
+  { id:'daily-sleep-1', name:'睡眠起步者', cat:'daily', series:'今日挑战 · 睡眠', cond:'累计完成 3 次', mat:'铁 · L1', img:'勋章新图标/成长历程/今日挑战/睡眠挑战01.png', unlocked:false, cond_unlock:'达成条件即可解锁' },
+  { id:'daily-sleep-2', name:'睡眠守护者', cat:'daily', series:'今日挑战 · 睡眠', cond:'累计完成 7 次', mat:'铜 · L2', img:'勋章新图标/成长历程/今日挑战/睡眠挑战02.png', unlocked:false, cond_unlock:'达成条件即可解锁' },
+  { id:'daily-sleep-3', name:'睡眠稳定者', cat:'daily', series:'今日挑战 · 睡眠', cond:'累计完成 15 次', mat:'银 · L3', img:'勋章新图标/成长历程/今日挑战/睡眠挑战03.png', unlocked:false, cond_unlock:'达成条件即可解锁' },
+  { id:'daily-sleep-4', name:'睡眠进阶者', cat:'daily', series:'今日挑战 · 睡眠', cond:'累计完成 30 次', mat:'金 · L4', img:'勋章新图标/成长历程/今日挑战/睡眠挑战04.png', unlocked:false, cond_unlock:'达成条件即可解锁' },
+  { id:'daily-sleep-5', name:'睡眠大师', cat:'daily', series:'今日挑战 · 睡眠', cond:'累计完成 60 次', mat:'钻石 · L5', img:'勋章新图标/成长历程/今日挑战/睡眠挑战05.png', unlocked:false, cond_unlock:'达成条件即可解锁' },
+  { id:'daily-burn-1', name:'消耗点火者', cat:'daily', series:'今日挑战 · 消耗', cond:'累计完成 3 次', mat:'铁 · L1', img:'勋章新图标/成长历程/今日挑战/消耗挑战01.png', unlocked:false, cond_unlock:'达成条件即可解锁' },
+  { id:'daily-burn-2', name:'燃动进阶者', cat:'daily', series:'今日挑战 · 消耗', cond:'累计完成 7 次', mat:'铜 · L2', img:'勋章新图标/成长历程/今日挑战/消耗挑战02.png', unlocked:false, cond_unlock:'达成条件即可解锁' },
+  { id:'daily-burn-3', name:'消耗稳定者', cat:'daily', series:'今日挑战 · 消耗', cond:'累计完成 15 次', mat:'银 · L3', img:'勋章新图标/成长历程/今日挑战/消耗挑战03.png', unlocked:false, cond_unlock:'达成条件即可解锁' },
+  { id:'daily-burn-4', name:'燃动挑战家', cat:'daily', series:'今日挑战 · 消耗', cond:'累计完成 30 次', mat:'金 · L4', img:'勋章新图标/成长历程/今日挑战/消耗挑战04.png', unlocked:false, cond_unlock:'达成条件即可解锁' },
+  { id:'daily-burn-5', name:'消耗王者', cat:'daily', series:'今日挑战 · 消耗', cond:'累计完成 60 次', mat:'钻石 · L5', img:'勋章新图标/成长历程/今日挑战/消耗挑战05.png', unlocked:false, cond_unlock:'达成条件即可解锁' },
+  { id:'daily-med-1', name:'按时服药者', cat:'daily', series:'今日挑战 · 吃药', cond:'累计完成 3 次', mat:'铁 · L1', img:'勋章新图标/成长历程/今日挑战/吃药挑战01.png', unlocked:false, cond_unlock:'达成条件即可解锁' },
+  { id:'daily-med-2', name:'服药稳定者', cat:'daily', series:'今日挑战 · 吃药', cond:'累计完成 7 次', mat:'铜 · L2', img:'勋章新图标/成长历程/今日挑战/吃药挑战02.png', unlocked:false, cond_unlock:'达成条件即可解锁' },
+  { id:'daily-med-3', name:'服药连胜者', cat:'daily', series:'今日挑战 · 吃药', cond:'累计完成 15 次', mat:'银 · L3', img:'勋章新图标/成长历程/今日挑战/吃药挑战03.png', unlocked:false, cond_unlock:'达成条件即可解锁' },
+  { id:'daily-med-4', name:'服药守时者', cat:'daily', series:'今日挑战 · 吃药', cond:'累计完成 30 次', mat:'金 · L4', img:'勋章新图标/成长历程/今日挑战/吃药挑战04.png', unlocked:false, cond_unlock:'达成条件即可解锁' },
+  { id:'daily-med-5', name:'服药掌控者', cat:'daily', series:'今日挑战 · 吃药', cond:'累计完成 60 次', mat:'钻石 · L5', img:'勋章新图标/成长历程/今日挑战/吃药挑战05.png', unlocked:false, cond_unlock:'达成条件即可解锁' },
+  { id:'daily-cardio-1', name:'心肺起步者', cat:'daily', series:'今日挑战 · 心肺锻炼', cond:'累计完成 3 次', mat:'铁 · L1', img:'勋章新图标/成长历程/今日挑战/心肺锻炼挑战01.png', unlocked:false, cond_unlock:'达成条件即可解锁' },
+  { id:'daily-cardio-2', name:'心肺进阶者', cat:'daily', series:'今日挑战 · 心肺锻炼', cond:'累计完成 7 次', mat:'铜 · L2', img:'勋章新图标/成长历程/今日挑战/心肺锻炼挑战02.png', unlocked:false, cond_unlock:'达成条件即可解锁' },
+  { id:'daily-cardio-3', name:'心肺稳定者', cat:'daily', series:'今日挑战 · 心肺锻炼', cond:'累计完成 15 次', mat:'银 · L3', img:'勋章新图标/成长历程/今日挑战/心肺锻炼挑战03.png', unlocked:false, cond_unlock:'达成条件即可解锁' },
+  { id:'daily-cardio-4', name:'心肺强韧者', cat:'daily', series:'今日挑战 · 心肺锻炼', cond:'累计完成 30 次', mat:'金 · L4', img:'勋章新图标/成长历程/今日挑战/心肺锻炼挑战04.png', unlocked:false, cond_unlock:'达成条件即可解锁' },
+  { id:'daily-cardio-5', name:'心肺王者', cat:'daily', series:'今日挑战 · 心肺锻炼', cond:'累计完成 60 次', mat:'钻石 · L5', img:'勋章新图标/成长历程/今日挑战/心肺锻炼挑战05.png', unlocked:false, cond_unlock:'达成条件即可解锁' },
+  { id:'daily-stand-1', name:'站立起身者', cat:'daily', series:'今日挑战 · 站立', cond:'累计完成 3 次', mat:'铁 · L1', img:'勋章新图标/成长历程/今日挑战/站立挑战01.png', unlocked:false, cond_unlock:'达成条件即可解锁' },
+  { id:'daily-stand-2', name:'站立响应者', cat:'daily', series:'今日挑战 · 站立', cond:'累计完成 7 次', mat:'铜 · L2', img:'勋章新图标/成长历程/今日挑战/站立挑战02.png', unlocked:false, cond_unlock:'达成条件即可解锁' },
+  { id:'daily-stand-3', name:'站立稳定者', cat:'daily', series:'今日挑战 · 站立', cond:'累计完成 15 次', mat:'银 · L3', img:'勋章新图标/成长历程/今日挑战/站立挑战03.png', unlocked:false, cond_unlock:'达成条件即可解锁' },
+  { id:'daily-stand-4', name:'站立守律者', cat:'daily', series:'今日挑战 · 站立', cond:'累计完成 30 次', mat:'金 · L4', img:'勋章新图标/成长历程/今日挑战/站立挑战04.png', unlocked:false, cond_unlock:'达成条件即可解锁' },
+  { id:'daily-stand-5', name:'站立节律大师', cat:'daily', series:'今日挑战 · 站立', cond:'累计完成 60 次', mat:'钻石 · L5', img:'勋章新图标/成长历程/今日挑战/站立挑战05.png', unlocked:false, cond_unlock:'达成条件即可解锁' },
+  { id:'mile-step-1', name:'万步启程者', cat:'daily', series:'绝对值里程碑 · 步行', cond:'单日步行达到 10000 步', mat:'铁 · L1', img:'勋章新图标/成长历程/单项里程碑/步数里程碑01.png', unlocked:false, cond_unlock:'达成条件即可解锁' },
+  { id:'mile-step-2', name:'两万步突破者', cat:'daily', series:'绝对值里程碑 · 步行', cond:'单日步行达到 20000 步', mat:'铜 · L2', img:'勋章新图标/成长历程/单项里程碑/步数里程碑02.png', unlocked:false, cond_unlock:'达成条件即可解锁' },
+  { id:'mile-step-3', name:'十万步积行者', cat:'daily', series:'绝对值里程碑 · 步行', cond:'累计步行达到 100000 步', mat:'银 · L3', img:'勋章新图标/成长历程/单项里程碑/步数里程碑03.png', unlocked:false, cond_unlock:'达成条件即可解锁' },
+  { id:'mile-step-4', name:'五十万步远行者', cat:'daily', series:'绝对值里程碑 · 步行', cond:'累计步行达到 500000 步', mat:'金 · L4', img:'勋章新图标/成长历程/单项里程碑/步数里程碑04.png', unlocked:false, cond_unlock:'达成条件即可解锁' },
+  { id:'mile-step-5', name:'百万步征途者', cat:'daily', series:'绝对值里程碑 · 步行', cond:'累计步行达到 1000000 步', mat:'钻石 · L5', img:'勋章新图标/成长历程/单项里程碑/步数里程碑05.png', unlocked:false, cond_unlock:'达成条件即可解锁' },
+  { id:'mile-burn-1', name:'燃烧起势者', cat:'daily', series:'绝对值里程碑 · 消耗', cond:'单日消耗达到 500 千卡', mat:'铁 · L1', img:'勋章新图标/成长历程/单项里程碑/消耗里程碑01.png', unlocked:false, cond_unlock:'达成条件即可解锁' },
+  { id:'mile-burn-2', name:'千卡突破者', cat:'daily', series:'绝对值里程碑 · 消耗', cond:'单日消耗达到 1000 千卡', mat:'铜 · L2', img:'勋章新图标/成长历程/单项里程碑/消耗里程碑02.png', unlocked:false, cond_unlock:'达成条件即可解锁' },
+  { id:'mile-burn-3', name:'万卡积燃者', cat:'daily', series:'绝对值里程碑 · 消耗', cond:'累计消耗达到 10000 千卡', mat:'银 · L3', img:'勋章新图标/成长历程/单项里程碑/消耗里程碑03.png', unlocked:false, cond_unlock:'达成条件即可解锁' },
+  { id:'mile-burn-4', name:'五万卡强能者', cat:'daily', series:'绝对值里程碑 · 消耗', cond:'累计消耗达到 50000 千卡', mat:'金 · L4', img:'勋章新图标/成长历程/单项里程碑/消耗里程碑04.png', unlocked:false, cond_unlock:'达成条件即可解锁' },
+  { id:'mile-burn-5', name:'十万卡王者', cat:'daily', series:'绝对值里程碑 · 消耗', cond:'累计消耗达到 100000 千卡', mat:'钻石 · L5', img:'勋章新图标/成长历程/单项里程碑/消耗里程碑05.png', unlocked:false, cond_unlock:'达成条件即可解锁' },
+  { id:'mile-stand-1', name:'站立五十次达成者', cat:'daily', series:'绝对值里程碑 · 站立', cond:'累计站立达到 50 次', mat:'铁 · L1', img:'勋章新图标/成长历程/单项里程碑/站立里程碑01.png', unlocked:false, cond_unlock:'达成条件即可解锁' },
+  { id:'mile-stand-2', name:'站立两百次守护者', cat:'daily', series:'绝对值里程碑 · 站立', cond:'累计站立达到 200 次', mat:'铜 · L2', img:'勋章新图标/成长历程/单项里程碑/站立里程碑02.png', unlocked:false, cond_unlock:'达成条件即可解锁' },
+  { id:'mile-stand-3', name:'站立五百次稳定者', cat:'daily', series:'绝对值里程碑 · 站立', cond:'累计站立达到 500 次', mat:'银 · L3', img:'勋章新图标/成长历程/单项里程碑/站立里程碑03.png', unlocked:false, cond_unlock:'达成条件即可解锁' },
+  { id:'mile-stand-4', name:'站立千次进阶者', cat:'daily', series:'绝对值里程碑 · 站立', cond:'累计站立达到 1000 次', mat:'金 · L4', img:'勋章新图标/成长历程/单项里程碑/站立里程碑04.png', unlocked:false, cond_unlock:'达成条件即可解锁' },
+  { id:'mile-stand-5', name:'站立两千次节律大师', cat:'daily', series:'绝对值里程碑 · 站立', cond:'累计站立达到 2000 次', mat:'钻石 · L5', img:'勋章新图标/成长历程/单项里程碑/站立里程碑05.png', unlocked:false, cond_unlock:'达成条件即可解锁' },
+  { id:'mile-cardio-1', name:'心肺十分钟起步者', cat:'daily', series:'绝对值里程碑 · 心肺锻炼', cond:'单次心肺锻炼达到 10 分钟', mat:'铁 · L1', img:'勋章新图标/成长历程/单项里程碑/心肺锻炼里程碑01.png', unlocked:false, cond_unlock:'达成条件即可解锁' },
+  { id:'mile-cardio-2', name:'心肺三十分钟突破者', cat:'daily', series:'绝对值里程碑 · 心肺锻炼', cond:'单次心肺锻炼达到 30 分钟', mat:'铜 · L2', img:'勋章新图标/成长历程/单项里程碑/心肺锻炼里程碑02.png', unlocked:false, cond_unlock:'达成条件即可解锁' },
+  { id:'mile-cardio-3', name:'心肺百分钟积能者', cat:'daily', series:'绝对值里程碑 · 心肺锻炼', cond:'累计心肺锻炼达到 100 分钟', mat:'银 · L3', img:'勋章新图标/成长历程/单项里程碑/心肺锻炼里程碑03.png', unlocked:false, cond_unlock:'达成条件即可解锁' },
+  { id:'mile-cardio-4', name:'心肺千分钟强韧者', cat:'daily', series:'绝对值里程碑 · 心肺锻炼', cond:'累计心肺锻炼达到 1000 分钟', mat:'金 · L4', img:'勋章新图标/成长历程/单项里程碑/心肺锻炼里程碑04.png', unlocked:false, cond_unlock:'达成条件即可解锁' },
+  { id:'mile-cardio-5', name:'心肺万分钟大师', cat:'daily', series:'绝对值里程碑 · 心肺锻炼', cond:'累计心肺锻炼达到 10000 分钟', mat:'钻石 · L5', img:'勋章新图标/成长历程/单项里程碑/心肺锻炼里程碑05.png', unlocked:false, cond_unlock:'达成条件即可解锁' },
+  { id:'mile-water-1', name:'喝水起步者', cat:'daily', series:'绝对值里程碑 · 喝水', cond:'单日喝水 1 万毫升', mat:'铁 · L1', img:'勋章新图标/成长历程/单项里程碑/喝水里程碑01.png', unlocked:false, cond_unlock:'达成条件即可解锁' },
+  { id:'mile-water-2', name:'喝水突破者', cat:'daily', series:'绝对值里程碑 · 喝水', cond:'单日喝水 2 万毫升', mat:'铜 · L2', img:'勋章新图标/成长历程/单项里程碑/喝水里程碑02.png', unlocked:false, cond_unlock:'达成条件即可解锁' },
+  { id:'mile-water-3', name:'补水十万稳定者', cat:'daily', series:'绝对值里程碑 · 喝水', cond:'累计喝水 10 万毫升', mat:'银 · L3', img:'勋章新图标/成长历程/单项里程碑/喝水里程碑03.png', unlocked:false, cond_unlock:'达成条件即可解锁' },
+  { id:'mile-water-4', name:'补水五十万守护者', cat:'daily', series:'绝对值里程碑 · 喝水', cond:'累计喝水 50 万毫升', mat:'金 · L4', img:'勋章新图标/成长历程/单项里程碑/喝水里程碑04.png', unlocked:false, cond_unlock:'达成条件即可解锁' },
+  { id:'mile-water-5', name:'补水百万大师', cat:'daily', series:'绝对值里程碑 · 喝水', cond:'累计喝水 100 万毫升', mat:'钻石 · L5', img:'勋章新图标/成长历程/单项里程碑/喝水里程碑05.png', unlocked:false, cond_unlock:'达成条件即可解锁' },
+  { id:'mile-deepsleep-1', name:'深睡一小时达成者', cat:'daily', series:'绝对值里程碑 · 深度睡眠', cond:'单晚深度睡眠达到 1 小时', mat:'铁 · L1', img:'勋章新图标/成长历程/单项里程碑/深度睡眠里程碑01.png', unlocked:false, cond_unlock:'达成条件即可解锁' },
+  { id:'mile-deepsleep-2', name:'深睡两小时突破者', cat:'daily', series:'绝对值里程碑 · 深度睡眠', cond:'单晚深度睡眠达到 2 小时', mat:'铜 · L2', img:'勋章新图标/成长历程/单项里程碑/深度睡眠里程碑02.png', unlocked:false, cond_unlock:'达成条件即可解锁' },
+  { id:'mile-deepsleep-3', name:'深睡十小时积累者', cat:'daily', series:'绝对值里程碑 · 深度睡眠', cond:'累计深度睡眠达到 10 小时', mat:'银 · L3', img:'勋章新图标/成长历程/单项里程碑/深度睡眠里程碑03.png', unlocked:false, cond_unlock:'达成条件即可解锁' },
+  { id:'mile-deepsleep-4', name:'深睡五十小时修复者', cat:'daily', series:'绝对值里程碑 · 深度睡眠', cond:'累计深度睡眠达到 50 小时', mat:'金 · L4', img:'勋章新图标/成长历程/单项里程碑/深度睡眠里程碑04.png', unlocked:false, cond_unlock:'达成条件即可解锁' },
+  { id:'mile-deepsleep-5', name:'深睡百小时大师', cat:'daily', series:'绝对值里程碑 · 深度睡眠', cond:'累计深度睡眠达到 100 小时', mat:'钻石 · L5', img:'勋章新图标/成长历程/单项里程碑/深度睡眠里程碑05.png', unlocked:false, cond_unlock:'达成条件即可解锁' },
+  { id:'ring-gold-5', name:'金牌殿堂者', cat:'daily', series:'三环累计 · 金牌', cond:'累计获得 180 枚金牌', mat:'钻石 · L5', img:'勋章新图标/成长历程/三环成绩/金牌05.png', unlocked:false, cond_unlock:'达成条件即可解锁' },
+  { id:'ring-silver-4', name:'银牌稳定者', cat:'daily', series:'三环累计 · 银牌', cond:'累计获得 90 枚银牌', mat:'金 · L4', img:'勋章新图标/成长历程/三环成绩/银牌04.png', unlocked:false, cond_unlock:'达成条件即可解锁' },
+  { id:'ring-silver-5', name:'银牌高光者', cat:'daily', series:'三环累计 · 银牌', cond:'累计获得 180 枚银牌', mat:'钻石 · L5', img:'勋章新图标/成长历程/三环成绩/银牌05.png', unlocked:false, cond_unlock:'达成条件即可解锁' },
+  { id:'ring-bronze-4', name:'铜牌累进者', cat:'daily', series:'三环累计 · 铜牌', cond:'累计获得 90 枚铜牌', mat:'金 · L4', img:'勋章新图标/成长历程/三环成绩/铜牌04.png', unlocked:false, cond_unlock:'达成条件即可解锁' },
+  { id:'ring-bronze-5', name:'铜牌长线玩家', cat:'daily', series:'三环累计 · 铜牌', cond:'累计获得 180 枚铜牌', mat:'钻石 · L5', img:'勋章新图标/成长历程/三环成绩/铜牌05.png', unlocked:false, cond_unlock:'达成条件即可解锁' },
 ];
 
-let currentMedalCat = 'all';
+let currentMedalCat = 'growth';
+/* 勋章墙 · 两级结构：成长历程（5 分组）/ 限时挑战 */
+const GROWTH_GROUPS = [
+  { key: 'newbie',    label: '新手引导',     sub: '与戒指相识的每一步，都值得记下',     match: m => (m.series || '').startsWith('新手引导') },
+  { key: 'metrics',   label: '身体指标',     sub: '8 项指标的长期表现，看见身体的进步', match: m => (m.series || '').startsWith('身体指标') },
+  { key: 'daily',     label: '今日挑战',     sub: '每天一点小坚持，攒成属于你的勋章',   match: m => (m.series || '').startsWith('今日挑战') },
+  { key: 'milestone', label: '绝对值里程碑', sub: '单次突破或长期累积的关键数值成就',   match: m => (m.series || '').startsWith('绝对值里程碑') || (m.series || '').startsWith('单项里程碑') },
+  { key: 'rings',     label: '三环累计',     sub: '三环结算的每一枚奖牌，都收藏在这里', match: m => (m.series || '').startsWith('三环累计') },
+];
+
 function renderMedalsWall() {
   const total = MEDALS.length;
   const unlockedCount = MEDALS.filter(m => m.unlocked).length;
   document.getElementById('hMwNum').textContent = unlockedCount;
   document.getElementById('hMwTotal').textContent = `/ ${total}`;
-  let visible = MEDALS;
-  if (currentMedalCat !== 'all') visible = MEDALS.filter(m => m.cat === currentMedalCat);
-  if (currentMedalCat === 'hidden') visible = []; // 隐藏类未解锁不显示
-  visible = visible.slice().sort((a, b) => (b.unlocked - a.unlocked));
-  const html = visible.map(m => `
+
+  const grid = document.getElementById('hMwGrid');
+
+  const renderItem = m => `
     <div class="h-medal-item ${m.unlocked ? '' : 'is-locked'}" data-id="${m.id}">
       ${m.cat === 'limited' || m.cat === 'event' ? `<div class="h-mi-tag ${m.cat === 'event' ? '' : 'is-multi'}">${m.cat === 'event' ? '月度' : '限定'}</div>` : ''}
       <div class="h-mi-img"><img src="${m.img}" alt="${m.name}"></div>
       <div class="h-mi-name">${m.name}</div>
-    </div>
-  `).join('');
-  document.getElementById('hMwGrid').innerHTML = html || `<div style="grid-column:span 3;text-align:center;padding:48px 16px;color:var(--text3)">${currentMedalCat === 'limited' ? '暂无限定勋章 · 关注每月限时活动获取' : currentMedalCat === 'hidden' ? '隐藏勋章在解锁后才会出现 · 保持探索' : '暂无勋章'}</div>`;
+    </div>`;
+
+  if (currentMedalCat === 'growth') {
+    // 成长历程：5 个分组卡按顺序堆叠
+    const html = GROWTH_GROUPS.map(g => {
+      const items = MEDALS.filter(g.match);
+      const got = items.filter(m => m.unlocked).length;
+      const body = items.length
+        ? `<div class="h-mg-grid">${items.map(renderItem).join('')}</div>`
+        : `<div class="h-mg-empty">该类型暂无勋章 · 后续上新中</div>`;
+      return `
+        <div class="h-medal-group" data-group="${g.key}">
+          <div class="h-mg-head">
+            <div class="h-mg-title">${g.label}<span class="h-mg-count">${got} / ${items.length}</span></div>
+            <div class="h-mg-sub">${g.sub}</div>
+          </div>
+          ${body}
+        </div>`;
+    }).join('');
+    grid.innerHTML = html;
+  } else {
+    // 限时挑战：cat=event 或 cat=limited
+    const items = MEDALS.filter(m => m.cat === 'event' || m.cat === 'limited');
+    const got = items.filter(m => m.unlocked).length;
+    const body = items.length
+      ? `<div class="h-mg-grid">${items.map(renderItem).join('')}</div>`
+      : `<div class="h-mg-empty">尚未参与限时挑战 · 关注每月活动即可获得</div>`;
+    grid.innerHTML = `
+      <div class="h-medal-group" data-group="event">
+        <div class="h-mg-head">
+          <div class="h-mg-title">限时挑战<span class="h-mg-count">${got} / ${items.length}</span></div>
+          <div class="h-mg-sub">参与官方 / 月度 / 季度 / 年度活动获得的纪念勋章</div>
+        </div>
+        ${body}
+      </div>`;
+  }
+
   document.querySelectorAll('#hMwGrid .h-medal-item').forEach(item => {
     item.addEventListener('click', () => openMedalDetail(item.dataset.id));
   });

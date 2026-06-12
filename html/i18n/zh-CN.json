@@ -1,0 +1,129 @@
+{
+  "__meta__": {
+    "lang": "zh-CN",
+    "label": "简体中文",
+    "version": "0.1.0",
+    "stage": "Phase 1 · 今日模块试点",
+    "note": "字串占位符使用 {name} 格式，开发对接 i18next/vue-i18n/intl 均兼容"
+  },
+
+  "common": {
+    "edit": "编辑",
+    "done": "完成",
+    "cancel": "取消",
+    "save": "保存",
+    "confirm": "确认",
+    "ok": "好的",
+    "close": "关闭",
+    "more": "更多",
+    "viewAll": "查看全部"
+  },
+
+  "nav": {
+    "today": "今日",
+    "level": "维度",
+    "care": "关心",
+    "harvest": "收获"
+  },
+
+  "ringStatus": {
+    "connected": "已连接",
+    "disconnected": "未连接",
+    "offline": "已离线",
+    "lowBattery": "低电量"
+  },
+
+  "rings3": {
+    "habit": { "label": "习惯", "subtitle": "持之以恒" },
+    "care":  { "label": "关心", "subtitle": "心意相通" },
+    "growth":{ "label": "成长", "subtitle": "成长跃迁" },
+    "summary": {
+      "empty":       "未显示任何圆环",
+      "startSingle": "今日的圆环交给你",
+      "startMulti":  "今日的第一环交给你",
+      "fullSingle":  "圆环全亮，今日满级",
+      "fullDouble":  "双环全亮，今日满级",
+      "fullTriple":  "三环全亮，今日满级",
+      "almostGold":  "离金牌只差最后一环",
+      "midSilver":   "再添一环就能升银"
+    },
+    "dayTitle": {
+      "nice":    "Nice Day",
+      "great":   "Great Day",
+      "perfect": "Perfect Day"
+    }
+  },
+
+  "section": {
+    "body": "身体",
+    "challenges": "今日挑战"
+  },
+
+  "metric": {
+    "btnMeasure":    "手动测量",
+    "btnStart":      "开始测量",
+    "lastMeasured":  "刚刚 · {time}",
+    "rangeNormal":   "正常范围 {min}-{max}",
+    "rangeToday":    "今日范围 {min}-{max} {unit}",
+    "status": {
+      "good":   "良好",
+      "normal": "正常",
+      "low":    "偏低",
+      "high":   "偏高",
+      "lightFatigue": "轻度疲劳"
+    },
+    "stressOk": "心理压力正常"
+  },
+
+  "habit": {
+    "walk": {
+      "name": "走路",
+      "chip": "{goal} 步目标",
+      "xpLabel": "+30 XP",
+      "desc": "已完成 {current} / {goal} 步，还差约 {remain} 步。继续保持中低强度步行，让身体更有活力，是日常健康的简单积累。"
+    },
+    "sleep": {
+      "name": "睡眠",
+      "chip": "{goal} 小时睡眠目标",
+      "xpLabel": "+40 XP",
+      "desc": "昨夜已睡 {current} / {goal} 小时，完成度很高。再把入睡时间稍微提前一点，整夜的睡眠质量和精力恢复都会更稳定。"
+    },
+    "burn": {
+      "name": "消耗",
+      "chip": "{goal} kcal 日消耗",
+      "xpLabel": "+35 XP",
+      "desc": "已消耗 {current} / {goal} kcal。再补一段轻松散步或慢节奏运动，就能轻松达成今天的活动目标。"
+    },
+    "water": {
+      "name": "喝水",
+      "chip": "{goal} ml 饮水目标",
+      "xpLabel": "+20 XP",
+      "desc": "今天已喝 {current} / {goal} 毫升，建议傍晚前补足剩余 {remain} 毫升，睡前少量饮水即可，以免影响睡眠。"
+    },
+    "stand": {
+      "name": "站立",
+      "chip": "每小时起身一次",
+      "xpLabel": "+25 XP",
+      "desc": "已完成 {current} / {goal} 小时站立目标。每完成一次起身，都能活动一下身体，缓解久坐带来的腰背僵硬感。"
+    },
+    "run": {
+      "name": "跑步",
+      "chip": "{goal} 公里训练计划",
+      "xpLabel": "+30 XP",
+      "desc": "目前已跑 {current} / {goal} 公里，刚好完成一半。若今晚状态不错，可以加一段轻松跑，让身体更有活力。"
+    },
+    "medicine": {
+      "name": "吃药",
+      "chip": "今日服药计划",
+      "xpLabel": "+20 XP",
+      "desc": "今天的用药任务已全部完成，{current} / {goal} 次 准时达成。按时记录每日健康习惯，帮你更安心地管理每天的健康节奏。"
+    }
+  },
+
+  "social": {
+    "likedBy":     "{names} 等{count}个赞",
+    "comment":     "评论",
+    "likeAria":    "点赞 / 取消点赞",
+    "commentAria": "评论"
+  }
+}

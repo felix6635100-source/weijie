@@ -1,0 +1,129 @@
+{
+  "__meta__": {
+    "lang": "en",
+    "label": "English",
+    "version": "0.1.0",
+    "stage": "Phase 1 · Today module pilot",
+    "note": "Placeholders use {name} format; compatible with i18next / vue-i18n / Flutter intl"
+  },
+
+  "common": {
+    "edit":    "Edit",
+    "done":    "Done",
+    "cancel":  "Cancel",
+    "save":    "Save",
+    "confirm": "Confirm",
+    "ok":      "OK",
+    "close":   "Close",
+    "more":    "More",
+    "viewAll": "View all"
+  },
+
+  "nav": {
+    "today":   "Today",
+    "level":   "Level",
+    "care":    "Care",
+    "harvest": "Harvest"
+  },
+
+  "ringStatus": {
+    "connected":    "Connected",
+    "disconnected": "Disconnected",
+    "offline":      "Offline",
+    "lowBattery":   "Low battery"
+  },
+
+  "rings3": {
+    "habit":  { "label": "Habits",  "subtitle": "Stay consistent" },
+    "care":   { "label": "Care",    "subtitle": "Stay connected" },
+    "growth": { "label": "Growth",  "subtitle": "Level up" },
+    "summary": {
+      "empty":       "No rings shown",
+      "startSingle": "Light up your first ring today",
+      "startMulti":  "Light up your first ring today",
+      "fullSingle":  "Ring complete — Today's done!",
+      "fullDouble":  "Both rings complete — Today's done!",
+      "fullTriple":  "All three rings complete — Today's done!",
+      "almostGold":  "One ring away from gold",
+      "midSilver":   "One more ring to reach silver"
+    },
+    "dayTitle": {
+      "nice":    "Nice Day",
+      "great":   "Great Day",
+      "perfect": "Perfect Day"
+    }
+  },
+
+  "section": {
+    "body":       "Body",
+    "challenges": "Today's Challenges"
+  },
+
+  "metric": {
+    "btnMeasure":   "Measure",
+    "btnStart":     "Start measuring",
+    "lastMeasured": "Just now · {time}",
+    "rangeNormal":  "Normal range {min}-{max}",
+    "rangeToday":   "Today's range {min}-{max} {unit}",
+    "status": {
+      "good":         "Good",
+      "normal":       "Normal",
+      "low":          "Low",
+      "high":         "High",
+      "lightFatigue": "Light fatigue"
+    },
+    "stressOk": "Stress level normal"
+  },
+
+  "habit": {
+    "walk": {
+      "name":    "Walking",
+      "chip":    "{goal} steps goal",
+      "xpLabel": "+30 XP",
+      "desc":    "{current} / {goal} steps done, about {remain} to go. Keep going at a light-to-moderate pace — small daily steps add up to lasting energy."
+    },
+    "sleep": {
+      "name":    "Sleep",
+      "chip":    "{goal}-hour sleep goal",
+      "xpLabel": "+40 XP",
+      "desc":    "Slept {current} / {goal} hours last night — strong finish. Try going to bed a touch earlier; your sleep quality and energy recovery will be even more stable."
+    },
+    "burn": {
+      "name":    "Burn",
+      "chip":    "{goal} kcal daily burn",
+      "xpLabel": "+35 XP",
+      "desc":    "Burned {current} / {goal} kcal. A short walk or easy-paced workout will easily hit today's active goal."
+    },
+    "water": {
+      "name":    "Water",
+      "chip":    "{goal} ml hydration goal",
+      "xpLabel": "+20 XP",
+      "desc":    "Drank {current} / {goal} ml today. Finish the remaining {remain} ml before evening, and keep sips light before bed so it doesn't disturb your sleep."
+    },
+    "stand": {
+      "name":    "Stand",
+      "chip":    "Stand up every hour",
+      "xpLabel": "+25 XP",
+      "desc":    "Reached {current} / {goal} stand hours. Every stand-up loosens your body and eases the stiffness that builds up from sitting too long."
+    },
+    "run": {
+      "name":    "Run",
+      "chip":    "{goal} km training plan",
+      "xpLabel": "+30 XP",
+      "desc":    "Logged {current} / {goal} km — halfway there. If you're feeling good tonight, add a relaxed run to wrap things up and boost your energy."
+    },
+    "medicine": {
+      "name":    "Medication",
+      "chip":    "Today's schedule",
+      "xpLabel": "+20 XP",
+      "desc":    "All medication tasks for today are complete, {current} / {goal} on time. Logging your daily routine helps you manage your health rhythm with more confidence."
+    }
+  },
+
+  "social": {
+    "likedBy":     "{names} and {count} others liked",
+    "comment":     "Comment",
+    "likeAria":    "Like / Unlike",
+    "commentAria": "Comment"
+  }
+}
